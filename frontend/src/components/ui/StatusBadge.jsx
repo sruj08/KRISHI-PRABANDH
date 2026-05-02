@@ -7,23 +7,27 @@ const StatusBadge = ({ status, className = '' }) => {
   switch (status?.toLowerCase()) {
     case 'pending':
     case 'survey pending':
-      badgeClass = 'badge-pending';
+    case 'under scrutiny':
+      badgeClass = 'badge-pending'; // typically amber/orange
       icon = 'schedule';
       break;
     case 'verified':
-      badgeClass = 'badge-verified';
+    case 'approved':
+      badgeClass = 'badge-verified'; // typically success/green
       icon = 'check_circle';
       break;
     case 'inspection req.':
     case 'urgent inspection':
     case 'urgent':
-      badgeClass = 'badge-error';
+    case 'rejected':
+      badgeClass = 'badge-error'; // typically red
       icon = 'error';
       break;
     case 'completed':
     case 'task completed':
-      badgeClass = 'badge-blue';
-      icon = 'done_all';
+    case 'applied':
+      badgeClass = 'badge-blue'; // typically blue
+      icon = 'pending_actions';
       break;
     default:
       badgeClass = 'badge-grey';
