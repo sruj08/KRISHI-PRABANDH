@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../context/LanguageContext';
-import StatCard from '../components/ui/StatCard';
-import TaskItem from '../components/ui/TaskItem';
-import CircularGauge from '../components/ui/CircularGauge';
+import { useLanguage } from '../../context/LanguageContext';
+import StatCard from '../../components/ui/StatCard';
+import TaskItem from '../../components/ui/TaskItem';
+import CircularGauge from '../../components/ui/CircularGauge';
 
 const Dashboard = () => {
   const { t, lang } = useLanguage();
