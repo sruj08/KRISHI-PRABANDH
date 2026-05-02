@@ -1,0 +1,96 @@
+const BASE_URL = 'http://localhost:8000';
+
+async function apiFetch(path, options = {}) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || `API error ${res.status}`);
+  }
+  return res.json();
+}
+
+// ── Applications ────────────────────────────────────────────────────────────
+
+export async function fetchApplications({ status, component, scheme_category, farmer_id, limit = 100, offset = 0 } = {}) {
+  const params = new URLSearchParams();
+  if (status) params.set('status', status);
+  if (component) params.set('component', component);
+  if (scheme_category) params.set('scheme_category', scheme_category);
+  if (farmer_id) params.set('farmer_id', farmer_id);
+  params.set('limit', limit);
+  params.set('offset', offset);
+  const { data } = await apiFetch(`/applications?${params}`);
+  return data;
+}
+
+export async function fetchApplication(id) {
+  const { data } = await apiFetch(`/applications/${id}`);
+  return data;
+}
+
+export async function updateApplicationStatus(id, newStatus, remarks = '') {
+  const { data } = await apiFetch(`/applications/${id}/status`, {
+    method: 'POST',
+    body: JSON.stringify({ new_status: newStatus, remarks }),
+  });
+  return data;
+}
+
+export async function uploadPhoto(applicationId, file, remarks = '') {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (remarks) formData.append('remarks', remarks);
+  const res = await fetch(`${BASE_URL}/applications/${applicationId}/upload-photo`, {
+    method: 'POST',
+    body: formData, // No Content-Type header — browser sets multipart boundary automatically
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || `Upload failed ${res.status}`);
+  }
+  return res.json();
+}
+
+// ── Insights ────────────────────────────────────────────────────────────────
+
+export async function fetchSummary() {
+  const { data } = await apiFetch('/insights/summary');
+  return data;
+}
+
+export async function fetchPriorityList(limit = 50) {
+  const { data } = await apiFetch(`/insights/priority?limit=${limit}`);
+  return data;
+}
+
+export async function fetchHighPriority() {
+  const { data } = await apiFetch('/insights/priority/high');
+  return data;
+}
+
+export async function fetchEligibleFarmers(limit = 10) {
+  const { data } = await apiFetch(`/insights/eligible-farmers?limit=${limit}`);
+  return data;
+}
+
+export async function fetchFraudAlerts() {
+  const { data } = await apiFetch('/insights/fraud-alerts');
+  return data;
+}
+
+// ── Audit Logs ───────────────────────────────────────────────────────────────
+
+export async function fetchLogs(limit = 50) {
+  const res = await apiFetch(`/logs?limit=${limit}`);
+  return res.data;
+}
+
+export async function postLog({ action, application_id, officer_id = 'system', details = '' }) {
+  return apiFetch('/logs', {
+    method: 'POST',
+    body: JSON.stringify({ action, application_id, officer_id, details }),
+  });
+}

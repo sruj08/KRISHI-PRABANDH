@@ -1,7 +1,3 @@
-# Python Utility Dependencies
-# No external libraries currently required for basic re-based scripts,
-# but these are recommended for advanced HTML/Data processing:
-beautifulsoup4==4.12.2
-lxml==4.9.3
-requests==2.31.0
-python-dotenv==1.0.0
+fastapi>=0.115
+uvicorn[standard]>=0.29
+pydantic>=2.10

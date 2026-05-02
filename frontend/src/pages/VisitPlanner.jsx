@@ -1,50 +1,105 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { useToast } from '../hooks/useToast.jsx';
 import Button from '../components/ui/Button';
 import InsightModal from '../components/ui/InsightModal';
-import { applicationsData } from '../data/applications';
+import { fetchApplications, updateApplicationStatus, postLog } from '../utils/api';
 
-const getDaysSince = (dateStr) => {
-  if (!dateStr) return 0;
-  const parts = dateStr.split('-');
-  const date = parts.length === 3 ? new Date(`${parts[2]}-${parts[1]}-${parts[0]}`) : new Date(dateStr);
+const getDaysSince = (d) => {
+  if (!d) return 0;
+  const p = d.split('-');
+  const date = p.length === 3 ? new Date(`${p[2]}-${p[1]}-${p[0]}`) : new Date(d);
   if (isNaN(date.getTime())) return 0;
-  return Math.max(0, Math.floor((new Date() - date) / 86400000));
+  return Math.max(0, Math.floor((Date.now() - date) / 86400000));
 };
+
+const RISK_CONFIG = {
+  HIGH:   { badgeClass: 'badge-error',   borderColor: '#ef5350', label: 'Risk: HIGH' },
+  MEDIUM: { badgeClass: 'badge-pending', borderColor: '#fb8c00', label: 'Risk: MEDIUM' },
+  LOW:    { badgeClass: 'badge-verified',borderColor: 'transparent', label: 'Risk: LOW' },
+};
+
+/**
+ * A visit is "completed" if its remarks contain "Field visit completed".
+ * It is merely "pending" if remarks contain "Field" but NOT "completed".
+ */
+const isVisitCompleted = (remarks = '') =>
+  remarks.includes('Field visit completed');
+
+const isVisitPending = (remarks = '') =>
+  remarks.includes('Field') && !isVisitCompleted(remarks);
 
 const VisitPlanner = () => {
   const { t, lang } = useLanguage();
+  const { addToast } = useToast();
   const navigate = useNavigate();
-  const [selectedApp, setSelectedApp] = useState(null);
 
-  // Count apps per farmer to detect multi-application HIGH risk
+  const [allApps, setAllApps] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [actionLoading, setActionLoading] = useState(null);
+
+  const loadData = useCallback(async () => {
+    try {
+      const result = await fetchApplications({ limit: 500 });
+      setAllApps(result.results || []);
+    } catch (err) {
+      console.error('VisitPlanner load error:', err);
+      addToast('Could not load visit data', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  // Count apps per farmer for multi-app risk detection
   const appCountByFarmer = useMemo(() => {
     const counts = {};
-    applicationsData.forEach(app => {
-      counts[app.farmer_id] = (counts[app.farmer_id] || 0) + 1;
-    });
+    allApps.forEach(a => { counts[a.farmer_id] = (counts[a.farmer_id] || 0) + 1; });
     return counts;
-  }, []);
+  }, [allApps]);
 
   const getRiskLevel = (app) => {
+    // After a successful field visit, downgrade to MEDIUM (or LOW if already approved)
+    if (isVisitCompleted(app.remarks || '')) {
+      return app.status === 'Approved' || app.status === 'Rejected' ? 'LOW' : 'MEDIUM';
+    }
     if (app.rejection_reason || (appCountByFarmer[app.farmer_id] || 0) > 3) return 'HIGH';
     if (app.status === 'Under Scrutiny') return 'MEDIUM';
     return 'LOW';
   };
 
+  // Show ALL apps that have any "Field" mention in remarks (both pending and completed)
   const visits = useMemo(() =>
-    applicationsData
+    allApps
       .filter(app => (app.remarks || '').includes('Field'))
       .map(app => ({ ...app, daysSince: getDaysSince(app.application_date) })),
-    []
+    [allApps]
   );
 
-  const RISK_CONFIG = {
-    HIGH:   { badgeClass: 'badge-error',   borderClass: 'card-bordered-error', label: 'Risk: HIGH',   color: '#c62828' },
-    MEDIUM: { badgeClass: 'badge-pending',  borderClass: '',                    label: 'Risk: MEDIUM', color: '#e65100' },
-    LOW:    { badgeClass: 'badge-verified', borderClass: '',                    label: 'Risk: LOW',    color: '#2e7d32' },
+  const handleAction = async (app, newStatus, remarks, label) => {
+    setActionLoading(app.application_id);
+    try {
+      const updated = await updateApplicationStatus(app.application_id, newStatus, remarks);
+      await postLog({ action: label, application_id: app.application_id, details: remarks });
+      setAllApps(prev => prev.map(a =>
+        a.application_id === app.application_id ? { ...a, ...updated } : a
+      ));
+      if (selectedApp?.application_id === app.application_id) {
+        setSelectedApp(prev => ({ ...prev, ...updated }));
+      }
+      addToast(`${label}: ${app.farmer_id} → ${newStatus}`, 'success');
+    } catch (err) {
+      console.error(err);
+      addToast(err.message || 'Action failed', 'error');
+    } finally {
+      setActionLoading(null);
+    }
   };
+
+  const highRiskCount = visits.filter(v => getRiskLevel(v) === 'HIGH').length;
 
   return (
     <div className="flex-col animate-fade-in mb-8" style={{ margin: 'calc(var(--sp-6) * -1) calc(var(--sp-6) * -1) 0 calc(var(--sp-6) * -1)' }}>
@@ -59,58 +114,142 @@ const VisitPlanner = () => {
           <h2 className="text-xl fw-bold text-white mb-1">{t("Today's Route", lang)}</h2>
           <div className="flex gap-2">
             <span className="badge bg-white text-primary fw-bold">{visits.length} {t('Assigned', lang)}</span>
-            <span className="badge badge-error">{visits.filter(v => getRiskLevel(v) === 'HIGH').length} High Risk</span>
+            <span className="badge badge-error">{highRiskCount} High Risk</span>
           </div>
         </div>
       </div>
 
       <div className="p-4 flex-col gap-4">
-        {visits.length === 0 && (
+        {loading && <div className="text-center text-muted p-4">Loading field visits…</div>}
+
+        {!loading && visits.length === 0 && (
           <div className="text-center text-muted p-6">
             <span className="material-symbols-outlined" style={{ fontSize: '48px', opacity: 0.3 }}>directions_off</span>
             <p className="mt-2">No field visits required today.</p>
           </div>
         )}
 
-        {visits.map((visit, index) => {
+        {visits.map((visit) => {
+          const remarks = visit.remarks || '';
+          const completed = isVisitCompleted(remarks);
+          const pending   = isVisitPending(remarks);
+
           const riskLevel = getRiskLevel(visit);
           const rc = RISK_CONFIG[riskLevel] || RISK_CONFIG.LOW;
+          const isBusy = actionLoading === visit.application_id;
+
+          // ── Button visibility rules ──────────────────────────────────────────
+          // Before visit: show "Mark as Visited" + "Investigate" (status=Applied)
+          // After visit:  show "Approve" + "Reject"              (completed flag)
+          const canMarkVisited = pending && visit.status === 'Applied';
+          const canInvestigate = pending && ['Applied', 'Under Scrutiny'].includes(visit.status);
+          const canApprove     = completed && ['Applied', 'Under Scrutiny'].includes(visit.status);
+          const canReject      = completed && ['Applied', 'Under Scrutiny'].includes(visit.status);
+
           return (
-            <div key={index} className={`card p-0 ${rc.borderClass}`} style={{ overflow: 'hidden' }}>
-              {/* Card header — clickable for insight */}
+            <div
+              key={visit.application_id}
+              className="card p-0"
+              style={{ overflow: 'hidden', opacity: isBusy ? 0.65 : 1, borderLeft: `4px solid ${rc.borderColor}` }}
+            >
+              {/* Card header — click for insight modal */}
               <div className="p-4 flex justify-between items-start" style={{ cursor: 'pointer' }} onClick={() => setSelectedApp(visit)}>
                 <div style={{ flex: 1 }}>
                   <h3 className="fw-bold mb-1">{visit.farmer_id || 'Unknown Farmer'}</h3>
-                  {/* Component-first */}
                   <p className="text-sm fw-bold text-muted mb-0">{visit.component || '—'}</p>
                   <p className="text-xs text-muted mb-2">{visit.scheme_name || '—'}</p>
                   <div className="flex gap-2 flex-wrap">
                     <span className={`badge ${rc.badgeClass}`}>{rc.label}</span>
                     <span className="badge badge-grey" style={{ fontSize: '10px' }}>{visit.scheme_category || '—'}</span>
-                    <span className="badge badge-grey">System Suggested</span>
+                    {completed && (
+                      <span
+                        className="badge"
+                        style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', fontWeight: 700, fontSize: '10px' }}
+                      >
+                        ✓ Visited
+                      </span>
+                    )}
+                    {pending && (
+                      <span className="badge badge-pending" style={{ fontSize: '10px' }}>Visit Pending</span>
+                    )}
                     {visit.daysSince <= 7 && <span className="badge badge-blue" style={{ fontSize: '10px' }}>Recent</span>}
                   </div>
                 </div>
-                <div className="flex-col items-end gap-2">
-                  <button className="btn-icon text-primary" onClick={e => { e.stopPropagation(); }}>
-                    <span className="material-symbols-outlined">directions</span>
-                  </button>
-                  <span className="text-xs text-muted">{visit.daysSince}d ago</span>
-                </div>
+                <span className="text-xs text-muted">{visit.daysSince}d ago</span>
               </div>
 
               {/* Remarks strip */}
-              {visit.remarks && (
+              {remarks && (
                 <div style={{ padding: '6px 16px', backgroundColor: 'var(--surface-low)', borderTop: '1px solid var(--outline-variant)', fontSize: '12px', color: 'var(--text-muted)' }}>
-                  📋 {visit.remarks}
+                  {completed
+                    ? '✅ Field visit completed'
+                    : `📋 ${remarks}`
+                  }
                 </div>
               )}
 
               {/* Action footer */}
-              <div className="p-3" style={{ borderTop: '1px solid var(--outline-variant)', backgroundColor: 'var(--surface-low)' }}>
-                <Button variant="primary" fullWidth onClick={() => navigate('/select-task')}>
-                  {t('Mark as Visited', lang)}
-                </Button>
+              <div className="flex gap-2 p-3" style={{ borderTop: '1px solid var(--outline-variant)', backgroundColor: 'var(--surface-low)' }}>
+
+                {/* ── PRE-VISIT actions ── */}
+                {canMarkVisited && (
+                  <Button
+                    variant="primary"
+                    fullWidth
+                    onClick={() => handleAction(visit, 'Under Scrutiny', 'Field visit completed', 'FIELD_VISIT')}
+                    disabled={isBusy}
+                  >
+                    {isBusy ? '…' : t('Mark as Visited', lang)}
+                  </Button>
+                )}
+                {canInvestigate && (
+                  <button
+                    disabled={isBusy}
+                    onClick={() => handleAction(visit, 'Under Scrutiny', 'Marked for investigation', 'INVESTIGATE')}
+                    style={{ flexShrink: 0, padding: '0 14px', backgroundColor: '#fff3e0', color: '#e65100', border: '1px solid #ffe0b2', borderRadius: 'var(--radius)', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
+                  >
+                    {isBusy ? '…' : '🔍 Investigate'}
+                  </button>
+                )}
+
+                {/* ── POST-VISIT actions ── */}
+                {canApprove && (
+                  <button
+                    disabled={isBusy}
+                    onClick={() => handleAction(visit, 'Approved', 'Approved after field visit', 'APPROVE')}
+                    style={{ flex: 1, padding: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: 'var(--radius)', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
+                  >
+                    {isBusy ? '…' : '✓ Approve'}
+                  </button>
+                )}
+                {canReject && (
+                  <button
+                    disabled={isBusy}
+                    onClick={() => handleAction(visit, 'Rejected', 'Rejected after field visit', 'REJECT')}
+                    style={{ flex: 1, padding: '8px', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: 'var(--radius)', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
+                  >
+                    {isBusy ? '…' : '✕ Reject'}
+                  </button>
+                )}
+
+                {/* Capture photo link — passes appId as query param */}
+                {(canMarkVisited || completed) && (
+                  <button
+                    disabled={isBusy}
+                    onClick={() => navigate(`/capture-photo?appId=${visit.application_id}`)}
+                    style={{ flexShrink: 0, padding: '0 12px', backgroundColor: '#e3f2fd', color: '#0055A4', border: '1px solid #bbdefb', borderRadius: 'var(--radius)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>photo_camera</span>
+                    Photo
+                  </button>
+                )}
+
+                {/* Terminal state — no more actions */}
+                {!canMarkVisited && !canInvestigate && !canApprove && !canReject && (
+                  <div className="text-xs text-muted text-center" style={{ width: '100%', padding: '6px' }}>
+                    Status: <strong>{visit.status}</strong> — No further actions available
+                  </div>
+                )}
               </div>
             </div>
           );

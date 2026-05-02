@@ -21,7 +21,7 @@ const deriveExplanation = (app) => {
   return '📋 Application is in progress. No special action required at this time.';
 };
 
-const InsightModal = ({ app, onClose }) => {
+const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
   if (!app) return null;
   const priority = app.priority || 'NORMAL';
   const pConfig = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.NORMAL;
@@ -86,6 +86,30 @@ const InsightModal = ({ app, onClose }) => {
           <div className="alert-detail-label mb-1" style={{ color: '#2e7d32' }}>System Insight</div>
           <div className="text-sm">{explanation}</div>
         </div>
+
+        {/* Action buttons — only rendered when callbacks provided */}
+        {(onApprove || onReject) && (
+          <div className="flex gap-2 mt-2">
+            {onApprove && (
+              <button
+                disabled={actionLoading}
+                style={{ flex: 1, backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: 'var(--radius)', padding: '10px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', opacity: actionLoading ? 0.6 : 1 }}
+                onClick={() => { onApprove(); onClose(); }}
+              >
+                {actionLoading ? '…' : '✓ Approve'}
+              </button>
+            )}
+            {onReject && (
+              <button
+                disabled={actionLoading}
+                style={{ flex: 1, backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: 'var(--radius)', padding: '10px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', opacity: actionLoading ? 0.6 : 1 }}
+                onClick={() => { onReject(); onClose(); }}
+              >
+                {actionLoading ? '…' : '✕ Reject'}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </Modal>
   );
