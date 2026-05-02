@@ -1,0 +1,144 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background-color: var(--surface-lowest);
+  border-right: 1px solid var(--outline-variant);
+  display: flex;
+  flex-direction: column;
+  z-index: 40;
+  transition: transform var(--transition);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+.sidebar-header {
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--outline-variant);
+}
+
+.officer-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.officer-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.officer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.officer-name {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--success-dark);
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.officer-id {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.officer-region {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: var(--sp-4) var(--sp-2);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 12px var(--sp-4);
+  border-radius: var(--radius);
+  color: var(--text-gray);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  font-weight: 600;
+}
+
+.sidebar-link:hover {
+  background-color: var(--surface-low);
+  color: var(--text-dark);
+}
+
+.sidebar-link.active {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+}
+
+.sidebar-link .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.sidebar-badge {
+  margin-left: auto;
+  background-color: var(--error);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+.sidebar-footer {
+  padding: var(--sp-4);
+  border-top: 1px solid var(--outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.language-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--sp-4) var(--sp-2);
+}
+
+.lang-label {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.logout-link {
+  color: var(--text-gray);
+}
+.logout-link:hover {
+  background-color: var(--error-light);
+  color: var(--error);
+}

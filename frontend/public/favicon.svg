@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="6" fill="#0D631B"/>
-  <path d="M16 8L10 18H22L16 8Z" fill="white"/>
-  <rect x="14" y="20" width="4" height="4" fill="white"/>
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="32" fill="#0055A4"/>
+  <path d="M96 144C69.4903 144 48 122.51 48 96C48 69.4903 69.4903 48 96 48C122.51 48 144 69.4903 144 96C144 122.51 122.51 144 96 144ZM96 132C115.882 132 132 115.882 132 96C132 76.1177 115.882 60 96 60C76.1177 60 60 76.1177 60 96C60 115.882 76.1177 132 96 132Z" fill="white"/>
+  <path d="M96 116C107.046 116 116 107.046 116 96C116 84.9543 107.046 76 96 76C84.9543 76 76 84.9543 76 96C76 107.046 84.9543 116 96 116Z" fill="#FF9933"/>
+  <path d="M116 96H132M60 96H76M96 60V76M96 116V132" stroke="#2D6A4F" stroke-width="8" stroke-linecap="round"/>
 </svg>
