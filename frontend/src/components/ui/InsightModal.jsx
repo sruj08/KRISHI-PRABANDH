@@ -1,0 +1,94 @@
+import React from 'react';
+import Modal from './Modal';
+import StatusBadge from './StatusBadge';
+
+const PRIORITY_CONFIG = {
+  HIGH:   { label: 'High Priority', color: '#c62828', bg: '#ffebee', icon: 'priority_high' },
+  MEDIUM: { label: 'Medium Priority', color: '#e65100', bg: '#fff3e0', icon: 'pending_actions' },
+  NORMAL: { label: 'Normal', color: '#0055A4', bg: '#e3f2fd', icon: 'info' },
+  LOW:    { label: 'Low Priority', color: '#388e3c', bg: '#e8f5e9', icon: 'check_circle' },
+};
+
+const deriveExplanation = (app) => {
+  const remarks = (app.remarks || '').toLowerCase();
+  const rejection = (app.rejection_reason || '').toLowerCase();
+  const status = (app.status || '').toLowerCase();
+  if (rejection.includes('duplicate')) return '⚠️ Possible duplicate application detected. Requires investigation.';
+  if (remarks.includes('field')) return '📍 Field verification required. Schedule a visit to confirm details.';
+  if (status === 'under scrutiny') return '🔍 Application is under scrutiny. Pending document verification.';
+  if (status === 'rejected') return '❌ Application has been rejected. Review rejection reason.';
+  if (status === 'approved') return '✅ Application approved. Disbursement pending.';
+  return '📋 Application is in progress. No special action required at this time.';
+};
+
+const InsightModal = ({ app, onClose }) => {
+  if (!app) return null;
+  const priority = app.priority || 'NORMAL';
+  const pConfig = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.NORMAL;
+  const explanation = deriveExplanation(app);
+  const daysSince = app.daysSince ?? 0;
+
+  return (
+    <Modal isOpen={!!app} onClose={onClose} title="Application Insight">
+      {/* Priority banner */}
+      <div style={{ backgroundColor: pConfig.bg, border: `1px solid ${pConfig.color}`, borderRadius: 'var(--radius)', padding: '10px 14px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span className="material-symbols-outlined" style={{ fontSize: '18px', color: pConfig.color }}>{pConfig.icon}</span>
+        <span style={{ fontWeight: 700, color: pConfig.color, fontSize: '13px' }}>{pConfig.label}</span>
+        {daysSince <= 7 && <span className="badge badge-blue" style={{ marginLeft: 'auto', fontSize: '11px' }}>Recently Applied</span>}
+        {priority === 'HIGH' && <span className="badge badge-error" style={{ marginLeft: daysSince <= 7 ? '4px' : 'auto', fontSize: '11px' }}>Action Required</span>}
+      </div>
+
+      {/* Core fields */}
+      <div className="flex-col gap-3">
+        <div className="alert-detail-grid">
+          <div>
+            <div className="alert-detail-label">Farmer ID</div>
+            <div className="alert-detail-value fw-bold">{app.farmer_id || '—'}</div>
+          </div>
+          <div>
+            <div className="alert-detail-label">Status</div>
+            <StatusBadge status={app.status || 'Unknown'} />
+          </div>
+          <div className="alert-detail-full">
+            <div className="alert-detail-label">Component</div>
+            <div className="alert-detail-value fw-bold">{app.component || '—'}</div>
+          </div>
+          <div className="alert-detail-full">
+            <div className="alert-detail-label">Scheme Name</div>
+            <div className="alert-detail-value">{app.scheme_name || '—'}</div>
+          </div>
+          <div>
+            <div className="alert-detail-label">Category</div>
+            <span className="badge badge-grey" style={{ fontSize: '11px' }}>{app.scheme_category || '—'}</span>
+          </div>
+          <div>
+            <div className="alert-detail-label">Applied</div>
+            <div className="alert-detail-value">{app.application_date || '—'} {daysSince > 0 ? `(${daysSince}d ago)` : ''}</div>
+          </div>
+        </div>
+
+        {/* Remarks */}
+        <div style={{ backgroundColor: 'var(--surface-low)', borderRadius: 'var(--radius)', padding: '10px 12px' }}>
+          <div className="alert-detail-label mb-1">Remarks</div>
+          <div className="text-sm">{app.remarks || 'No remarks'}</div>
+        </div>
+
+        {/* Rejection reason — only if present */}
+        {app.rejection_reason && (
+          <div style={{ backgroundColor: '#ffebee', borderRadius: 'var(--radius)', padding: '10px 12px', border: '1px solid #ffcdd2' }}>
+            <div className="alert-detail-label mb-1" style={{ color: '#c62828' }}>Rejection Reason</div>
+            <div className="text-sm" style={{ color: '#c62828' }}>{app.rejection_reason}</div>
+          </div>
+        )}
+
+        {/* Derived explanation */}
+        <div style={{ backgroundColor: '#e8f5e9', borderRadius: 'var(--radius)', padding: '10px 12px', border: '1px solid #c8e6c9' }}>
+          <div className="alert-detail-label mb-1" style={{ color: '#2e7d32' }}>System Insight</div>
+          <div className="text-sm">{explanation}</div>
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+export default InsightModal;
