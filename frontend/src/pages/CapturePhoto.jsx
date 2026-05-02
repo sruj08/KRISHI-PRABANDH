@@ -1,131 +1,318 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../hooks/useToast.jsx';
+import { uploadPhoto, postLog } from '../utils/api';
 
 const CapturePhoto = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { addToast } = useToast();
+
   const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const fileInputRef = useRef(null);
+
   const [stream, setStream] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
+  const [capturedBlob, setCapturedBlob] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [cameraError, setCameraError] = useState(false);
+
+  // Read applicationId from query params: /capture-photo?appId=APP-001
+  const applicationId = searchParams.get('appId');
+
+  // ── Camera setup ────────────────────────────────────────────────────────────
+
+  const startCamera = useCallback(async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      });
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+      setCameraError(false);
+    } catch (err) {
+      console.error('Camera error:', err);
+      setCameraError(true);
+      addToast('Camera not available — use file picker instead', 'error');
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // Start camera on mount
-    const startCamera = async () => {
-      try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'environment' } 
-        });
-        setStream(mediaStream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
-        }
-      } catch (err) {
-        console.error("Error accessing camera:", err);
-        addToast("Camera access denied or not available", "error");
-      }
-    };
     startCamera();
-
-    // Cleanup on unmount
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
+      // Cleanup: stop all tracks on unmount
+      setStream(prev => {
+        if (prev) prev.getTracks().forEach(track => track.stop());
+        return null;
+      });
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleCapture = () => {
-    setIsRecording(true);
-    addToast("Capturing GPS tagged photo...", "info", 1500);
-    setTimeout(() => {
-      setIsRecording(false);
-      addToast("Photo captured successfully!", "success");
-      // In a real app, we'd save the image data here
-    }, 1500);
+  const stopStream = () => {
+    if (stream) stream.getTracks().forEach(track => track.stop());
   };
 
-  const handleUpload = () => {
-    if (stream) stream.getTracks().forEach(track => track.stop());
-    navigate('/confirm-verification');
+  // ── Capture frame from live video ────────────────────────────────────────────
+
+  const handleCapture = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    setIsCapturing(true);
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(blob => {
+      if (!blob) {
+        addToast('Could not capture frame — try again', 'error');
+        setIsCapturing(false);
+        return;
+      }
+      setCapturedBlob(blob);
+      setPreviewUrl(URL.createObjectURL(blob));
+      setIsCapturing(false);
+      addToast('Photo captured!', 'success');
+    }, 'image/jpeg', 0.9);
+  };
+
+  // ── File picker fallback ─────────────────────────────────────────────────────
+
+  const handleFileChange = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith('image/')) {
+      addToast('Please select an image file', 'error');
+      return;
+    }
+    setCapturedBlob(f);
+    setPreviewUrl(URL.createObjectURL(f));
+    addToast('Image selected', 'info');
+  };
+
+  const handleRetake = () => {
+    setCapturedBlob(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // ── Upload to backend ────────────────────────────────────────────────────────
+
+  const handleUpload = async () => {
+    if (!capturedBlob) {
+      addToast('Capture or select a photo first', 'error');
+      return;
+    }
+    if (!applicationId) {
+      addToast('No application selected — go back and select one', 'error');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      // Wrap raw Blob as a named File so mulitpart/form-data has a filename
+      const file =
+        capturedBlob instanceof File
+          ? capturedBlob
+          : new File([capturedBlob], 'field-photo.jpg', { type: 'image/jpeg' });
+
+      await uploadPhoto(applicationId, file, 'Photo uploaded for verification');
+      await postLog({
+        action: 'PHOTO_UPLOAD',
+        application_id: applicationId,
+        details: 'Field photo captured and uploaded',
+      });
+
+      addToast('Photo uploaded successfully!', 'success');
+      stopStream();
+      navigate('/applications');
+    } catch (err) {
+      console.error('Upload error:', err);
+      addToast(err.message || 'Upload failed — please retry', 'error');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleBack = () => {
-    if (stream) stream.getTracks().forEach(track => track.stop());
+    stopStream();
     navigate(-1);
   };
 
+  // ── Render ───────────────────────────────────────────────────────────────────
+
   return (
     <div style={{ backgroundColor: '#000', color: 'white', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      
+
+      {/* Hidden canvas used for frame capture */}
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
+
       {/* Top Controls */}
       <div className="flex justify-between items-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 10 }}>
         <button className="btn-icon" style={{ color: 'white', backgroundColor: 'transparent' }} onClick={handleBack}>
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
         <div className="flex items-center gap-2">
-          {isRecording && <div className="recording-indicator" />}
-          <span className="text-sm fw-bold">LAT: 18.5204 N | LNG: 73.8567 E</span>
+          {isCapturing && <div className="recording-indicator" />}
+          {applicationId
+            ? <span className="text-sm fw-bold" style={{ color: '#4CAF50' }}>App: {applicationId}</span>
+            : <span className="text-sm" style={{ color: '#ef5350' }}>⚠ No application selected</span>
+          }
         </div>
-        <button className="btn-icon" style={{ color: 'white', backgroundColor: 'transparent' }}>
-          <span className="material-symbols-outlined">flash_on</span>
+        <button
+          className="btn-icon"
+          style={{ color: 'white', backgroundColor: 'transparent' }}
+          onClick={() => fileInputRef.current?.click()}
+          title="Pick from gallery"
+        >
+          <span className="material-symbols-outlined">photo_library</span>
         </button>
       </div>
 
-      {/* Camera View Area */}
+      {/* Camera / Preview Area */}
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <video 
-          ref={videoRef} 
-          autoPlay 
-          playsInline 
-          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute' }}
-        />
-        
-        {/* Alignment Frame */}
-        <div style={{ 
-          position: 'absolute', inset: '10%', 
-          border: '2px solid rgba(255, 255, 255, 0.4)', 
-          borderRadius: '16px',
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
-        }}>
-          <div className="flex justify-between p-2">
-            <div style={{ width: '20px', height: '20px', borderTop: '4px solid #4CAF50', borderLeft: '4px solid #4CAF50' }} />
-            <div style={{ width: '20px', height: '20px', borderTop: '4px solid #4CAF50', borderRight: '4px solid #4CAF50' }} />
-          </div>
-          <div className="text-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)', margin: '0 20px' }}>
-            <p className="text-sm fw-bold">{t("Align subject in frame", lang)}</p>
-          </div>
-          <div className="flex justify-between p-2">
-            <div style={{ width: '20px', height: '20px', borderBottom: '4px solid #4CAF50', borderLeft: '4px solid #4CAF50' }} />
-            <div style={{ width: '20px', height: '20px', borderBottom: '4px solid #4CAF50', borderRight: '4px solid #4CAF50' }} />
-          </div>
-        </div>
+
+        {/* Show preview if a photo was captured */}
+        {previewUrl ? (
+          <img
+            src={previewUrl}
+            alt="Captured"
+            style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'absolute' }}
+          />
+        ) : (
+          <>
+            {!cameraError ? (
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute' }}
+              />
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', color: '#aaa' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '64px', opacity: 0.4 }}>no_photography</span>
+                <p className="text-sm">Camera unavailable</p>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <span className="material-symbols-outlined">upload_file</span>
+                  Choose from Gallery
+                </button>
+              </div>
+            )}
+
+            {/* Alignment frame overlay */}
+            {!cameraError && (
+              <div style={{
+                position: 'absolute', inset: '10%',
+                border: '2px solid rgba(255, 255, 255, 0.4)',
+                borderRadius: '16px',
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+              }}>
+                <div className="flex justify-between p-2">
+                  <div style={{ width: '20px', height: '20px', borderTop: '4px solid #4CAF50', borderLeft: '4px solid #4CAF50' }} />
+                  <div style={{ width: '20px', height: '20px', borderTop: '4px solid #4CAF50', borderRight: '4px solid #4CAF50' }} />
+                </div>
+                <div className="text-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)', margin: '0 20px' }}>
+                  <p className="text-sm fw-bold">{t('Align subject in frame', lang)}</p>
+                </div>
+                <div className="flex justify-between p-2">
+                  <div style={{ width: '20px', height: '20px', borderBottom: '4px solid #4CAF50', borderLeft: '4px solid #4CAF50' }} />
+                  <div style={{ width: '20px', height: '20px', borderBottom: '4px solid #4CAF50', borderRight: '4px solid #4CAF50' }} />
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Bottom Controls */}
       <div className="flex justify-around items-center p-6" style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}>
-        <button className="btn text-white bg-transparent" onClick={() => addToast("Retaking photo", "info")}>
-          {t("Retake", lang)}
-        </button>
-        
-        <button 
-          onClick={handleCapture}
-          style={{
-            width: '72px', height: '72px', borderRadius: '50%',
-            backgroundColor: 'white', border: '4px solid #4CAF50',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer'
-          }}
-        >
-          <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: '2px solid rgba(0,0,0,0.1)' }} />
-        </button>
 
-        <button className="btn btn-primary" onClick={handleUpload}>
-          <span className="material-symbols-outlined">cloud_upload</span>
-          {t("Upload", lang)}
-        </button>
+        {previewUrl ? (
+          /* After capture: Retake or Upload */
+          <>
+            <button
+              className="btn text-white bg-transparent"
+              onClick={handleRetake}
+              disabled={isUploading}
+            >
+              {t('Retake', lang)}
+            </button>
+
+            <button
+              onClick={handleUpload}
+              disabled={isUploading}
+              style={{
+                padding: '12px 28px',
+                borderRadius: '999px',
+                backgroundColor: isUploading ? '#555' : '#4CAF50',
+                color: 'white',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '15px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: isUploading ? 'not-allowed' : 'pointer',
+                transition: 'background 0.2s',
+              }}
+            >
+              <span className="material-symbols-outlined">
+                {isUploading ? 'hourglass_top' : 'cloud_upload'}
+              </span>
+              {isUploading ? 'Uploading…' : t('Upload', lang)}
+            </button>
+          </>
+        ) : (
+          /* Before capture: Shutter button */
+          <>
+            <button
+              className="btn text-white bg-transparent"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Gallery
+            </button>
+
+            <button
+              onClick={handleCapture}
+              disabled={isCapturing || cameraError}
+              style={{
+                width: '72px', height: '72px', borderRadius: '50%',
+                backgroundColor: isCapturing ? '#aaa' : 'white',
+                border: '4px solid #4CAF50',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: isCapturing ? 'not-allowed' : 'pointer',
+                transition: 'background 0.15s',
+              }}
+            >
+              <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: '2px solid rgba(0,0,0,0.1)' }} />
+            </button>
+
+            <div style={{ width: '70px' }} /> {/* spacer */}
+          </>
+        )}
       </div>
 
     </div>
