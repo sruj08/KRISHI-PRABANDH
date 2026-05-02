@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AgriField Gov - Verification Confirmation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#7e5700",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#002204",
+                        "on-primary-fixed-variant": "#005312",
+                        "surface-bright": "#f7fbf0",
+                        "secondary-fixed": "#ffdeac",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e0e4da",
+                        "on-secondary-container": "#6a4800",
+                        "outline": "#707a6c",
+                        "surface-container-low": "#f1f5eb",
+                        "surface-container": "#ebefe5",
+                        "surface-container-high": "#e5eadf",
+                        "tertiary-fixed": "#ffd9e2",
+                        "on-tertiary-fixed": "#3f001c",
+                        "primary": "#0d631b",
+                        "surface-container-highest": "#e0e4da",
+                        "on-tertiary-container": "#ffedf0",
+                        "on-surface-variant": "#40493d",
+                        "inverse-primary": "#88d982",
+                        "surface-dim": "#d7dbd2",
+                        "on-secondary-fixed-variant": "#604100",
+                        "tertiary": "#923357",
+                        "primary-container": "#2e7d32",
+                        "on-surface": "#181d17",
+                        "inverse-on-surface": "#eef2e8",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#b14b6f",
+                        "outline-variant": "#bfcaba",
+                        "background": "#f7fbf0",
+                        "surface-tint": "#1b6d24",
+                        "tertiary-fixed-dim": "#ffb1c7",
+                        "primary-fixed": "#a3f69c",
+                        "on-primary-container": "#cbffc2",
+                        "surface": "#f7fbf0",
+                        "inverse-surface": "#2d322b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#281900",
+                        "secondary-container": "#feb300",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#88d982",
+                        "on-tertiary-fixed-variant": "#7f2448",
+                        "on-background": "#181d17",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "24px",
+                        "margin-mobile": "16px",
+                        "touch-target-min": "48px",
+                        "unit": "8px",
+                        "gutter": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Public Sans"],
+                        "display-xl": ["Public Sans"],
+                        "headline-md": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "headline-lg": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-bold": ["14px", { "lineHeight": "20px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen flex flex-col">
+<!-- TopAppBar Shared Component -->
+<header class="bg-white dark:bg-neutral-900 flex justify-between items-center w-full px-4 h-16 docked full-width top-0 border-b-2 border-neutral-200 dark:border-neutral-800 flat no shadows shrink-0">
+<button class="text-green-800 dark:text-green-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:opacity-70 transition-all p-2 rounded-full flex items-center justify-center min-h-[48px] min-w-[48px]">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-public-sans font-bold text-lg uppercase tracking-wider text-green-900 dark:text-green-50 font-black text-xl text-center flex-1">
+            AgriField Gov
+        </div>
+<div class="hover:bg-neutral-100 dark:hover:bg-neutral-800 active:opacity-70 transition-all p-1 rounded-full flex items-center justify-center min-h-[48px] min-w-[48px]">
+<img alt="Officer Profile Picture" class="w-8 h-8 rounded-full border border-neutral-200 object-cover" data-alt="A close up professional headshot of a rugged field officer in uniform, outdoors in bright daylight. The lighting is harsh but illuminating, typical of agricultural environments. The officer looks serious and focused. The overall tone is authoritative and practical, fitting a government field app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDS2zFBo0nME2kJKpgxsneXIOb0yKCEKIT-BWMB571nVwf-APN3JVtQBbICXml6iqphiTVvBzYCKTsc0VJ_F6cQu4u1pvL_9woDgmRklCWU1au3vpj-Op4U8GiIrRpWkGu_cwWIKCGDq8DToddfHDzKVctVMquAmrYNUdNi0T8NBjemZFwwLL7akKOlM-9ipp5K4xCoVp0ayVqw6cEzYt0f8RpVxyjVvkn_UE2nXsZBBb_JvAE00QutmKjwufCGG2xUK78rTPsPLZs"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<!-- Navigation suppressed due to Transactional/Linear Intent (Confirmation Screen) -->
+<main class="flex-1 flex flex-col p-margin-mobile gap-stack-lg max-w-2xl mx-auto w-full">
+<!-- Header -->
+<div class="flex flex-col gap-stack-sm pt-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<span class="font-label-bold text-label-bold uppercase tracking-wider">Step 3 of 3</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Confirm Details</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Please review the auto-filled data before final submission.</p>
+</div>
+<!-- Auto-filled Details Card (Rugged Minimalism: 1px border, left accent) -->
+<div class="bg-surface rounded-lg border border-outline relative overflow-hidden flex flex-col shadow-sm">
+<!-- Left status accent -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="p-4 flex flex-col gap-stack-md ml-1">
+<div class="flex flex-col gap-1 border-b border-surface-variant pb-3">
+<span class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wide text-xs">Farmer Name</span>
+<span class="font-body-lg text-body-lg font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">person</span>
+                        Ramesh D. Kumar
+                    </span>
+</div>
+<div class="flex flex-col gap-1 pb-1">
+<span class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wide text-xs">Gat Number</span>
+<span class="font-body-lg text-body-lg font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">map</span>
+                        104/2
+                    </span>
+</div>
+</div>
+<!-- Map Context (Visual Anchor) -->
+<div class="h-32 bg-surface-variant w-full border-t border-outline relative" data-alt="An aerial, top-down satellite view of segmented agricultural farm lands. The fields are a mix of earthy browns, dry yellows, and patches of green, separated by dirt roads and thin irrigation channels. The lighting suggests a clear, bright midday sun, casting very few shadows. The style is utilitarian, resembling a mapping application interface tailored for agricultural governance and precise land identification." data-location="Maharashtra" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBUHYz0bR-L6ScxpYACA1LQKaDi-WKQYujRNR5NyN03c8ZswLKzNZlx-HXwS1S2hWWzPFx4rm0_oE-7MZd6CAPHEslFb91JqpDqV8Mtp8Lt9ahWfZ4bX6LYsfAPprn5KuE9NESd3G3R1eqEyuro7nKARqAq1ja7W-GvSu0huwwNF4nROywCwu-8xLy7CPY5lbGqTc3qLs2y9JCZcByn8-H7PJUJDfgp8Q84i2rXZQWhbcZnrNip9OClSlwU5mKlvf_iVPvojEw3-7w'); background-size: cover; background-position: center;">
+<!-- Overlay targeting crosshair -->
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary drop-shadow-md" style="font-size: 32px; font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+</div>
+</div>
+<!-- Notes Section -->
+<div class="flex flex-col gap-stack-sm mt-2">
+<label class="font-label-bold text-label-bold text-on-surface flex justify-between items-end" for="field-notes">
+                Add Notes 
+                <span class="text-on-surface-variant font-normal text-xs uppercase tracking-wide">(Optional)</span>
+</label>
+<textarea class="w-full bg-surface-container-lowest border-2 border-outline rounded-lg p-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary-container transition-colors resize-none" id="field-notes" placeholder="Enter any observational notes here..." rows="4"></textarea>
+</div>
+<!-- Bottom Action Area -->
+<div class="mt-auto pt-stack-lg pb-stack-md w-full">
+<button class="w-full bg-primary text-on-primary min-h-touch-target-min rounded-lg font-label-bold text-label-bold flex items-center justify-center gap-2 shadow-md active:translate-y-px active:shadow-sm transition-all">
+<span class="material-symbols-outlined">upload</span>
+                SUBMIT VERIFICATION
+            </button>
+</div>
+</main>
+<script src="./src/i18n.js"></script>
+</body></html>

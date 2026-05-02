@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AgriField Gov - Alerts</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#7e5700",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed": "#002204",
+                    "on-primary-fixed-variant": "#005312",
+                    "surface-bright": "#f7fbf0",
+                    "secondary-fixed": "#ffdeac",
+                    "secondary-fixed-dim": "#ffba38",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#e0e4da",
+                    "on-secondary-container": "#6a4800",
+                    "outline": "#707a6c",
+                    "surface-container-low": "#f1f5eb",
+                    "surface-container": "#ebefe5",
+                    "surface-container-high": "#e5eadf",
+                    "tertiary-fixed": "#ffd9e2",
+                    "on-tertiary-fixed": "#3f001c",
+                    "primary": "#0d631b",
+                    "surface-container-highest": "#e0e4da",
+                    "on-tertiary-container": "#ffedf0",
+                    "on-surface-variant": "#40493d",
+                    "inverse-primary": "#88d982",
+                    "surface-dim": "#d7dbd2",
+                    "on-secondary-fixed-variant": "#604100",
+                    "tertiary": "#923357",
+                    "primary-container": "#2e7d32",
+                    "on-surface": "#181d17",
+                    "inverse-on-surface": "#eef2e8",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "tertiary-container": "#b14b6f",
+                    "outline-variant": "#bfcaba",
+                    "background": "#f7fbf0",
+                    "surface-tint": "#1b6d24",
+                    "tertiary-fixed-dim": "#ffb1c7",
+                    "primary-fixed": "#a3f69c",
+                    "on-primary-container": "#cbffc2",
+                    "surface": "#f7fbf0",
+                    "inverse-surface": "#2d322b",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#281900",
+                    "secondary-container": "#feb300",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#88d982",
+                    "on-tertiary-fixed-variant": "#7f2448",
+                    "on-background": "#181d17",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "24px",
+                    "margin-mobile": "16px",
+                    "touch-target-min": "48px",
+                    "unit": "8px",
+                    "gutter": "16px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "body-md": [
+                            "Public Sans"
+                    ],
+                    "display-xl": [
+                            "Public Sans"
+                    ],
+                    "headline-md": [
+                            "Public Sans"
+                    ],
+                    "label-bold": [
+                            "Public Sans"
+                    ],
+                    "body-lg": [
+                            "Public Sans"
+                    ],
+                    "headline-lg": [
+                            "Public Sans"
+                    ]
+            },
+            "fontSize": {
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-xl": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-bold": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-24 md:pb-0 flex flex-col md:flex-row flex flex-col md:flex-row">
+<!-- Mobile Drawer Container (Hidden by default, assumed handled by JS normally) -->
+<aside class="hidden md:flex bg-white dark:bg-neutral-900 h-full w-80 border-r-2 border-neutral-200 dark:border-neutral-800 shadow-xl flex-col gap-2 pt-4 fixed left-0 top-0 z-40">
+<div class="px-4 pb-4 border-b border-surface-variant flex items-center gap-4">
+<img alt="Officer Profile Picture" class="w-12 h-12 rounded-full object-cover bg-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8jwtjd46zsWZtU1VB0LANxdRYDSmyN-nB8zCsyg3L1f5HE15UrmgOZg4dO-6LKJIJ8DYObRHmsDrV2fZ7S4cI5EyhITLQSgtX1452DCAt4A4RR4SUFKyuiw54W2HfiBDYAcI9HcOZqIwnkycUpWcZDYQrJj1k3NwYOiBJmPcVTVBKwTVcFFNVbUhBTXboR1DHMjMLM-3gm6grrCnITmzbf2FLKFVErlC-PzbLbFDJo8clxNL8MWS-rkotCU71C5UxXdZuWu-hkm8"/>
+<div>
+<div class="font-headline-md text-headline-md text-primary-container">Sahayak Krushi Adhikari Ramesh Patil</div>
+<div class="font-body-md text-body-md text-on-surface-variant">ID: AGRI-9920</div>
+<div class="font-label-bold text-label-bold text-on-surface-variant">Region: North Sector</div>
+</div>
+</div>
+<nav class="flex-1 mt-4">
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors " href="index.html">
+<span class="material-symbols-outlined">home_work</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors " href="applications.html">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span class="font-body-md text-body-md">Applications</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors " href="visit_planner.html">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Planner</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-100 font-bold" href="fraud_alerts.html">
+<span class="material-symbols-outlined">report_problem</span>
+<span class="font-body-md text-body-md">Alerts</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors " href="advanced_tools.html">
+<span class="material-symbols-outlined">construction</span>
+<span class="font-body-md text-body-md">Advanced Tools</span>
+</a>
+</nav>
+<div class="p-4 border-t border-surface-variant flex flex-col gap-2">
+<div class="flex justify-between items-center px-4"><span class="text-sm font-bold text-neutral-500">Language</span><button class="lang-toggle-btn px-3 py-1 bg-surface-variant text-on-surface-variant rounded-full font-bold text-xs shadow-sm hover:bg-surface-dim transition-colors mx-2">मराठी</button></div>
+
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors" href="login.html">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 md:ml-80 flex flex-col w-full pb-20 md:pb-0">
+
+<!-- Mobile Drawer Container (Hidden by default, assumed handled by JS normally) -->
+
+<div class="flex-1 md:ml-80 flex flex-col w-full">
+<!-- TopAppBar -->
+<header class="bg-white text-green-800 font-public-sans font-bold text-lg uppercase tracking-wider docked full-width top-0 border-b-2 border-neutral-200 flat no shadows flex justify-between items-center w-full px-4 h-16 md:hidden">
+<button class="text-green-800 hover:bg-neutral-100 active:opacity-70 transition-all p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="text-green-900 font-black text-xl">AgriField Gov</span>
+<button class="hover:bg-neutral-100 active:opacity-70 transition-all rounded-full overflow-hidden w-8 h-8">
+<img alt="Officer Profile Picture" class="w-full h-full object-cover" data-alt="A small circular avatar image showing the professional headshot of a field officer. Bright lighting, clear focus on the face. Practical, uniform-style clothing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgWEI1QMlIquU1O6EhBcluaOnxPoSQhEmKrsNOKJeJI2gxRIhb_X85YAtxjW_LH-1FqIOVhWB_BrOdfaw3muJdvQ6FtsHDyOTq8Miuul-cvQBbbg86UHx3NHgl_SzEYMrjGGiPMxskdJCLRSrlujcTVZzs45LaWPKnuUaybfnV0SFI3tZrZw5nbpzKlbT6mg00H6NeFn07EXEU05RT4AY7E9C1DonQVk9D4d_ONNfOGLJ4rkFiYBiKGJBQek5T_K50yITws11kDKA"/>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-1 p-margin-mobile flex flex-col gap-stack-lg max-w-7xl px-4 md:px-12 w-full">
+<div class="flex flex-col gap-stack-sm mb-4">
+<h1 class="font-headline-lg text-headline-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+                    Fraud Alerts
+                </h1>
+<p class="font-body-md text-body-md text-on-surface-variant">High-priority flagged cases requiring immediate field verification.</p>
+</div>
+<!-- Urgent Case 1 -->
+<article class="bg-surface-container-lowest border border-error rounded-lg overflow-hidden flex flex-col relative shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="p-gutter flex flex-col gap-stack-md">
+<div class="flex justify-between items-start">
+<div>
+<div class="font-label-bold text-label-bold text-error mb-1 uppercase tracking-wide">Urgent Priority</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Duplicate Land Record</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Ref ID: #FR-8821-A</p>
+</div>
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full font-label-bold text-label-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+                            24h SLA
+                        </span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-surface-container-low p-4 rounded-md border border-surface-variant">
+<div>
+<div class="font-label-bold text-label-bold text-on-surface-variant text-sm">Location</div>
+<div class="font-body-md text-body-md text-on-surface">Plot 4A, West Valley</div>
+</div>
+<div>
+<div class="font-label-bold text-label-bold text-on-surface-variant text-sm">Claimant Name</div>
+<div class="font-body-md text-body-md text-on-surface">Multiple Applicants</div>
+</div>
+<div class="sm:col-span-2">
+<div class="font-label-bold text-label-bold text-on-surface-variant text-sm">System Flag Reason</div>
+<div class="font-body-md text-body-md text-on-surface">GPS coordinates match existing verified farm boundary (Ref: #AP-2201). Overlap area: 2.4 Hectares.</div>
+</div>
+</div>
+<button class="bg-error text-on-error h-touch-target-min w-full rounded font-label-bold text-label-bold flex items-center justify-center gap-2 hover:bg-on-error-container active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">gavel</span>
+                        Investigate Case
+                    </button>
+</div>
+</article>
+<!-- Urgent Case 2 -->
+<article class="bg-surface-container-lowest border border-error rounded-lg overflow-hidden flex flex-col relative shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="p-gutter flex flex-col gap-stack-md">
+<div class="flex justify-between items-start">
+<div>
+<div class="font-label-bold text-label-bold text-error mb-1 uppercase tracking-wide">High Priority</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Suspicious Activity Pattern</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Ref ID: #FR-8822-B</p>
+</div>
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full font-label-bold text-label-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+                            48h SLA
+                        </span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-surface-container-low p-4 rounded-md border border-surface-variant">
+<div>
+<div class="font-label-bold text-label-bold text-on-surface-variant text-sm">Location</div>
+<div class="font-body-md text-body-md text-on-surface">Sector 7, North District</div>
+</div>
+<div>
+<div class="font-label-bold text-label-bold text-on-surface-variant text-sm">Claimant Name</div>
+<div class="font-body-md text-body-md text-on-surface">Smith Agricultural Group</div>
+</div>
+<div class="sm:col-span-2">
+<div class="font-label-bold text-label-bold text-on-surface-variant text-sm">System Flag Reason</div>
+<div class="font-body-md text-body-md text-on-surface">Unusual spike in equipment subsidy claims. 5 claims filed within 24 hours from same IP address. Needs physical verification of machinery.</div>
+</div>
+</div>
+<button class="bg-error text-on-error h-touch-target-min w-full rounded font-label-bold text-label-bold flex items-center justify-center gap-2 hover:bg-on-error-container active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">gavel</span>
+                        Investigate Case
+                    </button>
+</div>
+</article>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+
+
+<script src="./src/i18n.js"></script>
+<script src="./src/main.js"></script>
+<nav class="bg-white dark:bg-neutral-900 border-t-2 border-neutral-200 dark:border-neutral-800 h-20 fixed bottom-0 w-full z-50 flex justify-around items-center px-2 md:hidden">
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg " href="index.html">
+<span class="material-symbols-outlined">home_work</span>
+<span class="font-public-sans font-semibold text-[12px]">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg " href="applications.html">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span class="font-public-sans font-semibold text-[12px]">Applications</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg " href="visit_planner.html">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-public-sans font-semibold text-[12px]">Planner</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-100 font-bold" href="fraud_alerts.html">
+<span class="material-symbols-outlined">report_problem</span>
+<span class="font-public-sans font-semibold text-[12px]">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg " href="advanced_tools.html">
+<span class="material-symbols-outlined">construction</span>
+<span class="font-public-sans font-semibold text-[12px]">Tools</span>
+</a>
+</nav>
+</div>
+</body>
+</html>

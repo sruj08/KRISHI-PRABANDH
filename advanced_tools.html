@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Advanced Tools - AgriField Gov</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#7e5700",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#002204",
+                        "on-primary-fixed-variant": "#005312",
+                        "surface-bright": "#f7fbf0",
+                        "secondary-fixed": "#ffdeac",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e0e4da",
+                        "on-secondary-container": "#6a4800",
+                        "outline": "#707a6c",
+                        "surface-container-low": "#f1f5eb",
+                        "surface-container": "#ebefe5",
+                        "surface-container-high": "#e5eadf",
+                        "tertiary-fixed": "#ffd9e2",
+                        "on-tertiary-fixed": "#3f001c",
+                        "primary": "#0d631b",
+                        "surface-container-highest": "#e0e4da",
+                        "on-tertiary-container": "#ffedf0",
+                        "on-surface-variant": "#40493d",
+                        "inverse-primary": "#88d982",
+                        "surface-dim": "#d7dbd2",
+                        "on-secondary-fixed-variant": "#604100",
+                        "tertiary": "#923357",
+                        "primary-container": "#2e7d32",
+                        "on-surface": "#181d17",
+                        "inverse-on-surface": "#eef2e8",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#b14b6f",
+                        "outline-variant": "#bfcaba",
+                        "background": "#f7fbf0",
+                        "surface-tint": "#1b6d24",
+                        "tertiary-fixed-dim": "#ffb1c7",
+                        "primary-fixed": "#a3f69c",
+                        "on-primary-container": "#cbffc2",
+                        "surface": "#f7fbf0",
+                        "inverse-surface": "#2d322b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#281900",
+                        "secondary-container": "#feb300",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#88d982",
+                        "on-tertiary-fixed-variant": "#7f2448",
+                        "on-background": "#181d17",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "24px",
+                        "margin-mobile": "16px",
+                        "touch-target-min": "48px",
+                        "unit": "8px",
+                        "gutter": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Public Sans"],
+                        "display-xl": ["Public Sans"],
+                        "headline-md": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "headline-lg": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-bold": ["14px", { "lineHeight": "20px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { min-height: max(884px, 100dvh); }
+    </style>
+    <link rel="stylesheet" href="./src/style.css">
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased pb-[100px] flex flex-col min-h-screen flex flex-col md:flex-row">
+<!-- Mobile Drawer Container (Hidden by default, assumed handled by JS normally) -->
+<aside class="hidden md:flex bg-white dark:bg-neutral-900 h-full w-80 border-r-2 border-neutral-200 dark:border-neutral-800 shadow-xl flex-col gap-2 pt-4 fixed left-0 top-0 z-40">
+<div class="px-4 pb-4 border-b border-surface-variant flex items-center gap-4">
+<img alt="Officer Profile Picture" class="w-12 h-12 rounded-full object-cover bg-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8jwtjd46zsWZtU1VB0LANxdRYDSmyN-nB8zCsyg3L1f5HE15UrmgOZg4dO-6LKJIJ8DYObRHmsDrV2fZ7S4cI5EyhITLQSgtX1452DCAt4A4RR4SUFKyuiw54W2HfiBDYAcI9HcOZqIwnkycUpWcZDYQrJj1k3NwYOiBJmPcVTVBKwTVcFFNVbUhBTXboR1DHMjMLM-3gm6grrCnITmzbf2FLKFVErlC-PzbLbFDJo8clxNL8MWS-rkotCU71C5UxXdZuWu-hkm8"/>
+<div>
+<div class="font-headline-md text-headline-md text-primary-container">Sahayak Krushi Adhikari Ramesh Patil</div>
+<div class="font-body-md text-body-md text-on-surface-variant">ID: AGRI-9920</div>
+<div class="font-label-bold text-label-bold text-on-surface-variant">Region: North Sector</div>
+</div>
+</div>
+<nav class="flex-1 mt-4">
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors " href="index.html">
+<span class="material-symbols-outlined">home_work</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors " href="applications.html">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span class="font-body-md text-body-md">Applications</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors " href="visit_planner.html">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Planner</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors " href="fraud_alerts.html">
+<span class="material-symbols-outlined">report_problem</span>
+<span class="font-body-md text-body-md">Alerts</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-100 font-bold" href="advanced_tools.html">
+<span class="material-symbols-outlined">construction</span>
+<span class="font-body-md text-body-md">Advanced Tools</span>
+</a>
+</nav>
+<div class="p-4 border-t border-surface-variant flex flex-col gap-2">
+<div class="flex justify-between items-center px-4"><span class="text-sm font-bold text-neutral-500">Language</span><button class="lang-toggle-btn px-3 py-1 bg-surface-variant text-on-surface-variant rounded-full font-bold text-xs shadow-sm hover:bg-surface-dim transition-colors mx-2">मराठी</button></div>
+
+<a class="flex items-center gap-4 px-4 py-3 text-neutral-700 dark:text-neutral-300 mx-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors" href="login.html">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 md:ml-80 flex flex-col w-full pb-20 md:pb-0">
+
+<header class="md:hidden bg-white dark:bg-neutral-900 text-green-800 dark:text-green-400 font-public-sans font-bold text-lg uppercase tracking-wider docked full-width top-0 border-b-2 border-neutral-200 dark:border-neutral-800 flat no shadows flex justify-between items-center w-full px-4 h-16 sticky z-40">
+<button class="text-green-800 dark:text-green-400 active:opacity-70 transition-all flex items-center justify-center p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu</span>
+</button>
+<span class="text-green-900 dark:text-green-50 font-black text-xl flex-1 text-center">AgriField Gov</span>
+<button class="lang-toggle-btn px-3 py-1 bg-surface-variant text-on-surface-variant rounded-full font-bold text-xs shadow-sm hover:bg-surface-dim transition-colors mx-2">मराठी</button>
+<button class="active:opacity-70 transition-all flex items-center justify-center p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800">
+<img alt="Officer Profile Picture" class="w-8 h-8 rounded-full border border-neutral-200" data-alt="A rugged close up portrait of an Indian male agricultural field officer wearing a light khaki shirt. He has a serious but approachable expression. The lighting is bright outdoor natural light suggesting a sunny day in the field. The overall aesthetic is professional, authentic, and high-quality, fitting a government ID profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGcy_RFccMMY74_mw4Y_9nLsNM-4qaTUtsu3Xs-oG95_xZG50la3VfpnNXoc-J0dmnvW2pdViqoBle8OAnAXCfsSV6pkaWQVW-v6rq1BuxgCTZx5UnCTXduXVRLSpULq3JnjgrHK-m02nQFyuftYR2GEPbG9LGcbH6xoyA2pstYFpVbQ5t3P8o0ws-Uz-_mxkM4mCMpPlVqvXg2dMzDKjkxES_-RlGjFlEWnUGjOVHE1dCBQqWxIk4ibZUs1y77lyqUjOAvqh1V70"/>
+</button>
+</header>
+<main class="flex-1 max-w-7xl px-4 md:px-12 w-full px-margin-mobile pt-stack-md pb-stack-lg flex flex-col gap-stack-lg">
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">Advanced Tools</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
+        <!-- Module 1: The "Pulse" Impact Header -->
+        <section class="pulse-header bg-surface rounded-xl p-4 border border-outline-variant shadow-sm">
+          <div class="pulse-gauge">
+            <div class="circular-progress" data-value="78" style="--accent: #2D6A4F;">
+              <svg viewBox="0 0 100 100"><circle class="bg"></circle><circle class="progress" stroke-dasharray="251.2" stroke-dashoffset="55"></circle></svg>
+              <div class="gauge-value">78<span>%</span></div>
+            </div>
+            <div class="gauge-label">
+              <h3>Equity Index (समता निर्देशांक)</h3>
+              <p>SC/ST/Women Funds Utilized</p>
+            </div>
+          </div>
+          
+          <div class="pulse-gauge">
+            <div class="circular-progress" data-value="12" style="--accent: #FFB703;">
+              <svg viewBox="0 0 100 100"><circle class="bg"></circle><circle class="progress" stroke-dasharray="251.2" stroke-dashoffset="221"></circle></svg>
+              <div class="gauge-value">12</div>
+            </div>
+            <div class="gauge-label">
+              <h3>Purified Queue (शुद्ध यादी)</h3>
+              <p>AI-Scrutinized Applications</p>
+            </div>
+          </div>
+
+          <div class="pulse-gauge wealth-delivered">
+            <div class="ticker-box">
+              <span class="currency">₹</span>
+              <span class="amount" id="wealth-ticker">4,52,000</span>
+            </div>
+            <div class="gauge-label">
+              <h3>Wealth Delivered (वितरीत निधी)</h3>
+              <p>Subsidies Disbursed this Month</p>
+            </div>
+          </div>
+        </section>
+        <!-- Module 2: The "Smart GR" Parser -->
+          <section class="smart-gr bg-surface rounded-xl p-4 border border-outline-variant shadow-sm">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-file-pdf"></i> Smart GR Parser</h2>
+              <span class="status-badge green">AI Ready</span>
+            </div>
+            
+            <div class="drag-drop-zone" id="gr-dropzone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <p>Drag & Drop new GR (शासन निर्णय) here</p>
+              <span>or click to browse</span>
+            </div>
+
+            <div class="gr-summary-card hidden" id="gr-summary">
+              <div class="gr-header">
+                <h3>PM-Kisan Drip Upgrade</h3>
+                <span class="badge new">New Scheme</span>
+              </div>
+              <ul class="gr-details">
+                <li><i class="fa-solid fa-percent"></i> <strong>Reserved Quota:</strong> 35% for ST Women Farmers</li>
+                <li><i class="fa-solid fa-ruler-combined"></i> <strong>Eligibility:</strong> < 1 Hectare</li>
+                <li><i class="fa-solid fa-cloud-sun"></i> <strong>Risk Profile:</strong> High-risk drought zone</li>
+              </ul>
+              <button class="btn-primary full-width mt-15" id="scan-village-btn">
+                <i class="fa-solid fa-radar"></i> Scan Village for Eligible Beneficiaries
+              </button>
+            </div>
+          </section>
+        <!-- Module 3: Proactive Beneficiary Radar -->
+          <section class="beneficiary-radar bg-surface rounded-xl p-4 border border-outline-variant shadow-sm">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-users-rays"></i> Proactive Inclusion Radar</h2>
+              <button class="btn-whatsapp" id="mass-notify-btn">
+                <i class="fa-brands fa-whatsapp"></i> Mass Notify
+              </button>
+            </div>
+
+            <div class="farmer-list">
+              <!-- Farmer Card 1 -->
+              <div class="farmer-card">
+                <div class="farmer-info">
+                  <h4>Sumanbai Pawar</h4>
+                  <p>Gat No: 45/2 • <strong>Caste: ST (Women)</strong></p>
+                </div>
+                <div class="farmer-actions">
+                  <button class="btn-icon log-friction-btn" title="Log Friction"><i class="fa-solid fa-triangle-exclamation"></i></button>
+                  <button class="btn-icon whatsapp-btn"><i class="fa-brands fa-whatsapp"></i></button>
+                </div>
+              </div>
+              
+              <!-- Farmer Card 2 -->
+              <div class="farmer-card">
+                <div class="farmer-info">
+                  <h4>Raju Bhil</h4>
+                  <p>Gat No: 112 • <strong>Caste: ST</strong></p>
+                </div>
+                <div class="farmer-actions">
+                  <button class="btn-icon log-friction-btn" title="Log Friction"><i class="fa-solid fa-triangle-exclamation"></i></button>
+                  <button class="btn-icon whatsapp-btn"><i class="fa-brands fa-whatsapp"></i></button>
+                </div>
+              </div>
+              
+              <!-- Farmer Card 3 -->
+              <div class="farmer-card">
+                <div class="farmer-info">
+                  <h4>Kondiba Munde</h4>
+                  <p>Gat No: 89 • <strong>Caste: SC</strong></p>
+                </div>
+                <div class="farmer-actions">
+                  <button class="btn-icon log-friction-btn" title="Log Friction"><i class="fa-solid fa-triangle-exclamation"></i></button>
+                  <button class="btn-icon whatsapp-btn"><i class="fa-brands fa-whatsapp"></i></button>
+                </div>
+              </div>
+            </div>
+          </section>
+        <!-- Module 4: The "Geo-Verified" Field Ops Map -->
+          <section class="geo-map bg-surface rounded-xl p-4 border border-outline-variant shadow-sm">
+             <div class="section-header">
+              <h2><i class="fa-solid fa-map-location"></i> Geo-Verified Field Ops</h2>
+              <div class="legend">
+                <span class="legend-item"><span class="dot green"></span> Standard</span>
+                <span class="legend-item"><span class="dot red"></span> Smart Audit</span>
+              </div>
+            </div>
+            <div id="map-container" class="map-container"></div>
+            
+            <div class="map-action-panel" id="map-action-panel">
+              <h3 id="selected-farm-name">Select a farm pin</h3>
+              <p id="selected-farm-details">Ensure you are physically present at the Gat location.</p>
+              <div class="camera-integration hidden" id="camera-integration">
+                <div class="camera-placeholder"><i class="fa-solid fa-camera"></i> Take Asset Photo</div>
+                <div class="watermark">Lat: 18.5204° N, Long: 73.8567° E | Time: <span id="current-time"></span></div>
+              </div>
+              <button class="btn-verify locked" id="verify-btn" disabled>
+                <i class="fa-solid fa-lock"></i> Complete Verification (Locked)
+              </button>
+            </div>
+          </section>
+        <!-- Module 5: Krishi Samvaad -->
+            <section class="krishi-samvaad bg-surface rounded-xl p-4 border border-outline-variant shadow-sm">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-microphone-lines"></i> Krishi Samvaad (Events)</h2>
+                <button class="btn-secondary small">+ New</button>
+              </div>
+              
+              <div class="event-card">
+                <div class="event-header">
+                  <h4>Modern Drone Demo</h4>
+                  <span class="date">Today, 4:00 PM</span>
+                </div>
+                <div class="event-actions">
+                  <button class="btn-outline small"><i class="fa-brands fa-whatsapp"></i> Auto-Invite (5km)</button>
+                  <button class="btn-icon mic-btn" id="voice-report-btn"><i class="fa-solid fa-microphone"></i></button>
+                  <button class="btn-icon photo-btn"><i class="fa-solid fa-users"></i></button>
+                </div>
+                <div class="voice-status hidden" id="voice-status">
+                  <div class="recording-indicator"></div> Recording Marathi Speech (30s)...
+                </div>
+                <button class="btn-primary full-width small mt-10 hidden" id="generate-pdf-btn">
+                  <i class="fa-solid fa-file-pdf"></i> Auto-Generate Taluka Report
+                </button>
+              </div>
+            </section>
+        <!-- Module 6: Friction Logger Dashboard (Authority View snippet) -->
+            <section class="friction-logger bg-surface rounded-xl p-4 border border-outline-variant shadow-sm">
+              <div class="section-header">
+                <h2><i class="fa-solid fa-chart-pie"></i> Policy Friction Analytics</h2>
+                <span class="badge amber">District Level</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="frictionChart"></canvas>
+              </div>
+              <div class="insight-box">
+                <i class="fa-solid fa-lightbulb"></i>
+                <p><strong>Insight:</strong> 70% of ST farmers in Shirur are not applying because they lack 'Margin Money'.</p>
+              </div>
+            </section>
+    </div>
+</main>
+<div class="modal-overlay" id="friction-modal">
+      <div class="modal-content glass-panel">
+        <div class="modal-header">
+          <h3>Log Friction for <span id="friction-farmer-name">Farmer</span></h3>
+          <button class="btn-close" id="close-modal"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p>Why is this farmer unable to participate?</p>
+        <div class="friction-tags">
+          <button class="friction-tag">Margin Money Too High</button>
+          <button class="friction-tag">Missing 7/12</button>
+          <button class="friction-tag">No Bank Account</button>
+          <button class="friction-tag">Family Land Dispute</button>
+        </div>
+        <button class="btn-primary full-width mt-15" id="submit-friction">Submit Friction Log</button>
+      </div>
+    </div>
+<script src="./src/i18n.js"></script>
+<script src="./src/main.js"></script>
+
+
+<nav class="bg-white dark:bg-neutral-900 border-t-2 border-neutral-200 dark:border-neutral-800 h-20 fixed bottom-0 w-full z-50 flex justify-around items-center px-2 md:hidden">
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg " href="index.html">
+<span class="material-symbols-outlined">home_work</span>
+<span class="font-public-sans font-semibold text-[12px]">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg " href="applications.html">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span class="font-public-sans font-semibold text-[12px]">Applications</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg " href="visit_planner.html">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-public-sans font-semibold text-[12px]">Planner</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg " href="fraud_alerts.html">
+<span class="material-symbols-outlined">report_problem</span>
+<span class="font-public-sans font-semibold text-[12px]">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 px-3 py-1 active:scale-95 transition-transform duration-100 rounded-lg bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-100 font-bold" href="advanced_tools.html">
+<span class="material-symbols-outlined">construction</span>
+<span class="font-public-sans font-semibold text-[12px]">Tools</span>
+</a>
+</nav>
+</div>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Field Verification Selection</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#7e5700",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed": "#002204",
+                    "on-primary-fixed-variant": "#005312",
+                    "surface-bright": "#f7fbf0",
+                    "secondary-fixed": "#ffdeac",
+                    "secondary-fixed-dim": "#ffba38",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#e0e4da",
+                    "on-secondary-container": "#6a4800",
+                    "outline": "#707a6c",
+                    "surface-container-low": "#f1f5eb",
+                    "surface-container": "#ebefe5",
+                    "surface-container-high": "#e5eadf",
+                    "tertiary-fixed": "#ffd9e2",
+                    "on-tertiary-fixed": "#3f001c",
+                    "primary": "#0d631b",
+                    "surface-container-highest": "#e0e4da",
+                    "on-tertiary-container": "#ffedf0",
+                    "on-surface-variant": "#40493d",
+                    "inverse-primary": "#88d982",
+                    "surface-dim": "#d7dbd2",
+                    "on-secondary-fixed-variant": "#604100",
+                    "tertiary": "#923357",
+                    "primary-container": "#2e7d32",
+                    "on-surface": "#181d17",
+                    "inverse-on-surface": "#eef2e8",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "tertiary-container": "#b14b6f",
+                    "outline-variant": "#bfcaba",
+                    "background": "#f7fbf0",
+                    "surface-tint": "#1b6d24",
+                    "tertiary-fixed-dim": "#ffb1c7",
+                    "primary-fixed": "#a3f69c",
+                    "on-primary-container": "#cbffc2",
+                    "surface": "#f7fbf0",
+                    "inverse-surface": "#2d322b",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#281900",
+                    "secondary-container": "#feb300",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#88d982",
+                    "on-tertiary-fixed-variant": "#7f2448",
+                    "on-background": "#181d17",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "24px",
+                    "margin-mobile": "16px",
+                    "touch-target-min": "48px",
+                    "unit": "8px",
+                    "gutter": "16px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Public Sans", "sans-serif"],
+                    "display-xl": ["Public Sans", "sans-serif"],
+                    "headline-md": ["Public Sans", "sans-serif"],
+                    "label-bold": ["Public Sans", "sans-serif"],
+                    "body-lg": ["Public Sans", "sans-serif"],
+                    "headline-lg": ["Public Sans", "sans-serif"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed w-full z-50 bg-white border-b-2 border-neutral-200 flat flex justify-between items-center px-4 h-16">
+<div class="flex items-center gap-4">
+<button class="hover:bg-neutral-100 active:opacity-70 transition-all p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-green-800">menu</span>
+</button>
+<h1 class="font-public-sans font-black text-xl uppercase tracking-wider text-green-900">AgriField Gov</h1>
+</div>
+<button class="hover:bg-neutral-100 active:opacity-70 transition-all rounded-full overflow-hidden w-8 h-8 flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-green-800">account_circle</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 pt-[80px] pb-[104px] px-margin-mobile flex flex-col gap-stack-lg max-w-2xl mx-auto w-full">
+<!-- Header -->
+<div class="flex flex-col gap-stack-sm">
+<span class="font-label-bold text-label-bold text-primary tracking-widest uppercase">Verification Task</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Target Selection</h2>
+</div>
+<!-- Search & Filter Area -->
+<section class="flex flex-col gap-stack-md bg-surface-container-low p-gutter rounded-lg border border-surface-variant">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full h-touch-target-min pl-12 pr-4 bg-surface-container-lowest rounded-DEFAULT border border-outline focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-body-lg text-body-lg text-on-surface placeholder:text-on-surface-variant transition-colors" placeholder="Search Farmer Name or Gat No." type="text"/>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<label class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wide text-xs">Filter by Scheme</label>
+<div class="relative">
+<select class="w-full h-touch-target-min pl-4 pr-12 bg-surface-container-lowest rounded-DEFAULT border border-outline focus:border-primary appearance-none font-body-lg text-body-lg text-on-surface focus:ring-2 focus:ring-primary/20 outline-none transition-colors">
+<option disabled="" selected="" value="">Select active scheme...</option>
+<option value="pm_kisan">PM-KISAN Fund</option>
+<option value="drip_irrigation">Drip Irrigation Subsidy</option>
+<option value="crop_insurance">Kharif Crop Insurance</option>
+<option value="soil_health">Soil Health Card</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+</section>
+<!-- Results List (Rugged Cards) -->
+<section class="flex flex-col gap-stack-sm">
+<div class="flex justify-between items-end mb-unit">
+<h3 class="font-label-bold text-label-bold text-on-surface">Matching Records (3)</h3>
+</div>
+<!-- Active / Selected Card -->
+<button class="w-full text-left bg-surface-container-lowest border border-outline rounded-DEFAULT p-gutter flex items-center justify-between border-l-[6px] border-l-primary shadow-sm active:bg-surface-container-low transition-colors">
+<div class="flex flex-col gap-1">
+<h4 class="font-headline-md text-[20px] leading-[28px] font-semibold text-on-surface">Ramesh D. Kumar</h4>
+<div class="flex items-center gap-2 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined !text-[18px]">location_on</span>
+<span>Gat: 104/2</span>
+<span class="text-outline-variant">•</span>
+<span>North Sector</span>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center bg-primary">
+<span class="material-symbols-outlined !text-[16px] text-on-primary">check</span>
+</div>
+</button>
+<!-- Inactive Cards -->
+<button class="w-full text-left bg-surface-container-lowest border border-surface-variant rounded-DEFAULT p-gutter flex items-center justify-between border-l-[6px] border-l-surface-dim opacity-90 hover:opacity-100 hover:border-outline active:bg-surface-container-low transition-all">
+<div class="flex flex-col gap-1">
+<h4 class="font-body-lg text-body-lg font-semibold text-on-surface">Suresh V. Patil</h4>
+<div class="flex items-center gap-2 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined !text-[18px]">location_on</span>
+<span>Gat: 201/A</span>
+<span class="text-outline-variant">•</span>
+<span>East Sector</span>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center"></div>
+</button>
+<button class="w-full text-left bg-surface-container-lowest border border-surface-variant rounded-DEFAULT p-gutter flex items-center justify-between border-l-[6px] border-l-surface-dim opacity-90 hover:opacity-100 hover:border-outline active:bg-surface-container-low transition-all">
+<div class="flex flex-col gap-1">
+<h4 class="font-body-lg text-body-lg font-semibold text-on-surface">Anita M. Deshmukh</h4>
+<div class="flex items-center gap-2 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined !text-[18px]">location_on</span>
+<span>Gat: 45/1</span>
+<span class="text-outline-variant">•</span>
+<span>West Sector</span>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center"></div>
+</button>
+</section>
+<!-- Primary Action -->
+<div class="mt-auto pt-stack-md">
+<button class="w-full h-touch-target-min bg-primary text-on-primary font-label-bold text-label-bold rounded-lg flex items-center justify-center gap-2 shadow-md active:scale-[0.98] active:shadow-none transition-all">
+                Proceed to Site Details
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 border-t-2 h-20 bg-white border-neutral-200 flat flex justify-around items-center px-2 pb-safe">
+<!-- Dashboard -->
+<button class="flex flex-col items-center justify-center text-neutral-500 px-3 py-1 hover:bg-neutral-50 active:scale-95 transition-transform duration-100 w-full h-full">
+<span class="material-symbols-outlined">home_work</span>
+<span class="font-public-sans font-semibold text-[12px] mt-1">Dashboard</span>
+</button>
+<!-- Applications -->
+<button class="flex flex-col items-center justify-center text-neutral-500 px-3 py-1 hover:bg-neutral-50 active:scale-95 transition-transform duration-100 w-full h-full">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span class="font-public-sans font-semibold text-[12px] mt-1">Applications</span>
+</button>
+<!-- Planner (Active state mapped to "Visits" intent) -->
+<button class="flex flex-col items-center justify-center bg-green-50 text-green-900 rounded-lg px-3 py-1 hover:bg-neutral-50 active:scale-95 transition-transform duration-100 w-full h-[calc(100%-16px)]">
+<span class="material-symbols-outlined fill">calendar_today</span>
+<span class="font-public-sans font-semibold text-[12px] mt-1">Planner</span>
+</button>
+<!-- Alerts -->
+<button class="flex flex-col items-center justify-center text-neutral-500 px-3 py-1 hover:bg-neutral-50 active:scale-95 transition-transform duration-100 w-full h-full relative">
+<span class="material-symbols-outlined">report_problem</span>
+<span class="font-public-sans font-semibold text-[12px] mt-1">Alerts</span>
+<!-- Notification Dot -->
+<span class="absolute top-3 right-6 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</nav>
+<script src="./src/i18n.js"></script>
+</body></html>
