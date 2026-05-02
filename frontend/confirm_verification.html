@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AgriField Gov - Verification Confirmation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="./src/styles/style.css">
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+    <header class="bg-white p-4 flex justify-between items-center border-b sticky top-0 z-40">
+        <button class="material-symbols-outlined">menu</button>
+        <div class="font-bold text-xl text-primary text-center flex-1">AgriField Gov</div>
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDS2zFBo0nME2kJKpgxsneXIOb0yKCEKIT-BWMB571nVwf-APN3JVtQBbICXml6iqphiTVvBzYCKTsc0VJ_F6cQu4u1pvL_9woDgmRklCWU1au3vpj-Op4U8GiIrRpWkGu_cwWIKCGDq8DToddfHDzKVctVMquAmrYNUdNi0T8NBjemZFwwLL7akKOlM-9ipp5K4xCoVp0ayVqw6cEzYt0f8RpVxyjVvkn_UE2nXsZBBb_JvAE00QutmKjwufCGG2xUK78rTPsPLZs" class="w-8 h-8 rounded-full">
+    </header>
+
+    <main class="flex-1 p-6 max-w-2xl mx-auto w-full space-y-6">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2 text-primary font-bold uppercase text-xs">
+                <span class="material-symbols-outlined text-sm">task_alt</span> Step 3 of 3
+            </div>
+            <h1 class="text-3xl font-bold">Confirm Details</h1>
+            <p class="text-neutral-500">Please review the auto-filled data before final submission.</p>
+        </div>
+
+        <div class="bg-white rounded-xl border relative overflow-hidden shadow-sm">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+            <div class="p-6 space-y-4">
+                <div class="border-b pb-4">
+                    <span class="text-xs font-bold text-neutral-400 uppercase">Farmer Name</span>
+                    <h3 class="text-xl font-bold">Ramesh D. Kumar</h3>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-neutral-400 uppercase">Gat Number</span>
+                    <h3 class="text-xl font-bold">104/2</h3>
+                </div>
+            </div>
+            <div class="h-48 bg-neutral-100 border-t relative">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUHYz0bR-L6ScxpYACA1LQKaDi-WKQYujRNR5NyN03c8ZswLKzNZlx-HXwS1S2hWWzPFx4rm0_oE-7MZd6CAPHEslFb91JqpDqV8Mtp8Lt9ahWfZ4bX6LYsfAPprn5KuE9NESd3G3R1eqEyuro7nKARqAq1ja7W-GvSu0huwwNF4nROywCwu-8xLy7CPY5lbGqTc3qLs2y9JCZcByn8-H7PJUJDfgp8Q84i2rXZQWhbcZnrNip9OClSlwU5mKlvf_iVPvojEw3-7w" class="w-full h-full object-cover opacity-80">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-4xl">location_on</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <label class="font-bold">Add Notes</label>
+            <textarea class="w-full border-2 rounded-xl p-4 min-h-[120px]" placeholder="Enter observational notes..."></textarea>
+        </div>
+
+        <button class="w-full bg-primary text-white py-4 rounded-xl font-bold shadow-lg">SUBMIT VERIFICATION</button>
+    </main>
+
+    <script src="./src/i18n.js"></script>
+    <script src="./src/main.js"></script>
+</body>
+</html>

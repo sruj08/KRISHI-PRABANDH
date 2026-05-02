@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Visit Planner - AgriField Gov</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="./src/styles/style.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d631b", "secondary": "#7e5700", "background": "#f7fbf0", "surface": "#f7fbf0",
+                        "on-surface": "#181d17", "outline": "#707a6c", "error": "#ba1a1a",
+                        "surface-variant": "#e0e4da", "on-surface-variant": "#40493d", "outline-variant": "#bfcaba",
+                        "surface-container": "#ebefe5", "surface-container-low": "#f1f5eb", "surface-container-lowest": "#ffffff",
+                        "primary-container": "#2e7d32", "on-primary-container": "#cbffc2", "on-primary": "#ffffff",
+                        "primary-fixed": "#a3f69c", "on-primary-fixed": "#002204",
+                        "secondary-container": "#feb300", "secondary-fixed": "#ffdeac", "on-secondary-fixed": "#281900",
+                        "error-container": "#ffdad6", "on-error-container": "#93000a",
+                    },
+                    spacing: { "stack-lg":"24px","margin-mobile":"16px","touch-target-min":"48px","unit":"8px","gutter":"16px","stack-sm":"8px","stack-md":"16px" },
+                    fontFamily: { "body-md": ["Public Sans"], "headline-md": ["Public Sans"], "label-bold": ["Public Sans"], "headline-lg": ["Public Sans"] },
+                    fontSize: {
+                        "body-md": ["16px",{"lineHeight":"24px","fontWeight":"400"}],
+                        "headline-md": ["24px",{"lineHeight":"32px","fontWeight":"600"}],
+                        "label-bold": ["14px",{"lineHeight":"20px","fontWeight":"700"}],
+                        "headline-lg": ["32px",{"lineHeight":"40px","fontWeight":"700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-24 font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container flex flex-col md:flex-row">
+
+    <!-- Desktop Sidebar -->
+    <aside class="flex bg-white dark:bg-neutral-900 h-full w-80 border-r-2 border-neutral-200 shadow-xl flex-col gap-2 pt-4 fixed left-0 top-0 z-40 -translate-x-full md:translate-x-0 transition-transform duration-300">
+        <div class="px-4 pb-4 border-b border-surface-variant flex items-center gap-4">
+            <img class="w-12 h-12 rounded-full object-cover bg-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8jwtjd46zsWZtU1VB0LANxdRYDSmyN-nB8zCsyg3L1f5HE15UrmgOZg4dO-6LKJIJ8DYObRHmsDrV2fZ7S4cI5EyhITLQSgtX1452DCAt4A4RR4SUFKyuiw54W2HfiBDYAcI9HcOZqIwnkycUpWcZDYQrJj1k3NwYOiBJmPcVTVBKwTVcFFNVbUhBTXboR1DHMjMLM-3gm6grrCnITmzbf2FLKFVErlC-PzbLbFDJo8clxNL8MWS-rkotCU71C5UxXdZuWu-hkm8" alt="Officer">
+            <div>
+                <div class="text-base font-semibold text-primary-container">Sahayak Krushi Adhikari Ramesh Patil</div>
+                <div class="text-sm text-on-surface-variant">ID: AGRI-9920</div>
+                <div class="text-xs font-bold text-on-surface-variant">Region: North Sector</div>
+            </div>
+        </div>
+        <nav class="flex-1 mt-4">
+            <a class="flex items-center gap-4 px-4 py-3 text-neutral-700 mx-2 hover:bg-neutral-100 rounded-lg transition-colors" href="index.html">
+                <span class="material-symbols-outlined">home_work</span><span>Dashboard</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-neutral-700 mx-2 hover:bg-neutral-100 rounded-lg transition-colors" href="applications.html">
+                <span class="material-symbols-outlined">assignment_turned_in</span><span>Applications</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 mx-2 rounded-lg bg-green-50 text-green-900 font-bold" href="visit_planner.html">
+                <span class="material-symbols-outlined">calendar_today</span><span>Planner</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-neutral-700 mx-2 hover:bg-neutral-100 rounded-lg transition-colors" href="fraud_alerts.html">
+                <span class="material-symbols-outlined">report_problem</span><span>Alerts</span>
+            </a>
+            <a class="flex items-center gap-4 px-4 py-3 text-neutral-700 mx-2 hover:bg-neutral-100 rounded-lg transition-colors" href="advanced_tools.html">
+                <span class="material-symbols-outlined">construction</span><span>Advanced Tools</span>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-surface-variant flex flex-col gap-2">
+            <div class="flex justify-between items-center px-4">
+                <span class="text-sm font-bold text-neutral-500">Language</span>
+                <button class="lang-toggle-btn px-3 py-1 bg-surface-variant text-on-surface-variant rounded-full font-bold text-xs shadow-sm hover:bg-neutral-200 transition-colors mx-2">मराठी</button>
+            </div>
+            <a class="flex items-center gap-4 px-4 py-3 text-neutral-700 mx-2 hover:bg-neutral-100 rounded-lg transition-colors" href="login.html">
+                <span class="material-symbols-outlined">logout</span><span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="flex-1 md:ml-80 flex flex-col w-full pb-20 md:pb-0">
+        <!-- Mobile Header -->
+        <header class="md:hidden bg-white dark:bg-neutral-900 w-full top-0 border-b-2 border-neutral-200 flex justify-between items-center px-4 h-16 sticky z-20">
+            <div class="flex items-center gap-4">
+                <button aria-label="Menu" class="w-12 h-12 flex items-center justify-center text-green-800 hover:bg-neutral-100 active:opacity-70 transition-all rounded-full">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+                </button>
+                <h1 class="text-green-900 font-black text-xl uppercase tracking-wider">AgriField Gov</h1>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border border-outline-variant flex items-center justify-center">
+                <span class="material-symbols-outlined text-outline" style="font-variation-settings: 'FILL' 1;">person</span>
+            </div>
+        </header>
+
+        <!-- Satellite Map Banner -->
+        <div class="w-full h-48 md:h-64 relative border-b border-outline">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI6LFPMWRPIUibtfVe6rAq77GT_j8ZFGxPqjvTsdxIB4gUr8Vskq3ynrbEiNQqNuo1jGLNb0QQvEkOgL2BW79GmiP1TRnsjf0UAGm6GjM3QpwR8oHgRk7kGvEtGd0-pXpLZaS-CXXW5lhv4I1wXcrLaGXoIStcHzLPYw4Bfrd8oOrsnovAmycQ_3ns_6rxCS6TCBdG0qzq7OV2rQrB6GlOPgsn-7xLDGOv_HC7evJ1k13Mt1WiCRON3BSddGtUsamSGg442ZWJF-c" alt="Map view of assigned farm locations" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent flex items-end p-margin-mobile">
+                <div class="bg-surface-container-lowest border border-outline-variant px-4 py-2 rounded shadow-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">my_location</span>
+                    <span class="font-label-bold text-label-bold text-on-surface">Sector 4, North Region</span>
+                </div>
+            </div>
+        </div>
+
+        <main class="p-margin-mobile flex flex-col gap-stack-lg max-w-4xl mx-auto w-full">
+            <div class="flex items-center justify-between">
+                <h2 class="font-headline-lg text-headline-lg text-on-background">Today's Route</h2>
+                <span class="font-label-bold text-label-bold text-outline">3 Assigned</span>
+            </div>
+
+            <div class="flex flex-col gap-stack-md">
+
+                <!-- Visit 1: Survey Pending — Elias Thorne -->
+                <article class="bg-surface-container-lowest border border-outline-variant border-l-[4px] border-l-secondary-container rounded p-margin-mobile flex flex-col gap-stack-md shadow-sm relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-secondary-fixed text-on-secondary-fixed font-label-bold text-[12px] uppercase tracking-wide">Survey Pending</span>
+                                <span class="font-label-bold text-label-bold text-outline flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">schedule</span> 09:00 AM
+                                </span>
+                            </div>
+                            <h3 class="font-headline-md text-headline-md text-on-surface">Elias Thorne</h3>
+                            <p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+                                <span class="material-symbols-outlined text-[18px]">location_on</span> Oakhaven Village, Plot 42
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Details Grid -->
+                    <div class="grid grid-cols-2 gap-unit bg-surface-container p-unit rounded-sm border border-outline-variant/50">
+                        <div class="flex flex-col">
+                            <span class="font-label-bold text-[12px] text-outline">Crop Type</span>
+                            <span class="font-body-md text-body-md text-on-surface">Winter Wheat</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-label-bold text-[12px] text-outline">Est. Area</span>
+                            <span class="font-body-md text-body-md text-on-surface">14.5 Hectares</span>
+                        </div>
+                    </div>
+                    <a href="select_task.html" class="w-full h-touch-target-min bg-primary text-on-primary font-label-bold text-label-bold flex items-center justify-center gap-2 rounded hover:bg-primary-container transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-primary active:scale-[0.98]">
+                        <span class="material-symbols-outlined">check_circle</span> Mark as Visited
+                    </a>
+                </article>
+
+                <!-- Visit 2: Urgent Inspection — Sarah Jenkins -->
+                <article class="bg-surface-container-lowest border border-outline-variant border-l-[4px] border-l-error rounded p-margin-mobile flex flex-col gap-stack-md shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-error-container text-on-error-container font-label-bold text-[12px] uppercase tracking-wide">Urgent Inspection</span>
+                                <span class="font-label-bold text-label-bold text-outline flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">schedule</span> 11:30 AM
+                                </span>
+                            </div>
+                            <h3 class="font-headline-md text-headline-md text-on-surface">Sarah Jenkins</h3>
+                            <p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+                                <span class="material-symbols-outlined text-[18px]">location_on</span> Riverbend Sector, Plot 18
+                            </p>
+                        </div>
+                    </div>
+                    <button class="w-full h-touch-target-min bg-primary text-on-primary font-label-bold text-label-bold flex items-center justify-center gap-2 rounded hover:bg-primary-container transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-primary active:scale-[0.98]">
+                        <span class="material-symbols-outlined">check_circle</span> Mark as Visited
+                    </button>
+                </article>
+
+                <!-- Visit 3: Task Completed — Marcus Vance (strikethrough) -->
+                <article class="bg-surface-container-lowest border border-outline-variant border-l-[4px] border-l-primary opacity-75 rounded p-margin-mobile flex flex-col gap-stack-md">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-primary-fixed text-on-primary-fixed font-label-bold text-[12px] uppercase tracking-wide">Task Completed</span>
+                                <span class="font-label-bold text-label-bold text-outline flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">done_all</span> 07:15 AM
+                                </span>
+                            </div>
+                            <h3 class="font-headline-md text-headline-md text-on-surface line-through decoration-outline-variant">Marcus Vance</h3>
+                            <p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+                                <span class="material-symbols-outlined text-[18px]">location_on</span> High Ridge, Plot 02
+                            </p>
+                        </div>
+                    </div>
+                    <button class="w-full h-touch-target-min bg-surface-variant text-on-surface-variant font-label-bold text-label-bold flex items-center justify-center gap-2 rounded border border-outline-variant cursor-not-allowed" disabled>
+                        <span class="material-symbols-outlined">task_alt</span> Visit Logged
+                    </button>
+                </article>
+
+            </div>
+        </main>
+
+        <!-- Mobile Bottom Nav -->
+        <nav class="bg-white dark:bg-neutral-900 border-t-2 border-neutral-200 h-20 fixed bottom-0 w-full z-50 flex justify-around items-center px-2 md:hidden">
+            <a class="flex flex-col items-center justify-center text-neutral-500 px-3 py-1 active:scale-95 transition-transform rounded-lg" href="index.html">
+                <span class="material-symbols-outlined">home_work</span><span class="font-semibold text-[12px]">Dashboard</span>
+            </a>
+            <a class="flex flex-col items-center justify-center text-neutral-500 px-3 py-1 active:scale-95 transition-transform rounded-lg" href="applications.html">
+                <span class="material-symbols-outlined">assignment_turned_in</span><span class="font-semibold text-[12px]">Applications</span>
+            </a>
+            <a class="flex flex-col items-center justify-center px-3 py-1 active:scale-95 transition-transform rounded-lg bg-green-50 text-green-900 font-bold" href="visit_planner.html">
+                <span class="material-symbols-outlined">calendar_today</span><span class="font-semibold text-[12px]">Planner</span>
+            </a>
+            <a class="flex flex-col items-center justify-center text-neutral-500 px-3 py-1 active:scale-95 transition-transform rounded-lg" href="fraud_alerts.html">
+                <span class="material-symbols-outlined">report_problem</span><span class="font-semibold text-[12px]">Alerts</span>
+            </a>
+            <a class="flex flex-col items-center justify-center text-neutral-500 px-3 py-1 active:scale-95 transition-transform rounded-lg" href="advanced_tools.html">
+                <span class="material-symbols-outlined">construction</span><span class="font-semibold text-[12px]">Tools</span>
+            </a>
+        </nav>
+    </div>
+
+    <script src="./src/i18n.js"></script>
+    <script src="./src/main.js"></script>
+</body>
+</html>

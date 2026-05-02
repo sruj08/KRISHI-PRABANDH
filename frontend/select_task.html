@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Field Verification Selection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="./src/styles/style.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#0d631b",
+                        "secondary": "#7e5700",
+                        "background": "#f7fbf0",
+                        "surface": "#f7fbf0",
+                        "on-surface": "#181d17"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col pb-24">
+    <header class="bg-white p-4 flex justify-between items-center border-b sticky top-0 z-40">
+        <button class="material-symbols-outlined">menu</button>
+        <div class="font-bold text-xl text-primary text-center flex-1">AgriField Gov</div>
+        <span class="material-symbols-outlined text-primary">account_circle</span>
+    </header>
+
+    <main class="flex-1 p-6 max-w-2xl mx-auto w-full space-y-6">
+        <div class="space-y-1">
+            <span class="text-primary font-bold uppercase text-xs tracking-widest">Verification Task</span>
+            <h1 class="text-3xl font-bold">Target Selection</h1>
+        </div>
+
+        <section class="bg-white p-6 rounded-xl border space-y-4 shadow-sm">
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">search</span>
+                <input type="text" class="w-full pl-10 pr-4 py-3 border rounded-lg" placeholder="Search Farmer Name or Gat No.">
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-neutral-400 uppercase">Filter by Scheme</label>
+                <select class="w-full border rounded-lg py-3 px-4">
+                    <option>PM-KISAN Fund</option>
+                    <option>Drip Irrigation Subsidy</option>
+                    <option>Kharif Crop Insurance</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="space-y-3">
+            <h3 class="font-bold text-sm">Matching Records (3)</h3>
+            
+            <button class="w-full text-left bg-white border-l-4 border-l-primary border rounded-xl p-6 flex items-center justify-between shadow-sm">
+                <div class="space-y-1">
+                    <h4 class="text-xl font-bold">Ramesh D. Kumar</h4>
+                    <div class="flex items-center gap-2 text-sm text-neutral-500">
+                        <span class="material-symbols-outlined text-sm">location_on</span> Gat: 104/2 • North Sector
+                    </div>
+                </div>
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined text-sm">check</span>
+                </div>
+            </button>
+
+            <button class="w-full text-left bg-white border border-neutral-200 rounded-xl p-6 flex items-center justify-between opacity-80">
+                <div class="space-y-1">
+                    <h4 class="text-xl font-bold">Suresh V. Patil</h4>
+                    <div class="flex items-center gap-2 text-sm text-neutral-500">
+                        <span class="material-symbols-outlined text-sm">location_on</span> Gat: 201/A • East Sector
+                    </div>
+                </div>
+                <div class="w-6 h-6 rounded-full border"></div>
+            </button>
+        </section>
+
+        <button onclick="window.location.href='confirm_verification.html'" class="w-full bg-primary text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">
+            Proceed to Site Details <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+    </main>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-4 z-50">
+        <a href="index.html" class="flex flex-col items-center gap-1 text-neutral-400">
+            <span class="material-symbols-outlined">home_work</span>
+            <span class="text-[10px] font-bold">Dashboard</span>
+        </a>
+        <a href="applications.html" class="flex flex-col items-center gap-1 text-neutral-400">
+            <span class="material-symbols-outlined">assignment_turned_in</span>
+            <span class="text-[10px] font-bold">Applications</span>
+        </a>
+        <a href="visit_planner.html" class="flex flex-col items-center gap-1 text-primary">
+            <span class="material-symbols-outlined fill">calendar_today</span>
+            <span class="text-[10px] font-bold">Planner</span>
+        </a>
+        <a href="fraud_alerts.html" class="flex flex-col items-center gap-1 text-neutral-400">
+            <span class="material-symbols-outlined">report_problem</span>
+            <span class="text-[10px] font-bold">Alerts</span>
+        </a>
+    </nav>
+
+    <script src="./src/i18n.js"></script>
+    <script src="./src/main.js"></script>
+</body>
+</html>
