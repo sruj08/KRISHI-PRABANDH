@@ -1,0 +1,71 @@
+.mobile-header {
+  display: none;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  background-color: var(--surface-lowest);
+  border-bottom: 1px solid var(--outline-variant);
+  z-index: 30;
+}
+
+@media (max-width: 767px) {
+  .mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--sp-4);
+  }
+}
+
+.mobile-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.menu-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--success-dark);
+  background: transparent;
+}
+.menu-button:hover,
+.menu-button:active {
+  background-color: var(--surface-variant);
+}
+
+.mobile-header-title {
+  font-size: var(--font-size-md);
+  font-weight: 900;
+  color: var(--success-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.mobile-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.profile-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--surface-variant);
+  border: 1px solid var(--outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  overflow: hidden;
+}
+.profile-button:hover {
+  border-color: var(--outline);
+}
