@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Field Verification - Camera</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="./src/styles/style.css">
+</head>
+<body class="bg-black text-on-surface font-body-md antialiased overflow-hidden">
+    <main class="relative h-screen w-full flex flex-col justify-between">
+        <!-- Live Camera Feed Placeholder -->
+        <div class="absolute inset-0 w-full h-full z-0 bg-neutral-900">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4C9lPiUwJ8ywiGUPRyMxhFZfGPt5PTAwsUpkAh90EwHg-NJI1pY2h2taovibYP725IR1rCa7XHBG0wq4Qz8K22ClFAj9xc85QDHqajzmUsFetz-8D2cKISngX3iBdjoPSGGXtwEc2eA90fPXQUzcYGwE69GDIXXsBIt6w1ZovRplGVxmq7gO_cBSbZAHfko-u7M3E-sa6zbHHeUgLNzUZZ62Z0Ff4zq3cLQQxxpzMyBOYXZxGNZMUYTSIIl8QKTrkjJExnh9oiCI" class="w-full h-full object-cover opacity-80">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60 pointer-events-none"></div>
+        </div>
+
+        <header class="relative w-full p-6 flex justify-between items-start z-10">
+            <button onclick="window.history.back()" class="h-12 w-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-green-600 animate-pulse"></div>
+                <span class="text-xs font-bold text-black">Align subject in frame</span>
+            </div>
+            <button class="h-12 w-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
+                <span class="material-symbols-outlined">flash_auto</span>
+            </button>
+        </header>
+
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <div class="w-64 h-80 border-2 border-green-500/50 rounded-lg relative">
+                <div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-green-500"></div>
+                <div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-green-500"></div>
+                <div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-green-500"></div>
+                <div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-green-500"></div>
+            </div>
+        </div>
+
+        <footer class="relative w-full bg-white rounded-t-3xl p-8 flex items-center justify-between z-20 shadow-2xl">
+            <button class="flex flex-col items-center gap-1">
+                <div class="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined">replay</span>
+                </div>
+                <span class="text-xs font-bold text-neutral-500">Retake</span>
+            </button>
+
+            <div class="w-20 h-20 rounded-full border-4 border-green-600 flex items-center justify-center p-1">
+                <button class="w-full h-full rounded-full bg-green-600 flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined text-3xl">photo_camera</span>
+                </button>
+            </div>
+
+            <button class="flex flex-col items-center gap-1">
+                <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                    <span class="material-symbols-outlined">cloud_upload</span>
+                </div>
+                <span class="text-xs font-bold text-green-600">Upload</span>
+            </button>
+        </footer>
+    </main>
+    <script src="./src/i18n.js"></script>
+</body>
+</html>
