@@ -4,6 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import StatCard from '../../components/ui/StatCard';
 import TaskItem from '../../components/ui/TaskItem';
 import CircularGauge from '../../components/ui/CircularGauge';
+import { applicationsData } from '../../data/applications';
 
 const Dashboard = () => {
   const { t, lang } = useLanguage();
@@ -94,31 +95,41 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Today's Tasks */}
+      {/* Eligible Farmers (Simulated) */}
       <section className="mb-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="section-title" style={{ margin: 0 }}>{t("Today's Tasks", lang)}</h3>
-          <button className="text-primary fw-bold text-sm bg-transparent border-none" onClick={() => navigate('/visit-planner')}>
+          <h3 className="section-title" style={{ margin: 0 }}>{t("Eligible Farmers (Simulated)", lang)}</h3>
+          <button className="text-primary fw-bold text-sm bg-transparent border-none" onClick={() => navigate('/advanced-tools')}>
             {t("View All", lang)}
           </button>
         </div>
         <div className="flex-col gap-2">
-          <TaskItem 
-            icon="person_pin_circle"
-            title="Visit Farmer Ramesh"
-            subtitle="North Sector, Plot 42"
-            time="10:00 AM"
-            iconColor="primary"
-            onClick={() => navigate('/visit-planner')}
-          />
-          <TaskItem 
-            icon="fact_check"
-            title="Verify Tractor Scheme"
-            subtitle="App #TS-8821"
-            time="URGENT"
-            iconColor="error"
-            onClick={() => navigate('/select-task')}
-          />
+          {(() => {
+            const eligibleApps = applicationsData.filter(app => app.status === 'Applied' || app.status === 'Under Scrutiny');
+            const grouped = [];
+            const seen = new Set();
+            for (const app of eligibleApps) {
+              if (!seen.has(app.farmer_id)) {
+                seen.add(app.farmer_id);
+                grouped.push(app);
+              }
+              if (grouped.length >= 8) break;
+            }
+            if (grouped.length === 0) {
+              return <div className="text-center text-muted p-4">No eligible farmers found.</div>;
+            }
+            return grouped.map((app, index) => (
+              <TaskItem 
+                key={index}
+                icon="person"
+                title={app.farmer_id || "Unknown Farmer"}
+                subtitle={`${app.component || 'Unknown Component'} • ${app.scheme_name || 'Unknown Scheme'}`}
+                time={app.remarks || "No remarks"}
+                iconColor="primary"
+                onClick={() => navigate('/advanced-tools')}
+              />
+            ));
+          })()}
         </div>
       </section>
 
