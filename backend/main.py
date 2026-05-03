@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.applications import router as applications_router
 from routes.insights import router as insights_router
 from routes.logs import router as logs_router
+from routes.gr import router as gr_router
 
 app = FastAPI(
     title="KrishiPrabandh API",
@@ -21,6 +22,7 @@ app.add_middleware(
 app.include_router(applications_router)
 app.include_router(insights_router)
 app.include_router(logs_router)
+app.include_router(gr_router)
 
 @app.get("/", tags=["Health"])
 def health():
