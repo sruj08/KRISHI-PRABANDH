@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 import StatusBadge from './StatusBadge';
 
@@ -22,6 +23,12 @@ const deriveExplanation = (app) => {
 };
 
 const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
+  const navigate = useNavigate();
+
+  const handleUploadPhoto = () => {
+    onClose();
+    navigate(`/capture-photo?appId=${app.application_id}`);
+  };
   if (!app) return null;
   const priority = app.priority || 'NORMAL';
   const pConfig = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.NORMAL;
@@ -67,6 +74,23 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
           </div>
         </div>
 
+        {/* Uploaded photo thumbnail */}
+        {app.photo && (
+          <div style={{ borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--outline-variant)' }}>
+            <div className="alert-detail-label" style={{ padding: '6px 12px 4px', backgroundColor: 'var(--surface-low)' }}>Field Photo</div>
+            <img
+              src={app.photo}
+              alt="Field photo"
+              style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', display: 'block' }}
+            />
+            {app.photo_uploaded_at && (
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', padding: '4px 12px', backgroundColor: 'var(--surface-low)' }}>
+                Uploaded: {app.photo_uploaded_at}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Remarks */}
         <div style={{ backgroundColor: 'var(--surface-low)', borderRadius: 'var(--radius)', padding: '10px 12px' }}>
           <div className="alert-detail-label mb-1">Remarks</div>
@@ -110,6 +134,24 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
             )}
           </div>
         )}
+
+        {/* Upload Photo button — always available */}
+        <button
+          id="insight-upload-photo-btn"
+          onClick={handleUploadPhoto}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+            backgroundColor: app.photo ? 'var(--surface-container)' : '#0055A4',
+            color: app.photo ? 'var(--text-dark)' : '#fff',
+            border: app.photo ? '1.5px solid var(--outline-variant)' : 'none',
+            borderRadius: 'var(--radius)', padding: '10px 16px',
+            fontWeight: 700, fontSize: '13px', cursor: 'pointer',
+            marginTop: '4px',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>photo_camera</span>
+          {app.photo ? '📷 Update Field Photo' : '📷 Upload Field Photo'}
+        </button>
       </div>
     </Modal>
   );
