@@ -107,7 +107,7 @@ const SahayakDashboard = () => {
       </section>
 
       {/* Quick Actions */}
-      <section className="quick-action-grid">
+      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--sp-3)' }}>
         <div className="quick-action-btn" onClick={() => navigate('/capture-photo')}>
           <div className="quick-action-icon blue"><span className="material-symbols-outlined">add_a_photo</span></div>
           <span className="quick-action-label">{t('Upload Photo', lang)}</span>
@@ -123,6 +123,19 @@ const SahayakDashboard = () => {
         <div className="quick-action-btn" onClick={() => navigate('/visit-planner')}>
           <div className="quick-action-icon rose"><span className="material-symbols-outlined">directions_car</span></div>
           <span className="quick-action-label">{t("Today's Visits", lang)}</span>
+        </div>
+        <div className="quick-action-btn" onClick={() => navigate('/fraud-alerts')}>
+          <div className="quick-action-icon" style={{ background: '#f3e5f5', color: '#7b1fa2' }}><span className="material-symbols-outlined">gpp_bad</span></div>
+          <span className="quick-action-label">{t('Fraud Alerts', lang)}</span>
+        </div>
+        <div className="quick-action-btn" onClick={() => navigate('/gram-sabha')}
+          style={{ border: '2px solid var(--success)', background: 'var(--success-light)' }}>
+          <div className="quick-action-icon green" style={{ background: 'var(--success)', color: 'white' }}>
+            <span className="material-symbols-outlined">qr_code_2</span>
+          </div>
+          <span className="quick-action-label" style={{ color: 'var(--success-dark)', fontWeight: 800 }}>
+            Gram Sabha
+          </span>
         </div>
       </section>
 

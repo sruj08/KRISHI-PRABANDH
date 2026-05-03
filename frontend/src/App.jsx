@@ -12,8 +12,10 @@ import FraudAlerts from './pages/FraudAlerts';
 import SelectTask from './pages/SelectTask';
 import VisitPlanner from './pages/VisitPlanner';
 import LandingPage from './pages/gate/LandingPage';
+import GramSabha from './pages/GramSabha';
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
 import SahayakDashboard from './pages/officer/SahayakDashboard';
+import CAODashboard from './pages/cao/CAODashboard';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -26,9 +28,8 @@ const ProtectedRoute = ({ children }) => {
 
 const DashboardRouter = () => {
   const { user } = useAuth();
-  if (user?.role === 'farmer') {
-    return <Navigate to="/farmer" replace />;
-  }
+  if (user?.role === 'farmer') return <Navigate to="/farmer" replace />;
+  if (user?.role === 'cao')    return <Navigate to="/cao" replace />;
   return <Navigate to="/officer" replace />;
 };
 
@@ -40,6 +41,7 @@ const App = () => {
         <Route path="/gate" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LandingPage />} />
         <Route path="/farmer" element={<FarmerDashboard />} />
+        <Route path="/cao" element={<CAODashboard />} />
         
         <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
           <Route path="/" element={<DashboardRouter />} />
@@ -51,6 +53,7 @@ const App = () => {
           <Route path="/fraud-alerts" element={<FraudAlerts />} />
           <Route path="/select-task" element={<SelectTask />} />
           <Route path="/visit-planner" element={<VisitPlanner />} />
+          <Route path="/gram-sabha" element={<GramSabha />} />
         </Route>
         
         {/* Fallback route */}
