@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../hooks/useToast.jsx';
 import CircularGauge from '../components/ui/CircularGauge';
+import SmartGRParser from '../components/ui/SmartGRParser';
 import FarmerCard from '../components/ui/FarmerCard';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
@@ -15,25 +16,9 @@ const AdvancedTools = () => {
   const { t, lang } = useLanguage();
   const { addToast } = useToast();
   
-  const [grSummary, setGrSummary] = useState(null);
   const [frictionModalOpen, setFrictionModalOpen] = useState(false);
   const [selectedFarmer, setSelectedFarmer] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setGrSummary({
-      scheme: 'New Scheme',
-      quota: '35% for ST Women Farmers',
-      eligibility: '< 1 Hectare',
-      risk: 'High-risk drought zone'
-    });
-    addToast('GR Parsed Successfully', 'success');
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
 
   const openFrictionModal = (farmerName) => {
     setSelectedFarmer(farmerName);
@@ -83,45 +68,7 @@ const AdvancedTools = () => {
       {/* 2. Smart GR Parser */}
       <section>
         <h2 className="section-title">{t("Smart GR Parser", lang)}</h2>
-        {!grSummary ? (
-          <div className="drag-drop-zone" onDrop={handleDrop} onDragOver={handleDragOver}>
-            <span className="material-symbols-outlined drag-icon">upload_file</span>
-            <p>{t("Drag & Drop new GR here", lang)}</p>
-            <span>{t("or click to browse", lang)}</span>
-          </div>
-        ) : (
-          <div className="gr-summary-card">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="fw-bold text-md text-success-dark">{t("New Scheme", lang)}: ST Women Tractor Subsidy</h3>
-              <button className="btn-icon" onClick={() => setGrSummary(null)}>
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            <ul className="gr-detail-list">
-              <li className="gr-detail-item">
-                <span className="material-symbols-outlined">pie_chart</span>
-                <div>
-                  <strong>{t("Reserved Quota:", lang)}</strong> {t("35% for ST Women Farmers", lang)}
-                </div>
-              </li>
-              <li className="gr-detail-item">
-                <span className="material-symbols-outlined">rule</span>
-                <div>
-                  <strong>{t("Eligibility:", lang)}</strong> {t("< 1 Hectare", lang)}
-                </div>
-              </li>
-              <li className="gr-detail-item">
-                <span className="material-symbols-outlined">warning</span>
-                <div>
-                  <strong>{t("Risk Profile:", lang)}</strong> {t("High-risk drought zone", lang)}
-                </div>
-              </li>
-            </ul>
-            <Button variant="primary" fullWidth className="mt-4" icon="radar">
-              {t("Scan Village for Eligible Beneficiaries", lang)}
-            </Button>
-          </div>
-        )}
+        <SmartGRParser />
       </section>
 
       {/* 3. Proactive Inclusion Radar */}
