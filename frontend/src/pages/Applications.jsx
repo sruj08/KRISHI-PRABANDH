@@ -74,6 +74,13 @@ const Applications = () => {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  // Reload when user navigates back from CapturePhoto (tab becomes visible again)
+  useEffect(() => {
+    const onFocus = () => loadData();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadData]);
+
   const handleStatusAction = async (app, newStatus, remarks, label) => {
     setActionLoading(app.application_id);
     try {

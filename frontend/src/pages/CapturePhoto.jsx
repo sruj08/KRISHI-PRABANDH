@@ -32,9 +32,6 @@ const CapturePhoto = () => {
         video: { facingMode: 'environment' },
       });
       setStream(mediaStream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
       setCameraError(false);
     } catch (err) {
       console.error('Camera error:', err);
@@ -42,6 +39,13 @@ const CapturePhoto = () => {
       addToast('Camera not available — use file picker instead', 'error');
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Wire the stream into the video element whenever stream changes
+  useEffect(() => {
+    if (stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
 
   useEffect(() => {
     startCamera();
@@ -103,7 +107,14 @@ const CapturePhoto = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+    // Restart camera if it was working
+    if (!cameraError) startCamera();
   };
+
+  // Revoke object URL on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
+  }, [previewUrl]);
 
   // ── Upload to backend ────────────────────────────────────────────────────────
 
