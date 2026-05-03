@@ -12,6 +12,7 @@ import FraudAlerts from './pages/FraudAlerts';
 import SelectTask from './pages/SelectTask';
 import VisitPlanner from './pages/VisitPlanner';
 import LandingPage from './pages/gate/LandingPage';
+import GramSabha from './pages/GramSabha';
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
 import SahayakDashboard from './pages/officer/SahayakDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="/fraud-alerts" element={<FraudAlerts />} />
           <Route path="/select-task" element={<SelectTask />} />
           <Route path="/visit-planner" element={<VisitPlanner />} />
+          <Route path="/gram-sabha" element={<GramSabha />} />
         </Route>
         
         {/* Fallback route */}
