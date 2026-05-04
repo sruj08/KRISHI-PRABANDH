@@ -19,7 +19,6 @@ const Sidebar = ({ isOpen }) => {
 
   const navLinks = [
     { to: '/',           icon: 'home_work',             label: 'Dashboard' },
-    { to: '/mandal',     icon: 'location_city',         label: 'Mandal View' },
     { to: '/applications', icon: 'assignment_turned_in', label: 'Applications' },
     { to: '/visit-planner', icon: 'calendar_today',     label: 'Planner' },
     { to: '/fraud-alerts',  icon: 'report_problem',     label: 'Alerts', badge: 2 },
