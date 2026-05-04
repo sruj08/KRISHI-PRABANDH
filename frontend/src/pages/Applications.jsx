@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useHierarchy } from '../context/HierarchyContext';
 import { useToast } from '../hooks/useToast.jsx';
 import SearchInput from '../components/ui/SearchInput';
 import StatusBadge from '../components/ui/StatusBadge';
@@ -46,6 +47,7 @@ const enrich = (app) => ({
 
 const Applications = () => {
   const { t, lang } = useLanguage();
+  const { currentSahayak } = useHierarchy();
   const { addToast } = useToast();
 
   const [apps, setApps] = useState([]);
@@ -62,7 +64,11 @@ const Applications = () => {
 
   const loadData = useCallback(async () => {
     try {
-      const result = await fetchApplications({ limit: 500 });
+      const params = { limit: 500 };
+      if (currentSahayak) {
+         params.sahayak_id = currentSahayak.sahayak_id;
+      }
+      const result = await fetchApplications(params);
       setApps((result.results || []).map(enrich));
     } catch (err) {
       console.error('Failed to load applications:', err);
@@ -70,7 +76,7 @@ const Applications = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentSahayak]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -140,9 +146,16 @@ const Applications = () => {
 
       <header className="mb-2">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl fw-bold text-primary-dark">{t('Applications', lang)}</h2>
+          <h2 className="text-xl fw-bold text-primary-dark">
+            {t('Applications', lang)}
+          </h2>
           <span className="badge badge-error" style={{ fontSize: '12px' }}>{highCount} High Priority</span>
         </div>
+        {currentSahayak && (
+           <div className="badge badge-verified mt-1" style={{ fontSize: '10px', display: 'inline-block' }}>
+              Your Assigned Applications
+           </div>
+        )}
         <p className="text-sm text-muted mt-1">
           {loading ? 'Loading…' : `${displayed.length} of ${apps.length} records`}
         </p>

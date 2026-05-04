@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import HierarchySelector from '../ui/HierarchySelector';
 import './MobileHeader.css';
 
 const MobileHeader = ({ onMenuClick }) => {
@@ -15,10 +16,11 @@ const MobileHeader = ({ onMenuClick }) => {
         >
           <span className="material-symbols-outlined">menu</span>
         </button>
-        <h1 className="mobile-header-title">{t("AgriField Gov")}</h1>
+        <h1 className="mobile-header-title">{t("KrishiPrabandh")}</h1>
       </div>
       
-      <div className="mobile-header-right">
+      <div className="mobile-header-right" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <HierarchySelector />
         <button className="profile-button" aria-label="Profile">
           <span className="material-symbols-outlined">person</span>
         </button>
@@ -28,3 +30,4 @@ const MobileHeader = ({ onMenuClick }) => {
 };
 
 export default MobileHeader;
+

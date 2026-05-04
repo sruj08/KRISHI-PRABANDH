@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useHierarchy } from '../context/HierarchyContext';
 import { useToast } from '../hooks/useToast.jsx';
 import Button from '../components/ui/Button';
 import StatusBadge from '../components/ui/StatusBadge';
@@ -8,6 +9,7 @@ import { fetchFraudAlerts, updateApplicationStatus, postLog } from '../utils/api
 
 const FraudAlerts = () => {
   const { t, lang } = useLanguage();
+  const { currentSahayak } = useHierarchy();
   const { addToast } = useToast();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,15 +18,23 @@ const FraudAlerts = () => {
 
   const loadData = useCallback(async () => {
     try {
+      // The current backend route doesn't accept sahayak_id natively for fraud-alerts,
+      // but we can client-side filter if needed, or if the backend route is updated to support it.
+      // Since fetchApplications does support it, and fraud alerts uses the same data structure, 
+      // let's do a client side filter for now to ensure scope.
       const result = await fetchFraudAlerts();
-      setAlerts(result.results || []);
+      let data = result.results || [];
+      if (currentSahayak) {
+         data = data.filter(a => a.sahayak_id === currentSahayak.sahayak_id);
+      }
+      setAlerts(data);
     } catch (err) {
       console.error('FraudAlerts load error:', err);
       addToast('Could not load fraud alerts', 'error');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentSahayak]);
 
   useEffect(() => { loadData(); }, [loadData]);
 

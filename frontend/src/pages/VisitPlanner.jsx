@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { useHierarchy } from '../context/HierarchyContext';
 import { useToast } from '../hooks/useToast.jsx';
 import Button from '../components/ui/Button';
 import InsightModal from '../components/ui/InsightModal';
@@ -32,6 +33,7 @@ const isVisitPending = (remarks = '') =>
 
 const VisitPlanner = () => {
   const { t, lang } = useLanguage();
+  const { currentSahayak } = useHierarchy();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
@@ -42,7 +44,11 @@ const VisitPlanner = () => {
 
   const loadData = useCallback(async () => {
     try {
-      const result = await fetchApplications({ limit: 500 });
+      const params = { limit: 500 };
+      if (currentSahayak) {
+         params.sahayak_id = currentSahayak.sahayak_id;
+      }
+      const result = await fetchApplications(params);
       setAllApps(result.results || []);
     } catch (err) {
       console.error('VisitPlanner load error:', err);
@@ -50,7 +56,7 @@ const VisitPlanner = () => {
     } finally {
       setLoading(false);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentSahayak]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { loadData(); }, [loadData]);
 

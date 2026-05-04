@@ -593,11 +593,17 @@ def translate_basic(mr: dict, gr_type: str) -> dict:
 # ──────────────────────────────────────────────
 
 @router.post("/parse")
-async def parse_gr(file: UploadFile = File(...)):
+async def parse_gr(
+    file: UploadFile = File(...),
+    sahayak_id: str | None = None,
+    mandal_id: str | None = None,
+):
     """
     Accept a Marathi Government Resolution PDF.
+    Optional query params sahayak_id / mandal_id scope the relevance check.
     Returns structured Marathi output + English translation.
     """
+    from fastapi import Query as FQuery
     if not (file.filename or "").lower().endswith(".pdf"):
         raise HTTPException(
             status_code=400,
@@ -624,8 +630,26 @@ async def parse_gr(file: UploadFile = File(...)):
     impact     = get_impact(gr_type)
     action     = get_action(gr_type)
 
-    applications = load_applications()
-    rel = check_relevance(text, gr_type, applications)
+    # ── Scope the relevance check to the current officer context ──────────────
+    all_applications = load_applications()
+    if sahayak_id:
+        scoped_apps = [a for a in all_applications if a.get("sahayak_id") == sahayak_id]
+        scope_label = "तुमच्या क्षेत्रातील"  # "in your area"
+    elif mandal_id:
+        scoped_apps = [a for a in all_applications if a.get("mandal_id") == mandal_id]
+        scope_label = "तुमच्या मंडलातील"  # "in your mandal"
+    else:
+        scoped_apps = all_applications
+        scope_label = "एकूण"
+
+    rel = check_relevance(text, gr_type, scoped_apps)
+
+    # Enrich reason string with scope label
+    if rel["matched_count"] > 0 and scope_label != "एकूण":
+        rel["reason"] = rel["reason"].replace(
+            f"{rel['matched_count']} अर्ज",
+            f"{scope_label} {rel['matched_count']} अर्ज",
+        )
 
     marathi = {
         "type":                 gr_type,
@@ -638,9 +662,15 @@ async def parse_gr(file: UploadFile = File(...)):
         "matched_components":   rel["matched_components"],
         "matched_apps_list":    rel["matched_applications"][:50],  # cap at 50 for UI
         "reason":               rel["reason"],
+        "scope":                "sahayak" if sahayak_id else ("mandal" if mandal_id else "all"),
     }
     english = translate_basic(marathi, gr_type)
-    # Mirror apps list into English block
     english["matched_apps_list"] = marathi["matched_apps_list"]
+
+    # Append scope note to English reason
+    if sahayak_id and rel["matched_count"] > 0:
+        english["reason"] += f" (scoped to your assigned applications)"
+    elif mandal_id and rel["matched_count"] > 0:
+        english["reason"] += f" (scoped to your mandal)"
 
     return ok({"marathi": marathi, "english": english})

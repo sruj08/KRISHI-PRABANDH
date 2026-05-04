@@ -6,8 +6,17 @@ export const MOCK_USERS = {
   },
   officer: {
     role: "officer",
-    name: "Krishi Sahayak",
-    agristack_id: "KS-98765"
+    name: "Ramesh Patil",
+    agristack_id: "KS-98765",
+    sahayak_id: "S001",
+    mandal_id: "M001",
+  },
+  mandal_officer: {
+    role: "officer",
+    name: "Prakash Shinde",
+    agristack_id: "KS-98766",
+    sahayak_id: "S003",
+    mandal_id: "M002",
   },
   cao: {
     role: "cao",
@@ -15,3 +24,4 @@ export const MOCK_USERS = {
     agristack_id: "MKA-PNE-0047"
   }
 };
+
