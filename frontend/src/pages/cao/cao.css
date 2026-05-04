@@ -144,6 +144,25 @@
   min-height: 800px;
 }
 
+/* 3-column layout for the expanded CAO dashboard */
+.cao-grid-3col {
+  grid-template-columns: 1fr 1.1fr 1fr;
+  grid-template-rows: 1fr;
+  min-height: 820px;
+}
+
+/* Supervision panel — fills full column height with flex scroll */
+.cao-panel--supervision {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cao-panel--supervision > div:last-child {
+  flex: 1;
+  overflow-y: auto;
+}
+
 .cao-panel {
   background-color: var(--surface-lowest);
   border: 1px solid var(--outline-variant);
