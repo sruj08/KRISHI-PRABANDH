@@ -1,0 +1,167 @@
+[
+  {
+    "session_id": "VS001",
+    "sahayak_id": "S001",
+    "mandal_id": "M001",
+    "village": "Chakan",
+    "date": "2024-10-20",
+    "topic": "Drip Irrigation Scheme",
+    "reported_attendance": 52,
+    "digital_attendance": 18,
+    "notes": "Attendance register shows all farmers but only 18 signed digitally"
+  },
+  {
+    "session_id": "VS002",
+    "sahayak_id": "S001",
+    "mandal_id": "M001",
+    "village": "Rajgurunagar",
+    "date": "2024-10-25",
+    "topic": "PM-KISAN Eligibility Verification",
+    "reported_attendance": 38,
+    "digital_attendance": 35,
+    "notes": "Normal session, slight discrepancy"
+  },
+  {
+    "session_id": "VS003",
+    "sahayak_id": "S001",
+    "mandal_id": "M001",
+    "village": "Nimgaon",
+    "date": "2024-11-02",
+    "topic": "Fasal Bima Awareness",
+    "reported_attendance": 65,
+    "digital_attendance": 12,
+    "notes": "High mismatch — very few QR scans recorded"
+  },
+  {
+    "session_id": "VS004",
+    "sahayak_id": "S002",
+    "mandal_id": "M001",
+    "village": "Kalewadi",
+    "date": "2024-10-22",
+    "topic": "Soil Health Card Distribution",
+    "reported_attendance": 29,
+    "digital_attendance": 27,
+    "notes": "Clean session"
+  },
+  {
+    "session_id": "VS005",
+    "sahayak_id": "S002",
+    "mandal_id": "M001",
+    "village": "Pimpalwadi",
+    "date": "2024-11-05",
+    "topic": "Pradhan Mantri Krishi Sinchayee",
+    "reported_attendance": 33,
+    "digital_attendance": 31,
+    "notes": "Good digital adoption"
+  },
+  {
+    "session_id": "VS006",
+    "sahayak_id": "S003",
+    "mandal_id": "M002",
+    "village": "Bhor",
+    "date": "2024-10-18",
+    "topic": "Nano Urea Distribution Awareness",
+    "reported_attendance": 61,
+    "digital_attendance": 14,
+    "notes": "Critical mismatch — field visit recommended"
+  },
+  {
+    "session_id": "VS007",
+    "sahayak_id": "S003",
+    "mandal_id": "M002",
+    "village": "Nasrapur",
+    "date": "2024-10-28",
+    "topic": "Kisan Credit Card Camp",
+    "reported_attendance": 45,
+    "digital_attendance": 43,
+    "notes": "Excellent digital attendance"
+  },
+  {
+    "session_id": "VS008",
+    "sahayak_id": "S003",
+    "mandal_id": "M002",
+    "village": "Velhe",
+    "date": "2024-11-08",
+    "topic": "Polyhouse Subsidy Scheme",
+    "reported_attendance": 22,
+    "digital_attendance": 20,
+    "notes": "Small village, clean session"
+  },
+  {
+    "session_id": "VS009",
+    "sahayak_id": "S004",
+    "mandal_id": "M002",
+    "village": "Panshet",
+    "date": "2024-10-30",
+    "topic": "Watershed Development Scheme",
+    "reported_attendance": 78,
+    "digital_attendance": 19,
+    "notes": "Very high reported, very low digital — HIGH RISK"
+  },
+  {
+    "session_id": "VS010",
+    "sahayak_id": "S004",
+    "mandal_id": "M002",
+    "village": "Dive Ghat",
+    "date": "2024-11-10",
+    "topic": "ATMA Training Session",
+    "reported_attendance": 40,
+    "digital_attendance": 37,
+    "notes": "Normal session"
+  },
+  {
+    "session_id": "VS011",
+    "sahayak_id": "S005",
+    "mandal_id": "M003",
+    "village": "Uruli Kanchan",
+    "date": "2024-10-15",
+    "topic": "Grapes Export Scheme",
+    "reported_attendance": 55,
+    "digital_attendance": 51,
+    "notes": "High digital adoption"
+  },
+  {
+    "session_id": "VS012",
+    "sahayak_id": "S005",
+    "mandal_id": "M003",
+    "village": "Loni Kalbhor",
+    "date": "2024-10-24",
+    "topic": "Natural Farming Workshop",
+    "reported_attendance": 30,
+    "digital_attendance": 28,
+    "notes": "Normal"
+  },
+  {
+    "session_id": "VS013",
+    "sahayak_id": "S005",
+    "mandal_id": "M003",
+    "village": "Manjari",
+    "date": "2024-11-01",
+    "topic": "Farmer Producer Organisation Setup",
+    "reported_attendance": 70,
+    "digital_attendance": 16,
+    "notes": "Very suspicious — same pattern as VS001 and VS003"
+  },
+  {
+    "session_id": "VS014",
+    "sahayak_id": "S006",
+    "mandal_id": "M003",
+    "village": "Wagholi",
+    "date": "2024-10-26",
+    "topic": "Sprinkler Irrigation Subsidy",
+    "reported_attendance": 24,
+    "digital_attendance": 23,
+    "notes": "Clean"
+  },
+  {
+    "session_id": "VS015",
+    "sahayak_id": "S006",
+    "mandal_id": "M003",
+    "village": "Koregaon Bhima",
+    "date": "2024-11-06",
+    "topic": "Soil Moisture Conservation",
+    "reported_attendance": 18,
+    "digital_attendance": 17,
+    "notes": "Clean"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "sahayak_id": "S001",
+    "name": "Ramesh Patil",
+    "mandal_id": "M001",
+    "phone": "9876543210",
+    "villages_assigned": ["Chakan", "Rajgurunagar", "Nimgaon"]
+  },
+  {
+    "sahayak_id": "S002",
+    "name": "Sunita Deshmukh",
+    "mandal_id": "M001",
+    "phone": "9876543211",
+    "villages_assigned": ["Kalewadi", "Pimpalwadi"]
+  },
+  {
+    "sahayak_id": "S003",
+    "name": "Prakash Shinde",
+    "mandal_id": "M002",
+    "phone": "9876543212",
+    "villages_assigned": ["Bhor", "Nasrapur", "Velhe"]
+  },
+  {
+    "sahayak_id": "S004",
+    "name": "Anita Jadhav",
+    "mandal_id": "M002",
+    "phone": "9876543213",
+    "villages_assigned": ["Panshet", "Dive Ghat"]
+  },
+  {
+    "sahayak_id": "S005",
+    "name": "Vijay More",
+    "mandal_id": "M003",
+    "phone": "9876543214",
+    "villages_assigned": ["Uruli Kanchan", "Loni Kalbhor", "Manjari"]
+  },
+  {
+    "sahayak_id": "S006",
+    "name": "Kavita Kulkarni",
+    "mandal_id": "M003",
+    "phone": "9876543215",
+    "villages_assigned": ["Wagholi", "Koregaon Bhima"]
+  }
+]

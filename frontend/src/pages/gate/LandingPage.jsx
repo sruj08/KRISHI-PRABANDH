@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useHierarchy } from '../../context/HierarchyContext';
 import { MOCK_USERS } from '../../utils/mockData';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { mandals, setCurrentMandal } = useHierarchy();
 
   const handleLogin = (role) => {
     login(MOCK_USERS[role]);
@@ -13,6 +15,15 @@ const LandingPage = () => {
     else if (role === 'cao') navigate('/cao');
     else navigate('/officer');
   };
+
+  const handleMandalLogin = () => {
+    login(MOCK_USERS['mandal_officer']);
+    // Pre-select M002 so the dashboard loads with real data
+    const m = mandals.find(m => m.mandal_id === 'M002') || mandals[0] || { mandal_id: 'M002', name: 'South Pune', district: 'Pune', taluka: 'Bhor' };
+    setCurrentMandal(m);
+    navigate('/mandal');
+  };
+
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #0d1117 0%, #161b22 60%, #1a2332 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
@@ -35,6 +46,12 @@ const LandingPage = () => {
           style={{ height: '60px', fontSize: '15px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: 'linear-gradient(135deg,#0055A4,#1976d2)', color: '#fff', border: 'none', borderRadius: '12px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,85,164,0.3)' }}>
           <span className="material-symbols-outlined">badge</span>
           Enter as Krishi Sahayak (Field Officer)
+        </button>
+
+        <button onClick={handleMandalLogin}
+          style={{ height: '60px', fontSize: '15px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: 'linear-gradient(135deg,#2e7d32,#4caf50)', color: '#fff', border: 'none', borderRadius: '12px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(46,125,50,0.3)' }}>
+          <span className="material-symbols-outlined">location_city</span>
+          Enter as Mandal Officer (MKA)
         </button>
 
         <button onClick={() => handleLogin('cao')}

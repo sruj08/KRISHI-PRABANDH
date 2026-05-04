@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/Layout/AppLayout';
 import ToastContainer from './components/ui/Toast';
 import { useAuth } from './context/AuthContext';
+import { HierarchyProvider } from './context/HierarchyContext';
 
 import Applications from './pages/Applications';
 import AdvancedTools from './pages/AdvancedTools';
@@ -15,6 +16,7 @@ import LandingPage from './pages/gate/LandingPage';
 import GramSabha from './pages/GramSabha';
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
 import SahayakDashboard from './pages/officer/SahayakDashboard';
+import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
 
 // Protected Route Wrapper
@@ -37,28 +39,31 @@ const App = () => {
   return (
     <BrowserRouter>
       <ToastContainer />
-      <Routes>
-        <Route path="/gate" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<LandingPage />} />
-        <Route path="/farmer" element={<FarmerDashboard />} />
-        <Route path="/cao" element={<CAODashboard />} />
-        
-        <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-          <Route path="/" element={<DashboardRouter />} />
-          <Route path="/officer" element={<SahayakDashboard />} />
-          <Route path="/applications" element={<Applications />} />
-          <Route path="/advanced-tools" element={<AdvancedTools />} />
-          <Route path="/capture-photo" element={<CapturePhoto />} />
-          <Route path="/confirm-verification" element={<ConfirmVerification />} />
-          <Route path="/fraud-alerts" element={<FraudAlerts />} />
-          <Route path="/select-task" element={<SelectTask />} />
-          <Route path="/visit-planner" element={<VisitPlanner />} />
-          <Route path="/gram-sabha" element={<GramSabha />} />
-        </Route>
-        
-        {/* Fallback route */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+      <HierarchyProvider>
+        <Routes>
+          <Route path="/gate" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<LandingPage />} />
+          <Route path="/farmer" element={<FarmerDashboard />} />
+          <Route path="/cao" element={<CAODashboard />} />
+          
+          <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+            <Route path="/" element={<DashboardRouter />} />
+            <Route path="/officer" element={<SahayakDashboard />} />
+            <Route path="/mandal" element={<MandalDashboard />} />
+            <Route path="/applications" element={<Applications />} />
+            <Route path="/advanced-tools" element={<AdvancedTools />} />
+            <Route path="/capture-photo" element={<CapturePhoto />} />
+            <Route path="/confirm-verification" element={<ConfirmVerification />} />
+            <Route path="/fraud-alerts" element={<FraudAlerts />} />
+            <Route path="/select-task" element={<SelectTask />} />
+            <Route path="/visit-planner" element={<VisitPlanner />} />
+            <Route path="/gram-sabha" element={<GramSabha />} />
+          </Route>
+          
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </HierarchyProvider>
     </BrowserRouter>
   );
 };

@@ -2,11 +2,13 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { useHierarchy } from '../../context/HierarchyContext';
 import './Sidebar.css';
 
 const Sidebar = ({ isOpen }) => {
   const { t, toggleLanguage, lang } = useLanguage();
   const { user, logout } = useAuth();
+  const { currentMandal, currentSahayak } = useHierarchy();
   const navigate = useNavigate();
 
   const handleLogout = (e) => {
@@ -16,11 +18,12 @@ const Sidebar = ({ isOpen }) => {
   };
 
   const navLinks = [
-    { to: '/', icon: 'home_work', label: 'Dashboard' },
+    { to: '/',           icon: 'home_work',             label: 'Dashboard' },
+    { to: '/mandal',     icon: 'location_city',         label: 'Mandal View' },
     { to: '/applications', icon: 'assignment_turned_in', label: 'Applications' },
-    { to: '/visit-planner', icon: 'calendar_today', label: 'Planner' },
-    { to: '/fraud-alerts', icon: 'report_problem', label: 'Alerts', badge: 2 },
-    { to: '/advanced-tools', icon: 'construction', label: 'Advanced Tools' },
+    { to: '/visit-planner', icon: 'calendar_today',     label: 'Planner' },
+    { to: '/fraud-alerts',  icon: 'report_problem',     label: 'Alerts', badge: 2 },
+    { to: '/advanced-tools', icon: 'construction',      label: 'Advanced Tools' },
   ];
 
   return (
@@ -31,9 +34,16 @@ const Sidebar = ({ isOpen }) => {
             <span className="material-symbols-outlined">person</span>
           </div>
           <div className="officer-info">
-            <h3 className="officer-name">{user?.name || t("Sahayak Krushi Adhikari Ramesh Patil")}</h3>
-            <p className="officer-id">{user?.id || t("ID: AGRI-9920")}</p>
-            <p className="officer-region">{user?.region || t("Region: North Sector")}</p>
+            <h3 className="officer-name">{user?.name || 'Sahayak Officer'}</h3>
+            <p className="officer-id" style={{ fontSize: '10px', color: '#888' }}>
+              {user?.agristack_id || 'KS-00000'}
+            </p>
+            {currentMandal && (
+              <p style={{ fontSize: '10px', color: '#2e7d32', fontWeight: 700, margin: '2px 0 0' }}>
+                📍 {currentMandal.name}
+                {currentSahayak && ` › ${currentSahayak.name}`}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -43,6 +53,7 @@ const Sidebar = ({ isOpen }) => {
           <NavLink
             key={link.to}
             to={link.to}
+            end={link.to === '/'}
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
           >
             <span className="material-symbols-outlined">{link.icon}</span>
@@ -69,3 +80,4 @@ const Sidebar = ({ isOpen }) => {
 };
 
 export default Sidebar;
+

@@ -1,0 +1,23 @@
+[
+  {
+    "mandal_id": "M001",
+    "name": "North Pune",
+    "district": "Pune",
+    "taluka": "Khed",
+    "villages": ["Chakan", "Rajgurunagar", "Nimgaon", "Kalewadi", "Pimpalwadi"]
+  },
+  {
+    "mandal_id": "M002",
+    "name": "South Pune",
+    "district": "Pune",
+    "taluka": "Bhor",
+    "villages": ["Bhor", "Nasrapur", "Velhe", "Panshet", "Dive Ghat"]
+  },
+  {
+    "mandal_id": "M003",
+    "name": "Haveli",
+    "district": "Pune",
+    "taluka": "Haveli",
+    "villages": ["Uruli Kanchan", "Loni Kalbhor", "Manjari", "Wagholi", "Koregaon Bhima"]
+  }
+]

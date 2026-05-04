@@ -16,6 +16,8 @@ def get_all_applications(
     component: str | None = Query(None),
     scheme_category: str | None = Query(None),
     farmer_id: str | None = Query(None),
+    sahayak_id: str | None = Query(None),
+    mandal_id: str | None = Query(None),
     limit: int = Query(100, le=500),
     offset: int = Query(0, ge=0),
 ):
@@ -28,6 +30,10 @@ def get_all_applications(
         apps = [a for a in apps if a.get("scheme_category", "").lower() == scheme_category.lower()]
     if farmer_id:
         apps = [a for a in apps if a.get("farmer_id", "") == farmer_id]
+    if sahayak_id:
+        apps = [a for a in apps if a.get("sahayak_id") == sahayak_id]
+    if mandal_id:
+        apps = [a for a in apps if a.get("mandal_id") == mandal_id]
     total = len(apps)
     return ok({"total": total, "offset": offset, "limit": limit, "results": apps[offset: offset + limit]})
 
