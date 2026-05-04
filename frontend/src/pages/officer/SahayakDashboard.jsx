@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { useHierarchy } from '../../context/HierarchyContext';
+
 import CircularGauge from '../../components/ui/CircularGauge';
 import InsightModal from '../../components/ui/InsightModal';
-import { fetchSummary, fetchSahayakSummary, fetchEligibleFarmers, fetchSahayakApplications, fetchApplication } from '../../utils/api';
+import { fetchSummary, fetchEligibleFarmers, fetchApplication } from '../../utils/api';
 
 // Fallback to static data if API is unavailable
 import { applicationsData } from '../../data/applications';
@@ -29,7 +29,7 @@ const getPriority = (app) => {
 const SahayakDashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
-  const { currentSahayak, currentMandal } = useHierarchy();
+
 
   const [selectedApp, setSelectedApp] = useState(null);
   const [summary, setSummary] = useState(null);
@@ -41,33 +41,15 @@ const SahayakDashboard = () => {
     const load = async () => {
       setLoading(true);
       try {
-        let s, e;
-        if (currentSahayak) {
-           // Scoped data
-           const [sRes, eRes] = await Promise.all([
-             fetchSahayakSummary(currentSahayak.sahayak_id),
-             fetchSahayakApplications(currentSahayak.sahayak_id, { limit: 8, status: 'Applied' })
-           ]);
-           s = { ...sRes, total_applications: sRes.total_applications }; // normalize if needed
-           e = eRes;
-        } else {
-           // Unscoped fallback
-           [s, e] = await Promise.all([fetchSummary(), fetchEligibleFarmers(8)]);
-        }
-        
+        const [s, e] = await Promise.all([fetchSummary(), fetchEligibleFarmers(8)]);
         setSummary(s);
         setEligibleFarmers(e.results || []);
         setApiOnline(true);
       } catch {
         // Fallback to static data
         const enriched = applicationsData.map(a => ({ ...a, priority: getPriority(a) }));
-        let scopedEnriched = enriched;
-        if (currentSahayak) {
-           scopedEnriched = enriched.filter(a => a.sahayak_id === currentSahayak.sahayak_id);
-        }
-
         const seen = new Set(); const grouped = [];
-        for (const a of scopedEnriched) {
+        for (const a of enriched) {
           if ((a.status === 'Applied' || a.status === 'Under Scrutiny') && !seen.has(a.farmer_id)) {
             seen.add(a.farmer_id); grouped.push(a);
           }
@@ -75,20 +57,20 @@ const SahayakDashboard = () => {
         }
         setEligibleFarmers(grouped);
         setSummary({
-          total_applications: scopedEnriched.length,
+          total_applications: enriched.length,
           by_status: {
-            Applied: scopedEnriched.filter(a => a.status === 'Applied').length,
-            'Under Scrutiny': scopedEnriched.filter(a => a.status === 'Under Scrutiny').length,
-            Approved: scopedEnriched.filter(a => a.status === 'Approved').length,
-            Rejected: scopedEnriched.filter(a => a.status === 'Rejected').length,
+            Applied: enriched.filter(a => a.status === 'Applied').length,
+            'Under Scrutiny': enriched.filter(a => a.status === 'Under Scrutiny').length,
+            Approved: enriched.filter(a => a.status === 'Approved').length,
+            Rejected: enriched.filter(a => a.status === 'Rejected').length,
           },
           by_priority: {
-            HIGH: scopedEnriched.filter(a => a.priority === 'HIGH').length,
-            MEDIUM: scopedEnriched.filter(a => a.priority === 'MEDIUM').length,
-            NORMAL: scopedEnriched.filter(a => a.priority === 'NORMAL').length,
-            LOW: scopedEnriched.filter(a => a.priority === 'LOW').length,
+            HIGH: enriched.filter(a => a.priority === 'HIGH').length,
+            MEDIUM: enriched.filter(a => a.priority === 'MEDIUM').length,
+            NORMAL: enriched.filter(a => a.priority === 'NORMAL').length,
+            LOW: enriched.filter(a => a.priority === 'LOW').length,
           },
-          fraud_alerts: scopedEnriched.filter(a => (a.rejection_reason || '').toLowerCase().includes('duplicate')).length,
+          fraud_alerts: enriched.filter(a => (a.rejection_reason || '').toLowerCase().includes('duplicate')).length,
         });
         setApiOnline(false);
       } finally {
@@ -96,7 +78,7 @@ const SahayakDashboard = () => {
       }
     };
     load();
-  }, [currentSahayak]);
+  }, []);
 
   const handleFarmerClick = async (app) => {
     if (apiOnline) {
@@ -109,10 +91,8 @@ const SahayakDashboard = () => {
     setSelectedApp({ ...app, priority: getPriority(app), daysSince: getDaysSince(app.application_date) });
   };
 
-  const displayName = currentSahayak ? currentSahayak.name : 'Sahayak Krushi Adhikari';
-  const displayLocation = currentSahayak 
-      ? `Assigned: ${currentMandal?.name} Mandal` 
-      : 'Assigned: 5 Villages';
+  const displayName = 'Sahayak Krushi Adhikari';
+  const displayLocation = 'Assigned: 5 Villages';
 
   return (
     <div className="flex-col gap-6 animate-fade-in">
