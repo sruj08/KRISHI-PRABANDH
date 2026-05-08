@@ -4,47 +4,23 @@
    ========================================================= */
 
 export const CAO_PROFILE = {
-  name: 'Rajendra Kulkarni',
+  name: 'Prakash Shinde',
   designation: 'Mandal Krushi Adhikari (CAO)',
-  mandal: 'Haveli Mandal',
+  mandal: 'Wagholi Mandal',
   district: 'Pune',
-  jurisdiction: '30 Villages',
-  employee_id: 'MKA-PNE-0047',
-  circle: 'Circle 3 — Haveli',
+  jurisdiction: '6 Villages',
+  employee_id: 'MKA-PNE-0082',
+  circle: 'Circle 2 — Wagholi',
 };
 
-/* ---------- 30 Villages with Pendency Data ---------- */
+/* ---------- 6 Villages in Wagholi Mandal ---------- */
 export const VILLAGES = [
-  { id: 'V01', name: 'Uruli Devachi', lat: 18.5012, lng: 74.0183, pending: 4,  sahayak: 'Ramesh Jadhav',   circle: 1, overdue: 0 },
-  { id: 'V02', name: 'Kesnand',       lat: 18.5210, lng: 74.0410, pending: 8,  sahayak: 'Ramesh Jadhav',   circle: 1, overdue: 1 },
-  { id: 'V03', name: 'Wagholi',       lat: 18.5607, lng: 73.9859, pending: 22, sahayak: 'Suresh Mane',     circle: 2, overdue: 5 },
-  { id: 'V04', name: 'Lohegaon',      lat: 18.5935, lng: 73.9229, pending: 37, sahayak: 'Suresh Mane',     circle: 2, overdue: 12 },
-  { id: 'V05', name: 'Vishrantwadi',  lat: 18.5806, lng: 73.9010, pending: 6,  sahayak: 'Anil Shinde',     circle: 3, overdue: 0 },
-  { id: 'V06', name: 'Dhanori',       lat: 18.5948, lng: 73.8886, pending: 11, sahayak: 'Anil Shinde',     circle: 3, overdue: 2 },
-  { id: 'V07', name: 'Charholi',      lat: 18.6212, lng: 73.9457, pending: 45, sahayak: 'Manoj Patil',     circle: 4, overdue: 18 },
-  { id: 'V08', name: 'Bhosari',       lat: 18.6289, lng: 73.8551, pending: 3,  sahayak: 'Anil Shinde',     circle: 3, overdue: 0 },
-  { id: 'V09', name: 'Moshi',         lat: 18.6443, lng: 73.8603, pending: 19, sahayak: 'Manoj Patil',     circle: 4, overdue: 4 },
-  { id: 'V10', name: 'Chikhali',      lat: 18.6553, lng: 73.8238, pending: 28, sahayak: 'Manoj Patil',     circle: 4, overdue: 9 },
-  { id: 'V11', name: 'Talawade',      lat: 18.6610, lng: 73.7950, pending: 7,  sahayak: 'Priya Desai',     circle: 5, overdue: 0 },
-  { id: 'V12', name: 'Ravet',         lat: 18.6407, lng: 73.7605, pending: 14, sahayak: 'Priya Desai',     circle: 5, overdue: 3 },
-  { id: 'V13', name: 'Punawale',      lat: 18.6183, lng: 73.7497, pending: 9,  sahayak: 'Priya Desai',     circle: 5, overdue: 1 },
-  { id: 'V14', name: 'Wakad',         lat: 18.5979, lng: 73.7640, pending: 5,  sahayak: 'Ramesh Jadhav',   circle: 1, overdue: 0 },
-  { id: 'V15', name: 'Pimple Saudagar',lat: 18.6034, lng: 73.7885, pending: 16, sahayak: 'Suresh Mane',    circle: 2, overdue: 6 },
-  { id: 'V16', name: 'Sangvi',        lat: 18.5791, lng: 73.7980, pending: 2,  sahayak: 'Anil Shinde',     circle: 3, overdue: 0 },
-  { id: 'V17', name: 'Aundh',         lat: 18.5589, lng: 73.8083, pending: 33, sahayak: 'Manoj Patil',     circle: 4, overdue: 11 },
-  { id: 'V18', name: 'Baner',         lat: 18.5590, lng: 73.7868, pending: 1,  sahayak: 'Priya Desai',     circle: 5, overdue: 0 },
-  { id: 'V19', name: 'Pashan',        lat: 18.5355, lng: 73.8009, pending: 12, sahayak: 'Ramesh Jadhav',   circle: 1, overdue: 2 },
-  { id: 'V20', name: 'Bavdhan',       lat: 18.5220, lng: 73.7770, pending: 7,  sahayak: 'Suresh Mane',     circle: 2, overdue: 1 },
-  { id: 'V21', name: 'Kothrud',       lat: 18.5074, lng: 73.8157, pending: 41, sahayak: 'Suresh Mane',     circle: 2, overdue: 15 },
-  { id: 'V22', name: 'Warje',         lat: 18.4861, lng: 73.8171, pending: 10, sahayak: 'Anil Shinde',     circle: 3, overdue: 2 },
-  { id: 'V23', name: 'Sinhagad Road', lat: 18.4650, lng: 73.8050, pending: 26, sahayak: 'Manoj Patil',     circle: 4, overdue: 8 },
-  { id: 'V24', name: 'Nanded',        lat: 18.4459, lng: 73.8196, pending: 5,  sahayak: 'Priya Desai',     circle: 5, overdue: 0 },
-  { id: 'V25', name: 'Ambegaon',      lat: 18.4602, lng: 73.7869, pending: 18, sahayak: 'Ramesh Jadhav',   circle: 1, overdue: 3 },
-  { id: 'V26', name: 'Shivane',       lat: 18.4741, lng: 73.7969, pending: 8,  sahayak: 'Suresh Mane',     circle: 2, overdue: 0 },
-  { id: 'V27', name: 'Katraj',        lat: 18.4535, lng: 73.8535, pending: 31, sahayak: 'Anil Shinde',     circle: 3, overdue: 10 },
-  { id: 'V28', name: 'Kondhwa',       lat: 18.4657, lng: 73.8796, pending: 14, sahayak: 'Manoj Patil',     circle: 4, overdue: 4 },
-  { id: 'V29', name: 'Wanowrie',      lat: 18.4907, lng: 73.9003, pending: 6,  sahayak: 'Priya Desai',     circle: 5, overdue: 1 },
-  { id: 'V30', name: 'Hadapsar',      lat: 18.5018, lng: 73.9258, pending: 23, sahayak: 'Ramesh Jadhav',   circle: 1, overdue: 7 },
+  { id: 'V01', name: 'Wagholi',       lat: 18.5807, lng: 73.9859, pending: 12, sahayak: 'Suresh Mane',     overdue: 2 },
+  { id: 'V02', name: 'Lohegaon',      lat: 18.5935, lng: 73.9229, pending: 5,  sahayak: 'Suresh Mane',     overdue: 0 },
+  { id: 'V03', name: 'Dhanori',       lat: 18.5948, lng: 73.8886, pending: 8,  sahayak: 'Anil Shinde',     overdue: 1 },
+  { id: 'V04', name: 'Kharadi',       lat: 18.5538, lng: 73.9436, pending: 22, sahayak: 'Anil Shinde',     overdue: 4 },
+  { id: 'V05', name: 'Vadgaon Sheri', lat: 18.5522, lng: 73.9272, pending: 6,  sahayak: 'Priya Desai',     overdue: 0 },
+  { id: 'V06', name: 'Kesnand',       lat: 18.5210, lng: 74.0410, pending: 18, sahayak: 'Priya Desai',     overdue: 3 },
 ];
 
 /* ---------- AI Triage Queue ---------- */
@@ -158,67 +134,41 @@ export const TRIAGE_QUEUE = [
   },
 ];
 
-/* ---------- Fertilizer Shops (Krushi Seva Kendra) ---------- */
+/* ---------- Fertilizer Shops in Wagholi Mandal ---------- */
 export const FERTILIZER_SHOPS = [
   { id: 'KSK-001', name: 'Jai Kisan Agro Centre',    village: 'Wagholi',     owner: 'Dinesh Patil',   lat: 18.5607, lng: 73.9859, last_inspected: '2025-12-10', license: 'LIC-PNE-1201', stock_complaints: 2 },
   { id: 'KSK-002', name: 'Mauli Krushi Seva',         village: 'Lohegaon',    owner: 'Ramkrishna More',lat: 18.5935, lng: 73.9229, last_inspected: '2026-04-01', license: 'LIC-PNE-1342', stock_complaints: 0 },
-  { id: 'KSK-003', name: 'Shree Ganesh Seeds',        village: 'Charholi',    owner: 'Bhagwan Kale',   lat: 18.6212, lng: 73.9457, last_inspected: '2026-01-05', license: 'LIC-PNE-0891', stock_complaints: 4 },
-  { id: 'KSK-004', name: 'Bharat Agri Kendra',        village: 'Bhosari',     owner: 'Santosh Tupe',   lat: 18.6289, lng: 73.8551, last_inspected: '2026-04-20', license: 'LIC-PNE-1567', stock_complaints: 0 },
-  { id: 'KSK-005', name: 'Rahi Beej Bhandar',         village: 'Moshi',       owner: 'Sunita Gore',    lat: 18.6443, lng: 73.8603, last_inspected: '2025-11-22', license: 'LIC-PNE-0754', stock_complaints: 5 },
-  { id: 'KSK-006', name: 'Kisanmitra Agro Shop',      village: 'Chikhali',    owner: 'Ramesh Borde',   lat: 18.6553, lng: 73.8238, last_inspected: '2026-02-14', license: 'LIC-PNE-1123', stock_complaints: 1 },
-  { id: 'KSK-007', name: 'Annadata Kendra',           village: 'Talawade',    owner: 'Priya Jadhav',   lat: 18.6610, lng: 73.7950, last_inspected: '2026-04-15', license: 'LIC-PNE-1689', stock_complaints: 0 },
-  { id: 'KSK-008', name: 'Sai Agricultural Store',    village: 'Ravet',       owner: 'Shyam Nimkar',   lat: 18.6407, lng: 73.7605, last_inspected: '2026-03-02', license: 'LIC-PNE-0967', stock_complaints: 1 },
-  { id: 'KSK-009', name: 'Vishwas Agro Traders',      village: 'Aundh',       owner: 'Vikas Dhole',    lat: 18.5589, lng: 73.8083, last_inspected: '2025-10-30', license: 'LIC-PNE-0445', stock_complaints: 7 },
-  { id: 'KSK-010', name: 'Nutan Seeds & Fertilizers', village: 'Katraj',      owner: 'Nalini Pawar',   lat: 18.4535, lng: 73.8535, last_inspected: '2026-04-10', license: 'LIC-PNE-1801', stock_complaints: 0 },
+  { id: 'KSK-003', name: 'Kharadi Agro Traders',      village: 'Kharadi',     owner: 'Vikas Dhole',    lat: 18.5538, lng: 73.9436, last_inspected: '2025-10-30', license: 'LIC-PNE-0445', stock_complaints: 7 },
+  { id: 'KSK-004', name: 'Nutan Seeds & Fertilizers', village: 'Kesnand',      owner: 'Nalini Pawar',   lat: 18.5210, lng: 74.0410, last_inspected: '2026-04-10', license: 'LIC-PNE-1801', stock_complaints: 0 },
 ];
 
-/* ---------- Krishi Sahayak Accountability Matrix ---------- */
+/* ---------- Krishi Sahayak Accountability Matrix (3 Sahayaks in Wagholi Mandal) ---------- */
 export const SAHAYAKS = [
   {
-    id: 'KS-001', name: 'Ramesh Jadhav', circle: 1,
-    villages: ['Uruli Devachi', 'Kesnand', 'Wakad', 'Pashan', 'Ambegaon', 'Hadapsar'],
-    verifications_week: 40, avg_days: 2.1,
-    total_pending: 42, overdue_15d: 3,
-    status: 'good',
-    last_field_visit: '2026-05-03',
-    whatsapp: '+91-9876543210',
-    trend: [32, 35, 38, 40, 40, 40, 40],
-  },
-  {
     id: 'KS-002', name: 'Suresh Mane', circle: 2,
-    villages: ['Wagholi', 'Lohegaon', 'Pimple Saudagar', 'Bavdhan', 'Kothrud', 'Shivane'],
+    villages: ['Wagholi', 'Lohegaon'],
     verifications_week: 12, avg_days: 8.4,
-    total_pending: 100, overdue_15d: 22,
+    total_pending: 17, overdue_15d: 2,
     status: 'warning',
     last_field_visit: '2026-04-29',
     whatsapp: '+91-9876543211',
     trend: [20, 18, 15, 14, 13, 12, 12],
   },
   {
-    id: 'KS-003', name: 'Anil Shinde', circle: 3,
-    villages: ['Vishrantwadi', 'Dhanori', 'Bhosari', 'Sangvi', 'Warje', 'Katraj'],
+    id: 'KS-003', name: 'Anil Shinde', circle: 2,
+    villages: ['Dhanori', 'Kharadi'],
     verifications_week: 28, avg_days: 3.5,
-    total_pending: 41, overdue_15d: 4,
+    total_pending: 30, overdue_15d: 5,
     status: 'good',
     last_field_visit: '2026-05-02',
     whatsapp: '+91-9876543212',
     trend: [25, 26, 28, 27, 29, 28, 28],
   },
   {
-    id: 'KS-004', name: 'Manoj Patil', circle: 4,
-    villages: ['Charholi', 'Moshi', 'Chikhali', 'Aundh', 'Sinhagad Road', 'Kondhwa', 'Hadapsar'],
-    verifications_week: 8, avg_days: 11.2,
-    total_pending: 137, overdue_15d: 37,
-    status: 'critical',
-    last_field_visit: '2026-04-25',
-    whatsapp: '+91-9876543213',
-    trend: [22, 20, 15, 12, 10, 9, 8],
-  },
-  {
-    id: 'KS-005', name: 'Priya Desai', circle: 5,
-    villages: ['Talawade', 'Ravet', 'Punawale', 'Baner', 'Nanded', 'Wanowrie'],
+    id: 'KS-005', name: 'Priya Desai', circle: 2,
+    villages: ['Vadgaon Sheri', 'Kesnand'],
     verifications_week: 35, avg_days: 1.8,
-    total_pending: 35, overdue_15d: 1,
+    total_pending: 24, overdue_15d: 3,
     status: 'excellent',
     last_field_visit: '2026-05-03',
     whatsapp: '+91-9876543214',
@@ -232,7 +182,7 @@ export const PMFBY_EVENTS = [
     id: 'PMFBY-E01',
     event: 'Unseasonal Hailstorm',
     date: '2026-04-12',
-    affected_villages: ['Charholi', 'Moshi', 'Chikhali', 'Wagholi', 'Lohegaon'],
+    affected_villages: ['Wagholi', 'Lohegaon', 'Dhanori'],
     total_claims: 318,
     crop: 'Wheat (Rabi)',
     ndvi_before: 0.72,
@@ -254,7 +204,7 @@ export const PMFBY_EVENTS = [
     id: 'PMFBY-E02',
     event: 'Drought (Water Deficit)',
     date: '2026-03-20',
-    affected_villages: ['Nanded', 'Sinhagad Road', 'Ambegaon'],
+    affected_villages: ['Kharadi', 'Vadgaon Sheri', 'Kesnand'],
     total_claims: 94,
     crop: 'Sugarcane (Kharif)',
     ndvi_before: 0.61,
@@ -274,14 +224,14 @@ export const PMFBY_EVENTS = [
 
 /* ---------- Dashboard KPIs ---------- */
 export const DASHBOARD_KPIS = {
-  total_pending:       487,
+  total_pending:       71,
   red_queue:           3,
   yellow_queue:        3,
   green_queue:         5,
-  fraud_prevented:     '₹3,05,000',
+  fraud_prevented:     '₹1,05,000',
   avg_approval_days:   4.2,
-  shops_overdue:       4,
-  sahayaks_critical:   2,
+  shops_overdue:       2,
+  sahayaks_critical:   1,
   pmfby_pending:       318,
-  total_disbursed:     '₹18.4 Cr',
+  total_disbursed:     '₹4.4 Cr',
 };

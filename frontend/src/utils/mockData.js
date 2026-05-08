@@ -22,6 +22,12 @@ export const MOCK_USERS = {
     role: "cao",
     name: "Rajendra Kulkarni",
     agristack_id: "MKA-PNE-0047"
+  },
+  tao: {
+    role: "tao",
+    name: "Suresh Deshmukh",
+    agristack_id: "TAO-PNE-0012",
+    taluka_id: "T001"
   }
 };
 

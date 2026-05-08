@@ -11,6 +11,7 @@ const LandingPage = () => {
     login(MOCK_USERS[role]);
     if (role === 'farmer') navigate('/farmer');
     else if (role === 'cao') navigate('/cao');
+    else if (role === 'tao') navigate('/tao');
     else navigate('/officer');
   };
 
@@ -87,6 +88,31 @@ const LandingPage = () => {
             <div>CAO Intelligence Dashboard</div>
             <div style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.7)', marginTop: '3px' }}>
               Circle Agriculture Officer (Mandal Adhikari) — Rajendra Kulkarni
+            </div>
+          </div>
+          <span style={{
+            marginLeft: 'auto', background: '#ff6b6b', color: '#fff',
+            fontSize: '10px', fontWeight: 800, padding: '3px 8px',
+            borderRadius: '20px', flexShrink: 0,
+          }}>HACKATHON 🚀</span>
+        </button>
+
+        {/* TAO — Taluka Agriculture Officer */}
+        <button
+          id="login-tao"
+          onClick={() => handleLogin('tao')}
+          style={{
+            height: '80px', fontSize: '15px', fontWeight: 800,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+            background: 'linear-gradient(135deg,#2b0f4c,#5c1a8a,#8e24aa)', color: '#fff',
+            border: '1px solid rgba(142,36,170,0.6)', borderRadius: '12px', cursor: 'pointer',
+            boxShadow: '0 0 30px rgba(142,36,170,0.4)',
+          }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>admin_panel_settings</span>
+          <div style={{ textAlign: 'left' }}>
+            <div>TAO Intelligence Dashboard</div>
+            <div style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.7)', marginTop: '3px' }}>
+              Taluka Agriculture Officer — Suresh Deshmukh
             </div>
           </div>
           <span style={{

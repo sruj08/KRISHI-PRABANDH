@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Polygon } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { VILLAGES, FERTILIZER_SHOPS } from '../../../utils/caoMockData';
 
@@ -18,8 +18,18 @@ const ActionMap = () => {
   const [selected, setSelected] = useState(null);
   const [showShops, setShowShops] = useState(false);
 
-  // Center of the mandal approximately
-  const center = [18.55, 73.85];
+  // Center of Wagholi Mandal
+  const center = [18.57, 73.95];
+
+  // Geofence polygon for Wagholi Mandal
+  const MANDAL_BOUNDARY = [
+    [18.60, 73.87],
+    [18.60, 74.00],
+    [18.55, 74.05],
+    [18.51, 74.05],
+    [18.54, 73.90],
+    [18.58, 73.87]
+  ];
 
   return (
     <div className="map-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 'var(--sp-2)' }}>
@@ -47,6 +57,12 @@ const ActionMap = () => {
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+          {/* Mandal Geofence Boundary */}
+          <Polygon 
+            positions={MANDAL_BOUNDARY} 
+            pathOptions={{ color: '#0055A4', fillColor: '#0055A4', fillOpacity: 0.1, weight: 2, dashArray: '5, 5' }} 
           />
 
           {/* Village Circles */}

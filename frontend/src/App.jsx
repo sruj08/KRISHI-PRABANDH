@@ -18,6 +18,7 @@ import FarmerDashboard from './pages/farmer/FarmerDashboard';
 import SahayakDashboard from './pages/officer/SahayakDashboard';
 import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
+import TAODashboard from './pages/tao/TAODashboard';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -32,6 +33,7 @@ const DashboardRouter = () => {
   const { user } = useAuth();
   if (user?.role === 'farmer') return <Navigate to="/farmer" replace />;
   if (user?.role === 'cao')    return <Navigate to="/cao" replace />;
+  if (user?.role === 'tao')    return <Navigate to="/tao" replace />;
   return <Navigate to="/officer" replace />;
 };
 
@@ -48,6 +50,7 @@ const App = () => {
           
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/" element={<DashboardRouter />} />
+            <Route path="/tao" element={<TAODashboard />} />
             <Route path="/officer" element={<SahayakDashboard />} />
             <Route path="/mandal" element={<MandalDashboard />} />
             <Route path="/applications" element={<Applications />} />
