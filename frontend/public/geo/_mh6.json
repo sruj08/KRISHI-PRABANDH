@@ -1,0 +1,612 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-05-09T04:28:55Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "relation",
+  "id": 10347865,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Karjat",
+    "name:mr": "कर्जत",
+    "ref:LGD:subdistrict": "4213",
+    "type": "boundary",
+    "wikidata": "Q6371238",
+    "wikipedia": "en:Karjat taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10347866,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Shrigonda",
+    "name:mr": "श्रीगोंदा",
+    "ref:LGD:subdistrict": "4212",
+    "type": "boundary",
+    "wikidata": "Q7503961",
+    "wikipedia": "en:Shrigonda taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10347867,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Parner",
+    "name:mr": "पारनेर",
+    "ref:LGD:subdistrict": "4211",
+    "type": "boundary",
+    "wikidata": "Q3632263",
+    "wikipedia": "en:Parner taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10347868,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Akola",
+    "name:mr": "अकोला",
+    "ref:LGD:subdistrict": "4201",
+    "type": "boundary",
+    "wikidata": "Q4701523",
+    "wikipedia": "en:Akole taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10347869,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Sangamner",
+    "name:mr": "संगमनेर",
+    "ref:LGD:subdistrict": "4202",
+    "type": "boundary",
+    "wikidata": "Q17088523",
+    "wikipedia": "en:Sangamner taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10347870,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Rahuri",
+    "name:mr": "राहुरी",
+    "ref:LGD:subdistrict": "4210",
+    "type": "boundary",
+    "wikidata": "Q7283634",
+    "wikipedia": "en:Rahuri taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10347872,
+  "tags": {
+    "admin_level": "6",
+    "alt_name": "Nagar Taluka",
+    "alt_name:en": "Nagar Taluka",
+    "boundary": "administrative",
+    "name": "Nagar Subdistrict",
+    "name:en": "Nagar Subdistrict",
+    "name:hi": "नगर तहसील",
+    "name:mr": "नगर तालुका",
+    "old_name": "Ahmednagar",
+    "old_name:en": "Ahmednagar",
+    "old_name:mr": "अहमदनगर",
+    "ref:LGD:subdistrict": "4209",
+    "type": "boundary",
+    "wikidata": "Q6958517",
+    "wikipedia": "en:Nagar taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10347873,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Pathardi",
+    "name:mr": "पाथर्डी",
+    "ref:LGD:subdistrict": "4208",
+    "type": "boundary",
+    "wikidata": "Q7144715",
+    "wikipedia": "en:Pathardi taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10347875,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Nevasa",
+    "name:mr": "नेवासा",
+    "ref:LGD:subdistrict": "4206",
+    "type": "boundary",
+    "wikidata": "Q13652773",
+    "wikipedia": "en:Nevasa taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10348275,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Ashti",
+    "name:mr": "आष्टी",
+    "ref:LGD:subdistrict": "4215",
+    "type": "boundary",
+    "wikidata": "Q13115819"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351345,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Kalyan Subdistrict",
+    "name:en": "Kalyan Subdistrict",
+    "name:mr": "कल्याण तालुका",
+    "ref:LGD:subdistrict": "4168",
+    "type": "boundary",
+    "wikidata": "Q6354875",
+    "wikipedia": "en:Kalyan taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351347,
+  "tags": {
+    "admin_level": "6",
+    "alt_name": "Ambarnath",
+    "boundary": "administrative",
+    "name": "Ambernath Subdistrict",
+    "name:en": "Ambernath Subdistrict",
+    "name:mr": "अंबरनाथ तालुका",
+    "ref:LGD:subdistrict": "4170",
+    "type": "boundary",
+    "wikidata": "Q19803832",
+    "wikipedia": "en:Ambarnath taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351348,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Murbad Subdistrict",
+    "name:en": "Murbad Subdistrict",
+    "name:mr": "मुरबाड तालुका",
+    "ref:LGD:subdistrict": "4171",
+    "type": "boundary",
+    "wikidata": "Q12938862",
+    "wikipedia": "en:Murbad taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351349,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Shahapur Subdistrict",
+    "name:en": "Shahapur Subdistrict",
+    "name:mr": "शहापूर तालुका",
+    "name:uk": "Шагапур",
+    "ref:LGD:subdistrict": "4167",
+    "type": "boundary",
+    "wikidata": "Q12943857",
+    "wikipedia": "en:Shahapur taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351618,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Indapur",
+    "name:mr": "इंदापूर",
+    "ref:LGD:subdistrict": "4200",
+    "type": "boundary",
+    "wikidata": "Q6015690",
+    "wikipedia": "en:Indapur taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351619,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Shirur",
+    "name:mr": "शिरूर",
+    "ref:LGD:subdistrict": "4189",
+    "type": "boundary",
+    "wikidata": "Q7499003",
+    "wikipedia": "en:Shirur taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351620,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Daund",
+    "name:mr": "दौंड",
+    "ref:LGD:subdistrict": "4195",
+    "type": "boundary",
+    "wikidata": "Q1194806",
+    "wikipedia": "en:Daund taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351621,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Baramati",
+    "name:mr": "बारामती",
+    "ref:LGD:subdistrict": "4199",
+    "type": "boundary",
+    "wikidata": "Q4858311",
+    "wikipedia": "en:Baramati taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351622,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Purandhar",
+    "name:mr": "पुरंदर",
+    "ref:LGD:subdistrict": "4196",
+    "type": "boundary",
+    "wikidata": "Q7260837",
+    "wikipedia": "en:Purandar taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351623,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Bhor",
+    "name:mr": "भोर",
+    "ref:LGD:subdistrict": "4198",
+    "type": "boundary",
+    "wikidata": "Q4902048",
+    "wikipedia": "en:Bhor taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351624,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Velhe",
+    "name:mr": "वेल्हे",
+    "ref:LGD:subdistrict": "4197",
+    "type": "boundary",
+    "wikidata": "Q7918914",
+    "wikipedia": "en:Velhe taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351625,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Mulshi Subdistrict",
+    "name:en": "Mulshi Subdistrict",
+    "name:mr": "मुळशी तालुका",
+    "ref:LGD:subdistrict": "4192",
+    "type": "boundary",
+    "wikidata": "Q6934339",
+    "wikipedia": "en:Mulshi taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351626,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Pune City Subdistrict",
+    "name:ar": "مدينة بونه",
+    "name:en": "Pune City Subdistrict",
+    "name:ko": "푸네",
+    "name:mr": "पुणे शहर तालुका",
+    "name:ur": "شہر پونے",
+    "ref:LGD:subdistrict": "4194",
+    "type": "boundary",
+    "wikidata": "Q7260101"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351627,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Haveli Subdistrict",
+    "name:en": "Haveli Subdistrict",
+    "name:mr": "हवेली तालुका",
+    "ref:LGD:subdistrict": "4193",
+    "type": "boundary",
+    "wikidata": "Q3309810",
+    "wikipedia": "en:Haveli taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351628,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Mawal",
+    "name:mr": "मावळ",
+    "ref:LGD:subdistrict": "4191",
+    "type": "boundary",
+    "wikidata": "Q6794120",
+    "wikipedia": "en:Maval taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351629,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Khed",
+    "name:mr": "खेड",
+    "ref:LGD:subdistrict": "4190",
+    "type": "boundary",
+    "wikidata": "Q6401178",
+    "wikipedia": "en:Khed taluka, Pune"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351630,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Ambegaon",
+    "name:mr": "आंबेगाव",
+    "ref:LGD:subdistrict": "4188",
+    "type": "boundary",
+    "wikidata": "Q4741195",
+    "wikipedia": "en:Ambegaon taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10351631,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Junnar",
+    "name:mr": "जुन्नर",
+    "ref:LGD:subdistrict": "4187",
+    "type": "boundary",
+    "wikidata": "Q12429090",
+    "wikipedia": "en:Junnar taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10352004,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Malshiras",
+    "name:mr": "माळशिरस",
+    "ref:LGD:subdistrict": "4250",
+    "type": "boundary",
+    "wikidata": "Q123267195"
+  }
+},
+{
+  "type": "relation",
+  "id": 10352005,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Karmala",
+    "name:mr": "करमाळा",
+    "ref:LGD:subdistrict": "4244",
+    "type": "boundary",
+    "wikidata": "Q17064102",
+    "wikipedia": "en:Karmala Taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10353538,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Poladpur Taluka",
+    "name:mr": "पोलादपूर तालुका",
+    "ref:LGD:subdistrict": "4186",
+    "type": "boundary",
+    "wikidata": "Q13118893",
+    "wikipedia": "en:Poladpur taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10353539,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Mahad Taluka",
+    "name:mr": "महाड तालुका",
+    "ref:LGD:subdistrict": "4185",
+    "type": "boundary",
+    "wikidata": "Q19810956",
+    "wikipedia": "en:Mahad taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10353540,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Mangaon Taluka",
+    "name:mr": "माणगाव तालुका",
+    "ref:LGD:subdistrict": "4181",
+    "type": "boundary",
+    "wikidata": "Q19811320",
+    "wikipedia": "en:Mangaon taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10353544,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Roha Taluka",
+    "name:mr": "रोहा तालुका",
+    "ref:LGD:subdistrict": "4179",
+    "type": "boundary",
+    "wikidata": "Q19812970",
+    "wikipedia": "en:Roha taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10353546,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Sudhagad Taluka",
+    "name:mr": "सुधागड तालुका",
+    "ref:LGD:subdistrict": "4180",
+    "type": "boundary",
+    "wikidata": "Q20584128"
+  }
+},
+{
+  "type": "relation",
+  "id": 10353550,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Khalapur Taluka",
+    "name:mr": "खालापूर तालुका",
+    "ref:LGD:subdistrict": "4175",
+    "type": "boundary",
+    "wikidata": "Q13116763",
+    "wikipedia": "en:Khalapur taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10353551,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Karjat Taluka",
+    "name:mr": "कर्जत तालुका",
+    "ref:LGD:subdistrict": "4174",
+    "type": "boundary",
+    "wikidata": "Q24928039",
+    "wikipedia": "en:Karjat taluka, Raigad"
+  }
+},
+{
+  "type": "relation",
+  "id": 10354526,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Wai",
+    "name:mr": "वाई",
+    "ref:LGD:subdistrict": "4256",
+    "type": "boundary",
+    "wikidata": "Q2772584"
+  }
+},
+{
+  "type": "relation",
+  "id": 10354582,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Koregaon",
+    "name:mr": "कोरेगाव",
+    "ref:LGD:subdistrict": "4261",
+    "type": "boundary",
+    "wikidata": "Q2729340",
+    "wikipedia": "en:Koregaon taluka"
+  }
+},
+{
+  "type": "relation",
+  "id": 10354584,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Khandala",
+    "name:mr": "खंडाळा",
+    "ref:LGD:subdistrict": "4257",
+    "type": "boundary",
+    "wikidata": "Q2729575"
+  }
+},
+{
+  "type": "relation",
+  "id": 10354585,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Phaltan",
+    "name:mr": "फलटण",
+    "ref:LGD:subdistrict": "4258",
+    "type": "boundary",
+    "wikidata": "Q2765106"
+  }
+},
+{
+  "type": "relation",
+  "id": 10354708,
+  "tags": {
+    "admin_level": "6",
+    "boundary": "administrative",
+    "name": "Mandangad Taluka",
+    "name:mr": "मंडणगड तालुका",
+    "ref:LGD:subdistrict": "4266",
+    "type": "boundary",
+    "wikidata": "Q24928186",
+    "wikipedia": "en:Mandangad taluka"
+  }
+}
+
+  ]
+}

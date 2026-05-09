@@ -19,6 +19,7 @@ import SahayakDashboard from './pages/officer/SahayakDashboard';
 import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
 import TAODashboard from './pages/tao/TAODashboard';
+import DistrictDashboard from './pages/district/DistrictDashboard';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -34,6 +35,7 @@ const DashboardRouter = () => {
   if (user?.role === 'farmer') return <Navigate to="/farmer" replace />;
   if (user?.role === 'cao')    return <Navigate to="/cao" replace />;
   if (user?.role === 'tao')    return <Navigate to="/tao" replace />;
+  if (user?.role === 'district') return <Navigate to="/district" replace />;
   return <Navigate to="/officer" replace />;
 };
 
@@ -47,6 +49,7 @@ const App = () => {
           <Route path="/login" element={<LandingPage />} />
           <Route path="/farmer" element={<FarmerDashboard />} />
           <Route path="/cao" element={<CAODashboard />} />
+          <Route path="/district" element={<DistrictDashboard />} />
           
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/" element={<DashboardRouter />} />

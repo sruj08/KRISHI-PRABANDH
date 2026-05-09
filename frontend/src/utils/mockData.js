@@ -28,6 +28,12 @@ export const MOCK_USERS = {
     name: "Suresh Deshmukh",
     agristack_id: "TAO-PNE-0012",
     taluka_id: "T001"
+  },
+  district: {
+    role: "district",
+    name: "Dr. Meera Kulkarni",
+    agristack_id: "DSAO-PNE-0001",
+    district_id: "D-PNE"
   }
 };
 

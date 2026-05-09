@@ -12,6 +12,7 @@ const LandingPage = () => {
     if (role === 'farmer') navigate('/farmer');
     else if (role === 'cao') navigate('/cao');
     else if (role === 'tao') navigate('/tao');
+    else if (role === 'district') navigate('/district');
     else navigate('/officer');
   };
 
@@ -95,6 +96,31 @@ const LandingPage = () => {
             fontSize: '10px', fontWeight: 800, padding: '3px 8px',
             borderRadius: '20px', flexShrink: 0,
           }}>HACKATHON 🚀</span>
+        </button>
+
+        {/* DSAO / DAO — District Executive Command Center */}
+        <button
+          id="login-district"
+          onClick={() => handleLogin('district')}
+          style={{
+            height: '80px', fontSize: '15px', fontWeight: 800,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+            background: 'linear-gradient(135deg,#0d2137,#1a365d,#0d47a1)', color: '#fff',
+            border: '1px solid rgba(100,181,246,0.45)', borderRadius: '12px', cursor: 'pointer',
+            boxShadow: '0 0 28px rgba(13,71,161,0.35)',
+          }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>monitoring</span>
+          <div style={{ textAlign: 'left' }}>
+            <div>District Executive Command Center</div>
+            <div style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.72)', marginTop: '3px' }}>
+              DSAO / DAO — Pune · Dr. Meera Kulkarni
+            </div>
+          </div>
+          <span style={{
+            marginLeft: 'auto', background: '#ffb300', color: '#1a237e',
+            fontSize: '10px', fontWeight: 800, padding: '3px 8px',
+            borderRadius: '20px', flexShrink: 0,
+          }}>EXEC</span>
         </button>
 
         {/* TAO — Taluka Agriculture Officer */}
