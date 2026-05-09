@@ -8,7 +8,7 @@ import './Sidebar.css';
 const Sidebar = ({ isOpen }) => {
   const { t, toggleLanguage, lang } = useLanguage();
   const { user, logout } = useAuth();
-  const { currentMandal, currentSahayak } = useHierarchy();
+  const { currentMandal } = useHierarchy();
   const navigate = useNavigate();
 
   const handleLogout = (e) => {
@@ -18,61 +18,60 @@ const Sidebar = ({ isOpen }) => {
   };
 
   const navLinks = [
-    { to: '/',           icon: 'home_work',             label: 'Dashboard' },
-    { to: '/applications', icon: 'assignment_turned_in', label: 'Applications' },
-    { to: '/visit-planner', icon: 'calendar_today',     label: 'Planner' },
-    { to: '/fraud-alerts',  icon: 'report_problem',     label: 'Alerts', badge: 2 },
-    { to: '/advanced-tools', icon: 'construction',      label: 'Advanced Tools' },
+    { to: '/',           icon: 'radar',                 label: 'Command Center' },
+    { to: '/survey',     icon: 'satellite_alt',         label: 'Survey Operations', badge: 'LIVE' },
+    { to: '/geo',        icon: 'map',                   label: 'Geo-Intelligence' },
+    { to: '/ledger',     icon: 'account_balance',       label: 'Compensation Ledger' },
   ];
 
   return (
-    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-      <div className="sidebar-header">
-        <div className="officer-profile">
-          <div className="officer-avatar">
-            <span className="material-symbols-outlined">person</span>
+    <aside className={`sidebar ${isOpen ? 'open' : ''} bg-white border-r border-gray-300 shadow-sm z-40 relative flex flex-col font-body`}>
+      <div className="p-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-sm bg-gray-900 flex items-center justify-center text-white">
+            <span className="material-symbols-outlined text-[18px]">security</span>
           </div>
-          <div className="officer-info">
-            <h3 className="officer-name">{user?.name || 'Sahayak Officer'}</h3>
-            <p className="officer-id" style={{ fontSize: '10px', color: '#888' }}>
-              {user?.agristack_id || 'KS-00000'}
+          <div>
+            <h3 className="text-gray-900 text-[13px] font-bold uppercase tracking-widest">{user?.name || 'OPERATOR_1'}</h3>
+            <p className="text-gray-500 font-mono text-[10px] tracking-wider mt-0.5 flex items-center gap-1.5">
+              ID: {user?.agristack_id || 'OP-X99'}
             </p>
-            {currentMandal && (
-              <p style={{ fontSize: '10px', color: '#2e7d32', fontWeight: 700, margin: '2px 0 0' }}>
-                📍 {currentMandal.name}
-                {currentSahayak && ` › ${currentSahayak.name}`}
-              </p>
-            )}
           </div>
         </div>
       </div>
 
-      <nav className="sidebar-nav">
+      <nav className="flex-1 overflow-y-auto py-4 flex flex-col gap-1 px-2 custom-scrollbar">
         {navLinks.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
-            end={link.to === '/'}
-            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            className={({ isActive }) => 
+              `group flex items-center gap-3 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-none border-l-4 ${
+                isActive 
+                  ? 'bg-primary/5 text-primary border-primary' 
+                  : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-300'
+              }`
+            }
           >
-            <span className="material-symbols-outlined">{link.icon}</span>
-            <span className="link-text">{t(link.label)}</span>
-            {link.badge && <span className="sidebar-badge">{link.badge}</span>}
+            <span className="material-symbols-outlined text-[18px]">{link.icon}</span>
+            <span className="flex-1">{t(link.label)}</span>
+            {link.badge && (
+              <span className="bg-error text-white text-[9px] px-1.5 py-0.5 rounded-sm">
+                {link.badge}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
 
-      <div className="sidebar-footer">
-        <div className="language-toggle">
-          <span className="lang-label">{t("Language")}</span>
-          <button className="btn-outline btn-sm lang-toggle-btn" onClick={toggleLanguage}>
-            {lang === 'en' ? 'मराठी' : 'English'}
-          </button>
-        </div>
-        <a href="#" className="sidebar-link logout-link" onClick={handleLogout}>
-          <span className="material-symbols-outlined">logout</span>
-          <span className="link-text">{t("Logout")}</span>
-        </a>
+      <div className="p-4 border-t border-gray-200 bg-gray-50">
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-error hover:bg-error/5 border-l-4 border-transparent transition-none w-full text-left"
+        >
+          <span className="material-symbols-outlined text-[18px]">power_settings_new</span>
+          <span>SYSTEM LOGOUT</span>
+        </button>
       </div>
     </aside>
   );
