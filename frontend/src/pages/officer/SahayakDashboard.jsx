@@ -6,8 +6,6 @@ import CircularGauge from '../../components/ui/CircularGauge';
 import InsightModal from '../../components/ui/InsightModal';
 import { fetchSummary, fetchEligibleFarmers, fetchApplication } from '../../utils/api';
 
-// Fallback to static data if API is unavailable
-import { applicationsData } from '../../data/applications';
 
 const getDaysSince = (dateStr) => {
   if (!dateStr) return 0;
@@ -45,33 +43,8 @@ const SahayakDashboard = () => {
         setSummary(s);
         setEligibleFarmers(e.results || []);
         setApiOnline(true);
-      } catch {
-        // Fallback to static data
-        const enriched = applicationsData.map(a => ({ ...a, priority: getPriority(a) }));
-        const seen = new Set(); const grouped = [];
-        for (const a of enriched) {
-          if ((a.status === 'Applied' || a.status === 'Under Scrutiny') && !seen.has(a.farmer_id)) {
-            seen.add(a.farmer_id); grouped.push(a);
-          }
-          if (grouped.length >= 8) break;
-        }
-        setEligibleFarmers(grouped);
-        setSummary({
-          total_applications: enriched.length,
-          by_status: {
-            Applied: enriched.filter(a => a.status === 'Applied').length,
-            'Under Scrutiny': enriched.filter(a => a.status === 'Under Scrutiny').length,
-            Approved: enriched.filter(a => a.status === 'Approved').length,
-            Rejected: enriched.filter(a => a.status === 'Rejected').length,
-          },
-          by_priority: {
-            HIGH: enriched.filter(a => a.priority === 'HIGH').length,
-            MEDIUM: enriched.filter(a => a.priority === 'MEDIUM').length,
-            NORMAL: enriched.filter(a => a.priority === 'NORMAL').length,
-            LOW: enriched.filter(a => a.priority === 'LOW').length,
-          },
-          fraud_alerts: enriched.filter(a => (a.rejection_reason || '').toLowerCase().includes('duplicate')).length,
-        });
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
         setApiOnline(false);
       } finally {
         setLoading(false);
@@ -81,14 +54,14 @@ const SahayakDashboard = () => {
   }, []);
 
   const handleFarmerClick = async (app) => {
-    if (apiOnline) {
-      try {
-        const full = await fetchApplication(app.application_id);
-        setSelectedApp({ ...full, priority: getPriority(full), daysSince: getDaysSince(full.application_date) });
-        return;
-      } catch { /* fallback below */ }
+    try {
+      const full = await fetchApplication(app.application_id);
+      setSelectedApp({ ...full, priority: getPriority(full), daysSince: getDaysSince(full.application_date) });
+    } catch (error) {
+      console.error('Failed to load application:', error);
+      // Fallback to basic list data if detailed fetch fails
+      setSelectedApp({ ...app, priority: getPriority(app), daysSince: getDaysSince(app.application_date) });
     }
-    setSelectedApp({ ...app, priority: getPriority(app), daysSince: getDaysSince(app.application_date) });
   };
 
   const displayName = 'Sahayak Krushi Adhikari';
