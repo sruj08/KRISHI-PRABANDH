@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form
 from typing import Optional
 import base64, datetime
-from utils.loader import load_applications, save_applications, find_by_id
+from utils.loader import load_applications, find_by_id
 from models.schemas import UpdateStatusRequest
 from services.workflow import update_status, get_allowed_transitions
 
@@ -83,19 +83,19 @@ async def upload_photo(
     mime = file.content_type or "image/jpeg"
     data_uri = f"data:{mime};base64,{b64}"
 
-    apps = load_applications()
-    for a in apps:
-        if a.get("application_id") == application_id:
-            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
-            a["photo"] = data_uri
-            a["photo_filename"] = file.filename
-            a["photo_uploaded_at"] = timestamp
-            new_remarks = remarks or "Photo uploaded for verification"
-            existing = a.get("remarks", "")
-            a["remarks"] = f"{existing}; {new_remarks}".lstrip("; ")
-            break
+    timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+    new_remarks = remarks or "Photo uploaded for verification"
+    existing = app.get("remarks", "")
+    updated_remarks = f"{existing}; {new_remarks}".lstrip("; ")
+    
+    from utils.loader import supabase
+    supabase.table("applications").update({
+        "photo": data_uri,
+        "photo_filename": file.filename,
+        "photo_uploaded_at": timestamp,
+        "remarks": updated_remarks
+    }).eq("application_id", application_id).execute()
 
-    save_applications(apps)
     return ok({
         "message": "Photo uploaded successfully",
         "application_id": application_id,

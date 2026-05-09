@@ -2,26 +2,17 @@
 services/vistar.py
 Krushi Vistar session analytics and fraud detection service.
 """
-import json
-import os
 from typing import Any
-
-BASE = os.path.join(os.path.dirname(__file__), "..", "data")
-SESSIONS_PATH = os.path.join(BASE, "vistar_sessions.json")
-SAHAYAKS_PATH = os.path.join(BASE, "sahayaks.json")
+from utils.loader import load_sahayaks, fetch_all
 
 FRAUD_THRESHOLD = 0.30   # flag if digital < 30% of reported (>70% mismatch)
 MODERATE_THRESHOLD = 0.65  # flag yellow if digital < 65% of reported
 
-
 def _load_sessions() -> list[dict]:
-    with open(SESSIONS_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
-
+    return fetch_all("vistar_sessions")
 
 def _load_sahayaks() -> list[dict]:
-    with open(SAHAYAKS_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    return load_sahayaks()
 
 
 def _sahayak_name_map() -> dict[str, str]:

@@ -7,11 +7,18 @@
     "dev": "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "dotenv": "^16.0.3",
-    "cors": "^2.8.5"
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
-  }
+  },
+  "description": "A production-style FastAPI backend serving the KrishiPrabandh agricultural scheme processing platform. Uses a JSON flat-file as its data store for portability.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
 }
