@@ -13,144 +13,59 @@ const LandingPage = () => {
     else if (role === 'cao') navigate('/cao');
     else if (role === 'tao') navigate('/tao');
     else if (role === 'district') navigate('/district');
-    else navigate('/officer');
+    else navigate('/survey');
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(160deg, #0d1117 0%, #161b22 60%, #1a2332 100%)',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px',
-    }}>
-      {/* Logo + title */}
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <div style={{
-          margin: '0 auto 16px', width: '80px', height: '80px',
-          background: 'linear-gradient(135deg,#2D6A4F,#40916c)', borderRadius: '20px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 40px rgba(64,145,108,0.4)',
-        }}>
-          <span className="material-symbols-outlined" style={{ color: 'white', fontSize: '44px' }}>agriculture</span>
+    <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-6 font-body">
+      
+      {/* Branding Header */}
+      <div className="text-center mb-12">
+        <div className="mx-auto mb-6 w-16 h-16 bg-primary flex items-center justify-center rounded-sm">
+          <span className="material-symbols-outlined text-white text-3xl">radar</span>
         </div>
-        <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#e6edf3', marginBottom: '6px', letterSpacing: '-0.5px' }}>
-          Krishi Prabandh
+        <h1 className="text-2xl font-bold text-gray-900 tracking-widest uppercase mb-2">
+          Krishi-Prabandh
         </h1>
-        <p style={{ color: '#8b949e', fontSize: '13px' }}>
-          Government of Maharashtra — Agriculture Intelligence Portal
+        <p className="text-xs text-gray-500 uppercase tracking-widest font-mono">
+          Govt. of Maharashtra — Geo-Spatial Intelligence Node
         </p>
       </div>
 
-      {/* Login buttons */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '420px' }}>
+      {/* Login Options Container */}
+      <div className="w-full max-w-md flex flex-col gap-4">
+        
+        <div className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-2 border-b border-gray-300 pb-2">
+          Secure Access Portal
+        </div>
 
-        {/* Farmer */}
-        <button
-          id="login-farmer"
-          onClick={() => handleLogin('farmer')}
-          style={{
-            height: '60px', fontSize: '15px', fontWeight: 700,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-            background: 'linear-gradient(135deg,#2D6A4F,#52b788)', color: '#fff',
-            border: 'none', borderRadius: '12px', cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(45,106,79,0.3)',
-          }}>
-          <span className="material-symbols-outlined">person</span>
-          Enter as Farmer (Ramdas Kamble)
-        </button>
-
-        {/* Krishi Sahayak */}
-        <button
-          id="login-sahayak"
-          onClick={() => handleLogin('officer')}
-          style={{
-            height: '60px', fontSize: '15px', fontWeight: 700,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-            background: 'linear-gradient(135deg,#0055A4,#1976d2)', color: '#fff',
-            border: 'none', borderRadius: '12px', cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(0,85,164,0.3)',
-          }}>
-          <span className="material-symbols-outlined">badge</span>
-          Enter as Krishi Sahayak (Field Officer)
-        </button>
-
-        {/* CAO — Circle Agriculture Officer = Mandal Adhikari */}
-        <button
-          id="login-cao"
-          onClick={() => handleLogin('cao')}
-          style={{
-            height: '80px', fontSize: '15px', fontWeight: 800,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-            background: 'linear-gradient(135deg,#1a0a2e,#4a1272,#6a1b9a)', color: '#fff',
-            border: '1px solid rgba(142,36,170,0.6)', borderRadius: '12px', cursor: 'pointer',
-            boxShadow: '0 0 30px rgba(142,36,170,0.4)',
-          }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>manage_accounts</span>
-          <div style={{ textAlign: 'left' }}>
-            <div>CAO Intelligence Dashboard</div>
-            <div style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.7)', marginTop: '3px' }}>
-              Circle Agriculture Officer (Mandal Adhikari) — Rajendra Kulkarni
+        {[
+          { id: 'farmer', icon: 'person', title: 'Field Initiator', sub: 'Role: Farmer (R. Kamble)' },
+          { id: 'officer', icon: 'badge', title: 'Survey Operator', sub: 'Role: Krishi Sahayak (Field Officer)' },
+          { id: 'cao', icon: 'admin_panel_settings', title: 'Command Level 2', sub: 'Role: Mandal Adhikari (CAO)' },
+          { id: 'tao', icon: 'account_balance', title: 'Taluka Command', sub: 'Role: Taluka Agriculture Officer (TAO)' },
+          { id: 'district', icon: 'language', title: 'Executive Command', sub: 'Role: District Authority (DAO)' },
+        ].map((btn) => (
+          <button
+            key={btn.id}
+            onClick={() => handleLogin(btn.id)}
+            className="w-full bg-white border border-gray-300 p-4 flex items-center gap-4 hover:border-primary hover:bg-primary/5 transition-none rounded-sm group text-left shadow-sm"
+          >
+            <div className={`w-10 h-10 flex items-center justify-center rounded-sm ${btn.id === 'officer' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 group-hover:bg-primary group-hover:text-white'}`}>
+              <span className="material-symbols-outlined">{btn.icon}</span>
             </div>
-          </div>
-          <span style={{
-            marginLeft: 'auto', background: '#ff6b6b', color: '#fff',
-            fontSize: '10px', fontWeight: 800, padding: '3px 8px',
-            borderRadius: '20px', flexShrink: 0,
-          }}>HACKATHON 🚀</span>
-        </button>
-
-        {/* DSAO / DAO — District Executive Command Center */}
-        <button
-          id="login-district"
-          onClick={() => handleLogin('district')}
-          style={{
-            height: '80px', fontSize: '15px', fontWeight: 800,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-            background: 'linear-gradient(135deg,#0d2137,#1a365d,#0d47a1)', color: '#fff',
-            border: '1px solid rgba(100,181,246,0.45)', borderRadius: '12px', cursor: 'pointer',
-            boxShadow: '0 0 28px rgba(13,71,161,0.35)',
-          }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>monitoring</span>
-          <div style={{ textAlign: 'left' }}>
-            <div>District Executive Command Center</div>
-            <div style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.72)', marginTop: '3px' }}>
-              DSAO / DAO — Pune · Dr. Meera Kulkarni
+            <div>
+              <div className="text-sm font-bold text-gray-900 uppercase tracking-wider">{btn.title}</div>
+              <div className="text-[10px] text-gray-500 font-mono mt-0.5">{btn.sub}</div>
             </div>
-          </div>
-          <span style={{
-            marginLeft: 'auto', background: '#ffb300', color: '#1a237e',
-            fontSize: '10px', fontWeight: 800, padding: '3px 8px',
-            borderRadius: '20px', flexShrink: 0,
-          }}>EXEC</span>
-        </button>
+          </button>
+        ))}
 
-        {/* TAO — Taluka Agriculture Officer */}
-        <button
-          id="login-tao"
-          onClick={() => handleLogin('tao')}
-          style={{
-            height: '80px', fontSize: '15px', fontWeight: 800,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-            background: 'linear-gradient(135deg,#2b0f4c,#5c1a8a,#8e24aa)', color: '#fff',
-            border: '1px solid rgba(142,36,170,0.6)', borderRadius: '12px', cursor: 'pointer',
-            boxShadow: '0 0 30px rgba(142,36,170,0.4)',
-          }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>admin_panel_settings</span>
-          <div style={{ textAlign: 'left' }}>
-            <div>TAO Intelligence Dashboard</div>
-            <div style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.7)', marginTop: '3px' }}>
-              Taluka Agriculture Officer — Suresh Deshmukh
-            </div>
-          </div>
-          <span style={{
-            marginLeft: 'auto', background: '#ff6b6b', color: '#fff',
-            fontSize: '10px', fontWeight: 800, padding: '3px 8px',
-            borderRadius: '20px', flexShrink: 0,
-          }}>HACKATHON 🚀</span>
-        </button>
+        <div className="mt-8 text-center text-[10px] font-mono text-gray-500 border-t border-gray-300 pt-4 flex items-center justify-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-success"></span>
+          SYSTEM STATUS: ONLINE • UNCLASSIFIED OPERATIONS ONLY
+        </div>
 
-        <p style={{ textAlign: 'center', fontSize: '11px', color: '#6e7681', marginTop: '8px' }}>
-          Demo Mode — No login credentials required
-        </p>
       </div>
     </div>
   );

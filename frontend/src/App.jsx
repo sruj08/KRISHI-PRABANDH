@@ -6,16 +6,13 @@ import { useAuth } from './context/AuthContext';
 import { HierarchyProvider } from './context/HierarchyContext';
 
 import Applications from './pages/Applications';
-import AdvancedTools from './pages/AdvancedTools';
 import CapturePhoto from './pages/CapturePhoto';
 import ConfirmVerification from './pages/ConfirmVerification';
 import FraudAlerts from './pages/FraudAlerts';
 import SelectTask from './pages/SelectTask';
-import VisitPlanner from './pages/VisitPlanner';
 import LandingPage from './pages/gate/LandingPage';
-import GramSabha from './pages/GramSabha';
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
-import SahayakDashboard from './pages/officer/SahayakDashboard';
+import SurveyOperationsDashboard from './features/survey_operations/SurveyOperationsDashboard';
 import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
 import TAODashboard from './pages/tao/TAODashboard';
@@ -36,7 +33,7 @@ const DashboardRouter = () => {
   if (user?.role === 'cao')    return <Navigate to="/cao" replace />;
   if (user?.role === 'tao')    return <Navigate to="/tao" replace />;
   if (user?.role === 'district') return <Navigate to="/district" replace />;
-  return <Navigate to="/officer" replace />;
+  return <Navigate to="/survey" replace />;
 };
 
 const App = () => {
@@ -53,17 +50,14 @@ const App = () => {
           
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/" element={<DashboardRouter />} />
+            <Route path="/survey" element={<SurveyOperationsDashboard />} />
             <Route path="/tao" element={<TAODashboard />} />
-            <Route path="/officer" element={<SahayakDashboard />} />
             <Route path="/mandal" element={<MandalDashboard />} />
             <Route path="/applications" element={<Applications />} />
-            <Route path="/advanced-tools" element={<AdvancedTools />} />
             <Route path="/capture-photo" element={<CapturePhoto />} />
             <Route path="/confirm-verification" element={<ConfirmVerification />} />
             <Route path="/fraud-alerts" element={<FraudAlerts />} />
             <Route path="/select-task" element={<SelectTask />} />
-            <Route path="/visit-planner" element={<VisitPlanner />} />
-            <Route path="/gram-sabha" element={<GramSabha />} />
           </Route>
           
           {/* Fallback route */}
