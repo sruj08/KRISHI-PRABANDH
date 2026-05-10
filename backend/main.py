@@ -1,40 +1,48 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.applications import router as applications_router
-from app.api.v1.insights import router as insights_router
-from app.api.v1.logs import router as logs_router
-from app.api.v1.gr import router as gr_router
-from app.api.v1.mandals import router as mandals_router
-from app.api.v1.sahayaks import router as sahayaks_router
-from app.api.v1.mka import router as mka_router
+from fastapi.responses import JSONResponse
+
+from api import analytics, approvals, auth, compensation, farms, farmers, health, surveys, users
+from config.settings import get_settings
+from middleware.logging import RequestLoggingMiddleware
+
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
-    title="KrishiPrabandh API v1",
-    description="Agriculture Scheme Processing Backend — Maharashtra Government Simulation",
-    version="2.0.0",
+    title="KRISHI-PRABANDH API",
+    description="Survey-centric agricultural intelligence — FARMER→FARM→SURVEY→EVIDENCE→APPROVAL→COMPENSATION",
+    version="3.0.0",
 )
 
+s = get_settings()
+app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=s.cors_origin_list(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(applications_router, prefix="/api/v1")
-app.include_router(insights_router, prefix="/api/v1")
-app.include_router(logs_router, prefix="/api/v1")
-app.include_router(gr_router, prefix="/api/v1")
-app.include_router(mandals_router, prefix="/api/v1")
-app.include_router(sahayaks_router, prefix="/api/v1")
-app.include_router(mka_router, prefix="/api/v1")
+app.include_router(health.router)
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(farmers.router)
+app.include_router(farms.router)
+app.include_router(surveys.router)
+app.include_router(approvals.router)
+app.include_router(analytics.router)
+app.include_router(compensation.router)
+
 
 @app.get("/", tags=["Health"])
-def health():
-    return {"success": True, "data": {"status": "KrishiPrabandh API v1 is running", "version": "2.0.0"}}
+def root():
+    return JSONResponse(
+        content={
+            "success": True,
+            "message": "KRISHI-PRABANDH API",
+            "data": {"status": "running", "version": "3.0.0"},
+        }
+    )

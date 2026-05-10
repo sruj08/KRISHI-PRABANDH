@@ -1,118 +1,48 @@
-# KrishiPrabandh — Backend (FastAPI)
+# KRISHI-PRABANDH — Backend (FastAPI + Supabase)
 
-A production-style FastAPI backend serving the KrishiPrabandh agricultural scheme processing platform. Uses a JSON flat-file as its data store for portability.
+Survey-centric workflow: **FARMER → FARM → SURVEY → EVIDENCE → APPROVAL → COMPENSATION**.
 
----
+See `BACKEND_REFACTOR.md` for the audit, boundaries, and migration notes.
 
 ## Stack
 
-- **Framework**: FastAPI + Uvicorn
-- **Language**: Python 3.11+
-- **Data store**: `data/applications.json` (read/write via `utils/loader.py`)
-- **Auth**: Stateless (frontend handles session via LocalStorage)
+- FastAPI, Pydantic v2, Uvicorn  
+- Supabase (PostgreSQL) via **service role** server key  
+- JWT auth (HS256) issued by this API  
 
----
-
-## Directory Structure
-
-```
-backend/
-├── main.py                  # FastAPI app, CORS middleware, router registration
-├── requirements.txt         # Python dependencies
-│
-├── routes/
-│   ├── applications.py      # CRUD + status updates + photo upload
-│   ├── insights.py          # Summary stats, priority list, fraud alerts
-│   └── logs.py              # Audit log read/write
-│
-├── services/
-│   ├── workflow.py          # Status transition rules & validation
-│   └── fraud.py             # Fraud detection heuristics
-│
-├── models/
-│   └── schemas.py           # Pydantic request/response models
-│
-├── utils/
-│   └── loader.py            # load_applications / save_applications / find_by_id
-│
-└── data/
-    └── applications.json    # Live flat-file database (source of truth)
-```
-
----
-
-## Running Locally
+## Setup
 
 ```bash
+cd backend
+cp .env.example .env   # fill SUPABASE_* and JWT_SECRET
 pip install -r requirements.txt
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-- API base: `http://localhost:8000`
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+- OpenAPI: `http://localhost:8000/docs`  
+- Health: `GET /healthz`
 
----
-
-## Key Routes
-
-### Applications — `/applications`
-
-| Method | Path                              | Description                              |
-|--------|-----------------------------------|------------------------------------------|
-| GET    | `/applications`                   | List all (supports `status`, `component`, `scheme_category`, `farmer_id`, `limit`, `offset` filters) |
-| GET    | `/applications/{id}`              | Fetch single application + allowed transitions |
-| POST   | `/applications/{id}/status`       | Update status (`new_status`, `remarks`)  |
-| POST   | `/applications/{id}/upload-photo` | Upload field photo (`multipart/form-data`: `file`, optional `remarks`) |
-
-### Insights — `/insights`
-
-| Method | Path                        | Description                        |
-|--------|-----------------------------|------------------------------------|
-| GET    | `/insights/summary`         | Counts by status, recent activity  |
-| GET    | `/insights/priority`        | Priority-ranked application list   |
-| GET    | `/insights/priority/high`   | HIGH priority applications only    |
-| GET    | `/insights/eligible-farmers`| Farmers eligible for schemes       |
-| GET    | `/insights/fraud-alerts`    | Fraud-flagged applications         |
-
-### Logs — `/logs`
-
-| Method | Path    | Description             |
-|--------|---------|-------------------------|
-| GET    | `/logs` | Fetch audit log entries |
-| POST   | `/logs` | Append a log entry      |
-
----
-
-## Photo Upload
-
-`POST /applications/{id}/upload-photo` accepts `multipart/form-data`:
-
-| Field     | Type   | Required | Description                              |
-|-----------|--------|----------|------------------------------------------|
-| `file`    | binary | ✅        | Image file (JPEG/PNG, max 10 MB)         |
-| `remarks` | string | ❌        | Defaults to `"Photo uploaded for verification"` |
-
-The photo is stored as a base64 data-URI inside the application record (`photo` field). Filename and upload timestamp are also recorded.
-
----
-
-## Status Workflow
-
-Valid transitions are enforced in `services/workflow.py`:
+## Layout
 
 ```
-Applied → Under Scrutiny → Approved
-                        → Rejected
-Applied → Rejected
+api/           # Routers — validation + service calls only
+services/      # Workflow & policy
+db/            # Supabase client + repositories
+schemas/       # Pydantic models
+middleware/    # JWT, RBAC helpers, request logging
+config/        # Settings & role constants
+utils/         # Response envelope, helpers
+docs/sql/      # Reference DDL
+tests/
 ```
 
----
+## Environment
 
-## Utility Scripts
+| Variable | Purpose |
+|----------|---------|
+| `SUPABASE_URL` | Project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key (bypasses RLS — enforce auth in API) |
+| `JWT_SECRET` | Signing key for API JWTs |
+| `CORS_ORIGINS` | Comma-separated browser origins |
 
-These scripts in `utils/` were used during initial data setup — they are **not part of the running server**:
-
-- `rewrite.py` — One-time data normalization script
-- `apply_changes.py` — One-time field correction script
-- `add_hidden.py` — One-time field injection script
+Legacy JSON loaders, `applications`, `mandals`, `sahayaks`, and MKA/GR routes have been **removed**.
