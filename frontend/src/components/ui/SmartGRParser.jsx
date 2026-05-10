@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'http://localhost:8000/api/v1';
 
 // ─── Status badge color helper ────────────────────────────────────────────────
 function statusStyle(status) {

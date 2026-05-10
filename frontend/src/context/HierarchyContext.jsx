@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../shared/api/client';
 
 const HierarchyContext = createContext(null);
 
@@ -31,17 +32,11 @@ export const HierarchyProvider = ({ children }) => {
     const load = async () => {
       try {
         const [mRes, sRes] = await Promise.all([
-          fetch('http://localhost:8000/mandals'),
-          fetch('http://localhost:8000/sahayaks'),
+          apiFetch('/mandals'),
+          apiFetch('/sahayaks'),
         ]);
-        if (mRes.ok) {
-          const { data } = await mRes.json();
-          setMandals(data || []);
-        }
-        if (sRes.ok) {
-          const { data } = await sRes.json();
-          setSahayaks(data || []);
-        }
+        setMandals(mRes?.data || []);
+        setSahayaks(sRes?.data || []);
       } catch {
         // API offline — hierarchy still works, just no data
       } finally {
