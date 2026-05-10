@@ -17,6 +17,11 @@ import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
 import TAODashboard from './pages/tao/TAODashboard';
 import DistrictDashboard from './pages/district/DistrictDashboard';
+import AdvancedTools from './pages/AdvancedTools';
+import VisitPlanner from './pages/VisitPlanner';
+import Placeholder from './pages/Placeholder';
+import SahayakDashboard from './pages/officer/SahayakDashboard';
+import GramSabha from './pages/GramSabha';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -33,7 +38,7 @@ const DashboardRouter = () => {
   if (user?.role === 'cao')    return <Navigate to="/cao" replace />;
   if (user?.role === 'tao')    return <Navigate to="/tao" replace />;
   if (user?.role === 'district') return <Navigate to="/district" replace />;
-  return <Navigate to="/survey" replace />;
+  return <Navigate to="/officer" replace />;
 };
 
 const App = () => {
@@ -50,6 +55,7 @@ const App = () => {
           
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/" element={<DashboardRouter />} />
+            <Route path="/officer" element={<SahayakDashboard />} />
             <Route path="/survey" element={<SurveyOperationsDashboard />} />
             <Route path="/tao" element={<TAODashboard />} />
             <Route path="/mandal" element={<MandalDashboard />} />
@@ -58,6 +64,11 @@ const App = () => {
             <Route path="/confirm-verification" element={<ConfirmVerification />} />
             <Route path="/fraud-alerts" element={<FraudAlerts />} />
             <Route path="/select-task" element={<SelectTask />} />
+            <Route path="/advanced-tools" element={<AdvancedTools />} />
+            <Route path="/visit-planner" element={<VisitPlanner />} />
+            <Route path="/geo" element={<Placeholder title="Geo-Intelligence" />} />
+            <Route path="/ledger" element={<Placeholder title="Compensation Ledger" />} />
+            <Route path="/gram-sabha" element={<GramSabha />} />
           </Route>
           
           {/* Fallback route */}

@@ -290,7 +290,7 @@ const SmartGRParser = () => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch(`${API_BASE}/gr/parse`, { method: 'POST', body: formData });
+      const res = await fetch(`${API_BASE}/api/v1/gr/parse`, { method: 'POST', body: formData });
       const json = await res.json();
       if (!res.ok) throw new Error(json.detail || `Server error ${res.status}`);
       setGrResult(json.data);

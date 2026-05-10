@@ -8,7 +8,7 @@ import './Sidebar.css';
 const Sidebar = ({ isOpen }) => {
   const { t, toggleLanguage, lang } = useLanguage();
   const { user, logout } = useAuth();
-  const { currentMandal } = useHierarchy();
+  const { currentMandal, currentSahayak } = useHierarchy();
   const navigate = useNavigate();
 
   const handleLogout = (e) => {
@@ -20,6 +20,10 @@ const Sidebar = ({ isOpen }) => {
   const navLinks = [
     { to: '/',           icon: 'radar',                 label: 'Command Center' },
     { to: '/survey',     icon: 'satellite_alt',         label: 'Survey Operations', badge: 'LIVE' },
+    { to: '/applications', icon: 'assignment_turned_in', label: 'Applications' },
+    { to: '/visit-planner', icon: 'calendar_today',     label: 'Planner' },
+    { to: '/fraud-alerts',  icon: 'report_problem',     label: 'Alerts', badge: 2 },
+    { to: '/advanced-tools', icon: 'construction',      label: 'Advanced Tools' },
     { to: '/geo',        icon: 'map',                   label: 'Geo-Intelligence' },
     { to: '/ledger',     icon: 'account_balance',       label: 'Compensation Ledger' },
   ];
@@ -36,6 +40,13 @@ const Sidebar = ({ isOpen }) => {
             <p className="text-gray-500 font-mono text-[10px] tracking-wider mt-0.5 flex items-center gap-1.5">
               ID: {user?.agristack_id || 'OP-X99'}
             </p>
+            {currentMandal && (
+              <p className="text-primary text-[10px] font-bold tracking-widest mt-1 flex items-center gap-1">
+                <span className="material-symbols-outlined text-[12px]">location_on</span>
+                {currentMandal.name}
+                {currentSahayak && ` › ${currentSahayak.name}`}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -64,7 +75,16 @@ const Sidebar = ({ isOpen }) => {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-200 bg-gray-50">
+      <div className="p-4 border-t border-gray-200 bg-gray-50 flex flex-col gap-2">
+        <div className="flex items-center justify-between px-3 py-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-gray-600">{t("Language")}</span>
+          <button 
+            className="px-2 py-1 text-[10px] font-bold uppercase bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors" 
+            onClick={toggleLanguage}
+          >
+            {lang === 'en' ? 'मराठी' : 'English'}
+          </button>
+        </div>
         <button 
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-error hover:bg-error/5 border-l-4 border-transparent transition-none w-full text-left"
