@@ -1,3 +1,6 @@
+/* =========================================================
+   Mobile Header — Stitch Glassmorphism
+   ========================================================= */
 .mobile-header {
   display: none;
   position: sticky;
@@ -5,8 +8,10 @@
   left: 0;
   width: 100%;
   height: var(--header-height);
-  background-color: var(--surface-lowest);
-  border-bottom: 1px solid var(--outline-variant);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--outline-card);
   z-index: 30;
 }
 
@@ -22,30 +27,31 @@
 .mobile-header-left {
   display: flex;
   align-items: center;
-  gap: var(--sp-4);
+  gap: var(--sp-3);
 }
 
 .menu-button {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--success-dark);
+  color: var(--primary);
   background: transparent;
 }
 .menu-button:hover,
 .menu-button:active {
-  background-color: var(--surface-variant);
+  background-color: rgba(3, 54, 33, 0.06);
 }
 
 .mobile-header-title {
-  font-size: var(--font-size-md);
-  font-weight: 900;
-  color: var(--success-dark);
+  font-family: var(--font-headline);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--primary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   margin: 0;
 }
 
@@ -57,9 +63,9 @@
 .profile-button {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background-color: var(--surface-variant);
-  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-container);
+  border: 1px solid var(--outline-card);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,5 +73,6 @@
   overflow: hidden;
 }
 .profile-button:hover {
-  border-color: var(--outline);
+  border-color: var(--primary);
+  color: var(--primary);
 }

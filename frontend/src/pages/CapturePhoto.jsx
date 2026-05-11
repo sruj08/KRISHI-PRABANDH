@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../hooks/useToast.jsx';
-import { uploadPhoto, postLog } from '../utils/api';
+import { uploadPhoto } from '../utils/api';
 
 const CapturePhoto = () => {
   const { t, lang } = useLanguage();
@@ -137,11 +137,11 @@ const CapturePhoto = () => {
           : new File([capturedBlob], 'field-photo.jpg', { type: 'image/jpeg' });
 
       await uploadPhoto(applicationId, file, 'Photo uploaded for verification');
-      await postLog({
+      /* await postLog({
         action: 'PHOTO_UPLOAD',
         application_id: applicationId,
         details: 'Field photo captured and uploaded',
-      });
+      }); */
 
       addToast('Photo uploaded successfully!', 'success');
       stopStream();

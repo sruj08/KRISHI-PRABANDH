@@ -101,30 +101,39 @@ const DistrictDashboard = () => {
 
   return (
     <div className="cao-root">
-      <header style={{ padding: 'var(--sp-4)', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
-          <h1 style={{ fontSize: '18px', margin: 0, fontWeight: 'bold' }}>KrishiNetra — District Executive Command Center</h1>
-          <span style={{ fontSize: '12px', opacity: 0.88, borderLeft: '1px solid rgba(255,255,255,0.3)', paddingLeft: '12px' }}>
-            {DISTRICT_PROFILE.district} · {DISTRICT_PROFILE.state} — {DISTRICT_PROFILE.officerTitle}
-          </span>
+      {/* ── Header ── */}
+      <header className="cao-header">
+        <div className="cao-header-left">
+          <div className="logo-text">
+            <span className="material-symbols-outlined" style={{ color: 'var(--primary)', marginRight: '8px', fontSize: '24px' }}>public</span>
+            KrishiNetra - DAO
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
-          <span style={{ fontSize: '12px', opacity: 0.9, maxWidth: '280px', textAlign: 'right' }}>
-            {user?.name || DISTRICT_PROFILE.name}
-          </span>
-          <button type="button" className="btn-outline btn-sm text-white" style={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }} onClick={handleLogout}>
-            Logout
-          </button>
+
+        <div className="cao-header-center" style={{ flex: 1, display: 'flex', justifyContent: 'center', fontSize: '13px', color: 'var(--text-muted)', gap: '16px' }}>
+          <span>Pune District</span> • 
+          <span>Maharashtra State</span> • 
+          <span>District Superintending Agriculture Officer</span>
+        </div>
+
+        <div className="cao-header-right">
+          <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>notifications</span>
+          <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>settings</span>
+          <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--text-dark)', cursor: 'pointer' }}>
+            D
+          </div>
         </div>
       </header>
 
       <div className="cao-kpi-strip">
         {execKpiStrip.map((k, i) => (
-          <div className="cao-kpi-card" key={i} style={{ '--kpi-color': k.color, '--kpi-bg': k.bg }}>
-            <span className="material-symbols-outlined cao-kpi-icon">{k.icon}</span>
-            <div>
-              <div className="cao-kpi-value">{k.value}</div>
-              <div className="cao-kpi-label">{k.label}</div>
+          <div className="kpi-card-stitch" key={i}>
+            <div className="kpi-card-header">
+              <span className="material-symbols-outlined">{k.icon}</span> {k.label}
+            </div>
+            <div className="kpi-card-value" style={{ color: k.color }}>{k.value}</div>
+            <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>
+              Live telemetry
             </div>
           </div>
         ))}
@@ -134,78 +143,67 @@ const DistrictDashboard = () => {
         {EXEC_KPIS.sentinel2Pass} · DAO: {DISTRICT_PROFILE.dao}
       </p>
 
-      <div className="district-exec-grid">
+      <div className="stitch-exec-grid">
         <div className="cao-panel cao-panel--map" style={{ minHeight: '560px' }}>
-          <div className="cao-panel-header">
-            <span className="material-symbols-outlined">map</span>
-            <span>Pune district — geofenced command map</span>
-            <span className="cao-panel-badge green">Live overlay</span>
+          <div className="cao-panel-header" style={{ alignItems: 'flex-start' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 'bold', fontSize: '15px', color: 'var(--text-dark)' }}>Taluka — Geo-fenced Command Map</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Live spatial analytics and telemetry</div>
+            </div>
+            <button className="stitch-map-mode-btn" style={{ padding: '6px 12px', fontSize: '12px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>layers</span> Layers
+            </button>
           </div>
-          <div style={{ flex: 1, padding: 'var(--sp-4)', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <div style={{ flex: 1, padding: '0', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <DistrictCommandMap />
           </div>
-        </div>
+        </div> 
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)', minHeight: 0 }}>
-          <div className="cao-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '280px' }}>
-            <div className="cao-panel-header">
-              <span className="material-symbols-outlined">troubleshoot</span>
-              <span>Friction logger — top drop-off drivers</span>
-              <span className="cao-panel-badge amber">This month</span>
+          {/* Card 1: Friction Logger */}
+          <div className="cao-panel" style={{ padding: 'var(--sp-4)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div>
+              <div style={{ fontWeight: 'bold', fontSize: '15px', color: 'var(--text-dark)' }}>Friction Logger</div>
+              <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>SYSTEM INTEGRATION ERRORS</div>
             </div>
-            <div style={{ padding: 'var(--sp-4)', flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
-              <div style={{ flex: 1, minHeight: '200px', position: 'relative' }}>
-                <Bar data={barData} options={barOptions} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+                <span style={{ color: 'var(--error)', marginRight: '8px', fontSize: '18px' }}>•</span>
+                Aadhar Mismatch (PM-KISAN)
+                <span style={{ color: 'var(--error)', marginLeft: 'auto' }}>42%</span>
               </div>
-              <div style={{ fontWeight: 700, fontSize: '11px', color: 'var(--text-dark)', marginTop: '4px' }}>AI administrative recommendations</div>
-              {FRICTION_MONTH.topThreeRecommendations.map((text, idx) => (
-                <div key={idx} className="district-ai-bullet">
-                  <span style={{ fontWeight: 800, color: '#1b5e20' }}>{idx + 1}. </span>
-                  {text}
-                </div>
-              ))}
+              <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+                <span style={{ color: 'var(--error)', marginRight: '8px', fontSize: '18px' }}>•</span>
+                7/12 Integration Failure
+                <span style={{ color: 'var(--error)', marginLeft: 'auto' }}>28%</span>
+              </div>
             </div>
           </div>
 
-          <div className="cao-panel" style={{ flex: '0 0 auto' }}>
-            <div className="cao-panel-header">
-              <span className="material-symbols-outlined">crisis_alert</span>
-              <span>Grievance escalation heatmap (signals)</span>
-              <span className="cao-panel-badge red">Spikes</span>
+          {/* Card 2: Administrative Recommendations */}
+          <div className="cao-panel" style={{ padding: 'var(--sp-4)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div>
+              <div style={{ fontWeight: 'bold', fontSize: '15px', color: 'var(--text-dark)' }}>Administrative Recommendations</div>
+              <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>AI-DRIVEN ACTIONABLE INSIGHTS</div>
             </div>
-            <div style={{ padding: 'var(--sp-3)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {GRIEVANCE_SPIKES.map((g) => (
-                <div key={g.taluka} style={{ background: 'var(--surface-lowest)', border: '1px solid var(--outline-variant)', borderRadius: '10px', padding: '10px 12px', fontSize: '12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-                    <strong>{g.taluka}</strong>
-                    <span className="cao-panel-badge" style={{ background: g.flag === 'audit' ? 'var(--error-light)' : 'var(--amber-light)', color: g.flag === 'audit' ? 'var(--error-dark)' : 'var(--on-amber)' }}>
-                      {g.flag === 'audit' ? 'Audit' : 'Watch'}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{g.category}</div>
-                  <div style={{ display: 'flex', gap: '16px', marginTop: '6px', fontSize: '11px' }}>
-                    <span>Week spike: <b style={{ color: '#c62828' }}>+{g.wowPct}%</b></span>
-                    <span>Open: <b>{g.open}</b></span>
-                  </div>
-                </div>
-              ))}
+            <div style={{ marginTop: '8px', padding: '12px', backgroundColor: '#f4fbf6', borderLeft: '4px solid #1b5e20', borderRadius: '4px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-dark)', marginBottom: '4px' }}>Increase PM-KISAN outreach in Loni Kalbhor.</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: '1.5' }}>Registration deficit detected vs. land record baseline. Deploy 2 mobile units.</div>
             </div>
           </div>
 
-          <div className="cao-panel" style={{ flex: '0 0 auto' }}>
-            <div className="cao-panel-header">
-              <span className="material-symbols-outlined">satellite_alt</span>
-              <span>PMFBY / disaster triage (satellite-led)</span>
-            </div>
-            <div style={{ padding: '12px 14px', fontSize: '12px', lineHeight: 1.55 }}>
-              <div style={{ fontWeight: 700, marginBottom: '6px' }}>{PMFBY_TRIAGE.event}</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>{PMFBY_TRIAGE.ndviDeltaSummary}</div>
-              <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                <span className="cao-panel-badge green">{PMFBY_TRIAGE.automatedHeatZones} heat zones</span>
-                {PMFBY_TRIAGE.priorityTalukas.map((t) => (
-                  <span key={t} className="cao-panel-badge amber">{t}</span>
-                ))}
+          {/* Card 3: PMFBY Disaster Alerts */}
+          <div className="cao-panel" style={{ padding: 'var(--sp-4)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div style={{ fontWeight: 'bold', fontSize: '15px', color: 'var(--text-dark)' }}>PMFBY Disaster Alerts</div>
+                <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>LIVE TELEMETRY TRIGGERS</div>
               </div>
+              <span className="cao-panel-badge" style={{ backgroundColor: '#fff0f0', color: '#d32f2f', padding: '2px 6px', fontSize: '9px', fontWeight: 'bold', borderRadius: '4px', border: '1px solid #ffcdd2' }}>HIGH</span>
+            </div>
+            <div style={{ marginTop: '8px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-dark)', marginBottom: '4px' }}>Localized hail damage in Jejuri.</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>450+ early claims logged.</div>
             </div>
           </div>
         </div>
@@ -232,21 +230,6 @@ const DistrictDashboard = () => {
                   <div><span style={{ color: 'var(--text-muted)' }}>Amount</span><br /><b>₹{b.amountCr} Cr</b></div>
                   <div style={{ gridColumn: '1 / -1' }}><span style={{ color: 'var(--text-muted)' }}>Mean AI confidence</span><br /><b>{(b.avgConfidence * 100).toFixed(1)}%</b></div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="cao-panel">
-          <div className="cao-panel-header">
-            <span className="material-symbols-outlined">leaderboard</span>
-            <span>Scheme penetration — top talukas</span>
-          </div>
-          <div style={{ padding: '12px' }}>
-            {SCHEME_PENETRATION_RANK.map((row, i) => (
-              <div key={row.taluka} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: i < SCHEME_PENETRATION_RANK.length - 1 ? '1px solid var(--outline-variant)' : 'none', fontSize: '12px' }}>
-                <span style={{ fontWeight: 600 }}>{row.taluka}</span>
-                <span style={{ fontWeight: 800, color: row.pct >= 82 ? '#1b5e20' : '#0055A4' }}>{row.pct}%</span>
               </div>
             ))}
           </div>

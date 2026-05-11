@@ -5,7 +5,7 @@ import { useHierarchy } from '../context/HierarchyContext';
 import { useToast } from '../hooks/useToast.jsx';
 import Button from '../components/ui/Button';
 import InsightModal from '../components/ui/InsightModal';
-import { fetchApplications, updateApplicationStatus, postLog } from '../utils/api';
+import { fetchApplications, updateApplicationStatus } from '../utils/api';
 
 const getDaysSince = (d) => {
   if (!d) return 0;
@@ -89,7 +89,7 @@ const VisitPlanner = () => {
     setActionLoading(app.application_id);
     try {
       const updated = await updateApplicationStatus(app.application_id, newStatus, remarks);
-      await postLog({ action: label, application_id: app.application_id, details: remarks });
+      // await postLog({ action: label, application_id: app.application_id, details: remarks });
       setAllApps(prev => prev.map(a =>
         a.application_id === app.application_id ? { ...a, ...updated } : a
       ));

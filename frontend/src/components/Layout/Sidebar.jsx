@@ -2,13 +2,11 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
-import { useHierarchy } from '../../context/HierarchyContext';
 import './Sidebar.css';
 
 const Sidebar = ({ isOpen }) => {
   const { t, toggleLanguage, lang } = useLanguage();
   const { user, logout } = useAuth();
-  const { currentMandal, currentSahayak } = useHierarchy();
   const navigate = useNavigate();
 
   const handleLogout = (e) => {
@@ -17,80 +15,116 @@ const Sidebar = ({ isOpen }) => {
     navigate('/login');
   };
 
-  const navLinks = [
-    { to: '/',           icon: 'radar',                 label: 'Command Center' },
-    { to: '/survey',     icon: 'satellite_alt',         label: 'Survey Operations', badge: 'LIVE' },
-    { to: '/applications', icon: 'assignment_turned_in', label: 'Applications' },
-    { to: '/visit-planner', icon: 'calendar_today',     label: 'Planner' },
-    { to: '/fraud-alerts',  icon: 'report_problem',     label: 'Alerts', badge: 2 },
-    { to: '/advanced-tools', icon: 'construction',      label: 'Advanced Tools' },
-    { to: '/geo',        icon: 'map',                   label: 'Geo-Intelligence' },
-    { to: '/ledger',     icon: 'account_balance',       label: 'Compensation Ledger' },
+  const overviewLinks = [
+    { to: '/',           icon: 'map',                 label: 'Command Map' },
+  ];
+
+  const moduleLinks = [
+    { to: '/survey',     icon: 'analytics',           label: 'Survey Analytics' },
+    { to: '/geo',        icon: 'location_on',         label: 'Geo Verification' },
+    { to: '/applications', icon: 'checklist',         label: 'Application Queue' },
+    { to: '/fraud-alerts',icon: 'policy',             label: 'Fraud Monitoring' },
+    { to: '/grievances', icon: 'priority_high',       label: 'Grievance Routing' },
+    { to: '/ledger',     icon: 'payments',            label: 'Compensation Status' },
+    { to: '/audit-logs', icon: 'history',             label: 'Audit Logs' },
+  ];
+
+  const systemLinks = [
+    { to: '/roles',      icon: 'badge',               label: 'User Roles' },
+    { to: '/settings',   icon: 'settings',            label: 'System Controls' },
   ];
 
   return (
-    <aside className={`sidebar ${isOpen ? 'open' : ''} bg-white border-r border-gray-300 shadow-sm z-40 relative flex flex-col font-body`}>
-      <div className="p-4 border-b border-gray-200 bg-gray-50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-sm bg-gray-900 flex items-center justify-center text-white">
-            <span className="material-symbols-outlined text-[18px]">security</span>
-          </div>
-          <div>
-            <h3 className="text-gray-900 text-[13px] font-bold uppercase tracking-widest">{user?.name || 'OPERATOR_1'}</h3>
-            <p className="text-gray-500 font-mono text-[10px] tracking-wider mt-0.5 flex items-center gap-1.5">
-              ID: {user?.agristack_id || 'OP-X99'}
-            </p>
-            {currentMandal && (
-              <p className="text-primary text-[10px] font-bold tracking-widest mt-1 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[12px]">location_on</span>
-                {currentMandal.name}
-                {currentSahayak && ` › ${currentSahayak.name}`}
-              </p>
-            )}
-          </div>
+    <aside className={`sidebar flex flex-col h-screen sticky top-0 py-8 bg-white w-[260px] shrink-0 z-40 border-r border-surface-variant ${isOpen ? 'open' : ''}`}>
+      {/* Logo Area */}
+      <div className="flex items-center gap-3 px-6 mb-8">
+        <span className="material-symbols-outlined text-primary-container" style={{ fontSize: '28px' }}>public</span>
+        <h2 className="font-headline-md text-on-background text-[20px] leading-tight m-0">
+          KrishiNetra - {user?.role === 'district' ? 'DAO' : (user?.role?.toUpperCase() || 'OFFICER')}
+        </h2>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4">
+        {/* Overview Section */}
+        <div className="mb-8">
+          <h3 className="font-label-caps text-xs text-on-surface-variant mb-4 px-4 tracking-[0.1em]">OVERVIEW</h3>
+          {overviewLinks.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              className={({ isActive }) =>
+                `flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all duration-150 font-body-main text-[15px] ${
+                  isActive 
+                    ? 'text-primary-container bg-surface-container-low' 
+                    : 'text-on-background hover:bg-surface-container-lowest'
+                }`
+              }
+            >
+              <span className="material-symbols-outlined text-[22px]" style={{ color: 'inherit' }}>{link.icon}</span>
+              {t(link.label)}
+            </NavLink>
+          ))}
+        </div>
+
+        {/* Modules Section */}
+        <div>
+          <h3 className="font-label-caps text-xs text-on-surface-variant mb-4 px-4 tracking-[0.1em]">MODULES</h3>
+          <nav className="space-y-2">
+            {moduleLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  `flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all duration-150 font-body-main text-[15px] ${
+                    isActive 
+                      ? 'text-primary-container bg-surface-container-low' 
+                      : 'text-on-background hover:bg-surface-container-lowest'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <span className={`material-symbols-outlined text-[22px] ${isActive ? 'text-primary-container' : 'text-on-surface-variant'}`}>{link.icon}</span>
+                    {t(link.label)}
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4 flex flex-col gap-1 px-2 custom-scrollbar">
-        {navLinks.map((link) => (
+      {/* Footer Section */}
+      <div className="px-4 mt-auto pt-6 space-y-2 border-t border-surface-variant bg-white">
+        {systemLinks.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
-            className={({ isActive }) => 
-              `group flex items-center gap-3 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-none border-l-4 ${
-                isActive 
-                  ? 'bg-primary/5 text-primary border-primary' 
-                  : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-300'
-              }`
-            }
+            className="flex items-center gap-4 px-4 py-3 text-on-background hover:bg-surface-container-lowest rounded-lg transition-all duration-150 font-body-main text-[15px]"
           >
-            <span className="material-symbols-outlined text-[18px]">{link.icon}</span>
-            <span className="flex-1">{t(link.label)}</span>
-            {link.badge && (
-              <span className="bg-error text-white text-[9px] px-1.5 py-0.5 rounded-sm">
-                {link.badge}
-              </span>
-            )}
+            <span className="material-symbols-outlined text-on-surface-variant text-[22px]">{link.icon}</span>
+            {t(link.label)}
           </NavLink>
         ))}
-      </nav>
 
-      <div className="p-4 border-t border-gray-200 bg-gray-50 flex flex-col gap-2">
-        <div className="flex items-center justify-between px-3 py-2">
-          <span className="text-xs font-bold uppercase tracking-widest text-gray-600">{t("Language")}</span>
-          <button 
-            className="px-2 py-1 text-[10px] font-bold uppercase bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors" 
+        <div className="flex justify-between items-center px-4 py-3 mt-4">
+          <span className="font-data-tabular text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
+            {t("Language")}
+          </span>
+          <button
+            className="px-3 py-1 text-[10px] font-bold uppercase bg-surface-container text-on-background rounded border border-outline-variant hover:bg-surface-container-high transition-colors"
             onClick={toggleLanguage}
           >
             {lang === 'en' ? 'मराठी' : 'English'}
           </button>
         </div>
-        <button 
+
+        <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-error hover:bg-error/5 border-l-4 border-transparent transition-none w-full text-left"
+          className="w-full flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all duration-150 font-body-main text-[15px] font-medium"
         >
-          <span className="material-symbols-outlined text-[18px]">power_settings_new</span>
-          <span>SYSTEM LOGOUT</span>
+          <span className="material-symbols-outlined text-[22px]">power_settings_new</span>
+          System Logout
         </button>
       </div>
     </aside>
@@ -98,4 +132,3 @@ const Sidebar = ({ isOpen }) => {
 };
 
 export default Sidebar;
-

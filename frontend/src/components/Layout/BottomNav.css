@@ -1,3 +1,6 @@
+/* =========================================================
+   Bottom Nav — Stitch Glassmorphism + Forest Green Active
+   ========================================================= */
 .bottom-nav {
   display: none;
   position: fixed;
@@ -5,10 +8,11 @@
   left: 0;
   width: 100%;
   height: var(--bottom-nav-height);
-  background-color: var(--surface-lowest);
-  border-top: 1px solid var(--outline-variant);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--outline-card);
   z-index: 50;
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
 }
 
 @media (max-width: 767px) {
@@ -45,13 +49,14 @@
 }
 
 .bottom-nav-item .material-symbols-outlined {
-  font-size: 24px;
+  font-size: 22px;
 }
 
 .bottom-nav-label {
+  font-family: var(--font-data);
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 .bottom-nav-badge {
@@ -65,25 +70,16 @@
   border: 1.5px solid var(--surface-lowest);
 }
 
-/* Active State */
+/* Active State — Forest Green */
 .bottom-nav-item.active {
-  color: var(--success-dark);
+  color: var(--primary);
 }
 
 .bottom-nav-item.active .bottom-nav-icon-wrapper {
-  background-color: var(--success-light);
-  color: var(--success-dark);
+  background-color: rgba(3, 54, 33, 0.08);
+  color: var(--primary);
 }
 
 .bottom-nav-item.active .bottom-nav-badge {
-  border-color: var(--success-light);
-}
-
-/* Active State for specific items if needed */
-.bottom-nav-item[href="/advanced-tools"].active {
-  color: var(--primary);
-}
-.bottom-nav-item[href="/advanced-tools"].active .bottom-nav-icon-wrapper {
-  background-color: var(--primary-light);
-  color: var(--primary);
+  border-color: rgba(3, 54, 33, 0.08);
 }

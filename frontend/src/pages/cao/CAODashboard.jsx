@@ -21,65 +21,55 @@ import './cao.css';
 
 const RiskBadge = ({ risk }) => {
   const cfg = {
-    HIGH:     { bg: '#fde8e8', color: '#b91c1c', label: 'HIGH RISK' },
-    MODERATE: { bg: '#fef3c7', color: '#b45309', label: 'MODERATE' },
-    CLEAN:    { bg: '#dcfce7', color: '#15803d', label: 'CLEAN' },
-  }[risk] || { bg: '#f5f5f5', color: '#666', label: risk };
+    HIGH:     { bg: 'bg-error-container', color: 'text-on-error-container', label: 'HIGH RISK' },
+    MODERATE: { bg: 'bg-secondary-container', color: 'text-on-secondary-container', label: 'MODERATE' },
+    CLEAN:    { bg: 'bg-primary-container', color: 'text-on-primary-container', label: 'CLEAN' },
+  }[risk] || { bg: 'bg-surface-variant', color: 'text-on-surface-variant', label: risk };
   return (
-    <span style={{ background: cfg.bg, color: cfg.color, fontWeight: 700, fontSize: '10px', padding: '2px 8px', borderRadius: '12px', whiteSpace: 'nowrap' }}>
+    <span className={`${cfg.bg} ${cfg.color} font-bold text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap`}>
       {cfg.label}
     </span>
   );
 };
 
-const StatMini = ({ icon, label, value, color, bg }) => (
-  <div style={{ background: bg, border: `1px solid ${color}22`, borderRadius: '10px', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-    <span className="material-symbols-outlined" style={{ color, fontSize: '22px' }}>{icon}</span>
-    <div>
-      <div style={{ fontSize: '18px', fontWeight: 800, color, lineHeight: 1 }}>{value ?? '—'}</div>
-      <div style={{ fontSize: '10px', color, opacity: 0.75, marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
-    </div>
-  </div>
-);
-
 // ── Sub-section: Sahayak Supervision ─────────────────────────────────────────
 
 const SahayakSupervisionPanel = ({ summary, vistar }) => {
-  if (!summary) return <div style={{ textAlign: 'center', padding: '20px', color: '#aaa', fontSize: '13px' }}>Loading sahayak data…</div>;
+  if (!summary) return <div className="text-center p-5 text-on-surface-variant text-sm">Loading sahayak data…</div>;
   const breakdown = summary.sahayak_breakdown || [];
-  if (breakdown.length === 0) return <div style={{ textAlign: 'center', padding: '20px', color: '#aaa', fontSize: '13px' }}>No sahayak data available.</div>;
+  if (breakdown.length === 0) return <div className="text-center p-5 text-on-surface-variant text-sm">No sahayak data available.</div>;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flex: 1, padding: '12px' }}>
+    <div className="flex flex-col gap-3 overflow-y-auto flex-1 p-3">
       {breakdown.map(sb => {
         const vp = vistar?.sahayak_performance?.find(p => p.sahayak_id === sb.sahayak_id);
         const approvalPct = sb.total ? Math.round((sb.approved / sb.total) * 100) : 0;
         return (
-          <div key={sb.sahayak_id} style={{ background: 'var(--surface-lowest)', border: '1px solid var(--outline-variant)', borderRadius: '10px', padding: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <div key={sb.sahayak_id} className="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+            <div className="flex justify-between items-center mb-2">
               <div>
-                <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-dark)' }}>{sb.name}</div>
-                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>{sb.sahayak_id}</div>
+                <div className="font-bold text-sm text-on-background">{sb.name}</div>
+                <div className="text-[11px] text-on-surface-variant mt-0.5">{sb.sahayak_id}</div>
               </div>
               {vp && <RiskBadge risk={vp.overall_risk} />}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', fontSize: '11px', marginBottom: '8px' }}>
-              <div><div style={{ color: 'var(--text-muted)', fontSize: '9px', textTransform: 'uppercase' }}>Apps</div><b>{sb.total}</b></div>
-              <div><div style={{ color: 'var(--text-muted)', fontSize: '9px', textTransform: 'uppercase' }}>Pending</div><b style={{ color: '#e65100' }}>{sb.pending}</b></div>
-              <div><div style={{ color: 'var(--text-muted)', fontSize: '9px', textTransform: 'uppercase' }}>Approved</div><b style={{ color: '#2e7d32' }}>{sb.approved}</b></div>
+            <div className="grid grid-cols-3 gap-2 text-xs mb-3">
+              <div><div className="text-on-surface-variant text-[10px] uppercase">Apps</div><b className="text-on-background">{sb.total}</b></div>
+              <div><div className="text-on-surface-variant text-[10px] uppercase">Pending</div><b className="text-[#e65100]">{sb.pending}</b></div>
+              <div><div className="text-on-surface-variant text-[10px] uppercase">Approved</div><b className="text-[#2e7d32]">{sb.approved}</b></div>
             </div>
             {vp && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', fontSize: '11px', marginBottom: '8px', paddingTop: '8px', borderTop: '1px solid var(--outline-variant)' }}>
-                <div><div style={{ color: 'var(--text-muted)', fontSize: '9px', textTransform: 'uppercase' }}>Sessions</div><b>{vp.total_sessions}</b></div>
-                <div><div style={{ color: 'var(--text-muted)', fontSize: '9px', textTransform: 'uppercase' }}>Avg Att.</div><b>{vp.avg_digital_attendance}</b></div>
-                <div><div style={{ color: 'var(--text-muted)', fontSize: '9px', textTransform: 'uppercase' }}>Fraud Flags</div><b style={{ color: vp.fraud_flags > 0 ? '#c62828' : '#2e7d32' }}>{vp.fraud_flags}</b></div>
+              <div className="grid grid-cols-3 gap-2 text-xs mb-3 pt-3 border-t border-outline-variant">
+                <div><div className="text-on-surface-variant text-[10px] uppercase">Sessions</div><b className="text-on-background">{vp.total_sessions}</b></div>
+                <div><div className="text-on-surface-variant text-[10px] uppercase">Avg Att.</div><b className="text-on-background">{vp.avg_digital_attendance}</b></div>
+                <div><div className="text-on-surface-variant text-[10px] uppercase">Fraud Flags</div><b className={vp.fraud_flags > 0 ? 'text-[#c62828]' : 'text-[#2e7d32]'}>{vp.fraud_flags}</b></div>
               </div>
             )}
-            <div style={{ height: '5px', background: '#eee', borderRadius: '3px', overflow: 'hidden', display: 'flex' }}>
-              <div style={{ width: `${approvalPct}%`, background: '#4caf50', transition: 'width 0.5s ease' }} />
-              <div style={{ width: `${sb.total ? (sb.pending / sb.total) * 100 : 0}%`, background: '#ff9800' }} />
+            <div className="h-1.5 bg-surface-variant rounded-full overflow-hidden flex">
+              <div className="bg-[#4caf50] transition-all duration-500 ease-in-out" style={{ width: `${approvalPct}%` }} />
+              <div className="bg-[#ff9800]" style={{ width: `${sb.total ? (sb.pending / sb.total) * 100 : 0}%` }} />
             </div>
-            <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '4px' }}>{approvalPct}% approved</div>
+            <div className="text-[10px] text-on-surface-variant mt-1.5">{approvalPct}% approved</div>
           </div>
         );
       })}
@@ -90,57 +80,82 @@ const SahayakSupervisionPanel = ({ summary, vistar }) => {
 // ── Sub-section: Krishi Vistar Supervision ────────────────────────────────────
 
 const VistarSupervisionPanel = ({ vistar, fraudSes }) => {
-  if (!vistar) return <div style={{ textAlign: 'center', padding: '20px', color: '#aaa', fontSize: '13px' }}>Loading vistar data…</div>;
+  if (!vistar) return <div className="text-center p-5 text-on-surface-variant text-sm">Loading vistar data…</div>;
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
       {/* Quick stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-        <StatMini icon="event"         label="Total Sessions"  value={vistar.total_sessions}        color="#0055A4" bg="#e3f2fd" />
-        <StatMini icon="people"        label="Avg Digital Att." value={vistar.avg_digital_attendance} color="#2e7d32" bg="#e8f5e9" />
-        <StatMini icon="report"        label="Fraud Flagged"   value={vistar.fraud_flagged_count}    color="#c62828" bg="#ffebee" />
-        <StatMini icon="trending_down" label="Attendance Gap"  value={`${vistar.overall_gap_pct || 0}%`} color="#f57f17" bg="#fff8e1" />
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-[#e3f2fd] border border-[#0055A4]/20 rounded-xl p-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#0055A4] text-[20px]">event</span>
+          <div>
+            <div className="text-lg font-bold text-[#0055A4] leading-none">{vistar.total_sessions}</div>
+            <div className="text-[10px] text-[#0055A4]/75 mt-1 uppercase tracking-wider">Total Sessions</div>
+          </div>
+        </div>
+        <div className="bg-[#e8f5e9] border border-[#2e7d32]/20 rounded-xl p-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#2e7d32] text-[20px]">people</span>
+          <div>
+            <div className="text-lg font-bold text-[#2e7d32] leading-none">{vistar.avg_digital_attendance}</div>
+            <div className="text-[10px] text-[#2e7d32]/75 mt-1 uppercase tracking-wider">Avg Digital Att.</div>
+          </div>
+        </div>
+        <div className="bg-[#ffebee] border border-[#c62828]/20 rounded-xl p-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#c62828] text-[20px]">report</span>
+          <div>
+            <div className="text-lg font-bold text-[#c62828] leading-none">{vistar.fraud_flagged_count}</div>
+            <div className="text-[10px] text-[#c62828]/75 mt-1 uppercase tracking-wider">Fraud Flagged</div>
+          </div>
+        </div>
+        <div className="bg-[#fff8e1] border border-[#f57f17]/20 rounded-xl p-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#f57f17] text-[20px]">trending_down</span>
+          <div>
+            <div className="text-lg font-bold text-[#f57f17] leading-none">{vistar.overall_gap_pct || 0}%</div>
+            <div className="text-[10px] text-[#f57f17]/75 mt-1 uppercase tracking-wider">Attendance Gap</div>
+          </div>
+        </div>
       </div>
 
       {/* Sahayak vistar performance */}
-      <div style={{ background: 'var(--surface-lowest)', border: '1px solid var(--outline-variant)', borderRadius: '10px', padding: '12px' }}>
-        <div style={{ fontWeight: 700, fontSize: '12px', marginBottom: '10px', color: 'var(--text-dark)' }}>Sahayak Vistar Performance</div>
+      <div className="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+        <div className="font-bold text-[13px] mb-3 text-on-background">Sahayak Vistar Performance</div>
         {(vistar.sahayak_performance || []).map(p => (
-          <div key={p.sahayak_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', marginBottom: '8px', borderBottom: '1px solid var(--outline-variant)' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: '12px', color: 'var(--text-dark)' }}>{p.sahayak_name}</div>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+          <div key={p.sahayak_id} className="flex justify-between items-center pb-2 mb-2 border-b border-outline-variant last:border-0 last:mb-0 last:pb-0">
+            <div className="flex-1">
+              <div className="font-bold text-xs text-on-background">{p.sahayak_name}</div>
+              <div className="text-[11px] text-on-surface-variant mt-1">
                 {p.total_sessions} sessions · {Math.round(p.overall_compliance_ratio * 100)}% compliance
-                {p.fraud_flags > 0 && <span style={{ color: '#c62828', fontWeight: 700, marginLeft: '4px' }}>· {p.fraud_flags} flags</span>}
+                {p.fraud_flags > 0 && <span className="text-[#c62828] font-bold ml-1">· {p.fraud_flags} flags</span>}
               </div>
-              <div style={{ marginTop: '5px', height: '4px', background: '#eee', borderRadius: '2px', overflow: 'hidden' }}>
-                <div style={{ width: `${Math.round(p.overall_compliance_ratio * 100)}%`, background: p.overall_risk === 'HIGH' ? '#ef5350' : p.overall_risk === 'MODERATE' ? '#ff9800' : '#4caf50', height: '100%' }} />
+              <div className="mt-1.5 h-1 bg-surface-variant rounded-full overflow-hidden">
+                <div className="h-full" style={{ width: `${Math.round(p.overall_compliance_ratio * 100)}%`, background: p.overall_risk === 'HIGH' ? '#ef5350' : p.overall_risk === 'MODERATE' ? '#ff9800' : '#4caf50' }} />
               </div>
             </div>
-            <div style={{ marginLeft: '10px' }}><RiskBadge risk={p.overall_risk} /></div>
+            <div className="ml-3"><RiskBadge risk={p.overall_risk} /></div>
           </div>
         ))}
       </div>
 
       {/* Fraud alert list */}
       {fraudSes.length > 0 && (
-        <div style={{ background: '#fff5f5', border: '1px solid #fca5a5', borderRadius: '10px', padding: '12px' }}>
-          <div style={{ fontWeight: 700, fontSize: '12px', color: '#b91c1c', marginBottom: '8px' }}>
-            🔴 Attendance Fraud Alerts ({fraudSes.length})
+        <div className="bg-[#fff5f5] border border-[#fca5a5] rounded-xl p-4">
+          <div className="font-bold text-xs text-[#b91c1c] mb-2 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#b91c1c]"></span>
+            Attendance Fraud Alerts ({fraudSes.length})
           </div>
           {fraudSes.slice(0, 4).map(s => (
-            <div key={s.session_id} style={{ background: 'white', borderRadius: '8px', padding: '8px 10px', marginBottom: '6px', fontSize: '11px', border: '1px solid #fecaca' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={s.session_id} className="bg-white rounded-lg p-3 mb-2 text-xs border border-[#fecaca] shadow-sm">
+              <div className="flex justify-between items-center">
                 <div>
-                  <div style={{ fontWeight: 700, color: 'var(--text-dark)' }}>{s.village} — {s.topic}</div>
-                  <div style={{ color: '#888', marginTop: '2px' }}>{s.date} · {s.sahayak_name}</div>
+                  <div className="font-bold text-on-background">{s.village} — {s.topic}</div>
+                  <div className="text-on-surface-variant mt-0.5">{s.date} · {s.sahayak_name}</div>
                 </div>
                 <RiskBadge risk={s.risk} />
               </div>
-              <div style={{ display: 'flex', gap: '12px', marginTop: '6px', fontSize: '10px' }}>
-                <span>📋 Reported: <b>{s.reported_attendance}</b></span>
-                <span>📱 Digital: <b style={{ color: '#b91c1c' }}>{s.digital_attendance}</b></span>
-                <span>Gap: <b>{s.gap_pct}%</b></span>
+              <div className="flex gap-3 mt-2 text-[11px]">
+                <span className="text-on-background">📋 Reported: <b className="font-medium">{s.reported_attendance}</b></span>
+                <span className="text-on-background">📱 Digital: <b className="text-[#b91c1c]">{s.digital_attendance}</b></span>
+                <span className="text-on-background">Gap: <b className="font-medium">{s.gap_pct}%</b></span>
               </div>
             </div>
           ))}
@@ -153,50 +168,77 @@ const VistarSupervisionPanel = ({ vistar, fraudSes }) => {
 // ── Sub-section: Mandal Overview ──────────────────────────────────────────────
 
 const MandalOverviewPanel = ({ summary, appIntel, vistar }) => {
-  if (!summary) return <div style={{ textAlign: 'center', padding: '20px', color: '#aaa', fontSize: '13px' }}>Loading mandal overview…</div>;
+  if (!summary) return <div className="text-center p-5 text-on-surface-variant text-sm">Loading mandal overview…</div>;
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
       {/* Application KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-        <StatMini icon="assignment"   label="Total Apps"    value={summary.total_applications}  color="#0055A4" bg="#e3f2fd" />
-        <StatMini icon="pending"      label="Pending"       value={(summary.by_status?.Applied || 0) + (summary.by_status?.['Under Scrutiny'] || 0)} color="#e65100" bg="#fff3e0" />
-        <StatMini icon="check_circle" label="Approved"      value={summary.by_status?.Approved}  color="#2e7d32" bg="#e8f5e9" />
-        <StatMini icon="gpp_bad"      label="Fraud Alerts"  value={summary.fraud_alerts}          color="#c62828" bg="#ffebee" />
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-[#e3f2fd] border border-[#0055A4]/20 rounded-xl p-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#0055A4] text-[20px]">assignment</span>
+          <div>
+            <div className="text-lg font-bold text-[#0055A4] leading-none">{summary.total_applications}</div>
+            <div className="text-[10px] text-[#0055A4]/75 mt-1 uppercase tracking-wider">Total Apps</div>
+          </div>
+        </div>
+        <div className="bg-[#fff3e0] border border-[#e65100]/20 rounded-xl p-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#e65100] text-[20px]">pending</span>
+          <div>
+            <div className="text-lg font-bold text-[#e65100] leading-none">{(summary.by_status?.Applied || 0) + (summary.by_status?.['Under Scrutiny'] || 0)}</div>
+            <div className="text-[10px] text-[#e65100]/75 mt-1 uppercase tracking-wider">Pending</div>
+          </div>
+        </div>
+        <div className="bg-[#e8f5e9] border border-[#2e7d32]/20 rounded-xl p-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#2e7d32] text-[20px]">check_circle</span>
+          <div>
+            <div className="text-lg font-bold text-[#2e7d32] leading-none">{summary.by_status?.Approved || 0}</div>
+            <div className="text-[10px] text-[#2e7d32]/75 mt-1 uppercase tracking-wider">Approved</div>
+          </div>
+        </div>
+        <div className="bg-[#ffebee] border border-[#c62828]/20 rounded-xl p-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#c62828] text-[20px]">gpp_bad</span>
+          <div>
+            <div className="text-lg font-bold text-[#c62828] leading-none">{summary.fraud_alerts || 0}</div>
+            <div className="text-[10px] text-[#c62828]/75 mt-1 uppercase tracking-wider">Fraud Alerts</div>
+          </div>
+        </div>
       </div>
 
       {/* Vistar quick bar */}
       {vistar && (
-        <div style={{ background: '#fff8e1', border: '1px solid #ffe082', borderRadius: '10px', padding: '12px' }}>
-          <div style={{ fontWeight: 700, fontSize: '12px', color: '#f57f17', marginBottom: '8px' }}>⚡ Vistar Snapshot</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '12px' }}>
-            <div><b>{vistar.total_sessions}</b> sessions</div>
-            <div><b>{vistar.fraud_flagged_count}</b> flagged</div>
-            <div>Avg Reported: <b>{vistar.avg_reported_attendance}</b></div>
-            <div>Avg Digital: <b>{vistar.avg_digital_attendance}</b></div>
+        <div className="bg-[#fff8e1] border border-[#ffe082] rounded-xl p-4 shadow-sm">
+          <div className="font-bold text-xs text-[#f57f17] mb-2 flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[16px]">bolt</span>
+            Vistar Snapshot
           </div>
-          <div style={{ marginTop: '8px', fontSize: '11px', color: '#888' }}>
-            Overall Gap: <b style={{ color: vistar.overall_gap_pct > 40 ? '#c62828' : '#2e7d32' }}>{vistar.overall_gap_pct}%</b>
+          <div className="grid grid-cols-2 gap-2 text-xs text-on-background">
+            <div><b className="font-semibold">{vistar.total_sessions}</b> sessions</div>
+            <div><b className="font-semibold text-error">{vistar.fraud_flagged_count}</b> flagged</div>
+            <div>Avg Reported: <b className="font-semibold">{vistar.avg_reported_attendance}</b></div>
+            <div>Avg Digital: <b className="font-semibold">{vistar.avg_digital_attendance}</b></div>
+          </div>
+          <div className="mt-2.5 pt-2.5 border-t border-[#ffe082]/50 text-[11px] text-on-surface-variant">
+            Overall Gap: <b className={`font-semibold ${vistar.overall_gap_pct > 40 ? 'text-[#c62828]' : 'text-[#2e7d32]'}`}>{vistar.overall_gap_pct}%</b>
           </div>
         </div>
       )}
 
       {/* Status funnel */}
       {appIntel && (
-        <div style={{ background: 'var(--surface-lowest)', border: '1px solid var(--outline-variant)', borderRadius: '10px', padding: '12px' }}>
-          <div style={{ fontWeight: 700, fontSize: '12px', marginBottom: '10px', color: 'var(--text-dark)' }}>Application Status Funnel</div>
+        <div className="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+          <div className="font-bold text-[13px] mb-3 text-on-background">Application Status Funnel</div>
           {Object.entries(appIntel.by_status || {}).map(([status, count]) => {
             const total = appIntel.total_applications || 1;
             const pct = Math.round((count / total) * 100);
             const clr = status === 'Approved' ? '#4caf50' : status === 'Rejected' ? '#ef5350' : status === 'Under Scrutiny' ? '#ff9800' : '#42a5f5';
             return (
-              <div key={status} style={{ marginBottom: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '3px' }}>
-                  <span style={{ color: 'var(--text-dark)' }}>{status}</span>
-                  <span style={{ fontWeight: 700 }}>{count} ({pct}%)</span>
+              <div key={status} className="mb-2.5 last:mb-0">
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-on-background">{status}</span>
+                  <span className="font-bold text-on-background">{count} <span className="text-on-surface-variant font-normal">({pct}%)</span></span>
                 </div>
-                <div style={{ height: '5px', background: '#f0f0f0', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ width: `${pct}%`, background: clr, height: '100%', borderRadius: '3px', transition: 'width 0.5s ease' }} />
+                <div className="h-1.5 bg-surface-variant rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-500 ease-in-out" style={{ width: `${pct}%`, background: clr }} />
                 </div>
               </div>
             );
@@ -206,13 +248,13 @@ const MandalOverviewPanel = ({ summary, appIntel, vistar }) => {
 
       {/* Scheme category distribution */}
       {appIntel?.by_scheme_category && (
-        <div style={{ background: 'var(--surface-lowest)', border: '1px solid var(--outline-variant)', borderRadius: '10px', padding: '12px' }}>
-          <div style={{ fontWeight: 700, fontSize: '12px', marginBottom: '10px', color: 'var(--text-dark)' }}>Scheme Category Distribution</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+        <div className="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+          <div className="font-bold text-[13px] mb-3 text-on-background">Scheme Category Distribution</div>
+          <div className="grid grid-cols-2 gap-2">
             {Object.entries(appIntel.by_scheme_category).slice(0, 6).map(([cat, cnt]) => (
-              <div key={cat} style={{ background: '#f8f9fa', borderRadius: '8px', padding: '7px 10px', fontSize: '11px' }}>
-                <div style={{ color: '#888', fontSize: '9px', marginBottom: '2px', textTransform: 'uppercase' }}>{cat || 'Other'}</div>
-                <b>{cnt}</b>
+              <div key={cat} className="bg-surface-container-low rounded-lg p-2.5 text-xs">
+                <div className="text-on-surface-variant text-[10px] mb-1 uppercase tracking-wider">{cat || 'Other'}</div>
+                <b className="text-on-background text-sm">{cnt}</b>
               </div>
             ))}
           </div>
@@ -221,10 +263,15 @@ const MandalOverviewPanel = ({ summary, appIntel, vistar }) => {
 
       {/* AI insights */}
       {vistar?.insights?.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <div style={{ fontWeight: 700, fontSize: '12px', color: 'var(--text-dark)' }}>🧠 Supervisory Insights</div>
+        <div className="flex flex-col gap-2 mt-1">
+          <div className="font-bold text-[13px] text-on-background flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[16px] text-primary">tips_and_updates</span>
+            Supervisory Insights
+          </div>
           {vistar.insights.map((ins, i) => (
-            <div key={i} style={{ background: '#f8f9fa', border: '1px solid #e0e0e0', borderRadius: '8px', padding: '8px 10px', fontSize: '11px', lineHeight: 1.5 }}>{ins}</div>
+            <div key={i} className="bg-surface-container-low border border-outline-variant rounded-lg p-3 text-xs text-on-background leading-relaxed shadow-sm">
+              {ins}
+            </div>
           ))}
         </div>
       )}
@@ -266,132 +313,221 @@ const CAODashboard = () => {
     }).finally(() => setLoading(false));
   }, [mid]);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  const kpiItems = [
-    { label: 'Pending Files',  value: DASHBOARD_KPIS.total_pending,        icon: 'pending_actions', color: 'var(--primary)',      bg: 'var(--primary-light)' },
-    { label: 'Red Alerts',     value: DASHBOARD_KPIS.red_queue,            icon: 'gpp_bad',         color: 'var(--error)',        bg: 'var(--error-light)' },
-    { label: 'Fraud Prevented',value: DASHBOARD_KPIS.fraud_prevented,      icon: 'security',        color: 'var(--success)',      bg: 'var(--success-light)' },
-    { label: 'Shops Overdue',  value: DASHBOARD_KPIS.shops_overdue,        icon: 'store_alert',     color: 'var(--amber)',        bg: 'var(--amber-light)' },
-    { label: 'PMFBY Claims',   value: DASHBOARD_KPIS.pmfby_pending,        icon: 'grain',           color: '#8e24aa',             bg: '#f3e5f5' },
-    { label: 'Avg Approval',   value: `${DASHBOARD_KPIS.avg_approval_days}d`, icon: 'timer',        color: 'var(--success-dark)', bg: 'var(--success-light)' },
-  ];
-
   const SUPERVISION_TABS = [
-    { id: 'sahayak', icon: 'group',      label: 'Sahayak Supervision' },
+    { id: 'sahayak', icon: 'group',      label: 'Sahayaks' },
     { id: 'vistar',  icon: 'school',     label: 'Krishi Vistar' },
-    { id: 'mandal',  icon: 'dashboard',  label: 'Mandal Overview' },
+    { id: 'mandal',  icon: 'dashboard',  label: 'Mandal Info' },
   ];
 
   return (
-    <div className="cao-root">
-      {/* ── Header ── */}
-      <header style={{ padding: 'var(--sp-4)', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
-          <h1 style={{ fontSize: '18px', margin: 0, fontWeight: 'bold' }}>KrishiNetra — CAO Intelligence Dashboard</h1>
-          <span style={{ fontSize: '12px', opacity: 0.8, borderLeft: '1px solid rgba(255,255,255,0.3)', paddingLeft: '12px' }}>
-            {CAO_PROFILE.mandal}, {CAO_PROFILE.district} · Circle Agriculture Officer
-          </span>
-        </div>
+    <div className="flex-1 flex flex-col min-w-0 animate-fade-in w-full">
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
-          <button className="cao-pmfby-btn" onClick={() => setPmfbyOpen(true)}>
-            <span className="material-symbols-outlined">satellite_alt</span>
-            PMFBY Disaster Triage
-            <span className="cao-pmfby-badge">{PMFBY_EVENTS.length}</span>
+      {/* Top App Bar (Full Width, Pulled out of padding) */}
+      <header className="bg-white border-b border-surface-variant px-8 py-4 -mt-8 -mx-8 mb-8 flex items-center justify-between sticky top-0 z-50">
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-3 font-body-main text-[13px] text-on-surface-variant">
+          <a className="hover:text-primary transition-colors" href="#">Hadapsar Mandal</a>
+          <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
+          <a className="hover:text-primary transition-colors" href="#">Haveli Taluka</a>
+          <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
+          <a className="hover:text-primary transition-colors" href="#">Pune District</a>
+          <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
+          <span className="text-on-surface-variant font-medium">Circle Agriculture Officer</span>
+        </nav>
+        
+        <div className="flex items-center gap-4">
+          <button className="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors flex items-center justify-center">
+            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>notifications</span>
           </button>
-          <div style={{ fontSize: '14px', fontWeight: 'bold', borderLeft: '1px solid rgba(255,255,255,0.3)', paddingLeft: '16px' }}>
-            {user?.name || CAO_PROFILE.name}
+          <button className="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors flex items-center justify-center">
+            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>settings</span>
+          </button>
+          <div className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-sm text-on-surface-variant ml-2 border border-outline-variant">
+            C
           </div>
-          <button className="btn-outline btn-sm text-white" style={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }} onClick={handleLogout}>
-            Logout
-          </button>
         </div>
       </header>
 
-      {/* ── KPI Strip ── */}
-      <div className="cao-kpi-strip">
-        {kpiItems.map((k, i) => (
-          <div className="cao-kpi-card" key={i} style={{ '--kpi-color': k.color, '--kpi-bg': k.bg }}>
-            <span className="material-symbols-outlined cao-kpi-icon">{k.icon}</span>
-            <div>
-              <div className="cao-kpi-value">{k.value}</div>
-              <div className="cao-kpi-label">{k.label}</div>
+      {/* Main Content Area */}
+      <div className="max-w-[1600px] mx-auto w-full">
+        {/* KPI Row */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6 mb-6">
+          {/* Card 1: Pending Files */}
+          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>description</span>
+              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Pending Files</span>
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none">71</span>
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex-1 bg-surface-variant h-1 rounded-full overflow-hidden">
+                  <div className="bg-error h-full rounded-full" style={{ width: '12%' }}></div>
+                </div>
+                <span className="text-[11px] text-error font-data-tabular font-medium">12%</span>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* ── Main Grid: now 3 columns ── */}
-      <div className="cao-grid cao-grid-3col">
-        {/* Col 1: Action Map */}
-        <div className="cao-panel cao-panel--map">
-          <div className="cao-panel-header">
-            <span className="material-symbols-outlined">map</span>
-            <span>Mandal Action Map — {CAO_PROFILE.jurisdiction}</span>
-            <span className="cao-panel-badge green">Live</span>
+          
+          {/* Card 2: Red Alerts */}
+          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>warning</span>
+              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Red Alerts</span>
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <span className="font-display-lg text-[32px] font-bold text-error leading-none">3</span>
+            </div>
+            <div className="mt-4">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-error-container text-on-error-container">! Critical</span>
+            </div>
           </div>
-          <ActionMap />
+          
+          {/* Card 3: Fraud Prevented */}
+          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>security</span>
+              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Fraud Prevented</span>
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <span className="font-display-lg text-[28px] font-bold text-on-background leading-none">₹1.05 <span className="text-xl">L</span></span>
+            </div>
+            <div className="mt-4">
+              <p className="font-body-main text-xs text-on-surface-variant">This week</p>
+            </div>
+          </div>
+          
+          {/* Card 4: Shops Overdue */}
+          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>storefront</span>
+              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Shops Overdue</span>
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none">2</span>
+            </div>
+            <div className="mt-4">
+              <p className="font-body-main text-xs text-on-surface-variant">Inspections</p>
+            </div>
+          </div>
+          
+          {/* Card 5: PMFBY Claims */}
+          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant" onClick={() => setPmfbyOpen(true)}>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>account_balance</span>
+              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">PMFBY Claims</span>
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none">318</span>
+            </div>
+            <div className="mt-4 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant"></span>
+              <span className="font-body-main text-xs text-on-surface-variant">Processed</span>
+            </div>
+          </div>
+          
+          {/* Card 6: Avg Approval */}
+          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>schedule</span>
+              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Avg Approval</span>
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none">4.2d</span>
+            </div>
+            <div className="mt-4">
+              <p className="font-body-main text-xs text-on-surface-variant">Target: 3d</p>
+            </div>
+          </div>
         </div>
 
-        {/* Col 2: Supervision Tabs (Sahayak / Vistar / Mandal Overview) */}
-        <div className="cao-panel cao-panel--supervision">
-          {/* Tab bar */}
-          <div style={{ display: 'flex', gap: '4px', padding: '8px 12px', background: 'var(--surface-low)', borderBottom: '1px solid var(--outline-variant)' }}>
-            {SUPERVISION_TABS.map(tab => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                style={{
-                  flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
-                  padding: '6px 4px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                  fontSize: '9px', fontWeight: 700, transition: 'all .15s',
-                  background: activeTab === tab.id ? 'var(--primary)' : 'transparent',
-                  color: activeTab === tab.id ? 'white' : 'var(--text-muted)',
-                }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{tab.icon}</span>
-                {tab.label}
-              </button>
-            ))}
+        {/* Main Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+          {/* Left Column (Spans 8 cols) */}
+          <div className="lg:col-span-8 flex flex-col gap-10 lg:gap-12">
+            {/* Map Container */}
+            <div className="bg-white rounded-xl overflow-hidden flex flex-col shadow-sm h-[560px]">
+              <div className="p-5 flex justify-between items-center z-10 border-b border-surface-variant">
+                <div>
+                  <h2 className="font-section-header text-section-header text-on-background">Circle — Geo-fenced Command Map</h2>
+                  <p className="font-body-main text-sm text-on-surface-variant mt-1">Live spatial analytics and telemetry</p>
+                </div>
+                <button className="flex items-center gap-2 px-3 py-1.5 bg-surface-container rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors font-medium text-xs text-on-background">
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>layers</span> Layers
+                </button>
+              </div>
+              <div className="relative flex-1 bg-[#f0f3f2]">
+                <ActionMap />
+              </div>
+            </div>
+
+            {/* Sahayak Matrix */}
+            <div className="bg-white rounded-xl overflow-hidden shadow-sm flex flex-col">
+              <div className="p-5 border-b border-surface-variant flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-on-surface-variant">leaderboard</span>
+                  <h3 className="font-section-header text-section-header text-on-background">Sahayak Accountability Matrix</h3>
+                </div>
+                <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-[#fff3e0] text-[#e65100]">
+                  {DASHBOARD_KPIS.sahayaks_critical} Critical
+                </span>
+              </div>
+              <div className="p-0">
+                <SahayakMatrix sahayaks={SAHAYAKS} />
+              </div>
+            </div>
           </div>
 
-          {loading && (
-            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)', fontSize: '13px' }}>
-              Loading data…
-            </div>
-          )}
+          {/* Right Column (Spans 4 cols) */}
+          <div className="lg:col-span-4 flex flex-col gap-8">
+            
+            {/* Supervision Tabs Widget */}
+            <div className="bg-white rounded-xl shadow-sm flex flex-col h-[400px]">
+              {/* Tab bar */}
+              <div className="flex gap-2 p-3 bg-surface-container-lowest border-b border-surface-variant rounded-t-xl">
+                {SUPERVISION_TABS.map(tab => (
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-lg transition-all duration-200 ${
+                      activeTab === tab.id 
+                        ? 'bg-primary text-white shadow-md' 
+                        : 'bg-transparent text-on-surface-variant hover:bg-surface-container-low'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{tab.icon}</span>
+                    <span className="text-[10px] font-bold tracking-wide">{tab.label}</span>
+                  </button>
+                ))}
+              </div>
 
-          {/* Tab content */}
-          {!loading && activeTab === 'sahayak' && (
-            <SahayakSupervisionPanel summary={summary} vistar={vistar} />
-          )}
-          {!loading && activeTab === 'vistar' && (
-            <VistarSupervisionPanel vistar={vistar} fraudSes={fraudSes} />
-          )}
-          {!loading && activeTab === 'mandal' && (
-            <MandalOverviewPanel summary={summary} appIntel={appIntel} vistar={vistar} />
-          )}
-        </div>
-
-        {/* Col 3: Right column stacked — Shop Tracker + Sahayak Matrix */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)' }}>
-          <div className="cao-panel cao-panel--shops" style={{ flex: 1 }}>
-            <div className="cao-panel-header">
-              <span className="material-symbols-outlined">storefront</span>
-              <span>Krushi Seva Kendra Tracker</span>
-              <span className="cao-panel-badge amber">{DASHBOARD_KPIS.shops_overdue} Overdue</span>
+              {loading ? (
+                <div className="flex-1 flex items-center justify-center text-on-surface-variant text-sm">
+                  Loading data…
+                </div>
+              ) : (
+                <>
+                  {activeTab === 'sahayak' && <SahayakSupervisionPanel summary={summary} vistar={vistar} />}
+                  {activeTab === 'vistar' && <VistarSupervisionPanel vistar={vistar} fraudSes={fraudSes} />}
+                  {activeTab === 'mandal' && <MandalOverviewPanel summary={summary} appIntel={appIntel} vistar={vistar} />}
+                </>
+              )}
             </div>
-            <ShopTracker />
-          </div>
 
-          <div className="cao-panel cao-panel--sahayak" style={{ flex: 1 }}>
-            <div className="cao-panel-header">
-              <span className="material-symbols-outlined">leaderboard</span>
-              <span>Sahayak Accountability Matrix</span>
-              <span className="cao-panel-badge orange">{DASHBOARD_KPIS.sahayaks_critical} Critical</span>
+            {/* Shop Tracker Widget */}
+            <div className="bg-white rounded-xl shadow-sm flex flex-col overflow-hidden">
+              <div className="p-5 border-b border-surface-variant flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-on-surface-variant">storefront</span>
+                  <h3 className="font-section-header text-section-header text-on-background">Krushi Seva Kendra</h3>
+                </div>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-medium bg-[#fff8e1] text-[#f57f17]">
+                  {DASHBOARD_KPIS.shops_overdue} Overdue
+                </span>
+              </div>
+              <div className="p-0">
+                <ShopTracker />
+              </div>
             </div>
-            <SahayakMatrix sahayaks={SAHAYAKS} />
+
           </div>
         </div>
       </div>
@@ -405,3 +541,4 @@ const CAODashboard = () => {
 };
 
 export default CAODashboard;
+

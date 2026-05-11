@@ -91,14 +91,29 @@ const MandalDashboard = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-      {/* Header */}
-      <div>
-        <span style={{ fontSize: '10px', fontWeight: 700, background: '#e8f5e9', color: '#2e7d32', padding: '2px 10px', borderRadius: '12px' }}>
-          {currentMandal.district} District · MKA Supervisory View
-        </span>
-        <h2 style={{ margin: '6px 0 2px', fontWeight: 800, fontSize: '20px' }}>{currentMandal.name} Mandal</h2>
-        <p style={{ fontSize: '12px', color: '#888', margin: 0 }}>Mandal Krishi Adhikari — Read-only supervisory intelligence</p>
-      </div>
+      {/* ── Header ── */}
+      <header className="cao-header" style={{ marginLeft: '-var(--sp-6)', marginRight: '-var(--sp-6)', marginTop: '-var(--sp-6)' }}>
+        <div className="cao-header-left">
+          <div className="logo-text">
+            <span className="material-symbols-outlined" style={{ color: 'var(--primary)', marginRight: '8px', fontSize: '24px' }}>public</span>
+            Krishi Prabandh - Mandal
+          </div>
+        </div>
+
+        <div className="cao-header-center" style={{ flex: 1, display: 'flex', justifyContent: 'center', fontSize: '13px', color: 'var(--text-muted)', gap: '16px' }}>
+          <span>{currentMandal.name} Mandal</span> • 
+          <span>{currentMandal.district} District</span> •
+          <span>Mandal Krishi Adhikari</span>
+        </div>
+
+        <div className="cao-header-right">
+          <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>notifications</span>
+          <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>settings</span>
+          <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--text-dark)', cursor: 'pointer' }}>
+            M
+          </div>
+        </div>
+      </header>
 
       {/* Tab Bar */}
       <div style={{ display: 'flex', gap: '6px', background: '#f5f5f5', borderRadius: '12px', padding: '4px', overflowX: 'auto' }}>
@@ -121,11 +136,27 @@ const MandalDashboard = () => {
       {!loading && activeTab === 'overview' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <SectionHeader icon="bar_chart" title="Mandal Overview" subtitle="Aggregate application statistics" />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <StatCard icon="assignment"    label="Total Applications" value={summary?.total_applications}  color="#0055A4" bg="#e3f2fd" />
-            <StatCard icon="pending"       label="Pending Action"     value={(summary?.by_status?.Applied || 0) + (summary?.by_status?.['Under Scrutiny'] || 0)} color="#e65100" bg="#fff3e0" />
-            <StatCard icon="check_circle"  label="Approved"           value={summary?.by_status?.Approved}  color="#2e7d32" bg="#e8f5e9" />
-            <StatCard icon="gpp_bad"       label="Fraud Alerts"       value={summary?.fraud_alerts}          color="#c62828" bg="#ffebee" />
+          <div className="cao-kpi-strip" style={{ margin: '0 -var(--sp-6)', borderTop: '1px solid var(--outline-card)', borderBottom: '1px solid var(--outline-card)' }}>
+            <div className="kpi-card-stitch">
+              <div className="kpi-card-header"><span className="material-symbols-outlined" style={{ color: '#0055A4' }}>assignment</span> <span style={{ color: '#0055A4' }}>TOTAL APPS</span></div>
+              <div className="kpi-card-value" style={{ color: '#0055A4' }}>{summary?.total_applications ?? '—'}</div>
+              <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>Mandal-wide</div>
+            </div>
+            <div className="kpi-card-stitch">
+              <div className="kpi-card-header"><span className="material-symbols-outlined" style={{ color: '#e65100' }}>pending</span> <span style={{ color: '#e65100' }}>PENDING ACTION</span></div>
+              <div className="kpi-card-value" style={{ color: '#e65100' }}>{(summary?.by_status?.Applied || 0) + (summary?.by_status?.['Under Scrutiny'] || 0) || '—'}</div>
+              <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>Awaiting review</div>
+            </div>
+            <div className="kpi-card-stitch">
+              <div className="kpi-card-header"><span className="material-symbols-outlined" style={{ color: '#2e7d32' }}>check_circle</span> <span style={{ color: '#2e7d32' }}>APPROVED</span></div>
+              <div className="kpi-card-value" style={{ color: '#2e7d32' }}>{summary?.by_status?.Approved ?? '—'}</div>
+              <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>Verified clear</div>
+            </div>
+            <div className="kpi-card-stitch">
+              <div className="kpi-card-header"><span className="material-symbols-outlined" style={{ color: '#c62828' }}>gpp_bad</span> <span style={{ color: '#c62828' }}>FRAUD ALERTS</span></div>
+              <div className="kpi-card-value" style={{ color: '#c62828' }}>{summary?.fraud_alerts ?? '—'}</div>
+              <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}><span className="badge badge-error p-0 bg-transparent" style={{ color: '#c62828' }}>Needs Audit</span></div>
+            </div>
           </div>
 
           {/* Vistar quick stats */}

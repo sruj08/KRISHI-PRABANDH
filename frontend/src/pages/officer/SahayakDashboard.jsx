@@ -28,7 +28,6 @@ const SahayakDashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
 
-
   const [selectedApp, setSelectedApp] = useState(null);
   const [summary, setSummary] = useState(null);
   const [eligibleFarmers, setEligibleFarmers] = useState([]);
@@ -59,7 +58,6 @@ const SahayakDashboard = () => {
       setSelectedApp({ ...full, priority: getPriority(full), daysSince: getDaysSince(full.application_date) });
     } catch (error) {
       console.error('Failed to load application:', error);
-      // Fallback to basic list data if detailed fetch fails
       setSelectedApp({ ...app, priority: getPriority(app), daysSince: getDaysSince(app.application_date) });
     }
   };
@@ -67,82 +65,108 @@ const SahayakDashboard = () => {
   const displayName = 'Sahayak Krushi Adhikari';
   const displayLocation = 'Assigned: 5 Villages';
 
+  const statItems = [
+    { icon: 'assignment',    label: 'Total Applications', value: summary?.total_applications,         color: '#033621', bg: 'rgba(3,54,33,0.06)', path: '/applications' },
+    { icon: 'manage_search', label: 'Under Scrutiny',     value: summary?.by_status?.['Under Scrutiny'], color: '#B45309', bg: 'rgba(180,83,9,0.06)', path: '/applications' },
+    { icon: 'priority_high', label: 'High Priority',      value: summary?.by_priority?.HIGH,          color: '#ba1a1a', bg: 'rgba(186,26,26,0.06)', path: '/applications' },
+    { icon: 'warning',       label: 'Anomaly Alerts',     value: summary?.fraud_alerts,               color: '#4d2024', bg: 'rgba(77,32,36,0.06)', path: '/fraud-alerts' },
+    { icon: 'check_circle',  label: 'Approved',           value: summary?.by_status?.Approved,        color: '#396940', bg: 'rgba(57,105,64,0.06)', path: '/applications' },
+  ];
+
   return (
-    <div className="flex-col gap-6 animate-fade-in">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-8)', animation: 'fadeIn 0.4s ease' }}>
       <InsightModal app={selectedApp} onClose={() => setSelectedApp(null)} />
 
-      {/* Welcome Banner */}
-      <section>
-        <div className="flex justify-between items-start">
-          <div>
-            <h2 className="text-xl fw-bold text-success-dark">
-              {t(`Good Morning, ${displayName}`, lang)}
-            </h2>
-            <p className="text-muted mt-1">{t(displayLocation, lang)}</p>
+      {/* ── Header ── */}
+      <header className="cao-header" style={{ marginLeft: '-var(--sp-6)', marginRight: '-var(--sp-6)', marginTop: '-var(--sp-6)', marginBottom: 'var(--sp-6)' }}>
+        <div className="cao-header-left">
+          <div className="logo-text">
+            <span className="material-symbols-outlined" style={{ color: 'var(--primary)', marginRight: '8px', fontSize: '24px' }}>public</span>
+            Krishi Prabandh - Sahayak
           </div>
-          <span className={`badge ${apiOnline ? 'badge-verified' : 'badge-grey'}`} style={{ fontSize: '10px', marginTop: '4px' }}>
-            {apiOnline ? '🟢 API Live' : '🟡 Offline Mode'}
+        </div>
+
+        <div className="cao-header-center" style={{ flex: 1, display: 'flex', justifyContent: 'center', fontSize: '13px', color: 'var(--text-muted)', gap: '16px' }}>
+          <span>{t(displayLocation, lang)}</span> • 
+          <span>{t(displayName, lang)}</span>
+        </div>
+
+        <div className="cao-header-right">
+          <span className="badge badge-verified" style={{ fontSize: '11px', marginRight: '8px' }}>
+            {apiOnline ? 'API Live' : 'Offline Mode'}
           </span>
+          <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>notifications</span>
+          <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>settings</span>
+          <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--text-dark)', cursor: 'pointer' }}>
+            S
+          </div>
+        </div>
+      </header>
+
+      {/* ── Quick Actions ── */}
+      <section>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--sp-4)' }}>
+          {[
+            { icon: 'add_a_photo',    label: t('Upload Photo', lang),    path: '/capture-photo',  color: 'var(--primary)',  bg: 'rgba(3,54,33,0.06)' },
+            { icon: 'post_add',       label: t('Applications', lang),    path: '/applications',   color: 'var(--amber)',    bg: 'rgba(180,83,9,0.06)' },
+            { icon: 'groups',         label: t('Eligible Farmers', lang),path: '/advanced-tools', color: 'var(--success)',  bg: 'rgba(57,105,64,0.06)' },
+            { icon: 'directions_car', label: t("Today's Visits", lang), path: '/visit-planner',  color: 'var(--tertiary)', bg: 'rgba(77,32,36,0.06)' },
+            { icon: 'gpp_bad',        label: t('Anomaly Alerts', lang),  path: '/fraud-alerts',   color: 'var(--tertiary)', bg: 'rgba(77,32,36,0.06)' },
+            { icon: 'qr_code_2',      label: 'Gram Sabha',              path: '/gram-sabha',     color: 'var(--primary)',  bg: 'var(--primary)', special: true },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="quick-action-btn"
+              onClick={() => navigate(item.path)}
+              style={item.special ? {
+                border: '2px solid var(--primary)',
+                background: 'rgba(3,54,33,0.04)',
+              } : {}}
+            >
+              <div style={{
+                width: '48px', height: '48px',
+                borderRadius: 'var(--radius-lg)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: item.special ? 'var(--primary)' : item.bg,
+                color: item.special ? 'white' : item.color,
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>{item.icon}</span>
+              </div>
+              <span className="quick-action-label" style={item.special ? { color: 'var(--primary)', fontWeight: 800 } : {}}>
+                {item.label}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Quick Actions */}
-      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--sp-3)' }}>
-        <div className="quick-action-btn" onClick={() => navigate('/capture-photo')}>
-          <div className="quick-action-icon blue"><span className="material-symbols-outlined">add_a_photo</span></div>
-          <span className="quick-action-label">{t('Upload Photo', lang)}</span>
-        </div>
-        <div className="quick-action-btn" onClick={() => navigate('/applications')}>
-          <div className="quick-action-icon amber"><span className="material-symbols-outlined">post_add</span></div>
-          <span className="quick-action-label">{t('Applications', lang)}</span>
-        </div>
-        <div className="quick-action-btn" onClick={() => navigate('/advanced-tools')}>
-          <div className="quick-action-icon green"><span className="material-symbols-outlined">groups</span></div>
-          <span className="quick-action-label">{t('Eligible Farmers', lang)}</span>
-        </div>
-        <div className="quick-action-btn" onClick={() => navigate('/visit-planner')}>
-          <div className="quick-action-icon rose"><span className="material-symbols-outlined">directions_car</span></div>
-          <span className="quick-action-label">{t("Today's Visits", lang)}</span>
-        </div>
-        <div className="quick-action-btn" onClick={() => navigate('/fraud-alerts')}>
-          <div className="quick-action-icon" style={{ background: '#f3e5f5', color: '#7b1fa2' }}><span className="material-symbols-outlined">gpp_bad</span></div>
-          <span className="quick-action-label">{t('Fraud Alerts', lang)}</span>
-        </div>
-        <div className="quick-action-btn" onClick={() => navigate('/gram-sabha')}
-          style={{ border: '2px solid var(--success)', background: 'var(--success-light)' }}>
-          <div className="quick-action-icon green" style={{ background: 'var(--success)', color: 'white' }}>
-            <span className="material-symbols-outlined">qr_code_2</span>
-          </div>
-          <span className="quick-action-label" style={{ color: 'var(--success-dark)', fontWeight: 800 }}>
-            Gram Sabha
-          </span>
-        </div>
-      </section>
-
-      {/* Live Summary */}
-      <section>
-        <h3 className="section-title">{t('Live Summary', lang)}</h3>
+      {/* ── Live Summary ── */}
+      <section style={{ margin: '0 -var(--sp-6) var(--sp-6)' }}>
         {loading ? (
-          <div className="text-muted text-sm p-4 text-center">Loading data...</div>
+          <div style={{
+            textAlign: 'center', padding: 'var(--sp-8)',
+            color: 'var(--text-muted)', fontFamily: 'var(--font-data)', fontSize: 'var(--font-size-sm)',
+          }}>
+            Loading data...
+          </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            {[
-              { icon: 'assignment',     label: 'Total Applications', value: summary?.total_applications,         color: '#0055A4', bg: '#e3f2fd', path: '/applications' },
-              { icon: 'manage_search',  label: 'Under Scrutiny',     value: summary?.by_status?.['Under Scrutiny'], color: '#e65100', bg: '#fff3e0', path: '/applications' },
-              { icon: 'priority_high',  label: 'High Priority',      value: summary?.by_priority?.HIGH,          color: '#c62828', bg: '#ffebee', path: '/applications' },
-              { icon: 'warning',        label: 'Fraud Alerts',       value: summary?.fraud_alerts,               color: '#7b1fa2', bg: '#f3e5f5', path: '/fraud-alerts' },
-              { icon: 'check_circle',   label: 'Approved',           value: summary?.by_status?.Approved,        color: '#2e7d32', bg: '#e8f5e9', path: '/applications' },
-            ].map((item, i) => (
+          <div className="cao-kpi-strip" style={{ borderTop: '1px solid var(--outline-card)', borderBottom: '1px solid var(--outline-card)' }}>
+            {statItems.map((item, i) => (
               <div
                 key={i}
-                className="card"
-                style={{ background: item.bg, border: `1px solid ${item.color}22`, padding: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
+                className="kpi-card-stitch"
                 onClick={() => navigate(item.path)}
+                style={{ cursor: 'pointer' }}
               >
-                <span className="material-symbols-outlined" style={{ color: item.color, fontSize: '28px' }}>{item.icon}</span>
-                <div>
-                  <div style={{ fontSize: '22px', fontWeight: 800, color: item.color, lineHeight: 1 }}>{item.value ?? '—'}</div>
-                  <div style={{ fontSize: '11px', color: item.color, opacity: 0.8, marginTop: '2px' }}>{item.label}</div>
+                <div className="kpi-card-header">
+                  <span className="material-symbols-outlined" style={{ color: item.color }}>{item.icon}</span> 
+                  <span style={{ color: item.color }}>{item.label}</span>
+                </div>
+                <div className="kpi-card-value" style={{ color: item.color }}>
+                  {item.value ?? '—'}
+                </div>
+                <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>
+                  Active
                 </div>
               </div>
             ))}
@@ -150,16 +174,16 @@ const SahayakDashboard = () => {
         )}
       </section>
 
-      {/* District Impact Pulse */}
+      {/* ── District Impact Pulse ── */}
       <section>
-        <div className="flex justify-between items-center mb-4">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
           <h3 className="section-title" style={{ margin: 0 }}>{t('District Impact Pulse', lang)}</h3>
-          <button className="btn btn-outline btn-sm text-primary" onClick={() => navigate('/advanced-tools')}>
+          <button className="btn btn-outline btn-sm" style={{ color: 'var(--primary)' }} onClick={() => navigate('/advanced-tools')}>
             {t('Full View', lang)}
           </button>
         </div>
         <div className="glass-panel">
-          <div style={{ display: 'flex', overflowX: 'auto', gap: 'var(--sp-6)', paddingBottom: 'var(--sp-2)' }}>
+          <div style={{ display: 'flex', overflowX: 'auto', gap: 'var(--sp-8)', paddingBottom: 'var(--sp-2)' }}>
             <CircularGauge value={summary?.by_priority?.HIGH ?? 0}         label="High Priority"   subtext="Needs Action"      color="var(--error)" />
             <CircularGauge value={summary?.by_status?.['Under Scrutiny'] ?? 0} label="Under Scrutiny" subtext="Being Processed"  color="var(--primary)" />
             <CircularGauge value={summary?.by_status?.Approved ?? 0}       label="Approved"        subtext="This Cycle"        color="var(--success)" />
@@ -167,34 +191,59 @@ const SahayakDashboard = () => {
         </div>
       </section>
 
-      {/* Eligible Farmers */}
-      <section className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+      {/* ── Eligible Farmers ── */}
+      <section style={{ marginBottom: 'var(--sp-6)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
           <h3 className="section-title" style={{ margin: 0 }}>{t('Eligible Farmers', lang)}</h3>
-          <button className="text-primary fw-bold text-sm bg-transparent border-none" onClick={() => navigate('/applications')}>
+          <button
+            style={{
+              background: 'transparent', border: 'none',
+              color: 'var(--primary)', fontFamily: 'var(--font-data)',
+              fontSize: 'var(--font-size-xs)', fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.06em',
+              cursor: 'pointer',
+            }}
+            onClick={() => navigate('/applications')}
+          >
             {t('View All', lang)}
           </button>
         </div>
-        <div className="flex-col gap-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
           {eligibleFarmers.length === 0 && !loading && (
-            <div className="text-center text-muted p-4">No eligible farmers found.</div>
+            <div style={{
+              textAlign: 'center', color: 'var(--text-muted)', padding: 'var(--sp-6)',
+              fontFamily: 'var(--font-data)', fontSize: 'var(--font-size-sm)',
+            }}>
+              No eligible farmers found.
+            </div>
           )}
           {eligibleFarmers.map((app, index) => (
             <div
               key={index}
               className="card"
-              style={{ padding: '12px 16px', cursor: 'pointer', borderLeft: `4px solid ${getPriority(app) === 'HIGH' ? '#ef5350' : '#42a5f5'}` }}
+              style={{
+                padding: 'var(--sp-4) var(--sp-5)', cursor: 'pointer',
+                borderLeft: `4px solid ${getPriority(app) === 'HIGH' ? 'var(--error)' : 'var(--primary)'}`,
+              }}
               onClick={() => handleFarmerClick(app)}
             >
-              <div className="flex justify-between items-start">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                  <div className="fw-bold text-sm">{app.farmer_id || '—'}</div>
-                  <div className="text-sm text-muted mt-1">{app.component || '—'}</div>
-                  <div className="text-xs text-muted">{app.scheme_name || '—'}</div>
+                  <div style={{ fontWeight: 700, fontSize: 'var(--font-size-sm)', color: 'var(--text-dark)' }}>
+                    {app.farmer_id || '—'}
+                  </div>
+                  <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    {app.component || '—'}
+                  </div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)' }}>
+                    {app.scheme_name || '—'}
+                  </div>
                 </div>
-                <div className="flex-col items-end gap-1">
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                   <span className="badge badge-grey" style={{ fontSize: '10px' }}>{app.scheme_category || '—'}</span>
-                  <span className="text-xs text-muted mt-1">{app.remarks || 'No remarks'}</span>
+                  <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    {app.remarks || 'No remarks'}
+                  </span>
                 </div>
               </div>
             </div>

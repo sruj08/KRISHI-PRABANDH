@@ -24,64 +24,108 @@ const Login = () => {
   };
 
   return (
-    <div className="flex-col" style={{ minHeight: '100vh', backgroundColor: 'var(--primary)', color: 'white' }}>
-      <header className="p-4 flex justify-between items-center">
-        <h1 className="text-lg fw-bold" style={{ margin: 0, color: 'white' }}>{t("AgriField Gov", lang)}</h1>
-        <button 
-          className="btn-outline btn-sm text-white border-white" 
-          style={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}
-          onClick={toggleLanguage}
-        >
-          {lang === 'en' ? 'मराठी' : 'English'}
-        </button>
-      </header>
-
-      <main className="flex-1 flex flex-col justify-center items-center p-6">
-        <div style={{ textAlign: 'center', marginBottom: 'var(--sp-8)' }}>
-          <div 
-            style={{ 
-              width: '80px', height: '80px', 
-              background: 'white', 
-              borderRadius: '50%', 
-              margin: '0 auto var(--sp-4)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}
-          >
-            <span className="material-symbols-outlined text-primary" style={{ fontSize: '48px' }}>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      fontFamily: 'var(--font-body)',
+    }}>
+      {/* Left Branding Panel */}
+      <div style={{
+        flex: '0 0 45%',
+        background: 'linear-gradient(160deg, #033621 0%, #1f4d36 50%, #214f38 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 'var(--sp-16)',
+        position: 'relative',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }} />
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <div style={{
+            width: '80px', height: '80px',
+            background: 'rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: 'var(--radius-xl)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto var(--sp-6)',
+            border: '1px solid rgba(255,255,255,0.15)',
+          }}>
+            <span className="material-symbols-outlined" style={{ color: '#a0d2b3', fontSize: '40px' }}>
               admin_panel_settings
             </span>
           </div>
-          <h2 className="text-xl fw-bold" style={{ color: 'white' }}>{t("Secure Government Officer Portal", lang)}</h2>
+          <h2 style={{
+            fontFamily: 'var(--font-headline)',
+            fontSize: '28px', fontWeight: 700, color: '#ffffff',
+            margin: '0 0 var(--sp-2)',
+          }}>
+            {t("Secure Government Officer Portal", lang)}
+          </h2>
+          <p style={{
+            fontFamily: 'var(--font-data)',
+            fontSize: '11px', fontWeight: 700, color: '#a0d2b3',
+            letterSpacing: '0.15em', textTransform: 'uppercase',
+          }}>
+            Maharashtra State Agriculture Department
+          </p>
         </div>
+      </div>
 
-        <div className="card w-full max-w-sm" style={{ padding: 'var(--sp-8)' }}>
-          <form onSubmit={handleSubmit} className="flex-col gap-4">
+      {/* Right Login Form */}
+      <div style={{
+        flex: 1,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+        padding: 'var(--sp-8)',
+        backgroundColor: 'var(--surface)',
+      }}>
+        <div style={{ width: '100%', maxWidth: '380px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-8)' }}>
+            <h3 style={{
+              fontFamily: 'var(--font-headline)',
+              fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-dark)', margin: 0,
+            }}>
+              {t("Officer Login", lang)}
+            </h3>
+            <button
+              onClick={toggleLanguage}
+              style={{
+                padding: '4px 12px', fontSize: '11px', fontWeight: 700,
+                background: 'var(--surface-container)', color: 'var(--text-dark)',
+                borderRadius: 'var(--radius)', border: '1px solid var(--outline-card)',
+                cursor: 'pointer',
+              }}
+            >
+              {lang === 'en' ? 'मराठी' : 'English'}
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)' }}>
             <div className="form-group">
               <label className="form-label">{t("Officer ID", lang)}</label>
               <div className="form-input-with-icon">
                 <span className="material-symbols-outlined input-icon">badge</span>
                 <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="e.g. AGRI-9920" 
-                  value={officerId}
-                  onChange={(e) => setOfficerId(e.target.value)}
-                  required
+                  type="text" className="form-input" placeholder="e.g. AGRI-9920" 
+                  value={officerId} onChange={(e) => setOfficerId(e.target.value)} required
                 />
               </div>
             </div>
 
-            <div className="form-group mb-4">
+            <div className="form-group">
               <label className="form-label">{t("Password / OTP", lang)}</label>
               <div className="form-input-with-icon">
                 <span className="material-symbols-outlined input-icon">lock</span>
                 <input 
-                  type="password" 
-                  className="form-input" 
-                  placeholder="••••••••" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  type="password" className="form-input" placeholder="••••••••" 
+                  value={password} onChange={(e) => setPassword(e.target.value)} required
                 />
               </div>
             </div>
@@ -90,12 +134,15 @@ const Login = () => {
               {t("Authenticate & Access", lang)}
             </Button>
           </form>
-        </div>
-      </main>
 
-      <footer className="p-4 text-center text-sm" style={{ opacity: 0.8 }}>
-        Maharashtra State Agriculture Department © 2024
-      </footer>
+          <p style={{
+            marginTop: 'var(--sp-10)', textAlign: 'center',
+            fontFamily: 'var(--font-data)', fontSize: '11px', color: 'var(--text-muted)',
+          }}>
+            Maharashtra State Agriculture Department © 2024
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

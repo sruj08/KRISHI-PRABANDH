@@ -5,7 +5,7 @@ import { useToast } from '../hooks/useToast.jsx';
 import Button from '../components/ui/Button';
 import StatusBadge from '../components/ui/StatusBadge';
 import InsightModal from '../components/ui/InsightModal';
-import { fetchFraudAlerts, updateApplicationStatus, postLog } from '../utils/api';
+import { fetchFraudAlerts, updateApplicationStatus } from '../utils/api';
 
 const FraudAlerts = () => {
   const { t, lang } = useLanguage();
@@ -42,7 +42,7 @@ const FraudAlerts = () => {
     setActionLoading(alert.application_id);
     try {
       const updated = await updateApplicationStatus(alert.application_id, 'Under Scrutiny', 'Marked for investigation');
-      await postLog({ action: 'INVESTIGATE', application_id: alert.application_id, details: 'Fraud investigation initiated' });
+      // await postLog({ action: 'INVESTIGATE', application_id: alert.application_id, details: 'Fraud investigation initiated' });
       setAlerts(prev => prev.map(a =>
         a.application_id === alert.application_id ? { ...a, ...updated } : a
       ));

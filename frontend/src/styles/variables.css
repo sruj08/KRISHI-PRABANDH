@@ -1,82 +1,143 @@
 /* =========================================================
-   Krishi-Prabandh — Design Tokens (Operational/Minimal)
+   Krishi-Prabandh — Design Tokens
+   Source: Stitch "Agricultural Intelligence Interface"
+   Project: 4810585282142419495
    ========================================================= */
 
 @theme {
-  --color-primary: #0F5132;
-  --color-primary-dark: #0A3622;
-  --color-primary-light: #D1E7DD;
-  --color-on-primary: #FFFFFF;
-  
-  --color-success: #0F5132;
-  --color-success-dark: #0A3622;
-  --color-success-light: #D1E7DD;
-  --color-success-medium: #198754;
-  --color-on-success: #FFFFFF;
+  /* ── Primary ── */
+  --color-primary: #033621;
+  --color-primary-dark: #002112;
+  --color-primary-light: #bceece;
+  --color-primary-container: #1f4d36;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #8dbd9f;
+  --color-inverse-primary: #a0d2b3;
 
-  --color-error: #991B1B;
-  --color-error-dark: #7F1D1D;
-  --color-error-light: #FEE2E2;
-  --color-on-error: #FFFFFF;
+  /* ── Secondary (Sage Green) ── */
+  --color-secondary: #396940;
+  --color-secondary-light: #baf0bc;
+  --color-on-secondary: #ffffff;
 
+  /* ── Tertiary (Deep Crimson — alerts) ── */
+  --color-tertiary: #4d2024;
+  --color-tertiary-container: #683639;
+  --color-on-tertiary: #ffffff;
+
+  /* ── Error ── */
+  --color-error: #ba1a1a;
+  --color-error-dark: #93000a;
+  --color-error-light: #ffdad6;
+  --color-on-error: #ffffff;
+
+  /* ── Success (alias to Secondary) ── */
+  --color-success: #396940;
+  --color-success-dark: #20502a;
+  --color-success-light: #baf0bc;
+  --color-success-medium: #3f6f45;
+  --color-on-success: #ffffff;
+
+  /* ── Amber / Warning ── */
   --color-amber: #B45309;
   --color-amber-light: #FEF3C7;
-  --color-on-amber: #FFFFFF;
+  --color-on-amber: #ffffff;
 
-  --color-surface: #F8F9FA;
-  --color-surface-container: #F3F4F6;
-  --color-surface-low: #F9FAFB;
-  --color-surface-lowest: #FFFFFF;
-  --color-surface-variant: #E5E7EB;
+  /* ── Surfaces (Tonal Layering) ── */
+  --color-surface: #f9faf6;
+  --color-surface-dim: #d9dad7;
+  --color-surface-bright: #f9faf6;
+  --color-surface-container: #edeeea;
+  --color-surface-container-high: #e7e9e5;
+  --color-surface-container-highest: #e2e3df;
+  --color-surface-container-low: #f3f4f0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-variant: #e2e3df;
+  --color-surface-tint: #3a674f;
 }
 
 :root {
-  --primary: #0F5132;
-  --primary-dark: #0A3622;
-  --primary-light: #D1E7DD;
-  --on-primary: #FFFFFF;
-  
-  --success: #0F5132;
-  --success-dark: #0A3622;
-  --success-light: #D1E7DD;
-  --success-medium: #198754;
-  --on-success: #FFFFFF;
+  /* ── Primary ── */
+  --primary: #033621;
+  --primary-dark: #002112;
+  --primary-light: #bceece;
+  --primary-container: #1f4d36;
+  --on-primary: #ffffff;
+  --on-primary-container: #8dbd9f;
+  --inverse-primary: #a0d2b3;
 
-  --error: #991B1B;
-  --error-dark: #7F1D1D;
-  --error-light: #FEE2E2;
-  --on-error: #FFFFFF;
+  /* ── Secondary ── */
+  --secondary: #396940;
+  --secondary-light: #baf0bc;
+  --on-secondary: #ffffff;
+  --secondary-container: #baf0bc;
 
+  /* ── Tertiary ── */
+  --tertiary: #4d2024;
+  --tertiary-container: #683639;
+  --on-tertiary: #ffffff;
+
+  /* ── Error ── */
+  --error: #ba1a1a;
+  --error-dark: #93000a;
+  --error-light: #ffdad6;
+  --on-error: #ffffff;
+
+  /* ── Success ── */
+  --success: #396940;
+  --success-dark: #20502a;
+  --success-light: #baf0bc;
+  --success-medium: #3f6f45;
+  --on-success: #ffffff;
+
+  /* ── Amber / Warning ── */
   --amber: #B45309;
   --amber-light: #FEF3C7;
-  --on-amber: #FFFFFF;
+  --on-amber: #ffffff;
 
-  --surface: #F8F9FA;
-  --surface-container: #F3F4F6;
-  --surface-low: #F9FAFB;
-  --surface-lowest: #FFFFFF;
-  --surface-variant: #E5E7EB;
-  
-  --outline: #E5E7EB;
-  --outline-variant: #D1D5DB;
+  /* ── Surfaces (Tonal Layering — "The Silent Overseer") ── */
+  --surface: #f9faf6;
+  --surface-dim: #d9dad7;
+  --surface-bright: #f9faf6;
+  --surface-container: #edeeea;
+  --surface-container-high: #e7e9e5;
+  --surface-container-highest: #e2e3df;
+  --surface-low: #f3f4f0;
+  --surface-lowest: #ffffff;
+  --surface-variant: #e2e3df;
+  --surface-tint: #3a674f;
 
-  --text-dark: #111827;
-  --text-gray: #374151;
-  --text-muted: #6B7280;
+  /* ── Outline ── */
+  --outline: #717972;
+  --outline-variant: #c0c9c1;
+  --outline-card: #E2E9E6;
 
-  --sidebar-bg: #FFFFFF;
-  --sidebar-text: #4B5563;
-  --sidebar-text-active: #0F5132;
+  /* ── Text ── */
+  --text-dark: #1a1c1a;
+  --text-gray: #414943;
+  --text-muted: #717972;
 
-  --font-body: 'Inter', 'Roboto', system-ui, sans-serif;
-  --font-size-xs: 10px;
-  --font-size-sm: 12px;
-  --font-size-base: 14px;
-  --font-size-md: 16px;
-  --font-size-lg: 20px;
-  --font-size-xl: 24px;
-  --font-size-2xl: 28px;
+  /* ── Sidebar ── */
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #414943;
+  --sidebar-text-active: #033621;
 
+  /* ── Typography — 3-Tier Font System ── */
+  --font-headline: 'Public Sans', 'Noto Sans Devanagari', system-ui, sans-serif;
+  --font-body: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
+  --font-data: 'IBM Plex Sans', 'Noto Sans Devanagari', monospace, sans-serif;
+
+  /* ── Font Sizes ── */
+  --font-size-2xs: 10px;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 24px;
+  --font-size-xl: 32px;
+  --font-size-2xl: 48px;
+
+  /* ── Spacing (4px rhythm) ── */
+  --sp-base: 4px;
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
@@ -86,24 +147,95 @@
   --sp-8: 32px;
   --sp-10: 40px;
   --sp-12: 48px;
+  --sp-16: 64px;
 
-  --radius-sm: 2px;
-  --radius: 4px;
-  --radius-lg: 6px;
-  --radius-xl: 8px;
-  --radius-full: 9999px;
+  /* ── Border Radius (Rounded-XL Philosophy) ── */
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius: 0.5rem;       /* 8px — buttons, inputs */
+  --radius-md: 0.75rem;   /* 12px */
+  --radius-lg: 1rem;      /* 16px */
+  --radius-xl: 1.5rem;    /* 24px — cards */
+  --radius-full: 9999px;  /* pills */
 
-  --shadow-sm: none;
-  --shadow: none;
-  --shadow-md: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  --shadow-blue: none;
+  /* ── Shadows (Layered Tonal — minimal, diffused) ── */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.05);
 
+  /* ── Layout ── */
   --sidebar-width: 260px;
   --bottom-nav-height: 64px;
   --header-height: 56px;
 
-  --transition-fast: 100ms ease;
-  --transition: 200ms ease;
-  --transition-slow: 300ms ease;
+  /* ── Transitions ── */
+  --transition-fast: 150ms ease;
+  --transition: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* ── Glassmorphism ── */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-blur: blur(12px);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+@theme {
+  /* Stitch TAO Command Center Additions */
+  --color-error-container: #ffdad6;
+  --color-surface-container-lowest: #ffffff;
+  --color-background: #f9faf6;
+  --color-tertiary: #4d2024;
+  --color-on-tertiary-fixed-variant: #6a383b;
+  --color-on-tertiary-container: #e5a0a3;
+  --color-primary-fixed-dim: #a0d2b3;
+  --color-on-secondary-container: #3f6f45;
+  --color-surface-container-low: #f3f4f0;
+  --color-outline-variant: #c0c9c1;
+  --color-outline: #717972;
+  --color-on-secondary-fixed-variant: #20502a;
+  --color-on-tertiary-fixed: #360e12;
+  --color-on-background: #1a1c1a;
+  --color-surface-dim: #d9dad7;
+  --color-on-surface: #1a1c1a;
+  --color-error: #ba1a1a;
+  --color-on-primary: #ffffff;
+  --color-on-error-container: #93000a;
+  --color-primary: #033621;
+  --color-secondary-fixed-dim: #9fd3a2;
+  --color-primary-fixed: #bceece;
+  --color-on-primary-container: #8dbd9f;
+  --color-inverse-on-surface: #f0f1ed;
+  --color-inverse-surface: #2e312f;
+  --color-surface-variant: #e2e3df;
+  --color-on-tertiary: #ffffff;
+  --color-inverse-primary: #a0d2b3;
+  --color-on-error: #ffffff;
+  --color-tertiary-container: #683639;
+  --color-surface-bright: #f9faf6;
+  --color-surface: #f9faf6;
+  --color-on-primary-fixed-variant: #214f38;
+  --color-surface-container-high: #e7e9e5;
+  --color-secondary-container: #baf0bc;
+  --color-on-secondary-fixed: #002109;
+  --color-surface-container: #edeeea;
+  --color-surface-container-highest: #e2e3df;
+  --color-secondary: #396940;
+  --color-secondary-fixed: #baf0bc;
+  --color-on-surface-variant: #414943;
+  --color-on-secondary: #ffffff;
+  --color-surface-tint: #3a674f;
+  --color-primary-container: #1f4d36;
+  --color-on-primary-fixed: #002112;
+  --color-tertiary-fixed-dim: #fbb4b7;
+  --color-tertiary-fixed: #ffdada;
+
+  --font-data-tabular: "IBM Plex Sans", sans-serif;
+  --font-headline-md: "Public Sans", sans-serif;
+  --font-label-caps: "IBM Plex Sans", sans-serif;
+  --font-display-lg: "Public Sans", sans-serif;
+  --font-body-main: "Inter", sans-serif;
+  --font-section-header: "Public Sans", sans-serif;
 }
