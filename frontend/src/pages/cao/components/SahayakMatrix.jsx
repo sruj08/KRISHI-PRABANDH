@@ -1,21 +1,50 @@
 import React, { useState } from 'react';
 
+// Muted enterprise palette — soft tints with subtle 1px borders.
+// All status tokens share the same shape so badges, avatars, and
+// rank pills compose into one cohesive design system.
 const STATUS_META = {
-  excellent: { color: '#0055A4', bg: '#e8f0fb', icon: 'star',        label: 'Excellent' },
-  good:      { color: '#2D6A4F', bg: '#ebf7f1', icon: 'thumb_up',    label: 'On Track'  },
-  warning:   { color: '#e07800', bg: '#fff3e0', icon: 'warning',     label: 'Warning'   },
-  critical:  { color: '#ba1a1a', bg: '#ffdad6', icon: 'priority_high',label: 'Critical' },
+  excellent: {
+    fg: '#1f4d36', bg: '#e8f0ea', border: 'rgba(31, 77, 54, 0.18)',
+    avatarFg: '#1f4d36', avatarBg: '#e8f0ea',
+    icon: 'star', label: 'Excellent',
+  },
+  good: {
+    fg: '#1f4d36', bg: '#eef3ef', border: 'rgba(31, 77, 54, 0.14)',
+    avatarFg: '#1f4d36', avatarBg: '#eef3ef',
+    icon: 'check', label: 'On Track',
+  },
+  warning: {
+    fg: '#b45309', bg: '#fff4e6', border: 'rgba(180, 83, 9, 0.18)',
+    avatarFg: '#b45309', avatarBg: '#fff4e6',
+    icon: 'priority_high', label: 'Warning',
+  },
+  critical: {
+    fg: '#ba1a1a', bg: '#fff0ee', border: 'rgba(186, 26, 26, 0.18)',
+    avatarFg: '#ba1a1a', avatarBg: '#fff0ee',
+    icon: 'priority_high', label: 'Critical',
+  },
 };
+
+// Tonal rank chips — first place gets a subtle gold tint, others sit neutral.
+const RANK_META = [
+  { fg: '#7a5310', bg: '#fdf4dc', border: 'rgba(122, 83, 16, 0.16)' },
+  { fg: '#5f676b', bg: '#f3f4f0', border: 'rgba(20, 40, 30, 0.08)' },
+  { fg: '#5f676b', bg: '#f3f4f0', border: 'rgba(20, 40, 30, 0.08)' },
+];
 
 const MiniBar = ({ values }) => {
   const max = Math.max(...values, 1);
   return (
     <div className="mini-bar-wrap">
-      {values.map((v, i) => (
-        <div key={i} className="mini-bar-col">
-          <div className="mini-bar-fill" style={{ height: `${(v / max) * 32}px` }} />
-        </div>
-      ))}
+      {values.map((v, i) => {
+        const pct = v / max;
+        return (
+          <div key={i} className="mini-bar-col">
+            <div className="mini-bar-fill" style={{ height: `${pct * 28}px`, opacity: 0.4 + pct * 0.55 }} />
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -28,21 +57,29 @@ const SahayakMatrix = ({ sahayaks }) => {
     <div className="sahayak-wrap">
       {sorted.map((s, rank) => {
         const meta = STATUS_META[s.status];
+        const rankMeta = RANK_META[rank] || RANK_META[2];
         const isSelected = selected === s.id;
+        const avgNumClass =
+          s.avg_days > 7 ? 'sahayak-stat-num sahayak-stat-num--danger'
+          : s.avg_days > 5 ? 'sahayak-stat-num sahayak-stat-num--warning'
+          : 'sahayak-stat-num';
+        const overdueNumClass =
+          s.overdue_15d > 10 ? 'sahayak-stat-num sahayak-stat-num--danger'
+          : s.overdue_15d > 3 ? 'sahayak-stat-num sahayak-stat-num--warning'
+          : 'sahayak-stat-num';
 
         return (
           <div key={s.id}
-            className={`sahayak-card ${isSelected ? 'sahayak-card--open' : ''}`}
-            style={{ borderLeft: `4px solid ${meta.color}` }}>
+            className={`sahayak-card ${isSelected ? 'sahayak-card--open' : ''}`}>
 
             <div className="sahayak-header" onClick={() => setSelected(isSelected ? null : s.id)}>
-              {/* Rank badge */}
-              <div className="sahayak-rank" style={{ background: rank === 0 ? '#FFB703' : '#e0e4da', color: rank === 0 ? '#281900' : '#40493d' }}>
-                #{rank + 1}
+              {/* Rank chip */}
+              <div className="sahayak-rank" style={{ background: rankMeta.bg, color: rankMeta.fg, border: `1px solid ${rankMeta.border}` }}>
+                {rank + 1}
               </div>
 
               {/* Avatar */}
-              <div className="sahayak-avatar" style={{ background: meta.bg, color: meta.color }}>
+              <div className="sahayak-avatar" style={{ background: meta.avatarBg, color: meta.avatarFg, border: `1px solid ${meta.border}` }}>
                 {s.name.split(' ').map(n => n[0]).join('')}
               </div>
 
@@ -50,7 +87,7 @@ const SahayakMatrix = ({ sahayaks }) => {
               <div className="sahayak-info">
                 <div className="sahayak-name">
                   {s.name}
-                  <span className="sahayak-status-badge" style={{ background: meta.bg, color: meta.color }}>
+                  <span className="sahayak-status-badge" style={{ background: meta.bg, color: meta.fg, border: `1px solid ${meta.border}` }}>
                     <span className="material-symbols-outlined">{meta.icon}</span>
                     {meta.label}
                   </span>
@@ -61,20 +98,16 @@ const SahayakMatrix = ({ sahayaks }) => {
               {/* Stats */}
               <div className="sahayak-stats">
                 <div className="sahayak-stat-block">
-                  <span className="sahayak-stat-num" style={{ color: meta.color }}>{s.verifications_week}</span>
-                  <span className="sahayak-stat-lbl">verifications</span>
+                  <span className="sahayak-stat-num">{s.verifications_week}</span>
+                  <span className="sahayak-stat-lbl">Verifications</span>
                 </div>
                 <div className="sahayak-stat-block">
-                  <span className="sahayak-stat-num" style={{ color: s.avg_days > 7 ? '#ba1a1a' : '#2D6A4F' }}>
-                    {s.avg_days}d
-                  </span>
-                  <span className="sahayak-stat-lbl">avg time</span>
+                  <span className={avgNumClass}>{s.avg_days}d</span>
+                  <span className="sahayak-stat-lbl">Avg Time</span>
                 </div>
                 <div className="sahayak-stat-block">
-                  <span className="sahayak-stat-num" style={{ color: s.overdue_15d > 10 ? '#ba1a1a' : '#40493d' }}>
-                    {s.overdue_15d}
-                  </span>
-                  <span className="sahayak-stat-lbl">overdue</span>
+                  <span className={overdueNumClass}>{s.overdue_15d}</span>
+                  <span className="sahayak-stat-lbl">Overdue</span>
                 </div>
                 <MiniBar values={s.trend} />
               </div>

@@ -101,7 +101,7 @@ const DistrictDashboard = () => {
   };
 
   return (
-    <div style={{ minHeight: '100%', background: '#f3f4f0', padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
       {/* ── KPI Strip ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>

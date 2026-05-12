@@ -78,7 +78,7 @@ const Sidebar = ({ isOpen }) => {
   // Auto-expand section on mount based on active route
   useEffect(() => {
     const currentPath = location.pathname;
-    const activeSection = menuSections.find(sec => 
+    const activeSection = menuSections.find(sec =>
       sec.items.some(item => {
         if (item.to === '/') return currentPath === '/';
         return currentPath.startsWith(item.to);
@@ -93,57 +93,77 @@ const Sidebar = ({ isOpen }) => {
     <aside className={`sidebar flex flex-col bg-white border-r border-[#E2E9E6] shrink-0 z-40 ${isOpen ? 'open' : ''}`}>
 
       {/* ── Nav links ── */}
-      <div className="flex-1 overflow-y-auto py-6 px-4 flex flex-col" style={{ gap: '16px' }}>
-        
-        {menuSections.map((section) => {
-          const isExpanded = expandedSection === section.id;
-          
-          return (
-            <div key={section.id} className="sidebar-section-container">
-              <button 
-                className="sidebar-section-header w-full" 
-                onClick={() => toggleSection(section.id)}
-                aria-expanded={isExpanded}
-              >
-                <span className="sidebar-section-label">{t(section.label)}</span>
-                <span className={`material-symbols-outlined sidebar-section-icon ${isExpanded ? 'expanded' : ''}`}>
-                  expand_more
-                </span>
-              </button>
+      <div className="flex-1 overflow-y-auto py-6 px-3">
 
-              <div className={`sidebar-section-content ${isExpanded ? 'expanded' : ''}`}>
-                <div className="sidebar-section-content-inner">
-                  {section.items.map((link) => (
-                    <NavLink
-                      key={link.to}
-                      to={link.to}
-                      end={link.to === '/'}
-                      className={({ isActive }) =>
-                        `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <span
-                            className="material-symbols-outlined"
-                            style={{ fontSize: 20, color: isActive ? '#033621' : '#717972', flexShrink: 0 }}
-                          >
-                            {link.icon}
-                          </span>
-                          <span className="sidebar-link-label">{t(link.label)}</span>
-                        </>
-                      )}
-                    </NavLink>
-                  ))}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {/* Overview */}
+        <p className="sidebar-section-label" style={{ marginTop: 0 }}>Overview</p>
+        {overviewLinks.map((link) => (
+          <NavLink
+            key={link.to}
+            to={link.to}
+            end
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 18, color: isActive ? '#033621' : '#717972', flexShrink: 0 }}
+                >
+                  {link.icon}
+                </span>
+                <span className="sidebar-link-label">{t(link.label)}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
+
+        {/* Modules */}
+        <p className="sidebar-section-label" style={{ marginTop: 24 }}>Modules</p>
+        <nav className="flex flex-col" style={{ gap: 2 }}>
+          {moduleLinks.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 18, color: isActive ? '#033621' : '#717972', flexShrink: 0 }}
+                  >
+                    {link.icon}
+                  </span>
+                  <span className="sidebar-link-label">{t(link.label)}</span>
+                </>
+              )}
+            </NavLink>
+          ))}
+        </nav>
       </div>
 
       {/* ── Footer ── */}
       <div className="sidebar-footer">
+        <NavLink
+          to="/roles"
+          className="sidebar-link"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972', flexShrink: 0 }}>badge</span>
+          <span className="sidebar-link-label">{t('User Roles')}</span>
+        </NavLink>
+        <NavLink
+          to="/settings"
+          className="sidebar-link"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972', flexShrink: 0 }}>settings</span>
+          <span className="sidebar-link-label">{t('System Controls')}</span>
+        </NavLink>
+
         <div className="sidebar-lang-row">
           <span className="sidebar-lang-label">{t('Language')}</span>
           <button className="sidebar-lang-btn" onClick={toggleLanguage}>

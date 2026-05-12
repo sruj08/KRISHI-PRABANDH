@@ -5,12 +5,26 @@ import { SAHAYAKS } from '../../../utils/caoMockData';
 const getDaysSince = (dateStr) =>
   Math.floor((new Date() - new Date(dateStr)) / 86400000);
 
+// Muted enterprise status palette — matches SahayakMatrix tokens
+// so badges/icons compose into a single visual system.
 const getShopStatus = (days, complaints) => {
   if (days > 90 || complaints >= 4)
-    return { label: 'Overdue', color: '#ba1a1a', bg: '#ffdad6', icon: 'warning' };
+    return {
+      label: 'Overdue', icon: 'priority_high',
+      color: '#ba1a1a', bg: '#fff0ee', border: 'rgba(186, 26, 26, 0.18)',
+      iconBg: '#fff0ee', iconFg: '#ba1a1a',
+    };
   if (days > 60 || complaints >= 2)
-    return { label: 'Due Soon', color: '#e07800', bg: '#fff3e0', icon: 'schedule' };
-  return { label: 'OK', color: '#2D6A4F', bg: '#ebf7f1', icon: 'check_circle' };
+    return {
+      label: 'Due Soon', icon: 'schedule',
+      color: '#b45309', bg: '#fff4e6', border: 'rgba(180, 83, 9, 0.18)',
+      iconBg: '#fff4e6', iconFg: '#b45309',
+    };
+  return {
+    label: 'OK', icon: 'check',
+    color: '#1f4d36', bg: '#e8f0ea', border: 'rgba(31, 77, 54, 0.18)',
+    iconBg: '#eef3ef', iconFg: '#1f4d36',
+  };
 };
 
 const ShopTracker = () => {
@@ -36,8 +50,8 @@ const ShopTracker = () => {
       <div className="shop-summary-bar">
         {[
           { label: 'Overdue (90d+)', count: shops.filter(s => s.days > 90).length, color: '#ba1a1a' },
-          { label: 'Due Soon',       count: shops.filter(s => s.days > 60 && s.days <= 90).length, color: '#e07800' },
-          { label: 'Compliant',      count: shops.filter(s => s.days <= 60).length, color: '#2D6A4F' },
+          { label: 'Due Soon',       count: shops.filter(s => s.days > 60 && s.days <= 90).length, color: '#b45309' },
+          { label: 'Compliant',      count: shops.filter(s => s.days <= 60).length, color: '#1f4d36' },
         ].map((s, i) => (
           <div key={i} className="shop-summary-item" style={{ '--sc': s.color }}>
             <span className="shop-summary-count">{s.count}</span>
@@ -51,19 +65,18 @@ const ShopTracker = () => {
         {shops.map((shop) => (
           <div key={shop.id}
             className={`shop-row ${selected === shop.id ? 'shop-row--active' : ''}`}
-            style={{ borderLeft: `4px solid ${shop.status.color}` }}
             onClick={() => setSelected(selected === shop.id ? null : shop.id)}>
 
             <div className="shop-row-main">
               <div className="shop-row-left">
-                <div className="shop-icon-wrap" style={{ background: shop.status.bg }}>
-                  <span className="material-symbols-outlined" style={{ color: shop.status.color }}>storefront</span>
+                <div className="shop-icon-wrap" style={{ background: shop.status.iconBg, border: `1px solid ${shop.status.border}` }}>
+                  <span className="material-symbols-outlined" style={{ color: shop.status.iconFg }}>storefront</span>
                 </div>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <div className="shop-name">
                     {shop.name}
                     {shop.status.label !== 'OK' && (
-                      <span className="shop-overdue-tag" style={{ background: shop.status.bg, color: shop.status.color }}>
+                      <span className="shop-overdue-tag" style={{ background: shop.status.bg, color: shop.status.color, borderColor: shop.status.border }}>
                         <span className="material-symbols-outlined">{shop.status.icon}</span>
                         {shop.status.label}
                       </span>

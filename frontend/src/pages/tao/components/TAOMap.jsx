@@ -27,26 +27,26 @@ const TAOMap = () => {
   const center = [18.4900, 73.9000];
 
   return (
-    <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '18px 22px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+    <div className="card" style={{ padding: '0', overflow: 'hidden', border: 'none', borderRadius: 0, background: 'transparent', display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div style={{ padding: '18px 28px', background: '#fff', borderBottom: '1px solid #e2e3df', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', flexWrap: 'wrap', minHeight: '70px' }}>
         <div style={{ minWidth: 0 }}>
-          <h3 className="fw-bold m-0" style={{ fontSize: '15px', color: 'var(--text-dark)', lineHeight: 1.3 }}>Haveli Taluka Geo-Verification</h3>
-          <p className="text-sm text-muted m-0" style={{ marginTop: '4px', fontSize: '12px', lineHeight: 1.4 }}>Live mapping of Mandals (Circles) and CAO regions</p>
+          <h3 className="fw-bold m-0" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)', lineHeight: 1.3 }}>Haveli Taluka Geo-Verification</h3>
+          <p className="text-sm text-muted m-0" style={{ marginTop: '5px', fontSize: '11.5px', lineHeight: 1.4 }}>Live mapping of Mandals (Circles) and CAO regions</p>
         </div>
-        <div style={{ display: 'flex', gap: '16px', fontSize: '12px', flexShrink: 0, alignItems: 'center' }}>
-           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2e7d32', display: 'inline-block' }}></span> Clear
+        <div style={{ display: 'flex', gap: '20px', fontSize: '11.5px', color: 'var(--text-muted)', flexShrink: 0, alignItems: 'center' }}>
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', lineHeight: 1 }}>
+             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#2e7d32', display: 'inline-block', flexShrink: 0 }}></span> Clear
            </div>
-           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f57c00', display: 'inline-block' }}></span> Warning
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', lineHeight: 1 }}>
+             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f57c00', display: 'inline-block', flexShrink: 0 }}></span> Warning
            </div>
-           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#d32f2f', display: 'inline-block' }}></span> Critical
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', lineHeight: 1 }}>
+             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#d32f2f', display: 'inline-block', flexShrink: 0 }}></span> Critical
            </div>
         </div>
       </div>
 
-      <div style={{ height: '400px', width: '100%', position: 'relative' }}>
+      <div style={{ flex: 1, minHeight: '380px', width: '100%', position: 'relative' }}>
         <MapContainer center={center} zoom={11} style={{ height: '100%', width: '100%', zIndex: 1 }}>
           <TileLayer
             attribution='&copy; OpenStreetMap contributors'
