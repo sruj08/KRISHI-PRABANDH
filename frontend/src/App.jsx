@@ -17,6 +17,8 @@ import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
 import TAODashboard from './pages/tao/TAODashboard';
 import DistrictDashboard from './pages/district/DistrictDashboard';
+import DivisionDashboard from './pages/division/DivisionDashboard';
+import StateDashboard from './pages/state/StateDashboard';
 import AdvancedTools from './pages/AdvancedTools';
 import VisitPlanner from './pages/VisitPlanner';
 import Placeholder from './pages/Placeholder';
@@ -70,28 +72,9 @@ const App = () => {
             <Route path="/visit-planner" element={<VisitPlanner />} />
             <Route path="/gram-sabha" element={<GramSabha />} />
 
-            {/* State & Division Placeholder Dashboards */}
-            <Route path="/state/dashboard" element={
-              <Placeholder 
-                title="State Command Center" 
-                icon="public" 
-                isDark={true}
-                sections={[
-                  { title: 'Statewide KPIs', type: 'cards' }, 
-                  { title: 'Maharashtra Command Map', type: 'table' }
-                ]} 
-              />
-            } />
-            <Route path="/division/dashboard" element={
-              <Placeholder 
-                title="Division Overview" 
-                icon="dashboard_customize" 
-                sections={[
-                  { title: 'Division Performance', type: 'cards' }, 
-                  { title: 'District Matrix', type: 'table' }
-                ]} 
-              />
-            } />
+            {/* State & Division Executive Command Centers — same UX as DAO/TAO */}
+            <Route path="/state/dashboard" element={<StateDashboard />} />
+            <Route path="/division/dashboard" element={<DivisionDashboard />} />
 
             {/* State Official Sidebar Routes */}
             <Route path="/state/map" element={<Placeholder isDark={true} title="Maharashtra Command Map" icon="map" sections={[{ title: 'Live Field Operations', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} />} />

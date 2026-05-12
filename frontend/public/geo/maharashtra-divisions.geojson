@@ -1,0 +1,214 @@
+{
+  "type": "FeatureCollection",
+  "name": "Maharashtra — demonstration divisional geofence",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "properties": {
+    "attribution": "State outline: simplified outer geofence. Division rings: digitized approximate administrative boundaries (irregular polygons for map display; not certified survey geometry).",
+    "state": "Maharashtra",
+    "country": "India"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "kind": "state", "name": "Maharashtra", "code": "IN-MH" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [72.65, 20.60],
+          [73.40, 21.95],
+          [74.90, 22.10],
+          [76.50, 21.80],
+          [78.20, 21.60],
+          [80.00, 21.20],
+          [80.85, 20.10],
+          [80.10, 19.20],
+          [78.40, 18.40],
+          [77.10, 17.50],
+          [76.50, 16.50],
+          [75.20, 15.70],
+          [73.90, 15.70],
+          [73.05, 16.50],
+          [72.85, 17.80],
+          [72.70, 19.10],
+          [72.65, 20.60]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "division",
+        "name": "Konkan",
+        "code": "DIV-KKN",
+        "officer": "Smt. Asha Joshi",
+        "districts": 6,
+        "schemePenetration": 81,
+        "ndviStress": 18,
+        "grievanceIdx": 24,
+        "fundsCr": 32.4,
+        "disbursedPct": 48.2,
+        "fraudAlerts": 11,
+        "tag": "Coastal — Mumbai, Thane, Palghar, Raigad, Ratnagiri, Sindhudurg"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [72.65, 20.60],
+          [73.40, 20.60],
+          [73.30, 19.10],
+          [73.20, 17.80],
+          [73.05, 16.50],
+          [72.85, 17.80],
+          [72.70, 19.10],
+          [72.65, 20.60]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "division",
+        "name": "Pune",
+        "code": "DIV-PNE",
+        "officer": "Vikram Kumar (DJDA)",
+        "districts": 5,
+        "schemePenetration": 79,
+        "ndviStress": 31,
+        "grievanceIdx": 28,
+        "fundsCr": 58.6,
+        "disbursedPct": 45.8,
+        "fraudAlerts": 30,
+        "tag": "Pune, Satara, Sangli, Solapur, Kolhapur"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [73.30, 19.10],
+          [75.40, 19.20],
+          [76.20, 18.30],
+          [76.30, 17.20],
+          [75.20, 15.70],
+          [73.90, 15.70],
+          [73.05, 16.50],
+          [73.20, 17.80],
+          [73.30, 19.10]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "division",
+        "name": "Nashik",
+        "code": "DIV-NSK",
+        "officer": "Shri. Rajiv Sharma",
+        "districts": 5,
+        "schemePenetration": 74,
+        "ndviStress": 36,
+        "grievanceIdx": 31,
+        "fundsCr": 41.2,
+        "disbursedPct": 39.6,
+        "fraudAlerts": 18,
+        "tag": "Nashik, Dhule, Jalgaon, Nandurbar, Ahmednagar"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [73.40, 21.95],
+          [74.90, 22.10],
+          [75.50, 21.20],
+          [75.20, 19.40],
+          [73.30, 19.10],
+          [73.40, 20.60],
+          [73.40, 21.95]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "division",
+        "name": "Chhatrapati Sambhajinagar",
+        "code": "DIV-CSN",
+        "officer": "Dr. Sunil Deshmukh",
+        "districts": 8,
+        "schemePenetration": 68,
+        "ndviStress": 62,
+        "grievanceIdx": 47,
+        "fundsCr": 49.8,
+        "disbursedPct": 33.4,
+        "fraudAlerts": 36,
+        "tag": "Marathwada — Aurangabad, Beed, Hingoli, Jalna, Latur, Nanded, Osmanabad, Parbhani"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [75.20, 19.40],
+          [75.50, 21.20],
+          [77.20, 20.90],
+          [77.10, 17.50],
+          [76.30, 17.20],
+          [76.20, 18.30],
+          [75.40, 19.20],
+          [75.20, 19.40]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "division",
+        "name": "Amravati",
+        "code": "DIV-AMR",
+        "officer": "Smt. Priya Patil",
+        "districts": 5,
+        "schemePenetration": 70,
+        "ndviStress": 44,
+        "grievanceIdx": 35,
+        "fundsCr": 38.7,
+        "disbursedPct": 41.2,
+        "fraudAlerts": 21,
+        "tag": "Vidarbha West — Amravati, Akola, Buldhana, Yavatmal, Washim"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [75.50, 21.20],
+          [78.20, 21.60],
+          [78.40, 18.40],
+          [77.10, 17.50],
+          [77.20, 20.90],
+          [75.50, 21.20]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "division",
+        "name": "Nagpur",
+        "code": "DIV-NGP",
+        "officer": "Shri. Manoj Kale",
+        "districts": 6,
+        "schemePenetration": 73,
+        "ndviStress": 38,
+        "grievanceIdx": 29,
+        "fundsCr": 44.5,
+        "disbursedPct": 43.7,
+        "fraudAlerts": 17,
+        "tag": "Vidarbha East — Nagpur, Bhandara, Chandrapur, Gadchiroli, Gondia, Wardha"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [78.20, 21.60],
+          [80.00, 21.20],
+          [80.85, 20.10],
+          [80.10, 19.20],
+          [78.40, 18.40],
+          [78.20, 21.60]
+        ]]
+      }
+    }
+  ]
+}
