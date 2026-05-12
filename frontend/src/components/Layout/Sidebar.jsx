@@ -48,7 +48,7 @@ const Sidebar = ({ isOpen }) => {
               <>
                 <span
                   className="material-symbols-outlined"
-                  style={{ fontSize: 18, color: isActive ? '#033621' : '#717972', flexShrink: 0 }}
+                  style={{ fontSize: 18, color: isActive ? '#1f4d36' : '#9aa19c', flexShrink: 0, transition: 'color 180ms ease' }}
                 >
                   {link.icon}
                 </span>
@@ -73,7 +73,7 @@ const Sidebar = ({ isOpen }) => {
                 <>
                   <span
                     className="material-symbols-outlined"
-                    style={{ fontSize: 18, color: isActive ? '#033621' : '#717972', flexShrink: 0 }}
+                    style={{ fontSize: 18, color: isActive ? '#1f4d36' : '#9aa19c', flexShrink: 0, transition: 'color 180ms ease' }}
                   >
                     {link.icon}
                   </span>
@@ -91,14 +91,14 @@ const Sidebar = ({ isOpen }) => {
           to="/roles"
           className="sidebar-link"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972', flexShrink: 0 }}>badge</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#9aa19c', flexShrink: 0, transition: 'color 180ms ease' }}>badge</span>
           <span className="sidebar-link-label">{t('User Roles')}</span>
         </NavLink>
         <NavLink
           to="/settings"
           className="sidebar-link"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972', flexShrink: 0 }}>settings</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#9aa19c', flexShrink: 0, transition: 'color 180ms ease' }}>settings</span>
           <span className="sidebar-link-label">{t('System Controls')}</span>
         </NavLink>
 
