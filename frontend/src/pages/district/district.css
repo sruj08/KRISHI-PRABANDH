@@ -113,3 +113,16 @@
   border-radius: var(--radius);
   color: var(--text-dark);
 }
+
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.data-card {
+  background-color: #ffffff;
+  border: 1px solid #f3f4f0;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}

@@ -1,84 +1,147 @@
 /* =========================================================
    Sidebar — Stitch Agricultural Intelligence Interface
-   White sidebar, Forest Green accents, label-caps nav
+   Width: 228px | Sticky below 64px header
    ========================================================= */
+
+/* ── Shell ── */
 .sidebar {
-  position: fixed;
-  top: 0;
+  width: 228px;
+  min-width: 228px;
+  position: sticky;
+  top: 64px;
   left: 0;
-  width: var(--sidebar-width);
-  height: 100vh;
-  background-color: var(--surface-lowest);
-  border-right: 1px solid var(--outline-card);
+  height: calc(100vh - 64px);
+  background-color: #ffffff;
+  border-right: 1px solid #E2E9E6;
   display: flex;
   flex-direction: column;
   z-index: 40;
-  transition: transform var(--transition);
+  transition: transform 200ms ease;
+  overflow: hidden; /* children scroll individually */
 }
 
+/* Mobile: off-canvas */
 @media (max-width: 767px) {
   .sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
     transform: translateX(-100%);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   }
   .sidebar.open {
     transform: translateX(0);
   }
 }
 
-/* ── User Profile Header ── */
-.sidebar .p-4.border-b {
-  padding: var(--sp-5);
-  border-bottom: 1px solid var(--outline-card);
-  background-color: var(--surface-low);
+/* ── Section labels ── */
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9eaa9f;
+  padding: 0 12px;
+  margin-bottom: 4px;
 }
 
-/* ── Navigation ── */
-.sidebar nav {
+/* ── Nav links ── */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #414943;
+  line-height: 1.25;
+  transition: background 120ms, color 120ms;
+  /* never wrap */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar-link:hover {
+  background: #f3f4f0;
+  color: #1a1c1a;
+}
+
+.sidebar-link--active {
+  background: #edf2ee;
+  color: #033621;
+}
+
+/* label inside link — let it truncate if ever needed */
+.sidebar-link-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   flex: 1;
-  overflow-y: auto;
-  padding: var(--sp-4) var(--sp-3);
+}
+
+/* ── Footer section ── */
+.sidebar-footer {
+  flex-shrink: 0;
+  border-top: 1px solid #E2E9E6;
+  padding: 10px 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.sidebar nav a {
+/* Language row */
+.sidebar-lang-row {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-4);
-  border-radius: var(--radius-lg);
-  font-family: var(--font-data);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-gray);
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  border-left: 3px solid transparent;
+  justify-content: space-between;
+  padding: 8px 12px;
+  margin-top: 4px;
 }
 
-.sidebar nav a:hover {
-  background-color: var(--surface-container);
-  color: var(--text-dark);
-}
-
-.sidebar nav a.active {
-  background-color: rgba(3, 54, 33, 0.06);
-  color: var(--primary);
-  border-left-color: var(--primary);
+.sidebar-lang-label {
+  font-size: 10px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9eaa9f;
 }
 
-.sidebar nav a .material-symbols-outlined {
-  font-size: 20px;
+.sidebar-lang-btn {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid #c7cec8;
+  background: #f3f4f0;
+  color: #414943;
+  cursor: pointer;
+  transition: background 120ms;
+}
+.sidebar-lang-btn:hover {
+  background: #e5e7e3;
 }
 
-/* ── Footer ── */
-.sidebar .p-4.border-t {
-  padding: var(--sp-4);
-  border-top: 1px solid var(--outline-card);
-  background-color: var(--surface-low);
+/* Logout button */
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #717972;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 120ms, color 120ms;
+  white-space: nowrap;
+}
+.sidebar-logout-btn:hover {
+  background: #fff0ef;
+  color: #ba1a1a;
 }

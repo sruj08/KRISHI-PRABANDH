@@ -1,250 +1,318 @@
-import React, { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../hooks/useToast.jsx';
+import React from 'react';
 import DistrictCommandMap from './components/DistrictCommandMap';
 import {
-  DISTRICT_PROFILE,
   EXEC_KPIS,
-  FRICTION_MONTH,
   PFMS_BATCHES,
-  GRIEVANCE_SPIKES,
-  PMFBY_TRIAGE,
-  SCHEME_PENETRATION_RANK,
+  FRICTION_MONTH,
 } from '../../utils/districtMockData';
-import '../cao/cao.css';
+import { useToast } from '../../hooks/useToast.jsx';
 import './district.css';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
-const StatMini = ({ icon, label, value, color, bg }) => (
-  <div style={{ background: bg, border: `1px solid ${color}22`, borderRadius: '10px', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-    <span className="material-symbols-outlined" style={{ color, fontSize: '22px' }}>{icon}</span>
-    <div>
-      <div style={{ fontSize: '17px', fontWeight: 800, color, lineHeight: 1 }}>{value}</div>
-      <div style={{ fontSize: '10px', color, opacity: 0.78, marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{label}</div>
+/* ── KPI Card ── */
+const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972', progress, children }) => (
+  <div
+    style={{
+      background: '#fff',
+      border: '1px solid #e2e3df',
+      borderRadius: 16,
+      padding: '18px 20px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 4,
+      boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
+      <div style={{ width: 28, height: 28, borderRadius: 6, background: '#f3f4f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#717972' }}>{icon}</span>
+      </div>
+      <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#717972', lineHeight: 1.35, whiteSpace: 'pre-line' }}>{label}</span>
     </div>
+    {children ? (
+      children
+    ) : (
+      <>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 4 }}>
+          <span style={{ fontSize: 28, fontWeight: 700, color: '#1a1c1a', lineHeight: 1 }}>₹{value}</span>
+          {unit && <span style={{ fontSize: 14, fontWeight: 500, color: '#717972' }}>{unit}</span>}
+        </div>
+        {progress !== undefined && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+            <div style={{ flex: 1, height: 6, background: '#f3f4f0', borderRadius: 99, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: '#396940', borderRadius: 99, width: `${progress}%` }} />
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 500, color: '#717972' }}>{progress}%</span>
+          </div>
+        )}
+        {sub && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, marginTop: 2, color: subColor }}>
+            {subIcon && <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{subIcon}</span>}
+            {sub}
+          </div>
+        )}
+      </>
+    )}
   </div>
 );
 
-const DistrictDashboard = () => {
-  const navigate = useNavigate();
-  const { logout, user } = useAuth();
-  const { addToast } = useToast();
+/* ── Right Panel Section Wrapper ── */
+const PanelSection = ({ title, subtitle, badge, children }) => (
+  <div
+    style={{
+      background: '#fff',
+      border: '1px solid #e2e3df',
+      borderRadius: 16,
+      padding: '20px 22px',
+      boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+      <div>
+        <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.3, margin: 0 }}>{title}</h3>
+        {subtitle && (
+          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', marginTop: 3, margin: 0, marginTop: 3 }}>{subtitle}</p>
+        )}
+      </div>
+      {badge && (
+        <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ba1a1a', background: 'rgba(255,218,214,0.4)', padding: '3px 8px', borderRadius: 4, flexShrink: 0, whiteSpace: 'nowrap' }}>{badge}</span>
+      )}
+    </div>
+    <div style={{ marginTop: 14 }}>{children}</div>
+  </div>
+);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+/* ── Friction Row ── */
+const FrictionRow = ({ label, pct, color }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '2px 0' }}>
+    <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
+    <span style={{ fontSize: 12, fontWeight: 500, color: '#1a1c1a', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+    <span style={{ fontSize: 12, fontWeight: 700, color, flexShrink: 0, fontVariantNumeric: 'tabular-nums', marginLeft: 8 }}>{pct}%</span>
+  </div>
+);
+
+/* ── Dashboard ── */
+const DistrictDashboard = () => {
+  const { addToast } = useToast();
 
   const onDscAuthorize = () => {
     const total = PFMS_BATCHES.reduce((a, b) => a + b.beneficiaries, 0);
     addToast(`DSC release queued for ${total.toLocaleString('en-IN')} beneficiaries across ${PFMS_BATCHES.length} PFMS batches (demo).`, 'success', 4200);
   };
 
-  const frictionTop3 = useMemo(() => {
-    const pairs = FRICTION_MONTH.labels.map((label, i) => ({ label, c: FRICTION_MONTH.counts[i] }));
-    pairs.sort((a, b) => b.c - a.c);
-    return pairs.slice(0, 3);
-  }, []);
-
-  const barData = {
-    labels: frictionTop3.map((x) => x.label),
-    datasets: [
-      {
-        label: 'Drop-offs (district)',
-        data: frictionTop3.map((x) => x.c),
-        backgroundColor: ['#0055A4', '#f57c00', '#2e7d32'],
-        borderRadius: 6,
-        maxBarThickness: 36,
-      },
-    ],
-  };
-
-  const barOptions = {
-    indexAxis: 'y',
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      title: { display: false },
-    },
-    scales: {
-      x: {
-        grid: { color: 'rgba(0,0,0,0.06)' },
-        ticks: { font: { size: 10 } },
-      },
-      y: {
-        grid: { display: false },
-        ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: false },
-      },
-    },
-  };
-
-  const execKpiStrip = [
-    { icon: 'account_balance', label: 'Total district budget', value: `₹${EXEC_KPIS.totalBudgetCr} Cr`, color: '#0055A4', bg: '#e3f2fd' },
-    { icon: 'payments', label: 'Disbursed (YTD)', value: `₹${EXEC_KPIS.disbursedCr} Cr`, color: '#2e7d32', bg: '#e8f5e9' },
-    { icon: 'hourglass_top', label: 'Pending PFMS clearance', value: `₹${EXEC_KPIS.pendingPfmCr} Cr`, color: '#e65100', bg: '#fff3e0' },
-    { icon: 'trending_down', label: 'Projected unutilized', value: `${EXEC_KPIS.projectedUnutilizedPct}%`, color: '#c62828', bg: '#ffebee' },
-    { icon: 'satellite_alt', label: 'Sentinel-2 coverage', value: '36h', color: '#6a1b9a', bg: '#f3e5f5' },
-  ];
-
   return (
-    <div className="cao-root">
-      {/* ── Header ── */}
-      <header className="cao-header">
-        <div className="cao-header-left">
-          <div className="logo-text">
-            <span className="material-symbols-outlined" style={{ color: 'var(--primary)', marginRight: '8px', fontSize: '24px' }}>public</span>
-            KrishiNetra - DAO
+    <div style={{ minHeight: '100%', background: '#f3f4f0', padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+      {/* ── KPI Strip ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
+        <KpiCard
+          icon="account_balance_wallet"
+          label={"Total Allocated\nFunds"}
+          value={EXEC_KPIS.totalBudgetCr}
+          unit="Cr"
+          sub="FY 2025-26"
+        />
+        <KpiCard
+          icon="payments"
+          label={"Disbursed\n(YTD)"}
+          value={EXEC_KPIS.disbursedCr}
+          unit="Cr"
+          progress={parseFloat(EXEC_KPIS.disbursedPct)}
+          sub={`Target: ₹${EXEC_KPIS.disbursedTarget} Cr`}
+        />
+        <KpiCard
+          icon="assignment_turned_in"
+          label={"Pending PFMS\nClearance"}
+          value={EXEC_KPIS.pendingPfmCr}
+          unit="Cr"
+          sub="> 48h alert"
+          subIcon="warning"
+          subColor="#ba1a1a"
+        />
+        <KpiCard
+          icon="monitoring"
+          label={"Under\nUtilization"}
+          value=""
+          unit=""
+          sub="Across all schemes"
+        >
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 4 }}>
+            <span style={{ fontSize: 28, fontWeight: 700, color: '#1a1c1a', lineHeight: 1 }}>{EXEC_KPIS.projectedUnutilizedPct}</span>
+            <span style={{ fontSize: 14, fontWeight: 500, color: '#717972' }}>%</span>
           </div>
-        </div>
-
-        <div className="cao-header-center" style={{ flex: 1, display: 'flex', justifyContent: 'center', fontSize: '13px', color: 'var(--text-muted)', gap: '16px' }}>
-          <span>Pune District</span> • 
-          <span>Maharashtra State</span> • 
-          <span>District Superintending Agriculture Officer</span>
-        </div>
-
-        <div className="cao-header-right">
-          <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>notifications</span>
-          <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>settings</span>
-          <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--text-dark)', cursor: 'pointer' }}>
-            D
-          </div>
-        </div>
-      </header>
-
-      <div className="cao-kpi-strip">
-        {execKpiStrip.map((k, i) => (
-          <div className="kpi-card-stitch" key={i}>
-            <div className="kpi-card-header">
-              <span className="material-symbols-outlined">{k.icon}</span> {k.label}
+        </KpiCard>
+        <KpiCard
+          icon="satellite_alt"
+          label="Satellite Status"
+          value=""
+          unit=""
+        >
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: '#396940', lineHeight: 1 }}>Active</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#717972', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ color: '#396940', fontSize: 10 }}>●</span> Next pass in 2h
             </div>
-            <div className="kpi-card-value" style={{ color: k.color }}>{k.value}</div>
-            <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>
-              Live telemetry
-            </div>
           </div>
-        ))}
+        </KpiCard>
       </div>
 
-      <p style={{ margin: '0 var(--sp-6)', padding: '10px 0 0', fontSize: '11px', color: 'var(--text-muted)' }}>
-        {EXEC_KPIS.sentinel2Pass} · DAO: {DISTRICT_PROFILE.dao}
-      </p>
+      {/* ── Main Grid: Map + Right Panel ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, flex: 1, minHeight: 0 }}>
 
-      <div className="stitch-exec-grid">
-        <div className="cao-panel cao-panel--map" style={{ minHeight: '560px' }}>
-          <div className="cao-panel-header" style={{ alignItems: 'flex-start' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 'bold', fontSize: '15px', color: 'var(--text-dark)' }}>Taluka — Geo-fenced Command Map</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Live spatial analytics and telemetry</div>
+        {/* Map Card */}
+        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 480 }}>
+          {/* Map Header */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
+            <div>
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Taluka — Geo-fenced Command Map</h2>
+              <p style={{ fontSize: 11, color: '#717972', marginTop: 3, margin: 0, marginTop: 3 }}>Live spatial analytics and telemetry</p>
             </div>
-            <button className="stitch-map-mode-btn" style={{ padding: '6px 12px', fontSize: '12px' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>layers</span> Layers
+            <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', border: '1px solid #e2e3df', borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#414943', background: '#fff', cursor: 'pointer', flexShrink: 0 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>layers</span>
+              Layers
             </button>
           </div>
-          <div style={{ flex: 1, padding: '0', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+
+          {/* Map body */}
+          <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
             <DistrictCommandMap />
-          </div>
-        </div> 
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)', minHeight: 0 }}>
-          {/* Card 1: Friction Logger */}
-          <div className="cao-panel" style={{ padding: 'var(--sp-4)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div>
-              <div style={{ fontWeight: 'bold', fontSize: '15px', color: 'var(--text-dark)' }}>Friction Logger</div>
-              <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>SYSTEM INTEGRATION ERRORS</div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', fontWeight: 'bold' }}>
-                <span style={{ color: 'var(--error)', marginRight: '8px', fontSize: '18px' }}>•</span>
-                Aadhar Mismatch (PM-KISAN)
-                <span style={{ color: 'var(--error)', marginLeft: 'auto' }}>42%</span>
+            {/* GIS Overlays Panel */}
+            <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 1000, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(6px)', borderRadius: 12, padding: 16, boxShadow: '0 4px 16px rgba(0,0,0,.1)', border: '1px solid #e2e3df', width: 200 }}>
+              <p style={{ fontSize: 9, fontWeight: 700, color: '#717972', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>GIS Overlays</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  { label: 'Mandal Boundaries', checked: true },
+                  { label: 'Crop Health (NDVI)', checked: true },
+                  { label: 'Verification Status', checked: true },
+                  { label: 'Grievance Hotspots', checked: false },
+                ].map(({ label, checked }) => (
+                  <label key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      defaultChecked={checked}
+                      style={{ width: 16, height: 16, borderRadius: 4, accentColor: '#396940' }}
+                    />
+                    <span style={{ fontSize: 12, color: '#1a1c1a', fontWeight: 500 }}>{label}</span>
+                  </label>
+                ))}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', fontWeight: 'bold' }}>
-                <span style={{ color: 'var(--error)', marginRight: '8px', fontSize: '18px' }}>•</span>
-                7/12 Integration Failure
-                <span style={{ color: 'var(--error)', marginLeft: 'auto' }}>28%</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Administrative Recommendations */}
-          <div className="cao-panel" style={{ padding: 'var(--sp-4)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div>
-              <div style={{ fontWeight: 'bold', fontSize: '15px', color: 'var(--text-dark)' }}>Administrative Recommendations</div>
-              <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>AI-DRIVEN ACTIONABLE INSIGHTS</div>
-            </div>
-            <div style={{ marginTop: '8px', padding: '12px', backgroundColor: '#f4fbf6', borderLeft: '4px solid #1b5e20', borderRadius: '4px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-dark)', marginBottom: '4px' }}>Increase PM-KISAN outreach in Loni Kalbhor.</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: '1.5' }}>Registration deficit detected vs. land record baseline. Deploy 2 mobile units.</div>
-            </div>
-          </div>
-
-          {/* Card 3: PMFBY Disaster Alerts */}
-          <div className="cao-panel" style={{ padding: 'var(--sp-4)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <div style={{ fontWeight: 'bold', fontSize: '15px', color: 'var(--text-dark)' }}>PMFBY Disaster Alerts</div>
-                <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>LIVE TELEMETRY TRIGGERS</div>
-              </div>
-              <span className="cao-panel-badge" style={{ backgroundColor: '#fff0f0', color: '#d32f2f', padding: '2px 6px', fontSize: '9px', fontWeight: 'bold', borderRadius: '4px', border: '1px solid #ffcdd2' }}>HIGH</span>
-            </div>
-            <div style={{ marginTop: '8px' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-dark)', marginBottom: '4px' }}>Localized hail damage in Jejuri.</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>450+ early claims logged.</div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="district-pfms-row">
-        <div className="cao-panel" style={{ gridColumn: '1 / -1' }}>
-          <div className="cao-panel-header" style={{ flexWrap: 'wrap', gap: '8px' }}>
-            <span className="material-symbols-outlined">account_balance_wallet</span>
-            <span>Automated PFMS disbursement queues (TAO-cleared, high confidence)</span>
-            <span className="cao-panel-badge green">{PFMS_BATCHES.length} batches ready</span>
-            <button type="button" className="district-dsc-btn" style={{ marginLeft: 'auto' }} onClick={onDscAuthorize}>
-              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>verified_user</span>
-              Single DSC — release all verified batches
-            </button>
-          </div>
-          <div style={{ padding: 'var(--sp-4)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--sp-3)' }}>
-            {PFMS_BATCHES.map((b) => (
-              <div key={b.id} style={{ border: '1px solid var(--outline-variant)', borderRadius: '10px', padding: '12px', background: 'var(--surface-lowest)' }}>
-                <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700 }}>{b.id}</div>
-                <div style={{ fontWeight: 700, fontSize: '13px', marginTop: '4px' }}>{b.scheme}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginTop: '10px', fontSize: '11px' }}>
-                  <div><span style={{ color: 'var(--text-muted)' }}>Beneficiaries</span><br /><b>{b.beneficiaries.toLocaleString('en-IN')}</b></div>
-                  <div><span style={{ color: 'var(--text-muted)' }}>Amount</span><br /><b>₹{b.amountCr} Cr</b></div>
-                  <div style={{ gridColumn: '1 / -1' }}><span style={{ color: 'var(--text-muted)' }}>Mean AI confidence</span><br /><b>{(b.avgConfidence * 100).toFixed(1)}%</b></div>
-                </div>
+        {/* ── Right Panel ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Friction Logger */}
+          <PanelSection title="Friction Logger" subtitle="System Integration Errors">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <FrictionRow label="Aadhar Mismatch (PM-KISAN)" pct={42} color="#ba1a1a" />
+              <FrictionRow label="7/12 Integration Failure" pct={28} color="#ba1a1a" />
+            </div>
+          </PanelSection>
+
+          {/* Admin Recommendations */}
+          <PanelSection title="Administrative Recommendations" subtitle="AI-Driven Actionable Insights">
+            {FRICTION_MONTH.topThreeRecommendations.slice(0, 1).map((rec, i) => (
+              <div key={i} style={{ borderLeft: '4px solid #396940', background: '#f5f8f6', borderRadius: '0 10px 10px 0', padding: '12px 14px' }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.35, marginBottom: 6 }}>
+                  Increase PM-KISAN outreach in Loni Kalbhor.
+                </p>
+                <p style={{ fontSize: 11, color: '#717972', lineHeight: 1.55 }}>
+                  Registration deficit detected vs. land record baseline. Deploy 2 mobile units.
+                </p>
               </div>
             ))}
-          </div>
+          </PanelSection>
+
+          {/* PMFBY Disaster Alerts */}
+          <PanelSection title="PMFBY Disaster Alerts" subtitle="Live Telemetry Triggers" badge="HIGH">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.35 }}>
+                  Localized hail damage in Jejuri.
+                </p>
+                <p style={{ fontSize: 11, color: '#717972', marginTop: 4 }}>450+ early claims logged.</p>
+              </div>
+              <button
+                style={{
+                  width: '100%',
+                  padding: '10px 0',
+                  border: '1px solid #e2e3df',
+                  borderRadius: 10,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: '#1a1c1a',
+                  background: '#fff',
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+                }}
+              >
+                Initiate Drone Survey
+              </button>
+            </div>
+          </PanelSection>
+        </div>
+      </div>
+
+      {/* ── PFMS Row ── */}
+      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', padding: '20px 22px' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>account_balance_wallet</span>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', flex: 1, minWidth: 200, margin: 0 }}>
+            Automated PFMS disbursement queues (TAO-cleared, high confidence)
+          </h3>
+          <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#396940', background: 'rgba(186,240,188,0.3)', padding: '4px 10px', borderRadius: 6, border: '1px solid #baf0bc', flexShrink: 0, whiteSpace: 'nowrap' }}>
+            {PFMS_BATCHES.length} Batches Ready
+          </span>
+          <button
+            type="button"
+            onClick={onDscAuthorize}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 16px',
+              background: '#396940',
+              color: '#fff',
+              borderRadius: 10,
+              fontSize: 12,
+              fontWeight: 700,
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(57,105,64,.25)',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>verified_user</span>
+            Single DSC — release all
+          </button>
         </div>
 
-        <div className="cao-panel">
-          <div className="cao-panel-header">
-            <span className="material-symbols-outlined">summarize</span>
-            <span>Utilization matrix snapshot</span>
-          </div>
-          <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <StatMini icon="percent" label="On-track schemes" value="76%" color="#2e7d32" bg="#e8f5e9" />
-            <StatMini icon="block" label="Friction-tagged stalled" value="12.4k" color="#e65100" bg="#fff3e0" />
-            <StatMini icon="schedule" label="Median PFMS cycle (est.)" value="4.2 d" color="#0055A4" bg="#e3f2fd" />
-          </div>
+        {/* Batch cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {PFMS_BATCHES.map((b) => (
+            <div key={b.id} style={{ border: '1px solid #e2e3df', borderRadius: 12, padding: '16px 18px', background: '#f9faf6' }}>
+              <p style={{ fontSize: 9, fontWeight: 700, color: '#717972', letterSpacing: '0.12em', textTransform: 'uppercase' }}>{b.id}</p>
+              <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', marginTop: 6 }}>{b.scheme}</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 16px', marginTop: 14 }}>
+                <div>
+                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Beneficiaries</span>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', marginTop: 2 }}>{b.beneficiaries.toLocaleString('en-IN')}</p>
+                </div>
+                <div>
+                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Amount</span>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', marginTop: 2 }}>₹{b.amountCr} Cr</p>
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Mean AI confidence</span>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', marginTop: 2 }}>{(b.avgConfidence * 100).toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

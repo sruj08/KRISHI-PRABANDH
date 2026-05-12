@@ -10,10 +10,12 @@ export const DISTRICT_PROFILE = {
 };
 
 export const EXEC_KPIS = {
-  totalBudgetCr: 500,
-  disbursedCr: 320,
-  pendingPfmCr: 45,
-  projectedUnutilizedPct: 8,
+  totalBudgetCr: '18.6',
+  disbursedCr: '7.42',
+  disbursedPct: '39.9',
+  disbursedTarget: '18.6',
+  pendingPfmCr: '2.18',
+  projectedUnutilizedPct: '12.4',
   sentinel2Pass: 'Last pass: 36h ago (Sentinel-2 L2A)',
 };
 

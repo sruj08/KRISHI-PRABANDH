@@ -140,7 +140,7 @@ input, textarea, select {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--outline); }
 
-/* ── Page Layout Wrapper ── */
+/* ── Page Layout Wrapper (legacy compat) ── */
 .page-with-sidebar {
   display: flex;
   min-height: 100vh;
@@ -148,19 +148,9 @@ input, textarea, select {
 
 .main-content-area {
   flex: 1;
-  margin-left: var(--sidebar-width);
   display: flex;
   flex-direction: column;
-  padding-bottom: 0;
-  min-height: 100vh;
   background-color: var(--surface);
-}
-
-@media (max-width: 767px) {
-  .main-content-area {
-    margin-left: 0;
-    padding-bottom: var(--bottom-nav-height);
-  }
 }
 
 /* ── Page Container ── */
@@ -169,19 +159,7 @@ input, textarea, select {
   width: 100%;
   max-width: 100%;
   margin: 0;
-  padding: var(--sp-8);
-}
-
-@media (max-width: 1024px) {
-  .page-container {
-    padding: var(--sp-6);
-  }
-}
-
-@media (max-width: 767px) {
-  .page-container {
-    padding: var(--sp-4);
-  }
+  padding: 0;
 }
 
 /* ── Utility Classes ── */

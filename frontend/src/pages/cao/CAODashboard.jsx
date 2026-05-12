@@ -320,171 +320,147 @@ const CAODashboard = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 animate-fade-in w-full">
-
-      {/* Top App Bar (Full Width, Pulled out of padding) */}
-      <header className="bg-white border-b border-surface-variant px-8 py-4 -mt-8 -mx-8 mb-8 flex items-center justify-between sticky top-0 z-50">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-3 font-body-main text-[13px] text-on-surface-variant">
-          <a className="hover:text-primary transition-colors" href="#">Hadapsar Mandal</a>
-          <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
-          <a className="hover:text-primary transition-colors" href="#">Haveli Taluka</a>
-          <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
-          <a className="hover:text-primary transition-colors" href="#">Pune District</a>
-          <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
-          <span className="text-on-surface-variant font-medium">Circle Agriculture Officer</span>
-        </nav>
-        
-        <div className="flex items-center gap-4">
-          <button className="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors flex items-center justify-center">
-            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>notifications</span>
-          </button>
-          <button className="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors flex items-center justify-center">
-            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>settings</span>
-          </button>
-          <div className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-sm text-on-surface-variant ml-2 border border-outline-variant">
-            C
-          </div>
-        </div>
-      </header>
+    <div className="min-h-full bg-[#f3f4f0] animate-fade-in">
 
       {/* Main Content Area */}
-      <div className="max-w-[1600px] mx-auto w-full">
+      <div className="p-6 flex flex-col gap-6">
         {/* KPI Row */}
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
           {/* Card 1: Pending Files */}
-          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>description</span>
-              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Pending Files</span>
+          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '24px', minHeight: '144px' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>description</span>
+              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Pending Files</span>
             </div>
-            <div className="flex-1 flex flex-col justify-center">
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none">71</span>
-              <div className="mt-3 flex items-center gap-2">
-                <div className="flex-1 bg-surface-variant h-1 rounded-full overflow-hidden">
-                  <div className="bg-error h-full rounded-full" style={{ width: '12%' }}></div>
-                </div>
-                <span className="text-[11px] text-error font-data-tabular font-medium">12%</span>
+            <div>
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">71</span>
+            </div>
+            <div className="mt-auto pt-2 flex items-center gap-2" style={{ width: '100%' }}>
+              <span className="text-[11px] text-on-surface-variant font-medium whitespace-nowrap">Target: &lt; 50</span>
+              <div className="flex-1 bg-surface-variant h-1 rounded-full overflow-hidden ml-1">
+                <div className="bg-error h-full rounded-full" style={{ width: '12%' }}></div>
               </div>
+              <span className="text-[10px] text-error font-data-tabular font-medium flex-shrink-0">12%</span>
             </div>
           </div>
           
           {/* Card 2: Red Alerts */}
-          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>warning</span>
-              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Red Alerts</span>
+          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '24px', minHeight: '144px' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-error" style={{ fontSize: '18px' }}>warning</span>
+              <span className="font-label-caps text-[10px] text-error tracking-wider uppercase font-semibold truncate">Red Alerts</span>
             </div>
-            <div className="flex-1 flex flex-col justify-center">
-              <span className="font-display-lg text-[32px] font-bold text-error leading-none">3</span>
+            <div className="flex items-end gap-2">
+              <span className="font-display-lg text-[32px] font-bold text-error leading-none tracking-tight">3</span>
+              <span className="text-[13px] font-bold text-error mb-1">High</span>
             </div>
-            <div className="mt-4">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-error-container text-on-error-container">! Critical</span>
+            <div className="mt-auto pt-2">
+              <span className="text-[11px] text-on-surface-variant font-medium">9 batches pending</span>
             </div>
           </div>
           
           {/* Card 3: Fraud Prevented */}
-          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>security</span>
-              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Fraud Prevented</span>
+          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '24px', minHeight: '144px' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>security</span>
+              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Fraud Prevented</span>
             </div>
-            <div className="flex-1 flex flex-col justify-center">
-              <span className="font-display-lg text-[28px] font-bold text-on-background leading-none">₹1.05 <span className="text-xl">L</span></span>
+            <div>
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight flex items-baseline gap-1">₹1.05<span className="text-xl">L</span></span>
             </div>
-            <div className="mt-4">
-              <p className="font-body-main text-xs text-on-surface-variant">This week</p>
+            <div className="mt-auto pt-2">
+              <p className="font-body-main text-[11px] text-on-surface-variant font-medium">Across all schemes</p>
             </div>
           </div>
           
           {/* Card 4: Shops Overdue */}
-          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>storefront</span>
-              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Shops Overdue</span>
+          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '24px', minHeight: '144px' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>storefront</span>
+              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Shops Overdue</span>
             </div>
-            <div className="flex-1 flex flex-col justify-center">
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none">2</span>
+            <div>
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">2</span>
             </div>
-            <div className="mt-4">
-              <p className="font-body-main text-xs text-on-surface-variant">Inspections</p>
+            <div className="mt-auto pt-2">
+              <p className="font-body-main text-[11px] text-on-surface-variant font-medium">Require inspections</p>
             </div>
           </div>
           
           {/* Card 5: PMFBY Claims */}
-          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant" onClick={() => setPmfbyOpen(true)}>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>account_balance</span>
-              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">PMFBY Claims</span>
+          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] cursor-pointer hover:bg-surface-container-lowest transition-colors hover:border-outline-variant relative overflow-hidden" style={{ padding: '24px', minHeight: '144px' }} onClick={() => setPmfbyOpen(true)}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>account_balance</span>
+              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">PMFBY Claims</span>
             </div>
-            <div className="flex-1 flex flex-col justify-center">
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none">318</span>
+            <div>
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">318</span>
             </div>
-            <div className="mt-4 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant"></span>
-              <span className="font-body-main text-xs text-on-surface-variant">Processed</span>
+            <div className="mt-auto pt-2 flex items-center gap-1.5 min-w-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant flex-shrink-0"></span>
+              <span className="font-body-main text-[11px] text-on-surface-variant font-medium truncate">Processed this month</span>
             </div>
           </div>
           
           {/* Card 6: Avg Approval */}
-          <div className="bg-white rounded-xl p-6 flex flex-col min-h-[140px] shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '20px' }}>schedule</span>
-              <span className="font-label-caps text-[11px] text-on-surface-variant tracking-wider uppercase">Avg Approval</span>
+          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '24px', minHeight: '144px' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>schedule</span>
+              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Avg Approval</span>
             </div>
-            <div className="flex-1 flex flex-col justify-center">
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none">4.2d</span>
+            <div>
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">4.2d</span>
             </div>
-            <div className="mt-4">
-              <p className="font-body-main text-xs text-on-surface-variant">Target: 3d</p>
+            <div className="mt-auto pt-2">
+              <p className="font-body-main text-[11px] text-on-surface-variant font-medium">Target: 3d</p>
             </div>
           </div>
         </div>
 
         {/* Main Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" style={{ marginTop: '8px' }}>
           {/* Left Column (Spans 8 cols) */}
-          <div className="lg:col-span-8 flex flex-col gap-10 lg:gap-12">
+          <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
             {/* Map Container */}
-            <div className="bg-white rounded-xl overflow-hidden flex flex-col shadow-sm h-[560px]">
-              <div className="p-5 flex justify-between items-center z-10 border-b border-surface-variant">
-                <div>
-                  <h2 className="font-section-header text-section-header text-on-background">Circle — Geo-fenced Command Map</h2>
-                  <p className="font-body-main text-sm text-on-surface-variant mt-1">Live spatial analytics and telemetry</p>
+            <div className="bg-white rounded-[16px] overflow-hidden flex flex-col shadow-sm border border-[#e2e3df] min-w-0" style={{ height: '520px' }}>
+              <div className="flex justify-between items-center z-10 border-b border-surface-variant" style={{ padding: '22px 24px' }}>
+                <div className="min-w-0">
+                  <h2 className="font-section-header font-bold text-base text-on-background tracking-tight truncate">Circle — Geo-fenced Command Map</h2>
+                  <p className="font-body-main text-xs text-on-surface-variant mt-0.5 font-medium truncate">Live spatial analytics and telemetry</p>
                 </div>
-                <button className="flex items-center gap-2 px-3 py-1.5 bg-surface-container rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors font-medium text-xs text-on-background">
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>layers</span> Layers
+                <button className="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 bg-surface-container rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors font-medium text-[11px] text-on-background ml-4">
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>layers</span> Layers
                 </button>
               </div>
-              <div className="relative flex-1 bg-[#f0f3f2]">
+              <div className="relative flex-1 bg-[#f0f3f2] w-full">
                 <ActionMap />
               </div>
             </div>
 
             {/* Sahayak Matrix */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm flex flex-col">
-              <div className="p-5 border-b border-surface-variant flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-on-surface-variant">leaderboard</span>
-                  <h3 className="font-section-header text-section-header text-on-background">Sahayak Accountability Matrix</h3>
+            <div className="bg-white rounded-[16px] overflow-hidden shadow-sm flex flex-col border border-[#e2e3df] min-w-0">
+              <div className="border-b border-surface-variant flex justify-between items-center" style={{ padding: '22px 24px' }}>
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="material-symbols-outlined text-on-surface-variant flex-shrink-0">leaderboard</span>
+                  <h3 className="font-section-header font-bold text-base text-on-background tracking-tight truncate">Sahayak Accountability Matrix</h3>
                 </div>
-                <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-[#fff3e0] text-[#e65100]">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#fff3e0] text-[#e65100] flex-shrink-0 ml-4 whitespace-nowrap">
                   {DASHBOARD_KPIS.sahayaks_critical} Critical
                 </span>
               </div>
-              <div className="p-0">
+              <div className="p-0 overflow-x-auto w-full">
                 <SahayakMatrix sahayaks={SAHAYAKS} />
               </div>
             </div>
           </div>
 
           {/* Right Column (Spans 4 cols) */}
-          <div className="lg:col-span-4 flex flex-col gap-8">
+          <div className="lg:col-span-4 flex flex-col gap-6 min-w-0">
             
             {/* Supervision Tabs Widget */}
-            <div className="bg-white rounded-xl shadow-sm flex flex-col h-[400px]">
+            <div className="bg-white rounded-[16px] shadow-sm flex flex-col border border-[#e2e3df] min-w-0" style={{ height: '410px' }}>
               {/* Tab bar */}
-              <div className="flex gap-2 p-3 bg-surface-container-lowest border-b border-surface-variant rounded-t-xl">
+              <div className="flex gap-2 p-3 bg-surface-container-lowest border-b border-surface-variant rounded-t-[16px]">
                 {SUPERVISION_TABS.map(tab => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                     className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-lg transition-all duration-200 ${
@@ -500,7 +476,7 @@ const CAODashboard = () => {
               </div>
 
               {loading ? (
-                <div className="flex-1 flex items-center justify-center text-on-surface-variant text-sm">
+                <div className="flex-1 flex items-center justify-center text-on-surface-variant text-sm font-medium">
                   Loading data…
                 </div>
               ) : (
@@ -513,17 +489,17 @@ const CAODashboard = () => {
             </div>
 
             {/* Shop Tracker Widget */}
-            <div className="bg-white rounded-xl shadow-sm flex flex-col overflow-hidden">
-              <div className="p-5 border-b border-surface-variant flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-on-surface-variant">storefront</span>
-                  <h3 className="font-section-header text-section-header text-on-background">Krushi Seva Kendra</h3>
+            <div className="bg-white rounded-[16px] shadow-sm flex flex-col overflow-hidden border border-[#e2e3df] min-w-0">
+              <div className="border-b border-surface-variant flex justify-between items-center" style={{ padding: '22px 24px' }}>
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="material-symbols-outlined text-on-surface-variant flex-shrink-0">storefront</span>
+                  <h3 className="font-section-header font-bold text-base text-on-background tracking-tight truncate">Krushi Seva Kendra</h3>
                 </div>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-medium bg-[#fff8e1] text-[#f57f17]">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#fff8e1] text-[#f57f17] flex-shrink-0 ml-4 whitespace-nowrap">
                   {DASHBOARD_KPIS.shops_overdue} Overdue
                 </span>
               </div>
-              <div className="p-0">
+              <div className="p-0 overflow-x-auto w-full">
                 <ShopTracker />
               </div>
             </div>
