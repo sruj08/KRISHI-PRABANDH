@@ -20,6 +20,7 @@ import DistrictDashboard from './pages/district/DistrictDashboard';
 import AdvancedTools from './pages/AdvancedTools';
 import VisitPlanner from './pages/VisitPlanner';
 import Placeholder from './pages/Placeholder';
+import NotFound from './pages/NotFound';
 import SahayakDashboard from './pages/officer/SahayakDashboard';
 import GramSabha from './pages/GramSabha';
 
@@ -65,12 +66,55 @@ const App = () => {
             <Route path="/select-task" element={<SelectTask />} />
             <Route path="/advanced-tools" element={<AdvancedTools />} />
             <Route path="/visit-planner" element={<VisitPlanner />} />
-            <Route path="/geo" element={<Placeholder title="Geo-Intelligence" />} />
-            <Route path="/ledger" element={<Placeholder title="Compensation Ledger" />} />
             <Route path="/gram-sabha" element={<GramSabha />} />
+
+            {/* Placeholder Routes for Sidebar Items */}
+            <Route path="/map" element={<Placeholder title="Village Map" icon="map" sections={[{ title: 'Live Field Operations', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} />} />
+            <Route path="/farmers" element={<Placeholder title="Farmer Registry" icon="groups" sections={[{ title: 'Registered Farmers', type: 'table' }, { title: 'Registration Analytics', type: 'cards' }]} />} />
+            
+            <Route path="/verification" element={
+              <Placeholder 
+                title="Field Verification" 
+                icon="verified_user" 
+                tabs={['Visits', 'Geo-tagged Photos', 'AI Verification', 'Pending Checks']}
+                sections={[{ title: 'Scheduled Visits', type: 'table' }, { title: 'Coverage Metrics', type: 'cards' }]} 
+              />
+            } />
+            <Route path="/damage" element={
+              <Placeholder 
+                title="Damage Reports" 
+                icon="warning" 
+                tabs={['Drought', 'Flood', 'Pest', 'Compensation']}
+                sections={[{ title: 'Severity Reports', type: 'cards' }, { title: 'Affected Regions', type: 'table' }]} 
+              />
+            } />
+            <Route path="/applications" element={
+              <Placeholder 
+                title="Applications" 
+                icon="article" 
+                tabs={['Pending', 'Approved', 'Rejected', 'Payment Status']}
+                sections={[{ title: 'Disbursement Status', type: 'cards' }, { title: 'Recent Queries', type: 'table' }]} 
+              />
+            } />
+            <Route path="/eligibility" element={<Placeholder title="Eligible Farmers" icon="fact_check" sections={[{ title: 'Eligibility Rules Engine', type: 'cards' }, { title: 'Pending Review', type: 'table' }]} />} />
+            <Route path="/health" element={<Placeholder title="Crop Health" icon="eco" sections={[{ title: 'NDVI Indices', type: 'cards' }, { title: 'High Stress Zones', type: 'table' }]} />} />
+            <Route path="/alerts" element={
+              <Placeholder 
+                title="Alerts & Rainfall" 
+                icon="notifications_active" 
+                tabs={['Anomalies', 'Deficit Warnings', 'Station Data']}
+                sections={[{ title: 'Critical Alerts', type: 'list' }, { title: 'Rainfall Metrics', type: 'cards' }]} 
+              />
+            } />
+            <Route path="/grievances" element={<Placeholder title="Grievances" icon="gavel" sections={[{ title: 'Open Tickets', type: 'table' }, { title: 'Resolution Metrics', type: 'cards' }]} />} />
+            <Route path="/reports" element={<Placeholder title="Reports" icon="description" tabs={['Village Reports', 'Audit Logs', 'SOPs']} sections={[{ title: 'Generated Reports', type: 'list' }, { title: 'System Logs', type: 'table' }]} />} />
+            <Route path="/settings" element={<Placeholder title="Settings" icon="settings" sections={[{ title: 'System Configuration', type: 'cards' }]} />} />
+            
+            {/* 404 Route within Protected Layout */}
+            <Route path="*" element={<NotFound />} />
           </Route>
           
-          {/* Fallback route */}
+          {/* Fallback route for unauthenticated users at root */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </HierarchyProvider>
