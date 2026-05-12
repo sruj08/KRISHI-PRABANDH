@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { MOCK_TAO_STATS, MOCK_APPLICATIONS, MOCK_GRIEVANCES } from '../../utils/taoMockData';
+const MOCK_APPLICATIONS = [];
+const MOCK_GRIEVANCES = [];
+const MOCK_TAO_STATS = { processed: 0, leakagePrevented: "0", pendingManualAudit: 0 };
 import TAOMap from './components/TAOMap';
 import CAOMatrix from './components/CAOMatrix';
 import TAOAnomalyModal from './components/TAOAnomalyModal';

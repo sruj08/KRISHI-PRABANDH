@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from middleware.auth import get_current_user
 from schemas.auth import JwtUserClaims
@@ -9,6 +9,17 @@ from services.farmer_service import FarmerService
 from utils.response import failure, success
 
 router = APIRouter(prefix="/farmers", tags=["Farmers"])
+
+
+@router.get("/lookup")
+def lookup_farmer(
+    email: str = Query(..., min_length=5),
+    user: JwtUserClaims = Depends(get_current_user),
+):
+    row = FarmerService().lookup_by_email(email)
+    if not row:
+        return failure("Farmer not found for this email", status_code=404)
+    return success("Farmer found", row)
 
 
 @router.get("/{farmer_id}/farms")

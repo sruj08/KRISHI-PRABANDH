@@ -1,10 +1,8 @@
 import React from 'react';
 import DistrictCommandMap from './components/DistrictCommandMap';
-import {
-  EXEC_KPIS,
-  PFMS_BATCHES,
-  FRICTION_MONTH,
-} from '../../utils/districtMockData';
+const EXEC_KPIS = {};
+const PFMS_BATCHES = [];
+const FRICTION_MONTH = { labels: [], counts: [], topThreeRecommendations: [] };
 import { useToast } from '../../hooks/useToast.jsx';
 import './district.css';
 

@@ -6,9 +6,10 @@ import ActionMap from './components/ActionMap';
 import ShopTracker from './components/ShopTracker';
 import SahayakMatrix from './components/SahayakMatrix';
 import PMFBYPanel from './components/PMFBYPanel';
-import {
-  CAO_PROFILE, DASHBOARD_KPIS, SAHAYAKS, PMFBY_EVENTS
-} from '../../utils/caoMockData';
+const CAO_PROFILE = { name: 'CAO Officer', designation: 'Mandal Krushi Adhikari', mandal: 'Wagholi Mandal', district: 'Pune' };
+const DASHBOARD_KPIS = {};
+const SAHAYAKS = [];
+const PMFBY_EVENTS = [];
 import {
   fetchMandalSummary,
   fetchVistarAnalytics,

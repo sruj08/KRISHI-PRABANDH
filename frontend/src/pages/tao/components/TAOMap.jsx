@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip, Polygon } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MOCK_HAVELI_MANDALS } from '../../../utils/taoMapMockData';
+const MOCK_HAVELI_MANDALS = [];
 
 // Approximate boundary for Haveli Taluka (just a simple polygon for visual effect)
 const HAVELI_BOUNDARY = [

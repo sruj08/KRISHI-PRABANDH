@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../hooks/useToast.jsx';
 import './LandingPage.css';
 import { useAuth } from '../../context/AuthContext';
-import { MOCK_USERS } from '../../utils/mockData';
+const API_BASE = 'http://localhost:8000';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -11,45 +11,52 @@ const LandingPage = () => {
   const { addToast } = useToast();
 
   const [selectedRole, setSelectedRole] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState(29);
+  const [emailInput, setEmailInput] = useState('');
+  const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
-  const handleOtpChange = (index, value) => {
-    if (value.length > 1) value = value.slice(-1);
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-    
-    // Auto-focus next input
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      if (nextInput) nextInput.focus();
-    }
-  };
 
-  const handleVerifyLogin = (e) => {
+  const handleVerifyLogin = async (e) => {
     e.preventDefault();
     if (!selectedRole) {
       addToast("Please select a role", "error");
       return;
     }
-    // Simple simulation
-    login(MOCK_USERS[selectedRole]);
-    if (selectedRole === 'state') navigate('/state/dashboard');
-    else if (selectedRole === 'division') navigate('/division/dashboard');
-    else if (selectedRole === 'farmer') navigate('/farmer');
-    else if (selectedRole === 'cao') navigate('/cao');
-    else if (selectedRole === 'tao') navigate('/tao');
-    else if (selectedRole === 'district') navigate('/district');
-    else navigate('/officer');
+    // Map role to seeded email
+    const emailMap = {
+      state: 'state@krishi.gov.in',
+      division: 'div@krishi.gov.in',
+      district: 'district@krishi.gov.in',
+      tao: 'tao@krishi.gov.in',
+      cao: 'cao@krishi.gov.in',
+      officer: 'sahayak1@krishi.gov.in',
+      farmer: 'state@krishi.gov.in',
+    };
+    const email = emailMap[selectedRole];
+    if (!email) { addToast("Invalid role", "error"); return; }
+    if (!password) { addToast("Please enter a password", "error"); return; }
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        addToast(data?.message || "Login failed", "error");
+        return;
+      }
+      login(data.data.user || data.data, data.data?.access_token);
+      if (selectedRole === 'state') navigate('/state/dashboard');
+      else if (selectedRole === 'division') navigate('/division/dashboard');
+      else if (selectedRole === 'farmer') navigate('/farmer');
+      else if (selectedRole === 'cao') navigate('/cao');
+      else if (selectedRole === 'tao') navigate('/tao');
+      else if (selectedRole === 'district') navigate('/district');
+      else navigate('/officer');
+    } catch (err) {
+      addToast("Cannot reach server", "error");
+    }
   };
 
   const roles = [
@@ -213,7 +220,7 @@ const LandingPage = () => {
               </div>
             </div>
 
-            {/* Mobile Number */}
+            {/* Email Address */}
             <div>
               <label style={{
                 display: 'block',
@@ -225,7 +232,7 @@ const LandingPage = () => {
                 letterSpacing: '0.05em',
                 marginBottom: '8px',
               }}>
-                REGISTERED MOBILE NUMBER
+                REGISTERED EMAIL ADDRESS
               </label>
               <div style={{
                 display: 'flex',
@@ -241,14 +248,17 @@ const LandingPage = () => {
                   color: '#4a5568',
                   fontSize: '15px',
                   fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
-                  +91
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>mail</span>
                 </div>
                 <input
-                  type="text"
-                  placeholder="Enter 10-digit number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  type="email"
+                  placeholder="Enter official email"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
                   style={{
                     flex: 1,
                     padding: '14px 16px',
@@ -261,53 +271,60 @@ const LandingPage = () => {
                 />
               </div>
               <p style={{ fontSize: '10px', color: '#718096', marginTop: '6px', fontStyle: 'italic' }}>
-                Enter the number registered with the Department HR portal.
+                Enter the email registered with the Department HR portal.
               </p>
             </div>
 
-            {/* OTP Section */}
+            {/* Password Section */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label style={{
-                  fontFamily: 'var(--font-data)',
-                  fontSize: '11px',
-                  fontWeight: 700,
+              <label style={{
+                display: 'block',
+                fontFamily: 'var(--font-data)',
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#4a5568',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '8px',
+              }}>
+                PASSWORD
+              </label>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                borderRadius: '12px',
+                border: '1px solid #e2e8f0',
+                backgroundColor: '#f8fafc',
+                overflow: 'hidden',
+              }}>
+                <div style={{
+                  padding: '14px 16px',
+                  borderRight: '1px solid #e2e8f0',
                   color: '#4a5568',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
-                  VERIFY OTP
-                </label>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#1a202c' }}>
-                  00:{timer < 10 ? `0${timer}` : timer}
-                </span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>lock</span>
+                </div>
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '14px 16px',
+                    border: 'none',
+                    backgroundColor: 'transparent',
+                    fontSize: '15px',
+                    outline: 'none',
+                    color: '#1a202c',
+                  }}
+                />
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {otp.map((digit, i) => (
-                  <input
-                    key={i}
-                    id={`otp-${i}`}
-                    type="text"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(i, e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: '56px',
-                      borderRadius: '12px',
-                      border: '1px solid #e2e8f0',
-                      backgroundColor: '#f8fafc',
-                      textAlign: 'center',
-                      fontSize: '18px',
-                      fontWeight: 700,
-                      outline: 'none',
-                      color: '#1a202c',
-                    }}
-                  />
-                ))}
-              </div>
-              <p style={{ fontSize: '11px', color: '#718096', marginTop: '10px' }}>
-                OTP sent to +91 ******4567 • <span style={{ fontWeight: 700, color: '#033621', cursor: 'pointer' }}>Resend</span>
-              </p>
             </div>
 
             {/* Submit Button */}

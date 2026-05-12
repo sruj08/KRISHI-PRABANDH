@@ -19,13 +19,13 @@ class AuditService:
         payload: Optional[dict[str, Any]] = None,
     ) -> None:
         row: dict[str, Any] = {
-            "actor_id": str(actor_id),
-            "action": action,
-            "entity_type": entity_type,
+            "user_id": str(actor_id),
+            "action_type": action,
+            "entity_name": entity_type,
             "created_at": utcnow().isoformat(),
         }
         if entity_id is not None:
             row["entity_id"] = entity_id
         if payload is not None:
-            row["payload"] = payload
+            row["new_data"] = payload
         self._repo.append(row)

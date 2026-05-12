@@ -17,7 +17,7 @@ class FarmRepository:
         res = (
             self._sb.table("farms")
             .select("*")
-            .eq("farmer_profile_id", farmer_profile_id)
+            .eq("farmer_id", farmer_profile_id)
             .execute()
         )
         return list(res.data or [])

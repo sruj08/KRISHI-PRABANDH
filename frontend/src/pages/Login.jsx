@@ -3,24 +3,41 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import Button from '../components/ui/Button';
+import { useToast } from '../hooks/useToast.jsx';
+
+const API_BASE = 'http://localhost:8000';
 
 const Login = () => {
   const { t, toggleLanguage, lang } = useLanguage();
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { addToast } = useToast();
   
   const [officerId, setOfficerId] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock login logic
-    login({
-      id: officerId || 'AGRI-9920',
-      name: 'Sahayak Krushi Adhikari Ramesh Patil',
-      region: 'North Sector'
-    });
-    navigate('/');
+    if (!officerId || !password) {
+      addToast("Please enter credentials", "error");
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: officerId, password }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        addToast(data?.message || "Login failed", "error");
+        return;
+      }
+      login(data.data.user || data.data, data.data?.access_token);
+      navigate('/');
+    } catch (err) {
+      addToast("Cannot reach server", "error");
+    }
   };
 
   return (
