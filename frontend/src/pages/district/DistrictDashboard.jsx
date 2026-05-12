@@ -167,37 +167,11 @@ const DistrictDashboard = () => {
               <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>Taluka — Geo-fenced Command Map</h2>
               <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>Live spatial analytics and telemetry</p>
             </div>
-            <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', border: '1px solid #e2e3df', borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#414943', background: '#fff', cursor: 'pointer', flexShrink: 0 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>layers</span>
-              Layers
-            </button>
           </div>
 
           {/* Map body */}
           <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
             <DistrictCommandMap />
-
-            {/* GIS Overlays Panel */}
-            <div style={{ position: 'absolute', bottom: 20, right: 20, zIndex: 1000, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(6px)', borderRadius: 12, padding: '16px 18px', boxShadow: '0 4px 16px rgba(0,0,0,.1)', border: '1px solid #e2e3df', width: 208 }}>
-              <p style={{ fontSize: 9, fontWeight: 700, color: '#717972', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0, marginBottom: 14, lineHeight: 1.3 }}>GIS Overlays</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
-                {[
-                  { label: 'Mandal Boundaries', checked: true },
-                  { label: 'Crop Health (NDVI)', checked: true },
-                  { label: 'Verification Status', checked: true },
-                  { label: 'Grievance Hotspots', checked: false },
-                ].map(({ label, checked }) => (
-                  <label key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', minHeight: 20 }}>
-                    <input
-                      type="checkbox"
-                      defaultChecked={checked}
-                      style={{ width: 16, height: 16, borderRadius: 4, accentColor: '#396940', flexShrink: 0 }}
-                    />
-                    <span style={{ fontSize: 12, color: '#1a1c1a', fontWeight: 500, lineHeight: 1.2 }}>{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 

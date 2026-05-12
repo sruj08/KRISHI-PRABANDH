@@ -105,13 +105,29 @@ function heatMetric01(mapMode, props) {
   return Math.min(1, Math.max(0, v / 100));
 }
 
+/**
+ * Fits the map to the DAO's district extent and locks the view so the
+ * officer can zoom IN to inspect talukas but cannot zoom OUT past the
+ * district nor pan into neighbouring regions. Taluka rendering inside
+ * the fence is untouched.
+ */
 function FitDistrict({ geoData }) {
   const map = useMap();
   useEffect(() => {
     if (!geoData?.features?.length) return;
     const gj = L.geoJSON(geoData);
     const b = gj.getBounds();
-    if (b.isValid()) map.fitBounds(b, { padding: [40, 40], maxZoom: 10 });
+    if (!b.isValid()) return;
+
+    map.setMinZoom(0);
+    map.setMaxBounds(null);
+
+    map.fitBounds(b, { padding: [20, 20], animate: false });
+
+    const fitZoom = map.getZoom();
+    map.setMinZoom(fitZoom);
+    map.setMaxBounds(b.pad(0.05));
+    map.options.maxBoundsViscosity = 1.0;
   }, [geoData, map]);
   return null;
 }
@@ -285,6 +301,42 @@ const DistrictCommandMap = () => {
     };
   }, [geoData]);
 
+  /**
+   * Builds a "spotlight" mask: one giant world-sized polygon with the
+   * DAO's district punched out as a hole. Rendered above the basemap
+   * tiles so everything outside the district appears dim + softly blurred,
+   * focusing the eye on the district and its talukas.
+   */
+  const focusMaskGeo = useMemo(() => {
+    if (!districtGeo?.features?.length) return null;
+    const holes = [];
+    for (const f of districtGeo.features) {
+      const g = f.geometry;
+      if (!g) continue;
+      if (g.type === 'Polygon') {
+        holes.push(g.coordinates[0]);
+      } else if (g.type === 'MultiPolygon') {
+        for (const poly of g.coordinates) holes.push(poly[0]);
+      }
+    }
+    if (!holes.length) return null;
+    const worldRing = [
+      [-180, -85],
+      [180, -85],
+      [180, 85],
+      [-180, 85],
+      [-180, -85],
+    ];
+    return {
+      type: 'Feature',
+      properties: { kind: 'focus-mask' },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [worldRing, ...holes],
+      },
+    };
+  }, [districtGeo]);
+
   const heatPoints = useMemo(() => {
     if (!geoData?.features) return [];
     const all = [];
@@ -372,12 +424,30 @@ const DistrictCommandMap = () => {
             zoom={9}
             style={{ height: '100%', width: '100%' }}
             scrollWheelZoom
+            maxBoundsViscosity={1.0}
+            worldCopyJump={false}
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              noWrap
             />
             <DistrictKdeHeatLayer points={heatPoints} mapMode={mapMode} />
+            <Pane name="districtFocusMask" className="geo-focus-mask-pane" style={{ zIndex: 350, pointerEvents: 'none' }}>
+              {focusMaskGeo && (
+                <GeoJSON
+                  data={focusMaskGeo}
+                  style={() => ({
+                    stroke: false,
+                    color: 'transparent',
+                    weight: 0,
+                    fillColor: '#0b1416',
+                    fillOpacity: 0.55,
+                    interactive: false,
+                  })}
+                />
+              )}
+            </Pane>
             <TalukaBoundariesLayer talukaGeo={talukaGeo} />
             <Pane name="districtCentroidPins" style={{ zIndex: 650 }}>
               {centroidPins.map((pin) => (
@@ -398,7 +468,7 @@ const DistrictCommandMap = () => {
                 </CircleMarker>
               ))}
             </Pane>
-            <FitDistrict geoData={geoData} />
+            <FitDistrict geoData={districtGeo} />
             <GeoJSON data={districtGeo} style={styleDistrictFence} />
           </MapContainer>
         )}

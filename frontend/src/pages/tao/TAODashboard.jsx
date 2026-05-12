@@ -129,41 +129,9 @@ const TAODashboard = () => {
                   <h2 className="font-section-header font-bold text-base text-on-background tracking-tight truncate" style={{ lineHeight: 1.3 }}>Haveli Taluka — Geo Verification Map</h2>
                   <p className="font-body-main text-xs text-on-surface-variant font-medium truncate" style={{ marginTop: '6px', lineHeight: 1.4 }}>Live spatial analytics and field officer telemetry</p>
                 </div>
-                <button className="flex-shrink-0 inline-flex items-center gap-2 border border-outline-variant rounded-lg bg-white hover:bg-surface-container-lowest transition-colors text-[12px] font-semibold text-on-background" style={{ padding: '8px 16px', height: '34px' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>layers</span> Layers
-                </button>
               </div>
               <div className="relative h-[500px] bg-[#f0f3f2] w-full">
                 <TAOMap />
-                
-                {/* Floating Map Legend / Controls */}
-                <div className="absolute bg-white rounded-xl shadow-md border border-outline-variant/30 z-10" style={{ bottom: '24px', right: '24px', padding: '18px 20px', width: '232px' }}>
-                  <h4 className="font-label-caps text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold" style={{ marginBottom: '16px', lineHeight: 1.3, letterSpacing: '0.12em' }}>GIS Overlays</h4>
-                  <div className="flex flex-col" style={{ gap: '12px' }}>
-                    <label className="flex items-center cursor-pointer" style={{ gap: '11px', minHeight: '22px' }}>
-                      <div className="rounded bg-primary flex items-center justify-center flex-shrink-0" style={{ width: '16px', height: '16px' }}>
-                        <span className="material-symbols-outlined text-white" style={{ fontSize: '12px', fontWeight: 700 }}>check</span>
-                      </div>
-                      <span className="text-[12px] font-medium text-on-background truncate" style={{ lineHeight: 1.3 }}>Mandal Boundaries</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer" style={{ gap: '11px', minHeight: '22px' }}>
-                      <div className="rounded bg-primary flex items-center justify-center flex-shrink-0" style={{ width: '16px', height: '16px' }}>
-                        <span className="material-symbols-outlined text-white" style={{ fontSize: '12px', fontWeight: 700 }}>check</span>
-                      </div>
-                      <span className="text-[12px] font-medium text-on-background truncate" style={{ lineHeight: 1.3 }}>Pending Inspections</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer" style={{ gap: '11px', minHeight: '22px' }}>
-                      <div className="rounded bg-primary flex items-center justify-center flex-shrink-0" style={{ width: '16px', height: '16px' }}>
-                        <span className="material-symbols-outlined text-white" style={{ fontSize: '12px', fontWeight: 700 }}>check</span>
-                      </div>
-                      <span className="text-[12px] font-medium text-on-background truncate" style={{ lineHeight: 1.3 }}>Fraud Hotspots</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer" style={{ gap: '11px', minHeight: '22px' }}>
-                      <div className="rounded border border-outline-variant bg-white flex-shrink-0" style={{ width: '16px', height: '16px' }}></div>
-                      <span className="text-[12px] font-medium text-on-background truncate" style={{ lineHeight: 1.3 }}>Field Officers</span>
-                    </label>
-                  </div>
-                </div>
               </div>
             </div>
 
