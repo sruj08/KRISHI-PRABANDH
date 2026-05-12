@@ -28,20 +28,20 @@ const TAOMap = () => {
 
   return (
     <div className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '16px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h3 className="fw-bold m-0" style={{ fontSize: '16px', color: 'var(--text-dark)' }}>Haveli Taluka Geo-Verification</h3>
-          <p className="text-sm text-muted m-0 mt-1">Live mapping of Mandals (Circles) and CAO regions</p>
+      <div style={{ padding: '18px 22px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ minWidth: 0 }}>
+          <h3 className="fw-bold m-0" style={{ fontSize: '15px', color: 'var(--text-dark)', lineHeight: 1.3 }}>Haveli Taluka Geo-Verification</h3>
+          <p className="text-sm text-muted m-0" style={{ marginTop: '4px', fontSize: '12px', lineHeight: 1.4 }}>Live mapping of Mandals (Circles) and CAO regions</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px', fontSize: '12px' }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2e7d32' }}></span> Clear
+        <div style={{ display: 'flex', gap: '16px', fontSize: '12px', flexShrink: 0, alignItems: 'center' }}>
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#2e7d32', display: 'inline-block' }}></span> Clear
            </div>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f57c00' }}></span> Warning
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f57c00', display: 'inline-block' }}></span> Warning
            </div>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#d32f2f' }}></span> Critical
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#d32f2f', display: 'inline-block' }}></span> Critical
            </div>
         </div>
       </div>

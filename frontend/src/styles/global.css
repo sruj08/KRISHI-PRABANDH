@@ -191,3 +191,40 @@ input, textarea, select {
 
 .animate-fade-in { animation: fadeIn 0.4s ease; }
 .animate-slide-up { animation: slideUp 0.35s ease; }
+
+/* =========================================================
+   Dashboard Polish — Leaflet zoom & attribution breathing room
+   Used across DAO / TAO / CAO maps.
+   ========================================================= */
+.leaflet-top.leaflet-left {
+  margin-top: 14px;
+  margin-left: 14px;
+}
+.leaflet-top.leaflet-right {
+  margin-top: 14px;
+  margin-right: 14px;
+}
+.leaflet-bottom.leaflet-right {
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+.leaflet-control-zoom {
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid #e2e3df !important;
+}
+.leaflet-control-zoom a {
+  border-radius: 0 !important;
+  border-color: #e2e3df !important;
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  font-size: 16px !important;
+  color: #414943 !important;
+}
+.leaflet-control-attribution {
+  padding: 2px 8px !important;
+  font-size: 10px !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+}

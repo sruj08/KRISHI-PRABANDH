@@ -31,10 +31,10 @@ const Sidebar = ({ isOpen }) => {
     <aside className={`sidebar flex flex-col bg-white border-r border-[#E2E9E6] shrink-0 z-40 ${isOpen ? 'open' : ''}`}>
 
       {/* ── Nav links ── */}
-      <div className="flex-1 overflow-y-auto py-5 px-3">
+      <div className="flex-1 overflow-y-auto py-6 px-3">
 
         {/* Overview */}
-        <p className="sidebar-section-label">Overview</p>
+        <p className="sidebar-section-label" style={{ marginTop: 0 }}>Overview</p>
         {overviewLinks.map((link) => (
           <NavLink
             key={link.to}
@@ -59,8 +59,8 @@ const Sidebar = ({ isOpen }) => {
         ))}
 
         {/* Modules */}
-        <p className="sidebar-section-label" style={{ marginTop: 20 }}>Modules</p>
-        <nav className="flex flex-col gap-0.5">
+        <p className="sidebar-section-label" style={{ marginTop: 24 }}>Modules</p>
+        <nav className="flex flex-col" style={{ gap: 2 }}>
           {moduleLinks.map((link) => (
             <NavLink
               key={link.to}

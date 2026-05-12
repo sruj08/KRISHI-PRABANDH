@@ -32,20 +32,20 @@ const ActionMap = () => {
   ];
 
   return (
-    <div className="map-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 'var(--sp-2)' }}>
+    <div className="map-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '12px', padding: '16px 20px 18px' }}>
       {/* Legend */}
-      <div className="map-legend" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', fontSize: '12px', color: 'var(--text-muted)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+      <div className="map-legend" style={{ display: 'flex', alignItems: 'center', gap: '18px', fontSize: '11.5px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span className="legend-dot" style={{ background: '#2D6A4F', width: '10px', height: '10px', borderRadius: '50%', display: 'inline-block' }} /> 0–10 (Low)
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span className="legend-dot" style={{ background: '#FF9933', width: '10px', height: '10px', borderRadius: '50%', display: 'inline-block' }} /> 11–30 (Med)
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span className="legend-dot" style={{ background: '#ba1a1a', width: '10px', height: '10px', borderRadius: '50%', display: 'inline-block' }} /> 31+ (High)
         </div>
-        <label className="shop-toggle" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', color: 'var(--primary)', fontWeight: '600' }}>
-          <input type="checkbox" checked={showShops} onChange={e => setShowShops(e.target.checked)} style={{ cursor: 'pointer' }} />
+        <label className="shop-toggle" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: 'var(--primary)', fontWeight: 600, padding: '4px 10px', border: '1px solid var(--outline-variant)', borderRadius: '999px', background: '#fff' }}>
+          <input type="checkbox" checked={showShops} onChange={e => setShowShops(e.target.checked)} style={{ cursor: 'pointer', accentColor: 'var(--primary)' }} />
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>storefront</span>
           Shops
         </label>

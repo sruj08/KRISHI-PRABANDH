@@ -327,8 +327,8 @@ const DistrictCommandMap = () => {
   const center = useMemo(() => [18.52, 73.86], []);
 
   return (
-    <div className="map-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 'var(--sp-3)' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'var(--sp-2)' }}>
+    <div className="map-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '12px', padding: '16px 20px 20px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 }}>
         {MAP_MODES.map((m) => (
           <button
             key={m.id}
@@ -345,12 +345,12 @@ const DistrictCommandMap = () => {
         <span className="cao-panel-badge green" style={{ marginLeft: 'auto' }}>KDE heatmap</span>
       </div>
 
-      <div className="district-heat-legend-strip" aria-hidden>
-        <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginRight: '8px', flexShrink: 0 }}>Intensity</span>
+      <div className="district-heat-legend-strip" aria-hidden style={{ marginTop: 2 }}>
+        <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginRight: '8px', flexShrink: 0, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Intensity</span>
         <div className="district-heat-legend-gradient" />
       </div>
 
-      <div className="map-legend" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'var(--sp-3)', fontSize: '11px', color: 'var(--text-muted)' }}>
+      <div className="map-legend" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, fontSize: '11px', color: 'var(--text-muted)', marginTop: 2 }}>
         {legend.map((row) => (
           <span key={row.t} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: row.c, border: '1px solid rgba(0,0,0,0.12)' }} />
@@ -359,7 +359,7 @@ const DistrictCommandMap = () => {
         ))}
       </div>
 
-      <div style={{ flex: 1, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--outline-variant)', minHeight: '480px', position: 'relative' }}>
+      <div style={{ flex: 1, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--outline-variant)', minHeight: '480px', position: 'relative', marginTop: 4 }}>
         {loadErr && (
           <div style={{ padding: '24px', color: 'var(--error)', fontSize: '13px' }}>{loadErr}</div>
         )}
