@@ -35,6 +35,8 @@ const ProtectedRoute = ({ children }) => {
 
 const DashboardRouter = () => {
   const { user } = useAuth();
+  if (user?.role === 'state') return <Navigate to="/state/dashboard" replace />;
+  if (user?.role === 'division') return <Navigate to="/division/dashboard" replace />;
   if (user?.role === 'farmer') return <Navigate to="/farmer" replace />;
   if (user?.role === 'cao')    return <Navigate to="/cao" replace />;
   if (user?.role === 'tao')    return <Navigate to="/tao" replace />;
@@ -68,7 +70,69 @@ const App = () => {
             <Route path="/visit-planner" element={<VisitPlanner />} />
             <Route path="/gram-sabha" element={<GramSabha />} />
 
-            {/* Placeholder Routes for Sidebar Items */}
+            {/* State & Division Placeholder Dashboards */}
+            <Route path="/state/dashboard" element={
+              <Placeholder 
+                title="State Command Center" 
+                icon="public" 
+                isDark={true}
+                sections={[
+                  { title: 'Statewide KPIs', type: 'cards' }, 
+                  { title: 'Maharashtra Command Map', type: 'table' }
+                ]} 
+              />
+            } />
+            <Route path="/division/dashboard" element={
+              <Placeholder 
+                title="Division Overview" 
+                icon="dashboard_customize" 
+                sections={[
+                  { title: 'Division Performance', type: 'cards' }, 
+                  { title: 'District Matrix', type: 'table' }
+                ]} 
+              />
+            } />
+
+            {/* State Official Sidebar Routes */}
+            <Route path="/state/map" element={<Placeholder isDark={true} title="Maharashtra Command Map" icon="map" sections={[{ title: 'Live Field Operations', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} />} />
+            <Route path="/state/schemes" element={<Placeholder isDark={true} title="Active Schemes" icon="account_tree" sections={[{ title: 'Scheme Performance', type: 'cards' }, { title: 'Scheme Registry', type: 'table' }]} />} />
+            <Route path="/state/new-scheme" element={<Placeholder isDark={true} title="New Scheme Creation" icon="add_box" sections={[{ title: 'Policy Engine', type: 'cards' }, { title: 'Draft Schemes', type: 'table' }]} />} />
+            <Route path="/state/lottery" element={<Placeholder isDark={true} title="Beneficiary Lottery" icon="casino" sections={[{ title: 'Lottery Execution', type: 'cards' }, { title: 'Recent Results', type: 'table' }]} />} />
+            <Route path="/state/budget" element={<Placeholder isDark={true} title="Budget Allocation" icon="account_balance_wallet" sections={[{ title: 'Statewide Budget', type: 'cards' }, { title: 'Fund Distribution', type: 'table' }]} />} />
+            <Route path="/state/pfms" element={<Placeholder isDark={true} title="PFMS Monitoring" icon="account_balance" sections={[{ title: 'Disbursement Status', type: 'cards' }, { title: 'Failed Transactions', type: 'table' }]} />} />
+            <Route path="/state/utilization" element={<Placeholder isDark={true} title="Utilization Analytics" icon="pie_chart" sections={[{ title: 'Fund Utilization %', type: 'cards' }, { title: 'District-wise Spending', type: 'table' }]} />} />
+            <Route path="/state/fraud" element={<Placeholder isDark={true} title="Fraud Prevention Grid" icon="shield_locked" sections={[{ title: 'AI Fraud Savings', type: 'cards' }, { title: 'Detected Rings', type: 'table' }]} />} />
+            <Route path="/state/friction" element={<Placeholder isDark={true} title="Policy Friction Feed" icon="timeline" sections={[{ title: 'Bottleneck Analysis', type: 'cards' }, { title: 'Friction Points', type: 'table' }]} />} />
+            <Route path="/state/risk" element={<Placeholder isDark={true} title="AI Risk Signals" icon="warning" sections={[{ title: 'Risk Score Matrix', type: 'cards' }, { title: 'Critical Warnings', type: 'table' }]} />} />
+            <Route path="/state/drought" element={<Placeholder isDark={true} title="Drought Heatmap" icon="wb_sunny" sections={[{ title: 'Drought Severity', type: 'cards' }, { title: 'Affected Regions', type: 'table' }]} />} />
+            <Route path="/state/flood" element={<Placeholder isDark={true} title="Flood Monitoring" icon="flood" sections={[{ title: 'Flood Risk Levels', type: 'cards' }, { title: 'Inundation Zones', type: 'table' }]} />} />
+            <Route path="/state/crop-failure" element={<Placeholder isDark={true} title="Crop Failure Alerts" icon="compost" sections={[{ title: 'Failure Predictions', type: 'cards' }, { title: 'Distress Zones', type: 'table' }]} />} />
+            <Route path="/state/reports" element={<Placeholder isDark={true} title="State Reports" icon="summarize" sections={[{ title: 'Coverage Stats', type: 'cards' }, { title: 'Generated Reports', type: 'list' }]} />} />
+            <Route path="/state/division-perf" element={<Placeholder isDark={true} title="Division Performance" icon="leaderboard" sections={[{ title: 'Division Rankings', type: 'cards' }, { title: 'Performance Matrix', type: 'table' }]} />} />
+            <Route path="/state/export" element={<Placeholder isDark={true} title="Export Center" icon="file_download" sections={[{ title: 'Data Exports', type: 'list' }]} />} />
+            <Route path="/state/users" element={<Placeholder isDark={true} title="User Governance" icon="manage_accounts" sections={[{ title: 'Active Staff', type: 'cards' }, { title: 'System Access', type: 'table' }]} />} />
+            <Route path="/state/audit" element={<Placeholder isDark={true} title="Audit Trails" icon="history" sections={[{ title: 'System Logs', type: 'table' }]} />} />
+            <Route path="/state/settings" element={<Placeholder isDark={true} title="Settings" icon="settings" sections={[{ title: 'Global Configuration', type: 'cards' }]} />} />
+
+            {/* Divisional Officer Sidebar Routes */}
+            <Route path="/division/map" element={<Placeholder title="Division Map" icon="map" sections={[{ title: 'Division Overview', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} />} />
+            <Route path="/division/district-matrix" element={<Placeholder title="District Matrix" icon="table_chart" sections={[{ title: 'District Comparisons', type: 'cards' }, { title: 'Matrix View', type: 'table' }]} />} />
+            <Route path="/division/pendency" element={<Placeholder title="Pendency Monitoring" icon="pending_actions" sections={[{ title: 'Backlog Metrics', type: 'cards' }, { title: 'Aged Files', type: 'table' }]} />} />
+            <Route path="/division/officer-perf" element={<Placeholder title="Officer Performance" icon="bar_chart" sections={[{ title: 'Efficiency Scores', type: 'cards' }, { title: 'Staff Rankings', type: 'table' }]} />} />
+            <Route path="/division/cross-fraud" element={<Placeholder title="Cross-District Fraud" icon="share_location" sections={[{ title: 'Fraud Rings Detected', type: 'cards' }, { title: 'Cross-Border Alerts', type: 'table' }]} />} />
+            <Route path="/division/ai-red-flags" element={<Placeholder title="AI Red Flags" icon="flag" sections={[{ title: 'Critical Anomalies', type: 'cards' }, { title: 'Flagged Operations', type: 'table' }]} />} />
+            <Route path="/division/escalations" element={<Placeholder title="Escalations" icon="priority_high" sections={[{ title: 'Escalated Issues', type: 'cards' }, { title: 'Action Required', type: 'table' }]} />} />
+            <Route path="/division/staff" element={<Placeholder title="Staff Deployment" icon="engineering" sections={[{ title: 'Active Resources', type: 'cards' }, { title: 'Staff Allocations', type: 'table' }]} />} />
+            <Route path="/division/task-redist" element={<Placeholder title="Task Redistribution" icon="move_up" sections={[{ title: 'Workload Balance', type: 'cards' }, { title: 'Reassignment Log', type: 'table' }]} />} />
+            <Route path="/division/emergency" element={<Placeholder title="Emergency Assignments" icon="local_hospital" sections={[{ title: 'Active Emergencies', type: 'cards' }, { title: 'Deployed Units', type: 'table' }]} />} />
+            <Route path="/division/rainfall" element={<Placeholder title="Rainfall Monitoring" icon="rainy" sections={[{ title: 'Rainfall Deficits', type: 'cards' }, { title: 'Station Data', type: 'table' }]} />} />
+            <Route path="/division/crop-distress" element={<Placeholder title="Crop Distress" icon="eco" sections={[{ title: 'Distress Signals', type: 'cards' }, { title: 'Affected Areas', type: 'table' }]} />} />
+            <Route path="/division/verification-trends" element={<Placeholder title="Verification Trends" icon="trending_up" sections={[{ title: 'Verification Speed', type: 'cards' }, { title: 'Weekly Trends', type: 'table' }]} />} />
+            <Route path="/division/reports" element={<Placeholder title="Division Reports" icon="summarize" sections={[{ title: 'Coverage Stats', type: 'cards' }, { title: 'Generated Reports', type: 'list' }]} />} />
+            <Route path="/division/comparison" element={<Placeholder title="District Comparison" icon="compare_arrows" sections={[{ title: 'Comparative Metrics', type: 'cards' }, { title: 'Data View', type: 'table' }]} />} />
+            <Route path="/division/settings" element={<Placeholder title="Division Controls" icon="settings" sections={[{ title: 'Division Settings', type: 'cards' }]} />} />
+
+            {/* Officer (Sahayak) Routes for Sidebar Items */}
             <Route path="/map" element={<Placeholder title="Village Map" icon="map" sections={[{ title: 'Live Field Operations', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} />} />
             <Route path="/farmers" element={<Placeholder title="Farmer Registry" icon="groups" sections={[{ title: 'Registered Farmers', type: 'table' }, { title: 'Registration Analytics', type: 'cards' }]} />} />
             

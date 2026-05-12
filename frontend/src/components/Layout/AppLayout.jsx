@@ -10,20 +10,19 @@ const AppLayout = () => {
   const { user } = useAuth();
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f4f0]">
+    <div className={`flex flex-col min-h-screen ${user?.role === 'state' ? 'bg-[#0a0f0d] text-white' : 'bg-[#f3f4f0]'}`}>
 
       {/* ── Global Top Header ── */}
       <header
-        className="h-16 bg-white flex items-center px-6 gap-4 sticky top-0 shrink-0"
+        className={`h-16 flex items-center px-6 gap-4 sticky top-0 shrink-0 ${user?.role === 'state' ? 'bg-[#111814] border-b border-[#1f2924]' : 'bg-white border-b border-[#e2e9e6]'}`}
         style={{
-          borderBottom: '1px solid rgba(20, 40, 30, 0.07)',
-          boxShadow: '0 1px 2px rgba(20, 40, 30, 0.025)',
+          boxShadow: user?.role === 'state' ? 'none' : '0 1px 2px rgba(20, 40, 30, 0.025)',
           zIndex: 1100,
         }}
       >
         {/* Mobile hamburger */}
         <button
-          className="icon-btn-soft md:hidden"
+          className={`icon-btn-soft md:hidden ${user?.role === 'state' ? 'text-gray-300' : ''}`}
           onClick={toggleSidebar}
           aria-label="Toggle menu"
         >
@@ -32,9 +31,14 @@ const AppLayout = () => {
 
         {/* Logo */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="material-symbols-outlined text-[22px]" style={{ color: '#1f4d36' }}>public</span>
-          <span className="font-bold text-[15px] text-[#1a1c1a] tracking-tight">
-            KrishiNetra - {user?.role === 'district' ? 'DAO' : (user?.role?.toUpperCase() || 'OFFICER')}
+          <span className="material-symbols-outlined text-[22px]" style={{ color: user?.role === 'state' ? '#4ade80' : '#1f4d36' }}>public</span>
+          <span className={`font-bold text-[15px] tracking-tight ${user?.role === 'state' ? 'text-white' : 'text-[#1a1c1a]'}`}>
+            KrishiNetra - {
+              user?.role === 'state' ? 'STATE COMMAND' :
+              user?.role === 'division' ? 'DIVISION' :
+              user?.role === 'district' ? 'DAO' :
+              (user?.role?.toUpperCase() || 'OFFICER')
+            }
           </span>
         </div>
 
@@ -42,11 +46,23 @@ const AppLayout = () => {
 
         {/* Breadcrumb */}
         <div className="hidden md:flex items-center gap-2 text-[13px] font-medium" style={{ color: '#717972' }}>
-          <span>Pune District</span>
-          <span style={{ color: '#c0c9c1' }}>•</span>
-          <span>Maharashtra State</span>
-          <span style={{ color: '#c0c9c1' }}>•</span>
-          <span>District Superintending Agriculture Officer</span>
+          {user?.role === 'state' ? (
+            <span>Maharashtra State Command</span>
+          ) : user?.role === 'division' ? (
+            <>
+              <span>Pune Division</span>
+              <span style={{ color: '#c0c9c1' }}>•</span>
+              <span>Maharashtra State</span>
+            </>
+          ) : (
+            <>
+              <span>Pune District</span>
+              <span style={{ color: '#c0c9c1' }}>•</span>
+              <span>Maharashtra State</span>
+              <span style={{ color: '#c0c9c1' }}>•</span>
+              <span>{user?.role === 'district' ? 'District Superintending Agriculture Officer' : 'Agriculture Officer'}</span>
+            </>
+          )}
         </div>
 
         {/* Actions */}

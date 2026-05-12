@@ -1,4 +1,14 @@
 export const MOCK_USERS = {
+  state: {
+    role: "state",
+    name: "Dr. Suhas Diwase",
+    agristack_id: "COM-MH-001",
+  },
+  division: {
+    role: "division",
+    name: "Vikram Kumar",
+    agristack_id: "JDA-PNE-001",
+  },
   farmer: {
     role: "farmer",
     name: "Ramdas",

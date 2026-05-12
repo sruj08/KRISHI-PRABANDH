@@ -43,7 +43,9 @@ const LandingPage = () => {
     }
     // Simple simulation
     login(MOCK_USERS[selectedRole]);
-    if (selectedRole === 'farmer') navigate('/farmer');
+    if (selectedRole === 'state') navigate('/state/dashboard');
+    else if (selectedRole === 'division') navigate('/division/dashboard');
+    else if (selectedRole === 'farmer') navigate('/farmer');
     else if (selectedRole === 'cao') navigate('/cao');
     else if (selectedRole === 'tao') navigate('/tao');
     else if (selectedRole === 'district') navigate('/district');
@@ -56,6 +58,8 @@ const LandingPage = () => {
     { id: 'cao',      title: 'Mandal Krushi Adhikari (CAO)' },
     { id: 'tao',      title: 'Taluka Agriculture Officer (TAO)' },
     { id: 'district', title: 'District Authority (DAO)' },
+    { id: 'division', title: 'Divisional Joint Director (DJDA)' },
+    { id: 'state',    title: 'Commissioner of Agriculture (State)' },
   ];
 
   return (
