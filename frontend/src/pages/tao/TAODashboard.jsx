@@ -226,7 +226,7 @@ const TAODashboard = () => {
                 <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Wagholi</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>42</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>{t('3 High')}</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>3 {t('High')}</span>
                 </td>
                 <td style={{ padding: '18px 28px', textAlign: 'right' }}>
                   <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>{t('Review')}</button>
@@ -237,7 +237,7 @@ const TAODashboard = () => {
                 <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Khed Shivapur</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>15</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#717972', background: '#f3f4f0', padding: '4px 10px', borderRadius: 6 }}>{t('0')}</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#717972', background: '#f3f4f0', padding: '4px 10px', borderRadius: 6 }}>0</span>
                 </td>
                 <td style={{ padding: '18px 28px', textAlign: 'right' }}>
                   <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>{t('Review')}</button>
@@ -248,7 +248,7 @@ const TAODashboard = () => {
                 <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Loni Kalbhor</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>52</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>{t('6 High')}</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>6 {t('High')}</span>
                 </td>
                 <td style={{ padding: '18px 28px', textAlign: 'right' }}>
                   <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>{t('Review')}</button>

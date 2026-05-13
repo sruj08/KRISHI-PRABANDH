@@ -27,7 +27,7 @@ export const LanguageProvider = ({ children }) => {
     if (LANGUAGES.includes(code)) setLang(code);
   }, []);
 
-  const translate = useCallback((key) => t(key, lang), [lang]);
+  const translate = useCallback((key, params) => t(key, lang, params), [lang]);
 
   const currentLabel = LANG_LABELS[lang] || 'English';
 

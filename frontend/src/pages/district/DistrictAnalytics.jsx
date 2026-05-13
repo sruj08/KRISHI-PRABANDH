@@ -95,7 +95,7 @@ const DistrictAnalytics = () => {
             {mockFraudTypeBars.map((row) => (
               <div key={row.label}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, color: MUTED, marginBottom: 4 }}>
-                  <span>{row.label}</span>
+                  <span>{t(row.label)}</span>
                   <span style={{ color: TEXT }}>{row.pct}%</span>
                 </div>
                 <div style={{ height: 8, background: '#f0f0ec', borderRadius: 99, overflow: 'hidden' }}>
@@ -116,7 +116,7 @@ const DistrictAnalytics = () => {
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: severityDot(it.severity), marginTop: 4, flexShrink: 0 }} />
                 <div>
                   <div style={{ fontSize: 10, fontWeight: 800, color: MUTED, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{it.time}</div>
-                  <div style={{ fontSize: 12, color: TEXT, lineHeight: 1.5, marginTop: 4 }}>{it.text}</div>
+                  <div style={{ fontSize: 12, color: TEXT, lineHeight: 1.5, marginTop: 4 }}>{t(it.text)}</div>
                 </div>
               </div>
             ))}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useToast } from '../../hooks/useToast.jsx';
+import { useLanguage } from '../../context/LanguageContext';
 import './tao.css';
 
 const CARD = {
@@ -11,6 +12,7 @@ const CARD = {
 
 const TaoWorkflowListPage = ({ title, subtitle, rows, emptyHint }) => {
   const { addToast } = useToast();
+  const { t } = useLanguage();
 
   return (
     <div className="tao-dash-root" style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -22,7 +24,7 @@ const TaoWorkflowListPage = ({ title, subtitle, rows, emptyHint }) => {
       </div>
       <div style={{ ...CARD, overflow: 'hidden' }}>
         <div style={{ padding: '14px 20px', borderBottom: '1px solid #f3f4f0', fontSize: 12, fontWeight: 700, color: '#1a1c1a' }}>
-          Queue (demo)
+          {t('Queue (demo)')}
         </div>
         <div style={{ padding: 0 }}>
           {rows.map((r) => (
@@ -61,10 +63,11 @@ const TaoWorkflowListPage = ({ title, subtitle, rows, emptyHint }) => {
 };
 
 export function TaoPendingApplicationsPage() {
+  const { t } = useLanguage();
   return (
     <TaoWorkflowListPage
-      title="Pending Applications"
-      subtitle="Applications awaiting taluka-level clearance. Open an item to continue the standard review workflow."
+      title={t('Pending Applications')}
+      subtitle={t('Applications awaiting taluka-level clearance. Open an item to continue the standard review workflow.')}
       rows={[
         { id: 'P-104', label: 'APL-2204 — Drip kit verification', meta: 'Submitted 11 May 2026 · Mohol' },
         { id: 'P-105', label: 'APL-2205 — Seed subsidy bundle', meta: 'Submitted 11 May 2026 · Barshi' },
@@ -75,10 +78,11 @@ export function TaoPendingApplicationsPage() {
 }
 
 export function TaoFieldVerificationPage() {
+  const { t } = useLanguage();
   return (
     <TaoWorkflowListPage
-      title="Field Verification Requests"
-      subtitle="TAO-coordinated field visits requested from circle teams. Assignments are illustrative only."
+      title={t('Field Verification Requests')}
+      subtitle={t('TAO-coordinated field visits requested from circle teams. Assignments are illustrative only.')}
       rows={[
         { id: 'F-12', label: 'Visit — Loni Kalbhor cluster', meta: 'Due 16 May 2026 · High backlog' },
         { id: 'F-13', label: 'Re-verify — Barshi dealer yard', meta: 'Due 18 May 2026 · Evidence pack attached' },

@@ -43,7 +43,7 @@ const FraudTrends = () => {
         {mockFraudTrendSummaryCards.map((c) => (
           <div key={c.title} style={{ background: '#fff', border: `1px solid ${PANEL}`, borderRadius: 16, padding: '20px 22px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
             <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, textTransform: 'uppercase' }}>{t(c.title)}</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: TEXT, marginTop: 10, lineHeight: 1.2 }}>{c.line1}</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: TEXT, marginTop: 10, lineHeight: 1.2 }}>{t(c.line1)}</div>
             <div
               style={{
                 fontSize: 11,
@@ -52,7 +52,7 @@ const FraudTrends = () => {
                 color: c.trendBad ? RED : MUTED,
               }}
             >
-              {c.line2}
+              {t(c.line2)}
             </div>
           </div>
         ))}
@@ -181,7 +181,7 @@ const FraudTrends = () => {
                   <td style={{ padding: '12px 14px', fontSize: 11, fontWeight: 800, color: e.severity === 'critical' ? RED : AMBER }}>
                     {e.severity === 'critical' ? <>&#x1F534; {t('CRITICAL')}</> : <>&#x1F7E1; {t('HIGH')}</>}
                   </td>
-                  <td style={{ padding: '12px 14px', fontSize: 12, color: TEXT, maxWidth: 420 }}>{e.description}</td>
+                  <td style={{ padding: '12px 14px', fontSize: 12, color: TEXT, maxWidth: 420 }}>{t(e.description)}</td>
                   <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                     <button type="button" className="btn btn-outline btn-sm" onClick={escalationToast}>
                       {t('Review')}
