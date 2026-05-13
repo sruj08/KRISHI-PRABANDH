@@ -11,7 +11,7 @@ const ConfirmVerification = () => {
   const [notes, setNotes] = useState('');
 
   const handleSubmit = () => {
-    addToast("Verification submitted successfully", "success");
+    addToast(t("Verification submitted successfully", lang), "success");
     navigate('/');
   };
 
@@ -28,26 +28,26 @@ const ConfirmVerification = () => {
       <div className="card">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h2 className="text-lg fw-bold mb-1">Ramesh D. Kumar</h2>
-            <p className="text-sm text-muted">ID: FM-88291</p>
+            <h2 className="text-lg fw-bold mb-1">{t("Ramesh D. Kumar", lang)}</h2>
+            <p className="text-sm text-muted">{t("ID: FM-88291", lang)}</p>
           </div>
-          <span className="badge badge-verified">Eligible</span>
+          <span className="badge badge-verified">{t("Eligible", lang)}</span>
         </div>
         
         <div className="divider" />
         
         <div className="flex-col gap-3">
           <div className="flex justify-between text-sm">
-            <span className="text-muted">Scheme</span>
-            <span className="fw-bold">Tractor Subsidy</span>
+            <span className="text-muted">{t("Scheme", lang)}</span>
+            <span className="fw-bold">{t("Tractor Subsidy", lang)}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted">Location</span>
-            <span className="fw-bold">Gat No. 104/2, North Sector</span>
+            <span className="text-muted">{t("Location", lang)}</span>
+            <span className="fw-bold">{t("Gat No. 104/2, North Sector", lang)}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted">Land Area</span>
-            <span className="fw-bold">1.2 Hectares</span>
+            <span className="text-muted">{t("Land Area", lang)}</span>
+            <span className="fw-bold">{t("1.2 Hectares", lang)}</span>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@ const ConfirmVerification = () => {
           </div>
           <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
             <span className="badge badge-verified" style={{ backgroundColor: 'rgba(235, 247, 241, 0.9)' }}>
-              Geo-Tagged
+              {t("Geo-Tagged", lang)}
             </span>
           </div>
         </div>
@@ -77,10 +77,10 @@ const ConfirmVerification = () => {
 
       {/* Notes */}
       <div className="form-group">
-        <label className="form-label">{t("Add Notes", lang)} (Optional)</label>
+        <label className="form-label">{t("Add Notes", lang)} {t("(Optional)", lang)}</label>
         <textarea 
           className="form-textarea" 
-          placeholder="Enter any field observations..."
+          placeholder={t("Enter any field observations...", lang)}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         ></textarea>

@@ -4,25 +4,12 @@ import Sidebar from './Sidebar';
 import BottomNav from './BottomNav';
 import { useSidebar } from '../../hooks/useSidebar';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const AppLayout = () => {
   const { isOpen, closeSidebar, toggleSidebar } = useSidebar();
   const { user } = useAuth();
-
-  const headerRoleSuffix =
-    user?.role === 'farmer'
-      ? 'FARMER'
-      : user?.role === 'state'
-        ? 'STATE OFFICER'
-        : user?.role === 'division'
-          ? 'DIVISIONAL OFFICER'
-          : user?.role === 'district'
-            ? 'DAO'
-            : user?.role === 'tao'
-              ? 'TAO'
-              : user?.role === 'cao'
-                ? 'CAO'
-                : user?.role?.toUpperCase() || 'OFFICER';
+  const { t, cycleLanguage, currentLabel } = useLanguage();
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f3f4f0]">
@@ -48,7 +35,22 @@ const AppLayout = () => {
         <div className="flex items-center gap-2 shrink-0">
           <span className="material-symbols-outlined text-[22px]" style={{ color: '#1f4d36' }}>public</span>
           <span className="font-bold text-[15px] tracking-tight text-[#1a1c1a]">
-            Krishi Prabandh - {headerRoleSuffix}
+            {t('Krishi Prabandh -')}{' '}
+            {t(
+              user?.role === 'state'
+                ? 'STATE COMMAND'
+                : user?.role === 'division'
+                  ? 'DIVISION'
+                  : user?.role === 'district'
+                    ? 'DAO'
+                    : user?.role === 'tao'
+                      ? 'TAO'
+                      : user?.role === 'cao'
+                        ? 'CAO'
+                        : user?.role === 'farmer'
+                          ? 'FARMER'
+                          : 'OFFICER',
+            )}
           </span>
         </div>
 
@@ -57,34 +59,43 @@ const AppLayout = () => {
         {/* Breadcrumb */}
         <div className="hidden md:flex items-center gap-2 text-[13px] font-medium" style={{ color: '#717972' }}>
           {user?.role === 'farmer' ? (
-            <span>MahaDBT · Farmer services</span>
+            <span>{t('MahaDBT · Farmer services')}</span>
           ) : user?.role === 'state' ? (
-            <span>Maharashtra State Command</span>
+            <span>{t('Maharashtra State Command')}</span>
           ) : user?.role === 'division' ? (
             <>
-              <span>{user?.division_name || 'Division'}</span>
+              <span>{user?.division_name || t('Division')}</span>
               <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>Maharashtra State</span>
+              <span>{t('Maharashtra State')}</span>
             </>
           ) : (
             <>
-              <span>{user?.district_name || 'District'}</span>
+              <span>{user?.district_name || t('District')}</span>
               <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>{user?.division_name || 'Division'}</span>
+              <span>{user?.division_name || t('Division')}</span>
               <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>Maharashtra State</span>
+              <span>{t('Maharashtra State')}</span>
               <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>{user?.role === 'district' ? 'District Superintending Agriculture Officer' : user?.role === 'tao' ? (user?.taluka_name || 'Taluka Agriculture Officer') : user?.role === 'cao' ? (user?.taluka_name ? `${user.taluka_name} (CAO scope)` : 'Circle / Mandal Supervisor') : 'Agriculture Officer'}</span>
+              <span>{user?.role === 'district' ? t('District Superintending Agriculture Officer') : user?.role === 'tao' ? (user?.taluka_name || t('Taluka Agriculture Officer')) : user?.role === 'cao' ? (user?.taluka_name ? `${user.taluka_name} (${t('CAO scope')})` : t('Circle / Mandal Supervisor')) : t('Agriculture Officer')}</span>
             </>
           )}
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-1.5 ml-4">
-          <button className="icon-btn-soft" aria-label="Notifications">
+          <button
+            className={`icon-btn-soft text-[11px] font-bold px-2 ${user?.role === 'state' ? 'text-gray-300' : ''}`}
+            onClick={cycleLanguage}
+            aria-label="Switch language"
+            title={t('Language')}
+          >
+            <span className="material-symbols-outlined text-[18px]">translate</span>
+            <span className="hidden sm:inline ml-0.5">{currentLabel}</span>
+          </button>
+          <button className="icon-btn-soft" aria-label={t('Notifications')}>
             <span className="material-symbols-outlined text-[20px]">notifications</span>
           </button>
-          <button className="icon-btn-soft" aria-label="Settings">
+          <button className="icon-btn-soft" aria-label={t('Settings')}>
             <span className="material-symbols-outlined text-[20px]">settings</span>
           </button>
           <div

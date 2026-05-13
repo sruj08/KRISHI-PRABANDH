@@ -1,9 +1,11 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { useToast } from '../../hooks/useToast.jsx';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ToastContainer = () => {
   const { toasts, removeToast } = useToast();
+  const { t } = useLanguage();
 
   const iconMap = {
     success: 'check_circle',

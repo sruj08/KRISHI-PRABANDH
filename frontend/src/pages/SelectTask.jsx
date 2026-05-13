@@ -14,26 +14,26 @@ const SelectTask = () => {
       
       <header>
         <h2 className="text-xl fw-bold text-primary-dark">{t("Target Selection", lang)}</h2>
-        <p className="text-sm text-muted">Select beneficiary for field operation</p>
+        <p className="text-sm text-muted">{t("Select beneficiary for field operation", lang)}</p>
       </header>
 
       {/* Search & Filter */}
       <div className="card flex-col gap-3 p-4">
-        <SearchInput placeholder="Search Gat No. or Name..." />
+        <SearchInput placeholder={t("Search Gat No. or Name...", lang)} />
         <div className="form-group">
           <label className="form-label">{t("Filter by Scheme", lang)}</label>
           <select className="form-select">
-            <option>All Schemes</option>
-            <option>Tractor Subsidy</option>
-            <option>Drip Irrigation</option>
-            <option>Seed Distribution</option>
+            <option>{t("All Schemes", lang)}</option>
+            <option>{t("Tractor Subsidy", lang)}</option>
+            <option>{t("Drip Irrigation", lang)}</option>
+            <option>{t("Seed Distribution", lang)}</option>
           </select>
         </div>
       </div>
 
       {/* Results */}
       <div>
-        <h3 className="section-title mb-3">{t("Matching Records", lang)} (2)</h3>
+        <h3 className="section-title mb-3">{t("Matching Records", lang)} {t("(2)", lang)}</h3>
         
         <div className="flex-col gap-3">
           {/* Record 1 (Selected) */}
@@ -50,11 +50,11 @@ const SelectTask = () => {
               style={{ width: '20px', height: '20px', accentColor: 'var(--primary)', marginTop: '4px' }}
             />
             <div>
-              <h4 className="fw-bold mb-1">Ramesh D. Kumar</h4>
-              <p className="text-sm text-muted mb-2">Gat No. 104/2 • North Sector</p>
+              <h4 className="fw-bold mb-1">{t("Ramesh D. Kumar", lang)}</h4>
+              <p className="text-sm text-muted mb-2">{t("Gat No. 104/2 • North Sector", lang)}</p>
               <div className="flex items-center gap-2">
-                <span className="badge badge-grey">Tractor Subsidy</span>
-                <span className="badge badge-pending">Pending</span>
+                <span className="badge badge-grey">{t("Tractor Subsidy", lang)}</span>
+                <span className="badge badge-pending">{t("Pending", lang)}</span>
               </div>
             </div>
           </div>
@@ -73,11 +73,11 @@ const SelectTask = () => {
               style={{ width: '20px', height: '20px', accentColor: 'var(--primary)', marginTop: '4px' }}
             />
             <div>
-              <h4 className="fw-bold mb-1">Suresh V. Patil</h4>
-              <p className="text-sm text-muted mb-2">Gat No. 88/1 • East Sector</p>
+              <h4 className="fw-bold mb-1">{t("Suresh V. Patil", lang)}</h4>
+              <p className="text-sm text-muted mb-2">{t("Gat No. 88/1 • East Sector", lang)}</p>
               <div className="flex items-center gap-2">
-                <span className="badge badge-grey">PM-Kisan</span>
-                <span className="badge badge-verified">Verified</span>
+                <span className="badge badge-grey">{t("PM-Kisan", lang)}</span>
+                <span className="badge badge-verified">{t("Verified", lang)}</span>
               </div>
             </div>
           </div>

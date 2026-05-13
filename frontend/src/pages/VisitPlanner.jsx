@@ -52,7 +52,7 @@ const VisitPlanner = () => {
       setAllApps(result.results || []);
     } catch (err) {
       console.error('VisitPlanner load error:', err);
-      addToast('Could not load visit data', 'error');
+      addToast(t('Could not load visit data', lang), 'error');
     } finally {
       setLoading(false);
     }
@@ -96,10 +96,10 @@ const VisitPlanner = () => {
       if (selectedApp?.application_id === app.application_id) {
         setSelectedApp(prev => ({ ...prev, ...updated }));
       }
-      addToast(`${label}: ${app.farmer_id} → ${newStatus}`, 'success');
+      addToast(t(`${label}: ${app.farmer_id} → ${newStatus}`, lang), 'success');
     } catch (err) {
       console.error(err);
-      addToast(err.message || 'Action failed', 'error');
+      addToast(err.message || t('Action failed', lang), 'error');
     } finally {
       setActionLoading(null);
     }
@@ -120,18 +120,18 @@ const VisitPlanner = () => {
           <h2 className="text-xl fw-bold text-white mb-1">{t("Today's Route", lang)}</h2>
           <div className="flex gap-2">
             <span className="badge bg-white text-primary fw-bold">{visits.length} {t('Assigned', lang)}</span>
-            <span className="badge badge-error">{highRiskCount} High Risk</span>
+            <span className="badge badge-error">{highRiskCount} {t('High Risk', lang)}</span>
           </div>
         </div>
       </div>
 
       <div className="p-4 flex-col gap-4">
-        {loading && <div className="text-center text-muted p-4">Loading field visits…</div>}
+        {loading && <div className="text-center text-muted p-4">{t('Loading field visits…', lang)}</div>}
 
         {!loading && visits.length === 0 && (
           <div className="text-center text-muted p-6">
             <span className="material-symbols-outlined" style={{ fontSize: '48px', opacity: 0.3 }}>directions_off</span>
-            <p className="mt-2">No field visits required today.</p>
+            <p className="mt-2">{t('No field visits required today.', lang)}</p>
           </div>
         )}
 
@@ -161,34 +161,34 @@ const VisitPlanner = () => {
               {/* Card header — click for insight modal */}
               <div className="p-4 flex justify-between items-start" style={{ cursor: 'pointer' }} onClick={() => setSelectedApp(visit)}>
                 <div style={{ flex: 1 }}>
-                  <h3 className="fw-bold mb-1">{visit.farmer_id || 'Unknown Farmer'}</h3>
+                  <h3 className="fw-bold mb-1">{visit.farmer_id || t('Unknown Farmer', lang)}</h3>
                   <p className="text-sm fw-bold text-muted mb-0">{visit.component || '—'}</p>
                   <p className="text-xs text-muted mb-2">{visit.scheme_name || '—'}</p>
                   <div className="flex gap-2 flex-wrap">
-                    <span className={`badge ${rc.badgeClass}`}>{rc.label}</span>
+                    <span className={`badge ${rc.badgeClass}`}>{t(rc.label, lang)}</span>
                     <span className="badge badge-grey" style={{ fontSize: '10px' }}>{visit.scheme_category || '—'}</span>
                     {completed && (
                       <span
                         className="badge"
                         style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', fontWeight: 700, fontSize: '10px' }}
                       >
-                        ✓ Visited
+                        {t('✓ Visited', lang)}
                       </span>
                     )}
                     {pending && (
-                      <span className="badge badge-pending" style={{ fontSize: '10px' }}>Visit Pending</span>
+                      <span className="badge badge-pending" style={{ fontSize: '10px' }}>{t('Visit Pending', lang)}</span>
                     )}
-                    {visit.daysSince <= 7 && <span className="badge badge-blue" style={{ fontSize: '10px' }}>Recent</span>}
+                    {visit.daysSince <= 7 && <span className="badge badge-blue" style={{ fontSize: '10px' }}>{t('Recent', lang)}</span>}
                   </div>
                 </div>
-                <span className="text-xs text-muted">{visit.daysSince}d ago</span>
+                <span className="text-xs text-muted">{visit.daysSince}{t('d ago', lang)}</span>
               </div>
 
               {/* Remarks strip */}
               {remarks && (
                 <div style={{ padding: '6px 16px', backgroundColor: 'var(--surface-low)', borderTop: '1px solid var(--outline-variant)', fontSize: '12px', color: 'var(--text-muted)' }}>
                   {completed
-                    ? '✅ Field visit completed'
+                    ? t('✅ Field visit completed', lang)
                     : `📋 ${remarks}`
                   }
                 </div>
@@ -214,7 +214,7 @@ const VisitPlanner = () => {
                     onClick={() => handleAction(visit, 'Under Scrutiny', 'Marked for investigation', 'INVESTIGATE')}
                     style={{ flexShrink: 0, padding: '0 14px', backgroundColor: '#fff3e0', color: '#e65100', border: '1px solid #ffe0b2', borderRadius: 'var(--radius)', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
                   >
-                    {isBusy ? '…' : '🔍 Investigate'}
+                    {isBusy ? '…' : t('🔍 Investigate', lang)}
                   </button>
                 )}
 
@@ -225,7 +225,7 @@ const VisitPlanner = () => {
                     onClick={() => handleAction(visit, 'Approved', 'Approved after field visit', 'APPROVE')}
                     style={{ flex: 1, padding: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: 'var(--radius)', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
                   >
-                    {isBusy ? '…' : '✓ Approve'}
+                    {isBusy ? '…' : t('✓ Approve', lang)}
                   </button>
                 )}
                 {canReject && (
@@ -234,7 +234,7 @@ const VisitPlanner = () => {
                     onClick={() => handleAction(visit, 'Rejected', 'Rejected after field visit', 'REJECT')}
                     style={{ flex: 1, padding: '8px', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: 'var(--radius)', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
                   >
-                    {isBusy ? '…' : '✕ Reject'}
+                    {isBusy ? '…' : t('✕ Reject', lang)}
                   </button>
                 )}
 
@@ -246,14 +246,14 @@ const VisitPlanner = () => {
                     style={{ flexShrink: 0, padding: '0 12px', backgroundColor: '#e3f2fd', color: '#0055A4', border: '1px solid #bbdefb', borderRadius: 'var(--radius)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>photo_camera</span>
-                    Photo
+                    {t('Photo', lang)}
                   </button>
                 )}
 
                 {/* Terminal state — no more actions */}
                 {!canMarkVisited && !canInvestigate && !canApprove && !canReject && (
                   <div className="text-xs text-muted text-center" style={{ width: '100%', padding: '6px' }}>
-                    Status: <strong>{visit.status}</strong> — No further actions available
+                    {t('Status:', lang)} <strong>{visit.status}</strong> {t('— No further actions available', lang)}
                   </div>
                 )}
               </div>

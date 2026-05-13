@@ -3,7 +3,7 @@ import { t } from '../../utils/translations';
 import { useLanguage } from '../../context/LanguageContext';
 
 const TaskItem = ({ icon, title, subtitle, time, iconColor = 'primary', onClick }) => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
   return (
     <div 

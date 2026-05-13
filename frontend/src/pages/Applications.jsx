@@ -72,7 +72,7 @@ const Applications = () => {
       setApps((result.results || []).map(enrich));
     } catch (err) {
       console.error('Failed to load applications:', err);
-      addToast('Failed to load applications. Using cached data.', 'error');
+      addToast(t('Failed to load applications. Using cached data.', lang), 'error');
     } finally {
       setLoading(false);
     }
@@ -100,10 +100,10 @@ const Applications = () => {
       if (selectedApp?.application_id === app.application_id) {
         setSelectedApp(enrich({ ...selectedApp, ...updated }));
       }
-      addToast(`${app.farmer_id} → ${newStatus}`, 'success');
+      addToast(`${app.farmer_id} → ${t(newStatus, lang)}`, 'success');
     } catch (err) {
       console.error(err);
-      addToast(err.message || `Failed to update status`, 'error');
+      addToast(err.message || t('Failed to update status', lang), 'error');
     } finally {
       setActionLoading(null);
     }
@@ -149,22 +149,22 @@ const Applications = () => {
           <h2 className="text-xl fw-bold text-primary-dark">
             {t('Applications', lang)}
           </h2>
-          <span className="badge badge-error" style={{ fontSize: '12px' }}>{highCount} High Priority</span>
+          <span className="badge badge-error" style={{ fontSize: '12px' }}>{highCount} {t('High Priority', lang)}</span>
         </div>
         {currentSahayak && (
-           <div className="badge badge-verified mt-1" style={{ fontSize: '10px', display: 'inline-block' }}>
-              Your Assigned Applications
-           </div>
+            <div className="badge badge-verified mt-1" style={{ fontSize: '10px', display: 'inline-block' }}>
+               {t('Your Assigned Applications', lang)}
+            </div>
         )}
         <p className="text-sm text-muted mt-1">
-          {loading ? 'Loading…' : `${displayed.length} of ${apps.length} records`}
+          {loading ? t('Loading…', lang) : `${displayed.length} ${t('of', lang)} ${apps.length} ${t('records', lang)}`}
         </p>
       </header>
 
       {/* Sticky search + filters */}
       <div className="sticky" style={{ top: 'var(--header-height)', backgroundColor: 'var(--surface)', padding: 'var(--sp-2) 0', zIndex: 10 }}>
         <SearchInput
-          placeholder="Search Farmer ID..."
+          placeholder={t('Search Farmer ID...', lang)}
           value={search}
           onChange={setSearch}
           onFilterClick={() => setShowFilters(!showFilters)}
@@ -172,7 +172,7 @@ const Applications = () => {
         <div className="flex items-center gap-3 mt-2">
           <label className="flex items-center gap-2 text-sm" style={{ cursor: 'pointer' }}>
             <input type="checkbox" checked={highOnly} onChange={e => setHighOnly(e.target.checked)} style={{ accentColor: '#c62828', width: '16px', height: '16px' }} />
-            <span style={{ color: highOnly ? '#c62828' : 'inherit', fontWeight: highOnly ? 700 : 400 }}>Show HIGH priority only</span>
+            <span style={{ color: highOnly ? '#c62828' : 'inherit', fontWeight: highOnly ? 700 : 400 }}>{t('Show HIGH priority only', lang)}</span>
           </label>
         </div>
 
@@ -180,24 +180,24 @@ const Applications = () => {
           <div className="flex-col gap-2 mt-3 p-3" style={{ backgroundColor: 'var(--surface-low)', borderRadius: 'var(--radius)', border: '1px solid var(--outline-variant)' }}>
             <div className="flex gap-2">
               <select className="form-input" value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '6px', fontSize: '12px', flex: 1 }}>
-                <option value="">All Statuses</option>
-                <option value="Applied">Applied</option>
-                <option value="Under Scrutiny">Under Scrutiny</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
+                <option value="">{t('All Statuses', lang)}</option>
+                <option value="Applied">{t('Applied', lang)}</option>
+                <option value="Under Scrutiny">{t('Under Scrutiny', lang)}</option>
+                <option value="Approved">{t('Approved', lang)}</option>
+                <option value="Rejected">{t('Rejected', lang)}</option>
               </select>
               <select className="form-input" value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)} style={{ padding: '6px', fontSize: '12px', flex: 1 }}>
-                <option value="">All Priorities</option>
-                <option value="HIGH">High Priority</option>
-                <option value="MEDIUM">Medium Priority</option>
-                <option value="NORMAL">Normal Priority</option>
-                <option value="LOW">Low Priority</option>
+                <option value="">{t('All Priorities', lang)}</option>
+                <option value="HIGH">{t('High Priority', lang)}</option>
+                <option value="MEDIUM">{t('Medium Priority', lang)}</option>
+                <option value="NORMAL">{t('Normal Priority', lang)}</option>
+                <option value="LOW">{t('Low Priority', lang)}</option>
               </select>
             </div>
             <select className="form-input" value={sortOption} onChange={e => setSortOption(e.target.value)} style={{ padding: '6px', fontSize: '12px', width: '100%' }}>
-              <option value="date_desc">Newest First</option>
-              <option value="date_asc">Oldest First</option>
-              <option value="priority">By Priority (High → Low)</option>
+              <option value="date_desc">{t('Newest First', lang)}</option>
+              <option value="date_asc">{t('Oldest First', lang)}</option>
+              <option value="priority">{t('By Priority (High → Low)', lang)}</option>
             </select>
           </div>
         )}
@@ -205,7 +205,7 @@ const Applications = () => {
 
       {/* Cards */}
       <div className="flex-col gap-3 mt-2 mb-6">
-        {loading && <div className="text-center text-muted p-6">Loading applications…</div>}
+        {loading && <div className="text-center text-muted p-6">{t('Loading applications…', lang)}</div>}
 
         {!loading && displayed.map((app) => {
           const pc = PRIORITY_CONFIG[app.priority] || PRIORITY_CONFIG.NORMAL;
@@ -224,17 +224,17 @@ const Applications = () => {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="flex items-center gap-2 mb-1">
                     <h2 className="text-md fw-bold" style={{ margin: 0 }}>{app.farmer_id || '—'}</h2>
-                    {app.daysSince <= 7 && <span className="badge badge-blue" style={{ fontSize: '10px' }}>Recently Applied</span>}
-                    {app.priority === 'HIGH' && <span className="badge badge-error" style={{ fontSize: '10px' }}>Action Required</span>}
+                    {app.daysSince <= 7 && <span className="badge badge-blue" style={{ fontSize: '10px' }}>{t('Recently Applied', lang)}</span>}
+                    {app.priority === 'HIGH' && <span className="badge badge-error" style={{ fontSize: '10px' }}>{t('Action Required', lang)}</span>}
                   </div>
                   <p className="text-sm fw-bold text-muted" style={{ margin: 0 }}>{app.component || '—'}</p>
                   <p className="text-xs text-muted" style={{ margin: '2px 0 0' }}>{app.scheme_name || '—'}</p>
                 </div>
                 <div className="flex-col items-end gap-2">
-                  <StatusBadge status={app.status || 'Unknown'} />
+                  <StatusBadge status={app.status || t('Unknown', lang)} />
                   <span style={{ fontSize: '11px', backgroundColor: pc.bg, color: pc.color, padding: '2px 8px', borderRadius: '999px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: pc.dot, display: 'inline-block' }} />
-                    {pc.label}
+                    {t(pc.label, lang)}
                   </span>
                 </div>
               </div>
@@ -249,7 +249,7 @@ const Applications = () => {
                       style={{ flex: 1, backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: 'var(--radius)', padding: '6px', fontSize: '12px', fontWeight: 700 }}
                       onClick={() => handleStatusAction(app, 'Approved', 'Approved via applications page', 'APPROVE')}
                     >
-                      {isBusy ? '…' : '✓ Approve'}
+                      {isBusy ? '…' : t('✓ Approve', lang)}
                     </button>
                   )}
                   {canReject && (
@@ -259,7 +259,7 @@ const Applications = () => {
                       style={{ flex: 1, backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: 'var(--radius)', padding: '6px', fontSize: '12px', fontWeight: 700 }}
                       onClick={() => handleStatusAction(app, 'Rejected', 'Rejected via applications page', 'REJECT')}
                     >
-                      {isBusy ? '…' : '✕ Reject'}
+                      {isBusy ? '…' : t('✕ Reject', lang)}
                     </button>
                   )}
                 </div>
@@ -269,7 +269,7 @@ const Applications = () => {
               <div className="flex justify-between items-center" style={{ borderTop: '1px solid var(--outline-variant)', backgroundColor: 'var(--surface-low)', padding: '8px 16px' }}>
                 <span className="badge badge-grey" style={{ fontSize: '10px' }}>{app.scheme_category || '—'}</span>
                 <span className={`text-xs ${app.priority === 'HIGH' ? 'text-error fw-bold' : 'text-muted'}`}>
-                  {app.daysSince}d ago • {app.application_date || '—'}
+                  {app.daysSince}{t('d ago', lang)} • {app.application_date || '—'}
                 </span>
               </div>
             </article>
@@ -279,7 +279,7 @@ const Applications = () => {
         {!loading && displayed.length === 0 && (
           <div className="text-center text-muted p-6">
             <span className="material-symbols-outlined" style={{ fontSize: '48px', opacity: 0.3 }}>search_off</span>
-            <p className="mt-2">No applications match the selected filters.</p>
+            <p className="mt-2">{t('No applications match the selected filters.', lang)}</p>
           </div>
         )}
       </div>

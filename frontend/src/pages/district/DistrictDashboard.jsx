@@ -9,6 +9,7 @@ import { mockFraudSummaryMetrics, mockTalukaData } from '../../mock/dao-analytic
 import { useToast } from '../../hooks/useToast.jsx';
 import { useAuth } from '../../context/AuthContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
+import { useLanguage } from '../../context/LanguageContext';
 import './district.css';
 
 /* ── KPI Card ── */
@@ -99,6 +100,7 @@ const DistrictDashboard = () => {
   const { addToast } = useToast();
   const { user } = useAuth();
   const { stats } = useKrishiData();
+  const { t } = useLanguage();
   const surveyCount =
     user?.district_id != null && stats?.surveyCountByDistrict
       ? stats.surveyCountByDistrict[String(user.district_id)]
@@ -137,21 +139,21 @@ const DistrictDashboard = () => {
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>hub</span>
-            <span style={{ fontWeight: 700 }}>CSV dataset scope</span>
+            <span style={{ fontWeight: 700 }}>{t('CSV dataset scope')}</span>
             {user?.district_name && (
               <span style={{ color: '#717972' }}>
-                District: <strong style={{ color: '#1a1c1a' }}>{user.district_name}</strong>
+                {t('District: ')}<strong style={{ color: '#1a1c1a' }}>{user.district_name}</strong>
               </span>
             )}
             {surveyCount != null && (
               <span style={{ color: '#717972' }}>
-                Surveys in dataset (linked via farms → villages → districts):{' '}
+                {t('Surveys in dataset (linked via farms → villages → districts): ')}
                 <strong style={{ color: '#1a1c1a' }}>{surveyCount.toLocaleString('en-IN')}</strong>
               </span>
             )}
             {evidenceInDistrict != null && (
               <span style={{ color: '#717972' }}>
-                Evidence rows (this district via surveys):{' '}
+                {t('Evidence rows (this district via surveys): ')}
                 <strong style={{ color: '#1a1c1a' }}>
                   {evidenceInDistrict.toLocaleString('en-IN')}
                 </strong>
@@ -159,7 +161,7 @@ const DistrictDashboard = () => {
             )}
             {evidenceInDistrict == null && stats?.totalSurveyEvidence != null && (
               <span style={{ color: '#717972' }}>
-                Evidence rows (CSV, statewide):{' '}
+                {t('Evidence rows (CSV, statewide): ')}
                 <strong style={{ color: '#1a1c1a' }}>
                   {Number(stats.totalSurveyEvidence).toLocaleString('en-IN')}
                 </strong>
@@ -167,17 +169,17 @@ const DistrictDashboard = () => {
             )}
             {stats?.paymentsByStatus && (
               <span style={{ color: '#717972' }}>
-                DBT: completed{' '}
+                {t('DBT: completed ')}
                 <strong>
                   {Number(stats.paymentsByStatus.COMPLETED || 0).toLocaleString('en-IN')}
                 </strong>{' '}
-                · failed{' '}
+                {t('· failed ')}
                 <strong>{Number(stats.paymentsByStatus.FAILED || 0).toLocaleString('en-IN')}</strong>
               </span>
             )}
             {stats?.totalSurveys != null && (
               <span style={{ color: '#717972', marginLeft: 'auto' }}>
-                Statewide surveys in CSV:{' '}
+                {t('Statewide surveys in CSV: ')}
                 {Number(stats.totalSurveys).toLocaleString('en-IN')}
               </span>
             )}
@@ -188,31 +190,31 @@ const DistrictDashboard = () => {
       <div className="district-kpi-grid">
         <KpiCard
           icon="account_balance_wallet"
-          label={"Total Allocated\nFunds"}
+          label={t("Total Allocated\nFunds")}
           value={EXEC_KPIS.totalBudgetCr}
           unit="Cr"
-          sub="FY 2025-26"
+          sub={t('FY 2025-26')}
         />
         <KpiCard
           icon="payments"
-          label={"Disbursed\n(YTD)"}
+          label={t("Disbursed\n(YTD)")}
           value={EXEC_KPIS.disbursedCr}
           unit="Cr"
           progress={parseFloat(EXEC_KPIS.disbursedPct)}
-          sub={`Target: ₹${EXEC_KPIS.disbursedTarget} Cr`}
+          sub={t('Target: ₹{target} Cr', { target: EXEC_KPIS.disbursedTarget })}
         />
         <KpiCard
           icon="assignment_turned_in"
-          label={"Pending PFMS\nClearance"}
+          label={t("Pending PFMS\nClearance")}
           value={EXEC_KPIS.pendingPfmCr}
           unit="Cr"
-          sub="> 48h alert"
+          sub={t('> 48h alert')}
           subIcon="warning"
           subColor="#ba1a1a"
         />
         <KpiCard
           icon="monitoring"
-          label={"Under\nUtilization"}
+          label={t("Under\nUtilization")}
           value=""
           unit=""
         >
@@ -221,18 +223,18 @@ const DistrictDashboard = () => {
             <span style={{ fontSize: 14, fontWeight: 500, color: '#717972' }}>%</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#717972', paddingTop: 12 }}>
-            Across all schemes
+            {t('Across all schemes')}
           </div>
         </KpiCard>
         <KpiCard
           icon="satellite_alt"
-          label="Satellite Status"
+          label={t('Satellite Status')}
           value=""
           unit=""
         >
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#396940', lineHeight: 1 }}>Active</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: '#396940', lineHeight: 1 }}>{t('Active')}</div>
           <div style={{ fontSize: 11, fontWeight: 600, color: '#717972', display: 'flex', alignItems: 'center', gap: 4, paddingTop: 12 }}>
-            <span style={{ color: '#396940', fontSize: 10 }}>●</span> Next pass in 2h
+            <span style={{ color: '#396940', fontSize: 10 }}>●</span> {t('Next pass in 2h')}
           </div>
         </KpiCard>
       </div>
@@ -245,8 +247,8 @@ const DistrictDashboard = () => {
           {/* Map Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>Taluka — Geo-fenced Command Map</h2>
-              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>Live spatial analytics and telemetry</p>
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{t('Taluka — Geo-fenced Command Map')}</h2>
+              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>{t('Live spatial analytics and telemetry')}</p>
             </div>
           </div>
 
@@ -260,35 +262,35 @@ const DistrictDashboard = () => {
         <div className="district-command-rail">
 
           {/* Friction Logger */}
-          <PanelSection title="Friction Logger" subtitle="System Integration Errors">
+          <PanelSection title={t('Friction Logger')} subtitle={t('System Integration Errors')}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <FrictionRow label="Aadhar Mismatch (PM-KISAN)" pct={42} color="#ba1a1a" />
-              <FrictionRow label="7/12 Integration Failure" pct={28} color="#ba1a1a" />
+              <FrictionRow label={t('Aadhar Mismatch (PM-KISAN)')} pct={42} color="#ba1a1a" />
+              <FrictionRow label={t('7/12 Integration Failure')} pct={28} color="#ba1a1a" />
             </div>
           </PanelSection>
 
           {/* Admin Recommendations */}
-          <PanelSection title="Administrative Recommendations" subtitle="AI-Driven Actionable Insights">
+          <PanelSection title={t('Administrative Recommendations')} subtitle={t('AI-Driven Actionable Insights')}>
             {FRICTION_MONTH.topThreeRecommendations.slice(0, 1).map((rec, i) => (
               <div key={i} style={{ borderLeft: '4px solid #396940', background: '#f5f8f6', borderRadius: '0 10px 10px 0', padding: '14px 16px' }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.4, margin: 0, marginBottom: 6 }}>
-                  Increase PM-KISAN outreach in Loni Kalbhor.
+                  {t('Increase PM-KISAN outreach in Loni Kalbhor.')}
                 </p>
                 <p style={{ fontSize: 11, color: '#717972', lineHeight: 1.55, margin: 0 }}>
-                  Registration deficit detected vs. land record baseline. Deploy 2 mobile units.
+                  {t('Registration deficit detected vs. land record baseline. Deploy 2 mobile units.')}
                 </p>
               </div>
             ))}
           </PanelSection>
 
           {/* PMFBY Disaster Alerts */}
-          <PanelSection title="PMFBY Disaster Alerts" subtitle="Live Telemetry Triggers" badge="HIGH">
+          <PanelSection title={t('PMFBY Disaster Alerts')} subtitle={t('Live Telemetry Triggers')} badge={t('HIGH')}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.4, margin: 0 }}>
-                  Localized hail damage in Jejuri.
+                  {t('Localized hail damage in Jejuri.')}
                 </p>
-                <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 6, lineHeight: 1.45 }}>450+ early claims logged.</p>
+                <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 6, lineHeight: 1.45 }}>{t('450+ early claims logged.')}</p>
               </div>
               <button
                 style={{
@@ -304,7 +306,7 @@ const DistrictDashboard = () => {
                   boxShadow: '0 1px 3px rgba(0,0,0,.04)',
                 }}
               >
-                Initiate Drone Survey
+                {t('Initiate Drone Survey')}
               </button>
             </div>
           </PanelSection>
@@ -320,9 +322,9 @@ const DistrictDashboard = () => {
           </div>
           <div style={{ flex: 1 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
-              Automated PFMS Disbursement Queues
+              {t('Automated PFMS Disbursement Queues')}
             </h3>
-            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>TAO-cleared, high-confidence batches ready for release</p>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>{t('TAO-cleared, high-confidence batches ready for release')}</p>
           </div>
           <button
             type="button"
@@ -330,7 +332,7 @@ const DistrictDashboard = () => {
             className="district-dsc-btn"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>verified_user</span>
-            Authorize Release
+            {t('Authorize Release')}
           </button>
         </div>
 
@@ -339,12 +341,12 @@ const DistrictDashboard = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Batch ID</th>
-                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Scheme Name</th>
-                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>Beneficiaries</th>
-                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>Amount (Cr)</th>
-                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>AI Confidence</th>
-                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>Status</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{t('Batch ID')}</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{t('Scheme Name')}</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>{t('Beneficiaries')}</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>{t('Amount (Cr)')}</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>{t('AI Confidence')}</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>{t('Status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -363,7 +365,7 @@ const DistrictDashboard = () => {
                     </div>
                   </td>
                   <td style={{ padding: '18px 28px', textAlign: 'center' }}>
-                    <span style={{ fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', color: '#396940', background: 'rgba(186,240,188,0.3)', padding: '4px 10px', borderRadius: 6, border: '1px solid rgba(57,105,64,0.2)' }}>Ready</span>
+                    <span style={{ fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', color: '#396940', background: 'rgba(186,240,188,0.3)', padding: '4px 10px', borderRadius: 6, border: '1px solid rgba(57,105,64,0.2)' }}>{t('Ready')}</span>
                   </td>
                 </tr>
               ))}
@@ -374,7 +376,7 @@ const DistrictDashboard = () => {
 
       {/* ── Fraud Intelligence Summary (DAO) ── */}
       <div>
-        <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: '0 0 12px', lineHeight: 1.3 }}>Fraud Intelligence Summary</h3>
+        <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: '0 0 12px', lineHeight: 1.3 }}>{t('Fraud Intelligence Summary')}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}>
           {mockFraudSummaryMetrics.map((m) => {
             let trendColor = '#717972';
@@ -403,9 +405,9 @@ const DistrictDashboard = () => {
                   flexDirection: 'column',
                 }}
               >
-                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#717972', lineHeight: 1.3, whiteSpace: 'pre-line' }}>{m.title}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#717972', lineHeight: 1.3, whiteSpace: 'pre-line' }}>{t(m.title)}</span>
                 <span style={{ fontSize: 28, fontWeight: 700, color: '#1a1c1a', marginTop: 10, lineHeight: 1 }}>{m.value}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: trendColor, marginTop: 'auto', paddingTop: 10 }}>{m.trendLabel}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: trendColor, marginTop: 'auto', paddingTop: 10 }}>{t(m.trendLabel)}</span>
               </div>
             );
           })}
@@ -415,18 +417,18 @@ const DistrictDashboard = () => {
       {/* ── District Fraud Heatmap (table) ── */}
       <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ padding: '18px 22px', borderBottom: '1px solid #f3f4f0' }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Taluka Fraud Intelligence</h3>
-          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: '6px 0 0', lineHeight: 1.3 }}>Applications · flagged · fraud rate · intensity</p>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>{t('Taluka Fraud Intelligence')}</h3>
+          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: '6px 0 0', lineHeight: 1.3 }}>{t('Applications · flagged · fraud rate · intensity')}</p>
         </div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Taluka</th>
-                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Applications</th>
-                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Flagged</th>
-                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Fraud rate</th>
-                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Intensity</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Taluka')}</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>{t('Applications')}</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>{t('Flagged')}</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>{t('Fraud rate')}</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Intensity')}</th>
               </tr>
             </thead>
             <tbody>
@@ -437,7 +439,7 @@ const DistrictDashboard = () => {
                     : row.intensity === 'medium'
                       ? 'rgba(180,83,9,0.10)'
                       : 'rgba(57,105,64,0.10)';
-                const emoji = row.intensity === 'high' ? '🔴 HIGH' : row.intensity === 'medium' ? '🟡 MEDIUM' : '🟢 LOW';
+                const emoji = row.intensity === 'high' ? `🔴 ${t('HIGH')}` : row.intensity === 'medium' ? `🟡 ${t('MEDIUM')}` : `🟢 ${t('LOW')}`;
                 return (
                   <tr key={row.taluka} style={{ borderBottom: idx === mockTalukaData.length - 1 ? 'none' : '1px solid #f3f4f0' }}>
                     <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 700, color: '#1a1c1a' }}>{row.taluka}</td>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 import Modal from './Modal';
 import StatusBadge from './StatusBadge';
 
@@ -23,6 +24,7 @@ const deriveExplanation = (app) => {
 };
 
 const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const handleUploadPhoto = () => {
@@ -36,56 +38,56 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
   const daysSince = app.daysSince ?? 0;
 
   return (
-    <Modal isOpen={!!app} onClose={onClose} title="Application Insight">
+    <Modal isOpen={!!app} onClose={onClose} title={t('Application Insight')}>
       {/* Priority banner */}
       <div style={{ backgroundColor: pConfig.bg, border: `1px solid ${pConfig.color}`, borderRadius: 'var(--radius)', padding: '10px 14px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <span className="material-symbols-outlined" style={{ fontSize: '18px', color: pConfig.color }}>{pConfig.icon}</span>
-        <span style={{ fontWeight: 700, color: pConfig.color, fontSize: '13px' }}>{pConfig.label}</span>
-        {daysSince <= 7 && <span className="badge badge-blue" style={{ marginLeft: 'auto', fontSize: '11px' }}>Recently Applied</span>}
-        {priority === 'HIGH' && <span className="badge badge-error" style={{ marginLeft: daysSince <= 7 ? '4px' : 'auto', fontSize: '11px' }}>Action Required</span>}
+        <span style={{ fontWeight: 700, color: pConfig.color, fontSize: '13px' }}>{t(pConfig.label)}</span>
+        {daysSince <= 7 && <span className="badge badge-blue" style={{ marginLeft: 'auto', fontSize: '11px' }}>{t('Recently Applied')}</span>}
+        {priority === 'HIGH' && <span className="badge badge-error" style={{ marginLeft: daysSince <= 7 ? '4px' : 'auto', fontSize: '11px' }}>{t('Action Required')}</span>}
       </div>
 
       {/* Core fields */}
       <div className="flex-col gap-3">
         <div className="alert-detail-grid">
           <div>
-            <div className="alert-detail-label">Farmer ID</div>
+            <div className="alert-detail-label">{t('Farmer ID')}</div>
             <div className="alert-detail-value fw-bold">{app.farmer_id || '—'}</div>
           </div>
           <div>
-            <div className="alert-detail-label">Status</div>
-            <StatusBadge status={app.status || 'Unknown'} />
+            <div className="alert-detail-label">{t('Status')}</div>
+            <StatusBadge status={app.status || t('Unknown')} />
           </div>
           <div className="alert-detail-full">
-            <div className="alert-detail-label">Component</div>
+            <div className="alert-detail-label">{t('Component')}</div>
             <div className="alert-detail-value fw-bold">{app.component || '—'}</div>
           </div>
           <div className="alert-detail-full">
-            <div className="alert-detail-label">Scheme Name</div>
+            <div className="alert-detail-label">{t('Scheme Name')}</div>
             <div className="alert-detail-value">{app.scheme_name || '—'}</div>
           </div>
           <div>
-            <div className="alert-detail-label">Category</div>
+            <div className="alert-detail-label">{t('Category')}</div>
             <span className="badge badge-grey" style={{ fontSize: '11px' }}>{app.scheme_category || '—'}</span>
           </div>
           <div>
-            <div className="alert-detail-label">Applied</div>
-            <div className="alert-detail-value">{app.application_date || '—'} {daysSince > 0 ? `(${daysSince}d ago)` : ''}</div>
+            <div className="alert-detail-label">{t('Applied')}</div>
+            <div className="alert-detail-value">{app.application_date || '—'} {daysSince > 0 ? `(${daysSince}d ${t('ago')})` : ''}</div>
           </div>
         </div>
 
         {/* Uploaded photo thumbnail */}
         {app.photo && (
           <div style={{ borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--outline-variant)' }}>
-            <div className="alert-detail-label" style={{ padding: '6px 12px 4px', backgroundColor: 'var(--surface-low)' }}>Field Photo</div>
+            <div className="alert-detail-label" style={{ padding: '6px 12px 4px', backgroundColor: 'var(--surface-low)' }}>{t('Field Photo')}</div>
             <img
               src={app.photo}
-              alt="Field photo"
+              alt={t('Field photo')}
               style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', display: 'block' }}
             />
             {app.photo_uploaded_at && (
               <div style={{ fontSize: '11px', color: 'var(--text-muted)', padding: '4px 12px', backgroundColor: 'var(--surface-low)' }}>
-                Uploaded: {app.photo_uploaded_at}
+                {t('Uploaded')}: {app.photo_uploaded_at}
               </div>
             )}
           </div>
@@ -93,22 +95,22 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
 
         {/* Remarks */}
         <div style={{ backgroundColor: 'var(--surface-low)', borderRadius: 'var(--radius)', padding: '10px 12px' }}>
-          <div className="alert-detail-label mb-1">Remarks</div>
-          <div className="text-sm">{app.remarks || 'No remarks'}</div>
+          <div className="alert-detail-label mb-1">{t('Remarks')}</div>
+          <div className="text-sm">{app.remarks || t('No remarks')}</div>
         </div>
 
         {/* Rejection reason — only if present */}
         {app.rejection_reason && (
           <div style={{ backgroundColor: '#ffebee', borderRadius: 'var(--radius)', padding: '10px 12px', border: '1px solid #ffcdd2' }}>
-            <div className="alert-detail-label mb-1" style={{ color: '#c62828' }}>Rejection Reason</div>
+            <div className="alert-detail-label mb-1" style={{ color: '#c62828' }}>{t('Rejection Reason')}</div>
             <div className="text-sm" style={{ color: '#c62828' }}>{app.rejection_reason}</div>
           </div>
         )}
 
         {/* Derived explanation */}
         <div style={{ backgroundColor: '#e8f5e9', borderRadius: 'var(--radius)', padding: '10px 12px', border: '1px solid #c8e6c9' }}>
-          <div className="alert-detail-label mb-1" style={{ color: '#2e7d32' }}>System Insight</div>
-          <div className="text-sm">{explanation}</div>
+          <div className="alert-detail-label mb-1" style={{ color: '#2e7d32' }}>{t('System Insight')}</div>
+          <div className="text-sm">{t(explanation)}</div>
         </div>
 
         {/* Action buttons — only rendered when callbacks provided */}
@@ -120,7 +122,7 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
                 style={{ flex: 1, backgroundColor: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: 'var(--radius)', padding: '10px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', opacity: actionLoading ? 0.6 : 1 }}
                 onClick={() => { onApprove(); onClose(); }}
               >
-                {actionLoading ? '…' : '✓ Approve'}
+                {actionLoading ? '…' : t('✓ Approve')}
               </button>
             )}
             {onReject && (
@@ -129,7 +131,7 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
                 style={{ flex: 1, backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: 'var(--radius)', padding: '10px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', opacity: actionLoading ? 0.6 : 1 }}
                 onClick={() => { onReject(); onClose(); }}
               >
-                {actionLoading ? '…' : '✕ Reject'}
+                {actionLoading ? '…' : t('✕ Reject')}
               </button>
             )}
           </div>
@@ -150,7 +152,7 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
           }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>photo_camera</span>
-          {app.photo ? '📷 Update Field Photo' : '📷 Upload Field Photo'}
+          {app.photo ? t('📷 Update Field Photo') : t('📷 Upload Field Photo')}
         </button>
       </div>
     </Modal>

@@ -3,7 +3,7 @@ import { t } from '../../utils/translations';
 import { useLanguage } from '../../context/LanguageContext';
 
 const SearchInput = ({ placeholder = 'Search...', value, onChange, onFilterClick }) => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
   return (
     <div className="flex gap-2">
@@ -22,7 +22,7 @@ const SearchInput = ({ placeholder = 'Search...', value, onChange, onFilterClick
           className="btn-secondary" 
           style={{ width: '48px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--radius)' }}
           onClick={onFilterClick}
-          aria-label="Filter"
+          aria-label={t('Filter')}
         >
           <span className="material-symbols-outlined">filter_list</span>
         </button>

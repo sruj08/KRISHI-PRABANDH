@@ -3,13 +3,13 @@ import { t } from '../../utils/translations';
 import { useLanguage } from '../../context/LanguageContext';
 
 const FarmerCard = ({ name, gat, caste, onLogFriction }) => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
   return (
     <div className="farmer-radar-card">
       <div className="farmer-info">
         <h4>{t(name, lang)}</h4>
-        <p>Gat No: {gat} • Caste: {caste}</p>
+        <p>{t('Gat No')}: {gat} • {t('Caste')}: {caste}</p>
       </div>
       <div className="farmer-actions">
         <button 
@@ -23,7 +23,7 @@ const FarmerCard = ({ name, gat, caste, onLogFriction }) => {
         <button 
           className="btn-icon whatsapp"
           onClick={() => window.open(`https://wa.me/?text=Hello ${name}`, '_blank')}
-          title="WhatsApp"
+          title={t('WhatsApp')}
         >
           <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>chat</span>
         </button>
