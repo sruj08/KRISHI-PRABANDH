@@ -1,7 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { MOCK_TAO_STATS, MOCK_APPLICATIONS, MOCK_GRIEVANCES } from '../../utils/taoMockData';
+import { useAuth } from '../../context/AuthContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
+const MOCK_APPLICATIONS = [];
+const MOCK_GRIEVANCES = [];
+const MOCK_TAO_STATS = { processed: 0, leakagePrevented: "0", pendingManualAudit: 0 };
 import TAOMap from './components/TAOMap';
 import CAOMatrix from './components/CAOMatrix';
 import TAOAnomalyModal from './components/TAOAnomalyModal';
@@ -9,6 +13,9 @@ import TAOAnomalyModal from './components/TAOAnomalyModal';
 const TAODashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { getReportingChain, stats } = useKrishiData();
+  const reportsTo = user?.user_id != null ? getReportingChain(user.user_id)[1] : null;
 
   const [selectedAppId, setSelectedAppId] = useState(null);
   const selectedApp = MOCK_APPLICATIONS.find(app => app.id === selectedAppId);
@@ -24,6 +31,30 @@ const TAODashboard = () => {
 
       {/* Main Content Area */}
       <div className="flex flex-col gap-6" style={{ padding: '24px 32px 32px 36px' }}>
+        {(user?.taluka_name || reportsTo) && (
+          <div
+            className="bg-white rounded-[12px] border border-[#e2e3df] px-4 py-3 text-[12px] text-[#1a1c1a] flex flex-wrap items-center gap-3"
+            style={{ boxShadow: '0 1px 2px rgba(0,0,0,.04)' }}
+          >
+            <span className="material-symbols-outlined text-[#396940]" style={{ fontSize: 20 }}>account_tree</span>
+            <span className="font-bold">CSV hierarchy</span>
+            {user?.taluka_name && (
+              <span className="text-[#717972]">
+                Taluka: <strong className="text-[#1a1c1a]">{user.taluka_name}</strong>
+              </span>
+            )}
+            {reportsTo && (
+              <span className="text-[#717972]">
+                Reports to: <strong className="text-[#1a1c1a]">{reportsTo.label || reportsTo.name}</strong> ({reportsTo.role?.replace(/_/g, ' ')})
+              </span>
+            )}
+            {stats?.totalSurveys != null && (
+              <span className="text-[#717972] ml-auto">
+                Surveys in CSV (statewide): {Number(stats.totalSurveys).toLocaleString('en-IN')}
+              </span>
+            )}
+          </div>
+        )}
         {/* KPI Row */}
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
           {/* Card 1: Files Processed */}

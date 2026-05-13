@@ -1,10 +1,90 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
 
 import CircularGauge from '../../components/ui/CircularGauge';
 import InsightModal from '../../components/ui/InsightModal';
 import { fetchSummary, fetchEligibleFarmers, fetchApplication } from '../../utils/api';
+
+const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+
+/** Build farmer “application” cards from CSV dataset for this Krushi Sahayak when API returns nothing */
+function buildDatasetFarmersForSahayak(user, officers, farmerProfiles, villages) {
+  if (!user?.user_id || !officers?.length) return [];
+  const uid = num(user.user_id);
+  const villageById = Object.fromEntries(
+    (villages || []).map((v) => [String(v.village_id), v.name || '']),
+  );
+  const profileByUserId = Object.fromEntries(
+    (farmerProfiles || []).map((p) => [String(p.user_id), p]),
+  );
+
+  let farmers = officers.filter(
+    (o) => o.appRole === 'farmer' && num(o.reports_to_user_id) === uid,
+  );
+  if (!farmers.length && user.circle_id != null) {
+    farmers = officers.filter(
+      (o) => o.appRole === 'farmer' && num(o.circle_id) === num(user.circle_id),
+    );
+  }
+  if (!farmers.length && user.taluka_id != null) {
+    farmers = officers.filter(
+      (o) => o.appRole === 'farmer' && num(o.taluka_id) === num(user.taluka_id),
+    );
+  }
+  if (!farmers.length && user.district_id != null) {
+    farmers = officers.filter(
+      (o) => o.appRole === 'farmer' && num(o.district_id) === num(user.district_id),
+    );
+  }
+
+  return farmers.slice(0, 80).map((o) => {
+    const p = profileByUserId[String(o.user_id)];
+    const kyc = p?.kyc_status || 'PENDING';
+    const status =
+      kyc === 'VERIFIED' ? 'Approved' : kyc === 'REJECTED' ? 'Rejected' : 'Under Scrutiny';
+    const villageName =
+      (o.village_id != null && villageById[String(o.village_id)]) ||
+      (p?.village_id != null && villageById[String(p.village_id)]) ||
+      `Village ref ${p?.village_id ?? o.village_id ?? '—'}`;
+    return {
+      application_id: `csv-farmer-${o.user_id}`,
+      farmer_id: p?.farmer_id_external || o.name || `User ${o.user_id}`,
+      farmer_name: o.label || o.name,
+      component: villageName,
+      scheme_name: 'Registry (CSV) — linked to your circle / taluka',
+      scheme_category: `KYC ${kyc}`,
+      remarks: [o.email, user.district_name && `District: ${user.district_name}`]
+        .filter(Boolean)
+        .join(' · '),
+      status,
+      application_date: '2026-04-15',
+      _fromDataset: true,
+    };
+  });
+}
+
+function buildDatasetSummary(rows) {
+  const byStatus = { Approved: 0, Rejected: 0, 'Under Scrutiny': 0 };
+  for (const r of rows) {
+    if (r.status === 'Approved') byStatus.Approved += 1;
+    else if (r.status === 'Rejected') byStatus.Rejected += 1;
+    else byStatus['Under Scrutiny'] += 1;
+  }
+  const high = rows.filter((r) => r.status === 'Under Scrutiny').length;
+  return {
+    total_applications: rows.length,
+    by_status: byStatus,
+    by_priority: {
+      HIGH: Math.min(high, Math.max(1, Math.ceil(rows.length * 0.15))),
+      MEDIUM: Math.ceil(rows.length * 0.25),
+      LOW: Math.max(0, rows.length - high),
+    },
+    fraud_alerts: Math.min(5, Math.ceil(rows.length * 0.02)),
+  };
+}
 
 
 const getDaysSince = (dateStr) => {
@@ -27,6 +107,13 @@ const getPriority = (app) => {
 const SahayakDashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { officers, farmerProfiles, villages } = useKrishiData();
+
+  const csvFarmers = useMemo(
+    () => buildDatasetFarmersForSahayak(user, officers, farmerProfiles, villages),
+    [user, officers, farmerProfiles, villages],
+  );
 
   const [selectedApp, setSelectedApp] = useState(null);
   const [summary, setSummary] = useState(null);
@@ -39,12 +126,15 @@ const SahayakDashboard = () => {
       setLoading(true);
       try {
         const [s, e] = await Promise.all([fetchSummary(), fetchEligibleFarmers(8)]);
+        const apiRows = e?.results || [];
         setSummary(s);
-        setEligibleFarmers(e.results || []);
+        setEligibleFarmers(apiRows);
         setApiOnline(true);
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
         setApiOnline(false);
+        setSummary(null);
+        setEligibleFarmers([]);
       } finally {
         setLoading(false);
       }
@@ -52,7 +142,24 @@ const SahayakDashboard = () => {
     load();
   }, []);
 
+  /** When API returns no rows, show farmers from merged CSV (same sahayak / circle / taluka) */
+  useEffect(() => {
+    if (loading) return;
+    if (eligibleFarmers.length > 0) return;
+    if (!csvFarmers.length) return;
+    setEligibleFarmers(csvFarmers);
+    setSummary((prev) => prev || buildDatasetSummary(csvFarmers));
+  }, [loading, eligibleFarmers.length, csvFarmers]);
+
   const handleFarmerClick = async (app) => {
+    if (app._fromDataset || String(app.application_id || '').startsWith('csv-farmer-')) {
+      setSelectedApp({
+        ...app,
+        priority: getPriority(app),
+        daysSince: getDaysSince(app.application_date),
+      });
+      return;
+    }
     try {
       const full = await fetchApplication(app.application_id);
       setSelectedApp({ ...full, priority: getPriority(full), daysSince: getDaysSince(full.application_date) });
@@ -62,8 +169,11 @@ const SahayakDashboard = () => {
     }
   };
 
-  const displayName = 'Sahayak Krushi Adhikari';
-  const displayLocation = 'Assigned: 5 Villages';
+  const displayName = user?.name || 'Sahayak Krushi Adhikari';
+  const displayLocation =
+    user?.district_name && user?.taluka_name
+      ? `${user.district_name} · ${user.taluka_name}`
+      : 'Assigned villages (CSV scope)';
 
   const statItems = [
     { icon: 'assignment',    label: 'Total Applications', value: summary?.total_applications,         color: '#033621', bg: 'rgba(3,54,33,0.06)', path: '/applications' },
@@ -93,7 +203,7 @@ const SahayakDashboard = () => {
 
         <div className="cao-header-right">
           <span className="badge badge-verified" style={{ fontSize: '11px', marginRight: '8px' }}>
-            {apiOnline ? 'API Live' : 'Offline Mode'}
+            {apiOnline ? 'API Live' : eligibleFarmers.some((f) => f._fromDataset) ? 'CSV roster' : 'Offline Mode'}
           </span>
           <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>notifications</span>
           <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>settings</span>
@@ -214,12 +324,12 @@ const SahayakDashboard = () => {
               textAlign: 'center', color: 'var(--text-muted)', padding: 'var(--sp-6)',
               fontFamily: 'var(--font-data)', fontSize: 'var(--font-size-sm)',
             }}>
-              No eligible farmers found.
+              No farmers linked to this sahayak in the CSV (check <strong>reports_to_user_id</strong> / circle / taluka).
             </div>
           )}
           {eligibleFarmers.map((app, index) => (
             <div
-              key={index}
+              key={app.application_id || index}
               className="card"
               style={{
                 padding: 'var(--sp-4) var(--sp-5)', cursor: 'pointer',
@@ -230,7 +340,10 @@ const SahayakDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 'var(--font-size-sm)', color: 'var(--text-dark)' }}>
-                    {app.farmer_id || '—'}
+                    {app.farmer_name || app.farmer_id || '—'}
+                  </div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)' }}>
+                    ID: {app.farmer_id || '—'}
                   </div>
                   <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginTop: '4px' }}>
                     {app.component || '—'}

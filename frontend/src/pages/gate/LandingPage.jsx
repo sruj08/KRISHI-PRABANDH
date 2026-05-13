@@ -1,48 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../hooks/useToast.jsx';
 import './LandingPage.css';
 import { useAuth } from '../../context/AuthContext';
-import { MOCK_USERS } from '../../utils/mockData';
+import { useKrishiData } from '../../context/KrishiDataContext';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { addToast } = useToast();
+  const { pickOfficerForUiRole, loginPayloadFromOfficer } = useKrishiData();
 
   const [selectedRole, setSelectedRole] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState(29);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleOtpChange = (index, value) => {
-    if (value.length > 1) value = value.slice(-1);
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-    
-    // Auto-focus next input
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      if (nextInput) nextInput.focus();
-    }
-  };
-
-  const handleVerifyLogin = (e) => {
+  const handleEnterDashboard = (e) => {
     e.preventDefault();
     if (!selectedRole) {
-      addToast("Please select a role", "error");
+      addToast('Please select a role', 'error');
       return;
     }
-    // Simple simulation
-    login(MOCK_USERS[selectedRole]);
+    const officer = pickOfficerForUiRole(selectedRole);
+    const payload = loginPayloadFromOfficer(officer, selectedRole);
+    if (!payload) {
+      addToast('No CSV officer found for this role', 'error');
+      return;
+    }
+    login(payload);
     if (selectedRole === 'state') navigate('/state/dashboard');
     else if (selectedRole === 'division') navigate('/division/dashboard');
     else if (selectedRole === 'farmer') navigate('/farmer');
@@ -150,7 +133,7 @@ const LandingPage = () => {
               color: '#1a202c',
               margin: '0 0 8px',
             }}>
-              Login to Dashboard
+              Choose role
             </h2>
             <p style={{
               fontFamily: 'var(--font-body)',
@@ -158,11 +141,11 @@ const LandingPage = () => {
               color: '#718096',
               margin: 0,
             }}>
-              Access the centralized agricultural management portal.
+              Demo mode: pick a role to open the matching dashboard. No server or sign-in required.
             </p>
           </div>
 
-          <form onSubmit={handleVerifyLogin} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <form onSubmit={handleEnterDashboard} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Role Selection */}
             <div>
               <label style={{
@@ -213,103 +196,6 @@ const LandingPage = () => {
               </div>
             </div>
 
-            {/* Mobile Number */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontFamily: 'var(--font-data)',
-                fontSize: '11px',
-                fontWeight: 700,
-                color: '#4a5568',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '8px',
-              }}>
-                REGISTERED MOBILE NUMBER
-              </label>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                borderRadius: '12px',
-                border: '1px solid #e2e8f0',
-                backgroundColor: '#f8fafc',
-                overflow: 'hidden',
-              }}>
-                <div style={{
-                  padding: '14px 16px',
-                  borderRight: '1px solid #e2e8f0',
-                  color: '#4a5568',
-                  fontSize: '15px',
-                  fontWeight: 600,
-                }}>
-                  +91
-                </div>
-                <input
-                  type="text"
-                  placeholder="Enter 10-digit number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                  style={{
-                    flex: 1,
-                    padding: '14px 16px',
-                    border: 'none',
-                    backgroundColor: 'transparent',
-                    fontSize: '15px',
-                    outline: 'none',
-                    color: '#1a202c',
-                  }}
-                />
-              </div>
-              <p style={{ fontSize: '10px', color: '#718096', marginTop: '6px', fontStyle: 'italic' }}>
-                Enter the number registered with the Department HR portal.
-              </p>
-            </div>
-
-            {/* OTP Section */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label style={{
-                  fontFamily: 'var(--font-data)',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: '#4a5568',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                }}>
-                  VERIFY OTP
-                </label>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#1a202c' }}>
-                  00:{timer < 10 ? `0${timer}` : timer}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {otp.map((digit, i) => (
-                  <input
-                    key={i}
-                    id={`otp-${i}`}
-                    type="text"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(i, e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: '56px',
-                      borderRadius: '12px',
-                      border: '1px solid #e2e8f0',
-                      backgroundColor: '#f8fafc',
-                      textAlign: 'center',
-                      fontSize: '18px',
-                      fontWeight: 700,
-                      outline: 'none',
-                      color: '#1a202c',
-                    }}
-                  />
-                ))}
-              </div>
-              <p style={{ fontSize: '11px', color: '#718096', marginTop: '10px' }}>
-                OTP sent to +91 ******4567 • <span style={{ fontWeight: 700, color: '#033621', cursor: 'pointer' }}>Resend</span>
-              </p>
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
@@ -333,28 +219,25 @@ const LandingPage = () => {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#022b1a'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#033621'}
             >
-              Verify & Login <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>login</span>
+              Open dashboard <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>arrow_forward</span>
             </button>
           </form>
 
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: '#4a5568', marginBottom: '16px', cursor: 'pointer' }}>
-              Login via ID/Password
-            </p>
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
               padding: '8px 16px',
               borderRadius: '20px',
-              backgroundColor: '#fff5f5',
-              color: '#c53030',
+              backgroundColor: '#f0fdf4',
+              color: '#166534',
               fontSize: '12px',
               fontWeight: 600,
-              border: '1px solid #feb2b2',
+              border: '1px solid #bbf7d0',
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>gpp_maybe</span>
-              Authorized Government Personnel Only
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>science</span>
+              Offline demo — data is illustrative only
             </div>
           </div>
         </div>

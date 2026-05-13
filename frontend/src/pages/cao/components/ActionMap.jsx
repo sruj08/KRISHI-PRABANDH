@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip, Polygon } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { VILLAGES, FERTILIZER_SHOPS } from '../../../utils/caoMockData';
+const VILLAGES = [];
+const FERTILIZER_SHOPS = [];
 
 const getPendencyColor = (pending) => {
   if (pending <= 10) return { fill: '#2D6A4F', label: 'Low', ring: '#40916c' };

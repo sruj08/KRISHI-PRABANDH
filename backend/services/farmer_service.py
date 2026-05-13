@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from uuid import UUID
 
-from config.constants import FARMER
+from config.constants import ROLE_FARMER as FARMER
 from db.repositories.farmer_repository import FarmerRepository
 from schemas.auth import JwtUserClaims
 
@@ -18,3 +18,6 @@ class FarmerService:
             if str(row.get("user_id")) != user.sub:
                 return None
         return row
+
+    def lookup_by_email(self, email: str) -> Optional[dict[str, Any]]:
+        return self._repo.get_by_email(email)

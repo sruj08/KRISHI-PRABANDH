@@ -8,6 +8,7 @@ import {
   STATE_PROFILE,
 } from '../../utils/stateMockData';
 import { useToast } from '../../hooks/useToast.jsx';
+import { useKrishiData } from '../../context/KrishiDataContext';
 import '../district/district.css';
 
 const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972', progress, children }) => (
@@ -79,6 +80,7 @@ const STATUS_CHIP = {
 
 const StateDashboard = () => {
   const { addToast } = useToast();
+  const { stats } = useKrishiData();
 
   const onDscAuthorize = () => {
     const total = PFMS_BATCHES.reduce((a, b) => a + b.beneficiaries, 0);
@@ -90,6 +92,39 @@ const StateDashboard = () => {
 
   return (
     <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+      {stats?.totalSurveys != null && (
+        <div
+          style={{
+            background: '#fff',
+            border: '1px solid #e2e3df',
+            borderRadius: 12,
+            padding: '12px 18px',
+            fontSize: 12,
+            color: '#1a1c1a',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 12,
+            alignItems: 'center',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>dataset</span>
+          <span style={{ fontWeight: 700 }}>Live CSV aggregate</span>
+          <span style={{ color: '#717972' }}>
+            Surveys: <strong>{Number(stats.totalSurveys).toLocaleString('en-IN')}</strong>
+          </span>
+          {stats.totalAuditLogs != null && (
+            <span style={{ color: '#717972' }}>
+              Audit events: <strong>{Number(stats.totalAuditLogs).toLocaleString('en-IN')}</strong>
+            </span>
+          )}
+          {stats.totalCompensationPayments != null && (
+            <span style={{ color: '#717972' }}>
+              DBT rows: <strong>{Number(stats.totalCompensationPayments).toLocaleString('en-IN')}</strong>
+            </span>
+          )}
+        </div>
+      )}
 
       {/* ── KPI Strip ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>

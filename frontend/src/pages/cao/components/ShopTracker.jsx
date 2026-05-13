@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { FERTILIZER_SHOPS } from '../../../utils/caoMockData';
-import { SAHAYAKS } from '../../../utils/caoMockData';
+const FERTILIZER_SHOPS = [];
+const SAHAYAKS = [];
 
 const getDaysSince = (dateStr) =>
   Math.floor((new Date() - new Date(dateStr)) / 86400000);

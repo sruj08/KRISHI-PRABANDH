@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
+    "gen:data": "node ../scripts/build-krishi-dataset.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

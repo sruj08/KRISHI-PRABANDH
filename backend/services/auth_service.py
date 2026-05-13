@@ -2,8 +2,8 @@ from datetime import timedelta
 from typing import Any, Optional
 from uuid import UUID
 
+import bcrypt as _bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from config.settings import get_settings
 from db.repositories.user_repository import UserRepository
@@ -11,7 +11,19 @@ from schemas.auth import JwtUserClaims, LoginRequest
 from services.audit_service import AuditService
 from utils.helpers import utcnow
 
-_pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Map backend role names to frontend-expected lowercase role names
+_ROLE_MAP = {
+    "STATE_AUTHORITY": "state",
+    "DIVISIONAL_AUTHORITY": "division",
+    "DISTRICT_AUTHORITY": "district",
+    "TALUKA_AUTHORITY": "tao",
+    "CIRCLE_AUTHORITY": "cao",
+    "VILLAGE_AUTHORITY": "village",
+    "TALATHI": "talathi",
+    "KRUSHI_SAHAYAK": "sahayak",
+    "KRUSHI_MITRA": "mitra",
+    "FARMER": "farmer",
+}
 
 
 class AuthService:
@@ -24,13 +36,13 @@ class AuthService:
         if not user:
             raise ValueError("Invalid credentials")
         hashed = user.get("password_hash")
-        if not hashed or not _pwd.verify(body.password, hashed):
+        if not hashed or not _bcrypt.checkpw(body.password.encode(), hashed.encode()):
             raise ValueError("Invalid credentials")
 
         uid = str(user["id"])
         claims = JwtUserClaims(
             sub=uid,
-            role=user.get("role", ""),
+            role=_ROLE_MAP.get(user.get("role", ""), user.get("role", "")),
             email=user.get("email"),
             state_id=_uuid_or_none(user.get("state_id")),
             division_id=_uuid_or_none(user.get("division_id")),
@@ -75,7 +87,7 @@ def _public_user(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": str(row["id"]),
         "email": row.get("email"),
-        "role": row.get("role"),
+        "role": _ROLE_MAP.get(row.get("role", ""), row.get("role", "")),
         "state_id": row.get("state_id"),
         "division_id": row.get("division_id"),
         "district_id": row.get("district_id"),

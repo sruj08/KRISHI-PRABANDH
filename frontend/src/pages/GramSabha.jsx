@@ -1,6 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { VILLAGES_LIST, SESSION_TYPES, lookupPhone, MOCK_FARMER_DB } from '../data/gramSabhaDB';
+const VILLAGES_LIST = ['Shirur', 'Pabal', 'Wagholi', 'Lohegaon', 'Kharadi', 'Kesnand'];
+const SESSION_TYPES = [
+  'Drip Irrigation Awareness Sabha',
+  'PM-KUSUM Solar Pump Yojana',
+  'Crop Insurance (PMFBY) Guidance',
+  'Seed Subsidy Registration',
+  'Soil Health Card Distribution',
+  'Women Farmer Empowerment Camp',
+];
 
 const INTAKE_NUMBER = '020-2794-8800';
 const CATEGORY_COLORS = {
@@ -17,32 +25,13 @@ const GramSabha = () => {
   const [sessionType, setSessionType] = useState('');
   const [intake, setIntake] = useState('qr');
   const [attendees, setAttendees] = useState([]);
-  const [manualPhone, setManualPhone] = useState('');
+  const [manualEmail, setManualEmail] = useState('');
   const [manualMsg, setManualMsg] = useState('');
-  const [simIndex, setSimIndex] = useState(0);
   const [sessionTime] = useState(new Date());
-  const intervalRef = useRef(null);
-
-  // Auto-simulate incoming scans every 4 seconds
-  useEffect(() => {
-    if (step !== 'live') return;
-    intervalRef.current = setInterval(() => {
-      setSimIndex(prev => {
-        const next = prev + 1;
-        if (next < MOCK_FARMER_DB.length) {
-          const farmer = MOCK_FARMER_DB[next];
-          const method = next % 3 === 0 ? 'Missed Call' : 'QR Scan';
-          addFarmer(farmer, method);
-        }
-        return next;
-      });
-    }, 3500);
-    return () => clearInterval(intervalRef.current);
-  }, [step]);
 
   const addFarmer = (farmer, method) => {
     setAttendees(prev => {
-      if (prev.find(a => a.phone === farmer.phone)) return prev;
+      if (prev.find(a => a.email === farmer.email)) return prev;
       return [...prev, {
         ...farmer,
         method,
@@ -52,15 +41,21 @@ const GramSabha = () => {
   };
 
   const handleManualLookup = () => {
-    if (!manualPhone.trim()) return;
-    const farmer = lookupPhone(manualPhone);
-    if (farmer) {
-      addFarmer(farmer, 'Manual Entry');
-      setManualMsg(`✅ ${farmer.name} (${farmer.id}) added successfully.`);
-    } else {
-      setManualMsg(`⚠️ Number not found. SMS sent: "Please register at MahaDBT portal."`);
-    }
-    setManualPhone('');
+    const email = manualEmail.trim();
+    if (!email) return;
+    const local = email.split('@')[0] || 'farmer';
+    const name = local.replace(/[._-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    addFarmer(
+      {
+        name,
+        email,
+        category: 'Open',
+        village: village || '—',
+      },
+      'manual',
+    );
+    setManualEmail('');
+    setManualMsg(`✅ Added ${name} (demo — no database)`);
     setTimeout(() => setManualMsg(''), 4000);
   };
 
@@ -143,7 +138,7 @@ const GramSabha = () => {
         </div>
         <div style={{ display: 'flex', gap: 'var(--sp-3)', alignItems: 'center' }}>
           <span className="badge badge-verified" style={{ fontSize: '14px', padding: '6px 14px' }}>{attendees.length} Attendees</span>
-          <button className="btn btn-error btn-sm" onClick={() => { clearInterval(intervalRef.current); setStep('report'); }}>
+          <button className="btn btn-error btn-sm" onClick={() => setStep('report')}>
             <span className="material-symbols-outlined">stop_circle</span>
             End Session
           </button>
@@ -189,9 +184,9 @@ const GramSabha = () => {
               Manual Lookup
             </h3>
             <div style={{ display: 'flex', gap: 'var(--sp-2)' }}>
-              <input className="form-input" value={manualPhone} onChange={e => setManualPhone(e.target.value)}
+              <input className="form-input" value={manualEmail} onChange={e => setManualEmail(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleManualLookup()}
-                placeholder="Enter phone number..." style={{ flex: 1, padding: '10px 12px' }} />
+                placeholder="Enter farmer email..." style={{ flex: 1, padding: '10px 12px' }} />
               <button className="btn btn-primary" onClick={handleManualLookup}>
                 <span className="material-symbols-outlined">search</span>
               </button>
@@ -224,7 +219,7 @@ const GramSabha = () => {
           ) : (
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {[...attendees].reverse().map((a, i) => (
-                <div key={a.phone} style={{ padding: 'var(--sp-3) var(--sp-4)', borderBottom: '1px solid var(--outline-variant)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', animation: i === 0 ? 'slideUp 0.3s ease' : 'none', backgroundColor: i === 0 ? 'var(--primary-light)' : 'white' }}>
+                <div key={a.email || a.id} style={{ padding: 'var(--sp-3) var(--sp-4)', borderBottom: '1px solid var(--outline-variant)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', animation: i === 0 ? 'slideUp 0.3s ease' : 'none', backgroundColor: i === 0 ? 'var(--primary-light)' : 'white' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
                     <div style={{ width: 36, height: 36, borderRadius: '50%', backgroundColor: CATEGORY_COLORS[a.category]?.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: CATEGORY_COLORS[a.category]?.color, flexShrink: 0 }}>
                       {a.name.charAt(0)}
@@ -350,7 +345,7 @@ const GramSabha = () => {
             </thead>
             <tbody>
               {attendees.map((a, i) => (
-                <tr key={a.phone} style={{ backgroundColor: i % 2 === 0 ? 'white' : 'var(--surface-low)', borderBottom: '1px solid var(--outline-variant)' }}>
+                <tr key={a.email || a.id} style={{ backgroundColor: i % 2 === 0 ? 'white' : 'var(--surface-low)', borderBottom: '1px solid var(--outline-variant)' }}>
                   <td style={{ padding: '8px 10px', color: 'var(--text-muted)' }}>{i + 1}</td>
                   <td style={{ padding: '8px 10px', fontWeight: 'bold' }}>{a.name}</td>
                   <td style={{ padding: '8px 10px', fontFamily: 'monospace' }}>{a.id}</td>
