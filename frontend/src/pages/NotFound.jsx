@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 const NotFound = () => {
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
 
   return (
@@ -10,16 +12,16 @@ const NotFound = () => {
         <span className="material-symbols-outlined text-[#a0aec0] mb-4" style={{ fontSize: '64px' }}>
           location_off
         </span>
-        <h2 className="text-2xl font-bold text-[#1a202c] mb-2 tracking-tight">System Module Not Found</h2>
+        <h2 className="text-2xl font-bold text-[#1a202c] mb-2 tracking-tight">{t('System Module Not Found', lang)}</h2>
         <p className="text-[#718096] text-sm mb-6">
-          The requested path does not exist or you do not have the required clearance to access this sector of the KrishiNetra intelligence platform.
+          {t('The requested path does not exist or you do not have the required clearance to access this sector of the KrishiNetra intelligence platform.', lang)}
         </p>
         <button 
           onClick={() => navigate('/')}
           className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#033621] text-white rounded-xl font-semibold hover:bg-[#022b1a] transition-colors shadow-sm"
         >
           <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>dashboard</span>
-          Return to Command Center
+          {t('Return to Command Center', lang)}
         </button>
       </div>
     </div>

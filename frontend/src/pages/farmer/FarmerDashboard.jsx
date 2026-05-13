@@ -2,67 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cvEngine } from '../../utils/cvEngine';
 import { useAuth } from '../../context/AuthContext';
-
-const FCFS_UPLOAD_CALLOUT = (
-  <>
-    <strong style={{ color: '#92400e' }}>Important:</strong> MahaDBT operates on a{' '}
-    <strong>First-Come, First-Served</strong> basis. If you upload a blurry document, your application
-    may be rejected by the officer later, and you will <strong>lose your priority spot</strong>. Our
-    smart scanner checks your document <strong>right now</strong> so it can be approved on the{' '}
-    <strong>first try</strong>.
-  </>
-);
-
-const BLUR_FEEDBACK =
-  '❌ Document is blurry or over-compressed. An officer will reject this, causing a 3-week delay. Please wipe your camera lens and retake the photo. Do not use WhatsApp to compress.';
-
-const CLEAR_FEEDBACK =
-  '✅ Perfect! 100% Readable. We have automatically adjusted the file size for you. Your application is safe from document-rejection.';
-
-/** Shown when scan is usable but quality is uncertain — farmer chooses retake or attach */
-const RISKY_QUALITY_INTRO =
-  'This photo may be hard for an officer to read. It could be returned or rejected later, which often means a delay of several weeks and can affect your place in the queue.';
-
-const RISKY_QUALITY_CHOICE =
-  'You can retake a clearer photo, attach this file anyway, or submit it with your application — the choice is yours.';
-
-const COMPRESSION_LINE = 'Compressing to Government limits (500 KB)… Done.';
-
-const SUBMIT_SUCCESS =
-  'Your application file is complete. Equipment receipt and fee are on record. You will not face document-related rejections for readability at the steps you cleared with the smart scanner.';
-
-/** Stages before filing the application record (no receipt yet) */
-const APPLICATION_STAGES = [
-  {
-    key: 'scheme',
-    label: 'Scheme type',
-    headline: 'Choose your scheme & component',
-    description:
-      'Select the MahaDBT scheme line and the exact sub-component (e.g. drip irrigation, tractor). This decides subsidy rules for your case.',
-  },
-  {
-    key: 'requirements',
-    label: 'Requirements',
-    headline: 'Quantity & declaration',
-    description:
-      'Enter the quantity or size you are claiming (pipe length, HP, area, etc.) and confirm you accept the Terms & Conditions.',
-  },
-  {
-    key: 'submitApp',
-    label: 'Submit application',
-    headline: 'Submit your application',
-    description:
-      'File your application with scheme and declaration. After submission you will see your progress here — next you will upload the dealer / equipment receipt, then pay the processing fee.',
-    isSubmitStep: true,
-  },
-];
-
-/** After application is filed — sequential follow-up tasks */
-const POST_SUBMIT_STEPS = [
-  { key: 'filed', label: 'Application submitted', icon: 'check_circle' },
-  { key: 'receipt', label: 'Upload equipment receipt', icon: 'document_scanner' },
-  { key: 'fee', label: 'Pay processing fee', icon: 'payments' },
-];
+import { useLanguage } from '../../context/LanguageContext';
 
 const initialSlotState = () => ({
   attached: null,
@@ -72,6 +12,13 @@ const initialSlotState = () => ({
 });
 
 function ReadabilityCallout() {
+  const { t } = useLanguage();
+  const fcfsContent = (
+    <>
+      <strong style={{ color: '#92400e' }}>{t('Important:')}</strong>{t(' MahaDBT operates on a ')}
+      <strong>{t('First-Come, First-Served')}</strong>{t(' basis. If you upload a blurry document, your application may be rejected by the officer later, and you will ')}<strong>{t('lose your priority spot')}</strong>{t('. Our smart scanner checks your document ')}<strong>{t('right now')}</strong>{t(' so it can be approved on the ')}<strong>{t('first try')}</strong>{t('.')}
+    </>
+  );
   return (
     <div
       role="status"
@@ -92,12 +39,13 @@ function ReadabilityCallout() {
       <span className="material-symbols-outlined" style={{ fontSize: 22, color: '#d97706', flexShrink: 0 }}>
         warning
       </span>
-      <div>{FCFS_UPLOAD_CALLOUT}</div>
+      <div>{fcfsContent}</div>
     </div>
   );
 }
 
 function ScanFeedbackBox({ variant, children }) {
+  const { t } = useLanguage();
   const isBlur = variant === 'blur';
   return (
     <div
@@ -120,7 +68,7 @@ function ScanFeedbackBox({ variant, children }) {
         {isBlur ? 'dangerous' : 'verified'}
       </span>
       <div>
-        <div style={{ fontWeight: 800, marginBottom: 4 }}>{isBlur ? 'Needs retake' : 'Smart scan passed'}</div>
+        <div style={{ fontWeight: 800, marginBottom: 4 }}>{isBlur ? t('Needs retake') : t('Smart scan passed')}</div>
         {children}
       </div>
     </div>
@@ -137,6 +85,10 @@ function SmartUploadSlot({
   inputId,
   onFileChange,
 }) {
+  const { t } = useLanguage();
+  const blurFeedback = t('❌ Document is blurry or over-compressed. An officer will reject this, causing a 3-week delay. Please wipe your camera lens and retake the photo. Do not use WhatsApp to compress.');
+  const clearFeedback = t('✅ Perfect! 100% Readable. We have automatically adjusted the file size for you. Your application is safe from document-rejection.');
+  const compressionLine = t('Compressing to Government limits (500 KB)… Done.');
   return (
     <div style={{ marginBottom: 20 }}>
       <h4 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 4px', color: 'var(--text-dark, #1a202c)' }}>{title}</h4>
@@ -156,25 +108,25 @@ function SmartUploadSlot({
         <span className="material-symbols-outlined drag-icon" style={{ color: 'var(--success, #2d6b48)' }}>
           document_scanner
         </span>
-        <p style={{ margin: 'var(--sp-2) 0', fontWeight: 600 }}>Snap &amp; check — tap to upload or use camera</p>
-        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Max 500 KB after optimization · PDF accepted</span>
+        <p style={{ margin: 'var(--sp-2) 0', fontWeight: 600 }}>{t("Snap & check — tap to upload or use camera")}</p>
+        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{t('Max 500 KB after optimization · PDF accepted')}</span>
       </div>
       {isProcessing && (
         <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--primary, #033621)', fontWeight: 600, fontSize: 13 }}>
           <span className="material-symbols-outlined" style={{ animation: 'spin 1s linear infinite' }}>
             progress_activity
           </span>
-          Smart scanner is reading your document…
+          {t('Smart scanner is reading your document…')}
         </div>
       )}
       {slotState.feedback === 'blur' && (
-        <ScanFeedbackBox variant="blur">{BLUR_FEEDBACK}</ScanFeedbackBox>
+        <ScanFeedbackBox variant="blur">{blurFeedback}</ScanFeedbackBox>
       )}
       {slotState.feedback === 'clear' && (
         <ScanFeedbackBox variant="clear">
-          <div>{CLEAR_FEEDBACK}</div>
+          <div>{clearFeedback}</div>
           {slotState.compressNote && (
-            <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: '#166534' }}>{COMPRESSION_LINE}</div>
+            <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: '#166534' }}>{compressionLine}</div>
           )}
         </ScanFeedbackBox>
       )}
@@ -196,7 +148,7 @@ function SmartUploadSlot({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
-            Attached — {((slotState.attached.size ?? 0) / 1024).toFixed(1)} KB
+            {t('Attached — ')}{((slotState.attached.size ?? 0) / 1024).toFixed(1)} KB
           </div>
           {slotState.lowQualityAck && (
             <div
@@ -211,7 +163,7 @@ function SmartUploadSlot({
                 border: '1px solid #fde68a',
               }}
             >
-              You chose to attach a photo the scanner flagged as unclear. Keep a clearer copy ready if the office asks.
+              {t('You chose to attach a photo the scanner flagged as unclear. Keep a clearer copy ready if the office asks.')}
             </div>
           )}
         </div>
@@ -222,15 +174,16 @@ function SmartUploadSlot({
 
 /** Progress through application stages (post-registration) */
 function ApplicationProgressBar({ activeIndex, totalStages }) {
+  const { t } = useLanguage();
   const pct = Math.min(100, Math.round(((activeIndex + 1) / totalStages) * 100));
   return (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
         <span style={{ fontSize: 12, fontWeight: 800, color: '#033621', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          Application progress
+          {t('Application progress')}
         </span>
         <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
-          Stage {activeIndex + 1} of {totalStages}
+          {t('Stage')} {activeIndex + 1} {t('of')} {totalStages}
         </span>
       </div>
       <div
@@ -257,6 +210,7 @@ function ApplicationProgressBar({ activeIndex, totalStages }) {
 }
 
 function StageChecklist({ stages, activeIndex }) {
+  const { t } = useLanguage();
   return (
     <div
       style={{
@@ -291,7 +245,7 @@ function StageChecklist({ stages, activeIndex }) {
             <span>{s.label}</span>
             {current && (
               <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#ca8a04' }}>
-                Now
+                {t('Now')}
               </span>
             )}
           </div>
@@ -301,7 +255,8 @@ function StageChecklist({ stages, activeIndex }) {
   );
 }
 
-function PostSubmitProgressBar({ receiptOk, feePaid, dossierComplete, postSubmitPhaseIndex }) {
+function PostSubmitProgressBar({ steps, receiptOk, feePaid, dossierComplete, postSubmitPhaseIndex }) {
+  const { t } = useLanguage();
   const pct = dossierComplete
     ? 100
     : Math.round(((1 + (receiptOk ? 1 : 0) + (feePaid ? 1 : 0)) / 3) * 100);
@@ -309,12 +264,12 @@ function PostSubmitProgressBar({ receiptOk, feePaid, dossierComplete, postSubmit
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
         <span style={{ fontSize: 12, fontWeight: 800, color: '#033621', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          Application status
+          {t('Application status')}
         </span>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>{pct}% complete</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>{pct}{t('% complete')}</span>
       </div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-        {POST_SUBMIT_STEPS.map((s, i) => {
+        {steps.map((s, i) => {
           const submittedMilestone = i === 0;
           const receiptStep = i === 1;
           const feeStep = i === 2;
@@ -374,6 +329,7 @@ function PostSubmitProgressBar({ receiptOk, feePaid, dossierComplete, postSubmit
 }
 
 function PostSubmitChecklist({ receiptOk, feePaid, postSubmitPhaseIndex }) {
+  const { t } = useLanguage();
   return (
     <div
       style={{
@@ -385,12 +341,12 @@ function PostSubmitChecklist({ receiptOk, feePaid, postSubmitPhaseIndex }) {
       }}
     >
       <div style={{ fontSize: 11, fontWeight: 800, color: '#64748b', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
-        Your steps after submission
+        {t('Your steps after submission')}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, color: '#166534' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
-          Application submitted — you are in the queue
+          {t('Application submitted — you are in the queue')}
         </div>
         <div
           style={{
@@ -405,9 +361,9 @@ function PostSubmitChecklist({ receiptOk, feePaid, postSubmitPhaseIndex }) {
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
             {receiptOk ? 'check_circle' : postSubmitPhaseIndex === 0 ? 'edit_calendar' : 'radio_button_unchecked'}
           </span>
-          Upload photo receipt / dealer bill for equipment
+          {t('Upload photo receipt / dealer bill for equipment')}
           {postSubmitPhaseIndex === 0 && !receiptOk && (
-            <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#ca8a04' }}>Now</span>
+            <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#ca8a04' }}>{t('Now')}</span>
           )}
         </div>
         <div
@@ -423,9 +379,9 @@ function PostSubmitChecklist({ receiptOk, feePaid, postSubmitPhaseIndex }) {
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
             {feePaid ? 'check_circle' : postSubmitPhaseIndex === 1 ? 'payments' : 'radio_button_unchecked'}
           </span>
-          Pay ₹23.60 processing fee (UPI / QR)
+          {t('Pay ₹23.60 processing fee (UPI / QR)')}
           {postSubmitPhaseIndex === 1 && !feePaid && receiptOk && (
-            <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#ca8a04' }}>Now</span>
+            <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#ca8a04' }}>{t('Now')}</span>
           )}
         </div>
       </div>
@@ -436,6 +392,39 @@ function PostSubmitChecklist({ receiptOk, feePaid, postSubmitPhaseIndex }) {
 const FarmerDashboard = () => {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+  const { t } = useLanguage();
+
+  const riskyQualityIntro = t('This photo may be hard for an officer to read. It could be returned or rejected later, which often means a delay of several weeks and can affect your place in the queue.');
+  const riskyQualityChoice = t('You can retake a clearer photo, attach this file anyway, or submit it with your application — the choice is yours.');
+  const submitSuccess = t('Your application file is complete. Equipment receipt and fee are on record. You will not face document-related rejections for readability at the steps you cleared with the smart scanner.');
+
+  const applicationStages = [
+    {
+      key: 'scheme',
+      label: t('Scheme type'),
+      headline: t('Choose your scheme & component'),
+      description: t('Select the MahaDBT scheme line and the exact sub-component (e.g. drip irrigation, tractor). This decides subsidy rules for your case.'),
+    },
+    {
+      key: 'requirements',
+      label: t('Requirements'),
+      headline: t('Quantity & declaration'),
+      description: t('Enter the quantity or size you are claiming (pipe length, HP, area, etc.) and confirm you accept the Terms & Conditions.'),
+    },
+    {
+      key: 'submitApp',
+      label: t('Submit application'),
+      headline: t('Submit your application'),
+      description: t('File your application with scheme and declaration. After submission you will see your progress here — next you will upload the dealer / equipment receipt, then pay the processing fee.'),
+      isSubmitStep: true,
+    },
+  ];
+
+  const postSubmitSteps = [
+    { key: 'filed', label: t('Application submitted'), icon: 'check_circle' },
+    { key: 'receipt', label: t('Upload equipment receipt'), icon: 'document_scanner' },
+    { key: 'fee', label: t('Pay processing fee'), icon: 'payments' },
+  ];
 
   /** 'register' = profile only; 'application' = staged dossier after registration */
   const [phase, setPhase] = useState('register');
@@ -465,9 +454,9 @@ const FarmerDashboard = () => {
   const [postSubmitPhaseIndex, setPostSubmitPhaseIndex] = useState(0);
   const [dossierComplete, setDossierComplete] = useState(false);
 
-  const totalAppStages = APPLICATION_STAGES.length;
+  const totalAppStages = applicationStages.length;
 
-  const currentStage = APPLICATION_STAGES[activeAppStage];
+  const currentStage = applicationStages[activeAppStage];
 
   useEffect(() => {
     if (scannerReady) return;
@@ -507,7 +496,7 @@ const FarmerDashboard = () => {
           originalSize: file.size,
           optimizedSize: file.size > 500 * 1024 ? 485.2 * 1024 : file.size,
           readabilityScore: 98,
-          rawVariance: 'N/A (vector PDF)',
+          rawVariance: t('N/A (vector PDF)'),
         });
         setSlot(slotKey, { feedback: 'clear', compressNote: true });
       }, 1200);
@@ -521,7 +510,7 @@ const FarmerDashboard = () => {
     if (!file) return;
 
     if (!scannerReady && file.type !== 'application/pdf') {
-      setGlobalError('Smart scanner is still loading. Please wait a few seconds and try again, or upload a PDF for now.');
+      setGlobalError(t('Smart scanner is still loading. Please wait a few seconds and try again, or upload a PDF for now.'));
       return;
     }
     setGlobalError('');
@@ -538,12 +527,12 @@ const FarmerDashboard = () => {
     setProcessingSlot(null);
 
     if (result.reason === 'OPENCV_NOT_READY') {
-      setGlobalError('Smart scanner is still loading. Please wait a few seconds and try again.');
+      setGlobalError(t('Smart scanner is still loading. Please wait a few seconds and try again.'));
       return;
     }
 
     if (!result.blob) {
-      setGlobalError('This file could not be prepared. Try another photo or a PDF.');
+      setGlobalError(t('This file could not be prepared. Try another photo or a PDF.'));
       return;
     }
 
@@ -657,16 +646,16 @@ const FarmerDashboard = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 26 }}>agriculture</span>
           <div>
-            <h1 style={{ fontSize: 17, margin: 0, fontWeight: 800 }}>Krishi Prabandh — Farmer</h1>
+            <h1 style={{ fontSize: 17, margin: 0, fontWeight: 800 }}>{t('Krishi Prabandh — Farmer')}</h1>
             <p style={{ margin: 0, fontSize: 11, opacity: 0.9 }}>
               {phase === 'register'
-                ? 'Registration (demo)'
+                ? t('Registration (demo)')
                 : dossierComplete
-                  ? `Dossier complete · ${applicationId || ''}`
+                  ? `${t('Dossier complete')} · ${applicationId || ''}`
                   : phase === 'application'
-                    ? `Before submit · ${applicationId || ''}`
+                    ? `${t('Before submit')} · ${applicationId || ''}`
                     : phase === 'postSubmit'
-                      ? `After submit · ${applicationId || ''}`
+                      ? `${t('After submit')} · ${applicationId || ''}`
                       : applicationId || ''}
             </p>
           </div>
@@ -677,7 +666,7 @@ const FarmerDashboard = () => {
               <span className="material-symbols-outlined" style={{ fontSize: 16, animation: 'spin 1.2s linear infinite' }}>
                 hourglass_top
               </span>
-              Loading smart scanner…
+              {t('Loading smart scanner…')}
             </span>
           )}
           <button
@@ -686,7 +675,7 @@ const FarmerDashboard = () => {
             style={{ borderColor: 'rgba(255,255,255,0.45)', color: 'white' }}
             onClick={handleLogout}
           >
-            Logout
+            {t('Logout')}
           </button>
         </div>
       </header>
@@ -694,17 +683,17 @@ const FarmerDashboard = () => {
       <main style={{ padding: '20px 18px 40px', maxWidth: 720, margin: '0 auto' }}>
         <div style={{ marginBottom: 18 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, color: '#033621', margin: '0 0 6px' }}>
-            Namaste, {user?.name || 'Farmer'}
+            {t('Namaste')}, {user?.name || t('Farmer')}
           </h2>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--text-muted, #64748b)' }}>
-            Farmer ID: <strong>{user?.agristack_id || user?.username || 'MH-AGR-2026-0001'}</strong>
+            {t('Farmer ID')}: <strong>{user?.agristack_id || user?.username || 'MH-AGR-2026-0001'}</strong>
             {(phase === 'application' || phase === 'postSubmit' || dossierComplete) && applicationId && (
               <>
                 {' '}
                 · <strong style={{ color: '#033621' }}>{applicationId}</strong>
-                {dossierComplete && <span style={{ color: '#166534', fontWeight: 600 }}> · Dossier complete</span>}
+                {dossierComplete && <span style={{ color: '#166534', fontWeight: 600 }}>{t(' · Dossier complete')}</span>}
                 {!dossierComplete && phase === 'postSubmit' && (
-                  <span style={{ color: '#64748b', fontWeight: 500 }}> · Filed</span>
+                  <span style={{ color: '#64748b', fontWeight: 500 }}>{t(' · Filed')}</span>
                 )}
               </>
             )}
@@ -732,15 +721,15 @@ const FarmerDashboard = () => {
           <div className="card" style={{ padding: 20 }}>
             <h3 style={{ fontSize: 17, fontWeight: 800, margin: '0 0 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span className="material-symbols-outlined" style={{ color: '#396940' }}>verified_user</span>
-              Registration — Step 1 of 2 · AgriStack
+              {t('Registration — Step 1 of 2 · AgriStack')}
             </h3>
             <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, marginBottom: 16 }}>
-              You are signed in with Farmer ID + OTP (demo). We fetch your profile from AgriStack so you do not re-type land and crop data.
+              {t('You are signed in with Farmer ID + OTP (demo). We fetch your profile from AgriStack so you do not re-type land and crop data.')}
             </p>
             {!agriStackSimulated ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#033621', fontWeight: 600 }}>
                 <span className="material-symbols-outlined" style={{ animation: 'spin 1s linear infinite' }}>sync</span>
-                Fetching your data from AgriStack…
+                {t('Fetching your data from AgriStack…')}
               </div>
             ) : (
               <div
@@ -753,16 +742,16 @@ const FarmerDashboard = () => {
                   lineHeight: 1.55,
                 }}
               >
-                <strong style={{ color: '#14532d' }}>Profile auto-filled (~50%)</strong>
+                <strong style={{ color: '#14532d' }}>{t('Profile auto-filled (~50%)')}</strong>
                 <ul style={{ margin: '10px 0 0', paddingLeft: 20, color: '#166534' }}>
-                  <li>7/12 land extract — linked</li>
-                  <li>Crop declaration (Pik Pahani) — season Kharif 2026</li>
-                  <li>Bank name on record — verified mask ••••4120</li>
+                  <li>{t('7/12 land extract — linked')}</li>
+                  <li>{t('Crop declaration (Pik Pahani) — season Kharif 2026')}</li>
+                  <li>{t('Bank name on record — verified mask ••••4120')}</li>
                 </ul>
               </div>
             )}
             <button type="button" className="btn btn-success" style={{ marginTop: 18, width: '100%' }} disabled={!agriStackSimulated} onClick={() => setRegStep(2)}>
-              Continue to profile
+              {t('Continue to profile')}
             </button>
           </div>
         )}
@@ -771,15 +760,15 @@ const FarmerDashboard = () => {
           <div className="card" style={{ padding: 20 }}>
             <div style={{ marginBottom: 14 }}>
               <span style={{ fontSize: 11, fontWeight: 800, color: '#64748b', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                Registration — Step 2 of 2
+                {t('Registration — Step 2 of 2')}
               </span>
-              <h3 style={{ fontSize: 17, fontWeight: 800, margin: '6px 0 0' }}>Profile &amp; certificates</h3>
+              <h3 style={{ fontSize: 17, fontWeight: 800, margin: '6px 0 0' }}>{t('Profile & certificates')}</h3>
             <p style={{ fontSize: 13, color: '#64748b', marginTop: 8, lineHeight: 1.5 }}>
-              Complete this step to <strong>open your application workspace</strong>. You will choose scheme and submit the application first; <strong>equipment receipt and fee</strong> come <strong>after</strong> submission on your status page.
+              {t('Complete this step to')} <strong>{t('open your application workspace')}</strong>{t('. You will choose scheme and submit the application first; ')}<strong>{t('equipment receipt and fee')}</strong>{t(' come ')}<strong>{t('after')}</strong>{t(' submission on your status page.')}
             </p>
             </div>
 
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8, color: '#475569' }}>Category</label>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8, color: '#475569' }}>{t('Category')}</label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -793,16 +782,16 @@ const FarmerDashboard = () => {
                 background: '#fff',
               }}
             >
-              <option value="">Select category</option>
-              <option value="SC">SC</option>
-              <option value="ST">ST</option>
-              <option value="OBC">OBC</option>
-              <option value="GENERAL">General</option>
+              <option value="">{t('Select category')}</option>
+              <option value="SC">{t('SC')}</option>
+              <option value="ST">{t('ST')}</option>
+              <option value="OBC">{t('OBC')}</option>
+              <option value="GENERAL">{t('General')}</option>
             </select>
 
             <SmartUploadSlot
-              title="Caste / category certificate"
-              subtitle="Required for SC/ST/OBC. Smart scan protects your queue position."
+              title={t('Caste / category certificate')}
+              subtitle={t('Required for SC/ST/OBC. Smart scan protects your queue position.')}
               showFcfsCallout
               disabled={!!processingSlot}
               isProcessing={processingSlot === 'caste'}
@@ -812,8 +801,8 @@ const FarmerDashboard = () => {
             />
 
             <SmartUploadSlot
-              title="Disability certificate (if applicable)"
-              subtitle="Optional — same smart scan if you upload."
+              title={t('Disability certificate (if applicable)')}
+              subtitle={t('Optional — same smart scan if you upload.')}
               showFcfsCallout={false}
               disabled={!!processingSlot}
               isProcessing={processingSlot === 'disability'}
@@ -824,15 +813,15 @@ const FarmerDashboard = () => {
 
             <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
               <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setRegStep(1)}>
-                Back
+                {t('Back')}
               </button>
               <button type="button" className="btn btn-success" style={{ flex: 2 }} disabled={!profileSaveOk} onClick={registerApplication}>
-                Register application
+                {t('Register application')}
               </button>
             </div>
             {!profileSaveOk && (
               <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10, textAlign: 'center' }}>
-                Choose category and attach a verified caste certificate to register.
+                {t('Choose category and attach a verified caste certificate to register.')}
               </p>
             )}
           </div>
@@ -842,7 +831,7 @@ const FarmerDashboard = () => {
         {phase === 'application' && currentStage && (
           <>
             <ApplicationProgressBar activeIndex={activeAppStage} totalStages={totalAppStages} />
-            <StageChecklist stages={APPLICATION_STAGES} activeIndex={activeAppStage} />
+            <StageChecklist stages={applicationStages} activeIndex={activeAppStage} />
 
             <div
               className="card"
@@ -869,14 +858,14 @@ const FarmerDashboard = () => {
                 }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 16 }}>flag</span>
-                What you need to do now
+                {t('What you need to do now')}
               </div>
               <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>{currentStage.headline}</h3>
               <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.6, margin: '0 0 20px' }}>{currentStage.description}</p>
 
               {currentStage.key === 'scheme' && (
                 <>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Scheme line</label>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>{t('Scheme line')}</label>
                   <select
                     value={scheme}
                     onChange={(e) => {
@@ -885,35 +874,35 @@ const FarmerDashboard = () => {
                     }}
                     style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 16 }}
                   >
-                    <option value="">Select scheme type</option>
-                    <option value="mech">Agricultural mechanization</option>
-                    <option value="irrigation">Micro irrigation</option>
-                    <option value="seeds">Certified seeds &amp; inputs</option>
+                    <option value="">{t('Select scheme type')}</option>
+                    <option value="mech">{t('Agricultural mechanization')}</option>
+                    <option value="irrigation">{t('Micro irrigation')}</option>
+                    <option value="seeds">{t('Certified seeds & inputs')}</option>
                   </select>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Sub-component</label>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>{t('Sub-component')}</label>
                   <select
                     value={subComponent}
                     onChange={(e) => setSubComponent(e.target.value)}
                     style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0' }}
                     disabled={!scheme}
                   >
-                    <option value="">{scheme ? 'Select sub-component' : 'Choose scheme first'}</option>
+                    <option value="">{scheme ? t('Select sub-component') : t('Choose scheme first')}</option>
                     {scheme === 'mech' && (
                       <>
-                        <option value="tractor">Tractor / power tiller</option>
-                        <option value="thresher">Thresher</option>
+                        <option value="tractor">{t('Tractor / power tiller')}</option>
+                        <option value="thresher">{t('Thresher')}</option>
                       </>
                     )}
                     {scheme === 'irrigation' && (
                       <>
-                        <option value="drip">Drip irrigation</option>
-                        <option value="sprinkler">Sprinkler system</option>
+                        <option value="drip">{t('Drip irrigation')}</option>
+                        <option value="sprinkler">{t('Sprinkler system')}</option>
                       </>
                     )}
                     {scheme === 'seeds' && (
                       <>
-                        <option value="hybrid">Hybrid seed kit</option>
-                        <option value="biofert">Bio-fertilizer pack</option>
+                        <option value="hybrid">{t('Hybrid seed kit')}</option>
+                        <option value="biofert">{t('Bio-fertilizer pack')}</option>
                       </>
                     )}
                   </select>
@@ -922,17 +911,17 @@ const FarmerDashboard = () => {
 
               {currentStage.key === 'requirements' && (
                 <>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Quantity / size</label>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>{t('Quantity / size')}</label>
                   <input
                     type="text"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    placeholder="e.g. 120 m pipe, 35 HP"
+                    placeholder={t('e.g. 120 m pipe, 35 HP')}
                     style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 16 }}
                   />
                   <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', fontSize: 13, lineHeight: 1.45 }}>
                     <input type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} style={{ marginTop: 3 }} />
-                    <span>I accept the Terms &amp; Conditions and confirm the details are correct.</span>
+                    <span>{t('I accept the Terms & Conditions and confirm the details are correct.')}</span>
                   </label>
                 </>
               )}
@@ -949,21 +938,21 @@ const FarmerDashboard = () => {
                     lineHeight: 1.55,
                   }}
                 >
-                  <strong style={{ color: '#0f172a' }}>Summary</strong>
+                  <strong style={{ color: '#0f172a' }}>{t('Summary')}</strong>
                   <ul style={{ margin: '10px 0 0', paddingLeft: 20 }}>
-                    <li>Scheme: {scheme ? `${scheme} / ${subComponent}` : '—'}</li>
-                    <li>Quantity / note: {quantity || '—'}</li>
-                    <li>Terms accepted: {termsAccepted ? 'Yes' : 'No'}</li>
+                    <li>{t('Scheme')}: {scheme ? `${scheme} / ${subComponent}` : '—'}</li>
+                    <li>{t('Quantity / note')}: {quantity || '—'}</li>
+                    <li>{t('Terms accepted')}: {termsAccepted ? t('Yes') : t('No')}</li>
                   </ul>
                   <p style={{ margin: '12px 0 0', fontSize: 12, color: '#64748b' }}>
-                    Submitting files your application in the queue. You will then upload your equipment receipt and pay the fee on the next screen.
+                    {t('Submitting files your application in the queue. You will then upload your equipment receipt and pay the fee on the next screen.')}
                   </p>
                 </div>
               )}
 
               <div style={{ display: 'flex', gap: 10, marginTop: 22, flexWrap: 'wrap' }}>
                 <button type="button" className="btn btn-outline" style={{ flex: '0 1 auto', minWidth: 100 }} onClick={goPrevStage} disabled={activeAppStage === 0}>
-                  Back
+                  {t('Back')}
                 </button>
                 {currentStage.key === 'submitApp' ? (
                   <button
@@ -973,16 +962,16 @@ const FarmerDashboard = () => {
                     disabled={!stageAdvanceGuard}
                     onClick={fileApplicationRecord}
                   >
-                    Submit application
+                    {t('Submit application')}
                   </button>
                 ) : (
                   <button type="button" className="btn btn-success" style={{ flex: 1, minWidth: 160 }} disabled={!stageAdvanceGuard} onClick={goNextStage}>
-                    Save &amp; continue
+                    {t('Save & continue')}
                   </button>
                 )}
               </div>
               {currentStage.key === 'submitApp' && !stageAdvanceGuard && (
-                <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>Complete scheme and requirements to enable submit.</p>
+                <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>{t('Complete scheme and requirements to enable submit.')}</p>
               )}
             </div>
           </>
@@ -1002,15 +991,16 @@ const FarmerDashboard = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 28, color: '#166534' }}>task_alt</span>
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: '#14532d' }}>Application submitted</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: '#14532d' }}>{t('Application submitted')}</div>
                   <div style={{ fontSize: 12, color: '#166534', marginTop: 4 }}>
-                    Reference <strong>{applicationId}</strong>. Your request is filed — finish the steps below (receipt, then fee).
+                    {t('Reference')} <strong>{applicationId}</strong>{t('. Your request is filed — finish the steps below (receipt, then fee).')}
                   </div>
                 </div>
               </div>
             </div>
 
             <PostSubmitProgressBar
+              steps={postSubmitSteps}
               receiptOk={receiptOk}
               feePaid={feePaid}
               dossierComplete={dossierComplete}
@@ -1044,15 +1034,15 @@ const FarmerDashboard = () => {
                   }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }}>flag</span>
-                  What you need to do now
+                  {t('What you need to do now')}
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>Upload proof of receipt / dealer bill</h3>
+                <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>{t('Upload proof of receipt / dealer bill')}</h3>
                 <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.6, margin: '0 0 20px' }}>
-                  Upload a clear photo of your bill, delivery challan, or dealer receipt for the farm equipment or material. Blurry bills delay approval — use the smart scanner.
+                  {t('Upload a clear photo of your bill, delivery challan, or dealer receipt for the farm equipment or material. Blurry bills delay approval — use the smart scanner.')}
                 </p>
                 <SmartUploadSlot
-                  title="Dealer bill / equipment receipt"
-                  subtitle="Photo of bill, challan, or receipt for the farm equipment or material covered by this application."
+                  title={t('Dealer bill / equipment receipt')}
+                  subtitle={t('Photo of bill, challan, or receipt for the farm equipment or material covered by this application.')}
                   showFcfsCallout
                   disabled={!!processingSlot}
                   isProcessing={processingSlot === 'equipmentReceipt'}
@@ -1062,11 +1052,11 @@ const FarmerDashboard = () => {
                 />
                 <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
                   <button type="button" className="btn btn-success" style={{ flex: 1, minWidth: 140 }} disabled={!receiptOk} onClick={() => setPostSubmitPhaseIndex(1)}>
-                    Save &amp; continue
+                    {t('Save & continue')}
                   </button>
                 </div>
                 {!receiptOk && (
-                  <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>Attach a receipt to continue to the fee step.</p>
+                  <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>{t('Attach a receipt to continue to the fee step.')}</p>
                 )}
               </div>
             )}
@@ -1097,16 +1087,16 @@ const FarmerDashboard = () => {
                   }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }}>flag</span>
-                  What you need to do now
+                  {t('What you need to do now')}
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>Pay processing fee</h3>
+                <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>{t('Pay processing fee')}</h3>
                 <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.6, margin: '0 0 20px' }}>
-                  Pay the <strong>₹23.60</strong> processing fee via UPI / QR (simulated). Then mark your dossier complete.
+                  {t('Pay the ')}<strong>₹23.60</strong>{t(' processing fee via UPI / QR (simulated). Then mark your dossier complete.')}
                 </p>
                 {!feePaid ? (
                   <button type="button" className="btn btn-success" style={{ width: '100%', marginBottom: 12 }} onClick={() => setFeePaid(true)}>
                     <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: 6 }}>qr_code_2</span>
-                    Simulate UPI payment — ₹23.60
+                    {t('Simulate UPI payment — ₹23.60')}
                   </button>
                 ) : (
                   <div
@@ -1124,12 +1114,12 @@ const FarmerDashboard = () => {
                     }}
                   >
                     <span className="material-symbols-outlined">payments</span>
-                    Payment received (demo)
+                    {t('Payment received (demo)')}
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   <button type="button" className="btn btn-outline" onClick={() => setPostSubmitPhaseIndex(0)}>
-                    Back
+                    {t('Back')}
                   </button>
                   <button
                     type="button"
@@ -1138,7 +1128,7 @@ const FarmerDashboard = () => {
                     disabled={!canCompleteDossier}
                     onClick={() => setDossierComplete(true)}
                   >
-                    Complete application
+                    {t('Complete application')}
                   </button>
                 </div>
               </div>
@@ -1159,11 +1149,11 @@ const FarmerDashboard = () => {
             <div style={{ fontSize: 40, lineHeight: 1, marginBottom: 12 }} aria-hidden>
               🎉
             </div>
-            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#14532d', margin: '0 0 12px' }}>Application submitted</h3>
-            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>Reference: <strong>{applicationId}</strong></p>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: '#166534', margin: 0 }}>{SUBMIT_SUCCESS}</p>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#14532d', margin: '0 0 12px' }}>{t('Application submitted')}</h3>
+            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>{t('Reference')}: <strong>{applicationId}</strong></p>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: '#166534', margin: 0 }}>{submitSuccess}</p>
             <button type="button" className="btn btn-outline" style={{ marginTop: 20 }} onClick={() => navigate('/login')}>
-              Return to home
+              {t('Return to home')}
             </button>
           </div>
         )}
@@ -1189,35 +1179,35 @@ const FarmerDashboard = () => {
                   <>
                     <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#14532d', margin: 0, fontSize: 17 }}>
                       <span className="material-symbols-outlined">verified</span>
-                      Snap &amp; check — document is readable
+                      {t('Snap & check — document is readable')}
                     </h3>
-                    <p style={{ margin: '8px 0 0', fontSize: 13, color: '#64748b', lineHeight: 1.45 }}>{CLEAR_FEEDBACK}</p>
+                    <p style={{ margin: '8px 0 0', fontSize: 13, color: '#64748b', lineHeight: 1.45 }}>{t('✅ Perfect! 100% Readable. We have automatically adjusted the file size for you. Your application is safe from document-rejection.')}</p>
                   </>
                 ) : (
                   <>
                     <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#b45309', margin: 0, fontSize: 17 }}>
                       <span className="material-symbols-outlined">warning</span>
-                      Quality notice — your choice
+                      {t('Quality notice — your choice')}
                     </h3>
                     <p style={{ margin: '8px 0 0', fontSize: 13, color: '#78350f', lineHeight: 1.55 }}>
-                      {RISKY_QUALITY_INTRO} {RISKY_QUALITY_CHOICE}
+                      {riskyQualityIntro} {riskyQualityChoice}
                     </p>
                   </>
                 )}
               </div>
-              <button type="button" className="btn-icon" onClick={() => dismissPreview(true)} aria-label="Close">
+              <button type="button" className="btn-icon" onClick={() => dismissPreview(true)} aria-label={t('Close')}>
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
               <div style={{ flex: '1 1 280px' }}>
-                <h4 style={{ textAlign: 'center', fontWeight: 700, marginBottom: 8, fontSize: 13 }}>Original ({(previewData.originalSize / 1024).toFixed(1)} KB)</h4>
+                <h4 style={{ textAlign: 'center', fontWeight: 700, marginBottom: 8, fontSize: 13 }}>{t('Original')} ({(previewData.originalSize / 1024).toFixed(1)} KB)</h4>
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: 10, overflow: 'hidden', minHeight: 220, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {previewData.type === 'pdf' ? (
-                    <iframe src={previewData.originalSrc} title="Original PDF" style={{ width: '100%', minHeight: 220, border: 'none' }} />
+                    <iframe src={previewData.originalSrc} title={t('Original PDF')} style={{ width: '100%', minHeight: 220, border: 'none' }} />
                   ) : (
-                    <img src={previewData.originalSrc} alt="Original" style={{ maxWidth: '100%', maxHeight: 280, objectFit: 'contain' }} />
+                    <img src={previewData.originalSrc} alt={t('Original')} style={{ maxWidth: '100%', maxHeight: 280, objectFit: 'contain' }} />
                   )}
                 </div>
               </div>
@@ -1231,7 +1221,7 @@ const FarmerDashboard = () => {
                     color: previewData.qualityTier === 'risky' ? '#b45309' : '#166534',
                   }}
                 >
-                  Optimized for upload ({(previewData.optimizedSize / 1024).toFixed(1)} KB)
+                  {t('Optimized for upload')} ({(previewData.optimizedSize / 1024).toFixed(1)} KB)
                 </h4>
                 <div
                   style={{
@@ -1246,26 +1236,26 @@ const FarmerDashboard = () => {
                   }}
                 >
                   {previewData.type === 'pdf' ? (
-                    <iframe src={previewData.optimizedSrc} title="Optimized PDF" style={{ width: '100%', minHeight: 220, border: 'none' }} />
+                    <iframe src={previewData.optimizedSrc} title={t('Optimized PDF')} style={{ width: '100%', minHeight: 220, border: 'none' }} />
                   ) : (
-                    <img src={previewData.optimizedSrc} alt="Optimized" style={{ maxWidth: '100%', maxHeight: 280, objectFit: 'contain' }} />
+                    <img src={previewData.optimizedSrc} alt={t('Optimized')} style={{ maxWidth: '100%', maxHeight: 280, objectFit: 'contain' }} />
                   )}
                 </div>
                 {previewData.type !== 'pdf' && (
                   <p style={{ fontSize: 12, fontWeight: 600, color: previewData.qualityTier === 'risky' ? '#b45309' : '#166534', marginTop: 10 }}>
-                    {COMPRESSION_LINE}
+                    {t('Compressing to Government limits (500 KB)… Done.')}
                   </p>
                 )}
               </div>
             </div>
 
             <div style={{ padding: 12, background: '#f8fafc', borderRadius: 10, marginBottom: 16, fontSize: 12, color: '#475569' }}>
-              <strong>Readability score:</strong> {previewData.readabilityScore}% · <strong>Raw variance (normalized):</strong> {previewData.rawVariance}
+              <strong>{t('Readability score')}:</strong> {previewData.readabilityScore}% · <strong>{t('Raw variance (normalized)')}:</strong> {previewData.rawVariance}
             </div>
 
             {previewData.qualityTier === 'risky' && (
               <p style={{ fontSize: 11, color: '#64748b', marginTop: -8, marginBottom: 16, lineHeight: 1.45 }}>
-                “Attach” or “Submit with application” both add this file to your application. Retake replaces it with a new photo.
+                {t('“Attach” or “Submit with application” both add this file to your application. Retake replaces it with a new photo.')}
               </p>
             )}
 
@@ -1280,12 +1270,12 @@ const FarmerDashboard = () => {
               }}
             >
               <button type="button" className="btn btn-outline" onClick={() => dismissPreview(true)}>
-                Retake
+                {t('Retake')}
               </button>
               {previewData.qualityTier === 'risky' ? (
                 <>
                   <button type="button" className="btn btn-outline" onClick={handleConfirmAttach}>
-                    Attach anyway
+                    {t('Attach anyway')}
                   </button>
                   <button
                     type="button"
@@ -1294,13 +1284,13 @@ const FarmerDashboard = () => {
                     onClick={handleConfirmAttach}
                   >
                     <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', fontSize: 18 }}>upload</span>
-                    Submit with application
+                    {t('Submit with application')}
                   </button>
                 </>
               ) : (
                 <button type="button" className="btn btn-success" onClick={handleConfirmAttach}>
                   <span className="material-symbols-outlined" style={{ verticalAlign: 'middle' }}>check_circle</span>
-                  Confirm &amp; attach
+                  {t('Confirm & attach')}
                 </button>
               )}
             </div>

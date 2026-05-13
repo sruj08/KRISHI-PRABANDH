@@ -240,14 +240,14 @@ const SahayakDashboard = () => {
   const displayLocation =
     user?.district_name && user?.taluka_name
       ? `${user.district_name} · ${user.taluka_name}`
-      : 'Assigned villages (CSV scope)';
+      : t('Assigned villages (CSV scope)', lang);
 
   const statItems = [
-    { icon: 'assignment',    label: 'Total Applications', value: summary?.total_applications,         color: '#033621', bg: 'rgba(3,54,33,0.06)', path: '/applications' },
-    { icon: 'manage_search', label: 'Under Scrutiny',     value: summary?.by_status?.['Under Scrutiny'], color: '#B45309', bg: 'rgba(180,83,9,0.06)', path: '/applications' },
-    { icon: 'priority_high', label: 'High Priority',      value: summary?.by_priority?.HIGH,          color: '#ba1a1a', bg: 'rgba(186,26,26,0.06)', path: '/applications' },
-    { icon: 'warning',       label: 'Anomaly Alerts',     value: summary?.fraud_alerts,               color: '#4d2024', bg: 'rgba(77,32,36,0.06)', path: '/fraud-alerts' },
-    { icon: 'check_circle',  label: 'Approved',           value: summary?.by_status?.Approved,        color: '#396940', bg: 'rgba(57,105,64,0.06)', path: '/applications' },
+    { icon: 'assignment',    label: t('Total Applications', lang), value: summary?.total_applications,         color: '#033621', bg: 'rgba(3,54,33,0.06)', path: '/applications' },
+    { icon: 'manage_search', label: t('Under Scrutiny', lang),     value: summary?.by_status?.['Under Scrutiny'], color: '#B45309', bg: 'rgba(180,83,9,0.06)', path: '/applications' },
+    { icon: 'priority_high', label: t('High Priority', lang),      value: summary?.by_priority?.HIGH,          color: '#ba1a1a', bg: 'rgba(186,26,26,0.06)', path: '/applications' },
+    { icon: 'warning',       label: t('Anomaly Alerts', lang),     value: summary?.fraud_alerts,               color: '#4d2024', bg: 'rgba(77,32,36,0.06)', path: '/fraud-alerts' },
+    { icon: 'check_circle',  label: t('Approved', lang),           value: summary?.by_status?.Approved,        color: '#396940', bg: 'rgba(57,105,64,0.06)', path: '/applications' },
   ];
 
   const pendingAlerts = Number(summary?.fraud_alerts) || 0;
@@ -255,8 +255,8 @@ const SahayakDashboard = () => {
   const docIntelCards = [
     {
       icon: 'description',
-      label: 'GR ASSISTANT',
-      subtitle: 'Upload & understand GR documents',
+      label: t('GR ASSISTANT', lang),
+      subtitle: t('Upload & understand GR documents', lang),
       path: '/officer/gr-assistant',
       badgeNew: true,
       color: 'var(--primary)',
@@ -264,16 +264,16 @@ const SahayakDashboard = () => {
     },
     {
       icon: 'document_scanner',
-      label: 'SCAN DOCUMENT',
-      subtitle: 'Aadhaar • Satbara • Bank Passbook',
+      label: t('SCAN DOCUMENT', lang),
+      subtitle: t('Aadhaar • Satbara • Bank Passbook', lang),
       path: '/officer/scan-document',
       color: 'var(--amber)',
       bg: 'rgba(180,83,9,0.06)',
     },
     {
       icon: 'verified_user',
-      label: 'AI VERIFICATION',
-      subtitle: 'View flagged anomalies',
+      label: t('AI VERIFICATION', lang),
+      subtitle: t('View flagged anomalies', lang),
       path: '/officer/ai-verification',
       color: 'var(--tertiary)',
       bg: 'rgba(77,32,36,0.06)',
@@ -288,7 +288,7 @@ const SahayakDashboard = () => {
         <div className="cao-header-left">
           <div className="logo-text">
             <span className="material-symbols-outlined" style={{ color: 'var(--primary)', marginRight: '8px', fontSize: '24px' }}>public</span>
-            Krishi Prabandh - Sahayak
+            {t('Krishi Prabandh - Sahayak', lang)}
           </div>
         </div>
 
@@ -299,7 +299,7 @@ const SahayakDashboard = () => {
 
         <div className="cao-header-right">
           <span className="badge badge-verified" style={{ fontSize: '11px', marginRight: '8px' }}>
-            {apiOnline ? 'API Live' : eligibleFarmers.some((f) => f._fromDataset) ? 'CSV + Agristack' : 'Offline Mode'}
+            {apiOnline ? t('API Live', lang) : eligibleFarmers.some((f) => f._fromDataset) ? t('CSV + Agristack', lang) : t('Offline Mode', lang)}
           </span>
           <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>notifications</span>
           <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>settings</span>
@@ -318,7 +318,7 @@ const SahayakDashboard = () => {
             { icon: 'groups',         label: t('Eligible Farmers', lang),path: '/advanced-tools', color: 'var(--success)',  bg: 'rgba(57,105,64,0.06)' },
             { icon: 'directions_car', label: t("Today's Visits", lang), path: '/visit-planner',  color: 'var(--tertiary)', bg: 'rgba(77,32,36,0.06)' },
             { icon: 'gpp_bad',        label: t('Anomaly Alerts', lang),  path: '/fraud-alerts',   color: 'var(--tertiary)', bg: 'rgba(77,32,36,0.06)' },
-            { icon: 'qr_code_2',      label: 'Gram Sabha',              path: '/gram-sabha',     color: 'var(--primary)',  bg: 'var(--primary)', special: true },
+            { icon: 'qr_code_2',      label: t('Gram Sabha', lang),              path: '/gram-sabha',     color: 'var(--primary)',  bg: 'var(--primary)', special: true },
           ].map((item, i) => (
             <div
               key={i}
@@ -353,7 +353,7 @@ const SahayakDashboard = () => {
             textAlign: 'center', padding: 'var(--sp-8)',
             color: 'var(--text-muted)', fontFamily: 'var(--font-data)', fontSize: 'var(--font-size-sm)',
           }}>
-            Loading data...
+            {t('Loading data...', lang)}
           </div>
         ) : (
           <div className="cao-kpi-strip" style={{ borderTop: '1px solid var(--outline-card)', borderBottom: '1px solid var(--outline-card)' }}>
@@ -372,7 +372,7 @@ const SahayakDashboard = () => {
                   {item.value ?? '—'}
                 </div>
                 <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>
-                  Active
+                  {t('Active', lang)}
                 </div>
               </div>
             ))}
@@ -390,9 +390,9 @@ const SahayakDashboard = () => {
         </div>
         <div className="glass-panel">
           <div style={{ display: 'flex', overflowX: 'auto', gap: 'var(--sp-8)', paddingBottom: 'var(--sp-2)' }}>
-            <CircularGauge value={summary?.by_priority?.HIGH ?? 0}         label="High Priority"   subtext="Needs Action"      color="var(--error)" />
-            <CircularGauge value={summary?.by_status?.['Under Scrutiny'] ?? 0} label="Under Scrutiny" subtext="Being Processed"  color="var(--primary)" />
-            <CircularGauge value={summary?.by_status?.Approved ?? 0}       label="Approved"        subtext="This Cycle"        color="var(--success)" />
+            <CircularGauge value={summary?.by_priority?.HIGH ?? 0}         label={t('High Priority', lang)}   subtext={t('Needs Action', lang)}      color="var(--error)" />
+            <CircularGauge value={summary?.by_status?.['Under Scrutiny'] ?? 0} label={t('Under Scrutiny', lang)} subtext={t('Being Processed', lang)}  color="var(--primary)" />
+            <CircularGauge value={summary?.by_status?.Approved ?? 0}       label={t('Approved', lang)}        subtext={t('This Cycle', lang)}        color="var(--success)" />
           </div>
         </div>
       </section>
@@ -425,7 +425,7 @@ const SahayakDashboard = () => {
                     letterSpacing: '0.04em',
                   }}
                 >
-                  NEW
+                  {t('NEW', lang)}
                 </span>
               )}
               {item.countBadge != null && (
@@ -477,7 +477,7 @@ const SahayakDashboard = () => {
               textAlign: 'center', color: 'var(--text-muted)', padding: 'var(--sp-6)',
               fontFamily: 'var(--font-data)', fontSize: 'var(--font-size-sm)',
             }}>
-              No farmers linked to this sahayak in the CSV (check <strong>reports_to_user_id</strong> / circle / taluka).
+              {t('No farmers linked to this sahayak in the CSV (check', lang)} <strong>reports_to_user_id</strong> {t('/ circle / taluka).', lang)}
             </div>
           )}
           {eligibleFarmers.map((app, index) => (
@@ -496,7 +496,7 @@ const SahayakDashboard = () => {
                     {app.farmer_name || app.farmer_id || '—'}
                   </div>
                   <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)' }}>
-                    ID: {app.farmer_id || '—'}
+                    {t('ID: ', lang)}{app.farmer_id || '—'}
                   </div>
                   <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginTop: '4px' }}>
                     {app.component || '—'}
@@ -508,7 +508,7 @@ const SahayakDashboard = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                   <span className="badge badge-grey" style={{ fontSize: '10px' }}>{app.scheme_category || '—'}</span>
                   <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    {app.remarks || 'No remarks'}
+                    {app.remarks || t('No remarks', lang)}
                   </span>
                 </div>
               </div>

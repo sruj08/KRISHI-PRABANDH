@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
 
 const Sidebar = ({ isOpen }) => {
-  const { t, toggleLanguage, lang } = useLanguage();
+  const { t, cycleLanguage, lang, langLabels } = useLanguage();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -341,8 +341,8 @@ const Sidebar = ({ isOpen }) => {
 
         <div className={`sidebar-lang-row ${isDark ? 'border-[#1f2924]' : ''}`}>
           <span className={`sidebar-lang-label ${isDark ? 'text-gray-400' : ''}`}>{t('Language')}</span>
-          <button className={`sidebar-lang-btn ${isDark ? 'bg-[#111814] border-[#1f2924] text-gray-300 hover:bg-[#1a241d]' : ''}`} onClick={toggleLanguage}>
-            {lang === 'en' ? 'मराठी' : 'EN'}
+          <button className={`sidebar-lang-btn ${isDark ? 'bg-[#111814] border-[#1f2924] text-gray-300 hover:bg-[#1a241d]' : ''}`} onClick={cycleLanguage}>
+            {langLabels[lang] || lang}
           </button>
         </div>
 

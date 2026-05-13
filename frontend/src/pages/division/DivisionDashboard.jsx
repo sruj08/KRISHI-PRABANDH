@@ -8,6 +8,7 @@ import {
   DIVISION_PROFILE,
 } from '../../utils/divisionMockData';
 import { useToast } from '../../hooks/useToast.jsx';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
 import '../district/district.css';
@@ -100,6 +101,7 @@ const STATUS_CHIP = {
 
 const DivisionDashboard = () => {
   const { addToast } = useToast();
+  const { t } = useLanguage();
   const { user } = useAuth();
   const { stats, mandals } = useKrishiData();
   const circlesInDivision =
@@ -111,7 +113,7 @@ const DivisionDashboard = () => {
 
   const onDscAuthorize = () => {
     const total = PFMS_BATCHES.reduce((a, b) => a + b.beneficiaries, 0);
-    addToast(`DSC release queued for ${total.toLocaleString('en-IN')} beneficiaries across ${PFMS_BATCHES.length} consolidated PFMS batches (demo).`, 'success', 4200);
+    addToast(t('dscReleaseQueuedDivision', { total: total.toLocaleString('en-IN'), count: PFMS_BATCHES.length }), 'success', 4200);
   };
 
   const totalAlerts = DISTRICT_MATRIX.reduce((a, d) => a + d.fraudAlerts, 0);
@@ -136,20 +138,20 @@ const DivisionDashboard = () => {
           }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>dataset</span>
-          <span style={{ fontWeight: 700 }}>CSV scope (division)</span>
+          <span style={{ fontWeight: 700 }}>{t('csvScopeDivision')}</span>
           {user?.division_name && (
             <span style={{ color: '#717972' }}>
-              Division: <strong>{user.division_name}</strong>
+              {t('division')}: <strong>{user.division_name}</strong>
             </span>
           )}
           {circlesInDivision != null && (
             <span style={{ color: '#717972' }}>
-              Agriculture circles in dataset: <strong>{circlesInDivision}</strong>
+              {t('agricultureCirclesInDataset')}: <strong>{circlesInDivision}</strong>
             </span>
           )}
           {stats?.totalSurveys != null && (
             <span style={{ color: '#717972', marginLeft: 'auto' }}>
-              Statewide surveys (CSV): {Number(stats.totalSurveys).toLocaleString('en-IN')}
+              {t('statewideSurveysCsv')}: {Number(stats.totalSurveys).toLocaleString('en-IN')}
             </span>
           )}
         </div>
@@ -159,31 +161,31 @@ const DivisionDashboard = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
         <KpiCard
           icon="account_balance_wallet"
-          label={"Division Allocated\nFunds"}
+          label={t('divisionAllocatedFunds')}
           value={EXEC_KPIS.totalBudgetCr}
           unit="Cr"
-          sub={`5 districts • FY 2025-26`}
+          sub={t('fyBudgetPeriod')}
         />
         <KpiCard
           icon="payments"
-          label={"Disbursed\n(YTD)"}
+          label={t('disbursedYtd')}
           value={EXEC_KPIS.disbursedCr}
           unit="Cr"
           progress={parseFloat(EXEC_KPIS.disbursedPct)}
-          sub={`Target: ₹${EXEC_KPIS.disbursedTarget} Cr`}
+          sub={t('target', { target: EXEC_KPIS.disbursedTarget })}
         />
         <KpiCard
           icon="assignment_turned_in"
-          label={"Pending PFMS\nClearance"}
+          label={t('pendingPfmsClearance')}
           value={EXEC_KPIS.pendingPfmCr}
           unit="Cr"
-          sub="> 48h alert"
+          sub={t('fortyEightHourAlert')}
           subIcon="warning"
           subColor="#ba1a1a"
         />
         <KpiCard
           icon="monitoring"
-          label={"Under\nUtilization"}
+          label={t('underUtilization')}
           value=""
           unit=""
         >
@@ -192,26 +194,26 @@ const DivisionDashboard = () => {
             <span style={{ fontSize: 14, fontWeight: 500, color: TEXT_MUTED }}>%</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: TEXT_MUTED, paddingTop: 12 }}>
-            Across all schemes
+            {t('acrossAllSchemes')}
           </div>
         </KpiCard>
         <KpiCard
           icon="warning"
-          label={"Fraud\nRisk Alerts"}
+          label={t('fraudRiskAlerts')}
           value={totalAlerts.toString()}
-          sub={`${DISTRICT_MATRIX.filter(d => d.status === 'Watch' || d.status === 'Lagging').length} districts at risk`}
+          sub={t('districtsAtRisk', { count: DISTRICT_MATRIX.filter(d => d.status === 'Watch' || d.status === 'Lagging').length })}
           subIcon="report_problem"
           subColor="#ba1a1a"
         />
         <KpiCard
           icon="satellite_alt"
-          label="Satellite Status"
+          label={t('satelliteStatus')}
           value=""
           unit=""
         >
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#396940', lineHeight: 1 }}>Active</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: '#396940', lineHeight: 1 }}>{t('active')}</div>
           <div style={{ fontSize: 11, fontWeight: 600, color: TEXT_MUTED, display: 'flex', alignItems: 'center', gap: 4, paddingTop: 12 }}>
-            <span style={{ color: '#396940', fontSize: 10 }}>●</span> Next pass in 2h
+            <span style={{ color: '#396940', fontSize: 10 }}>●</span> {t('nextPassIn2h')}
           </div>
         </KpiCard>
       </div>
@@ -223,8 +225,8 @@ const DivisionDashboard = () => {
         <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 480 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{DIVISION_PROFILE.division} Division — Geo-fenced Command Map</h2>
-              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>Live spatial analytics • {DIVISION_PROFILE.role}</p>
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{t('geoFencedCommandMap', { division: DIVISION_PROFILE.division })}</h2>
+              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>{t('liveSpatialAnalyticsDivision', { role: DIVISION_PROFILE.role })}</p>
             </div>
           </div>
           <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
@@ -238,19 +240,19 @@ const DivisionDashboard = () => {
         {/* ── Right Panel ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-          <PanelSection title="Cross-District Friction" subtitle="System Integration Errors">
+          <PanelSection title={t('crossDistrictFriction')} subtitle={t('systemIntegrationErrors')}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <FrictionRow label="Aadhaar Mismatch (PM-KISAN)" pct={38} color="#ba1a1a" />
-              <FrictionRow label="7/12 Integration Failure" pct={26} color="#ba1a1a" />
+              <FrictionRow label={t('aadhaarMismatch')} pct={38} color="#ba1a1a" />
+              <FrictionRow label={t('integrationFailure')} pct={26} color="#ba1a1a" />
             </div>
           </PanelSection>
 
-          <PanelSection title="Divisional Recommendations" subtitle="AI-Driven Cross-District Insights">
+          <PanelSection title={t('divisionalRecommendations')} subtitle={t('aiDrivenCrossDistrictInsights')}>
             {FRICTION_MONTH.topThreeRecommendations.slice(0, 1).map((rec, i) => (
               <div key={i} style={{ borderLeft: '4px solid #396940', background: '#f5f8f6', borderRadius: '0 10px 10px 0', padding: '14px 16px' }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.4, margin: 0, marginBottom: 6 }}>
-                  Joint audit — Solapur ↔ Sangli fraud ring suspected.
-                </p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.4, margin: 0, marginBottom: 6 }}>
+                    {t('jointAuditSolapurSangli')}
+                  </p>
                 <p style={{ fontSize: 11, color: '#717972', lineHeight: 1.55, margin: 0 }}>
                   {rec}
                 </p>
@@ -258,16 +260,16 @@ const DivisionDashboard = () => {
             ))}
           </PanelSection>
 
-          <PanelSection title="Disaster Triage" subtitle="Live Telemetry Triggers" badge="HIGH">
+          <PanelSection title={t('disasterTriage')} subtitle={t('liveTelemetryTriggers')} badge={t('high')}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.4, margin: 0 }}>
-                  Drought stress detected — Solapur belt.
+                  {t('droughtStressSolapur')}
                 </p>
-                <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 6, lineHeight: 1.45 }}>11,800+ plots flagged in Madha + Mangalwedha.</p>
+                <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 6, lineHeight: 1.45 }}>{t('plotsFlaggedMadhaMangalwedha')}</p>
               </div>
               <button style={{ width: '100%', padding: '11px 0', border: '1px solid #e2e3df', borderRadius: 10, fontSize: 12, fontWeight: 700, color: '#1a1c1a', background: '#fff', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-                Initiate Drone Survey
+                {t('initiateDroneSurvey')}
               </button>
             </div>
           </PanelSection>
@@ -278,22 +280,22 @@ const DivisionDashboard = () => {
       <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '22px 24px', borderBottom: '1px solid #f3f4f0', flexWrap: 'wrap' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>table_chart</span>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', flex: 1, margin: 0, lineHeight: 1.35 }}>District Performance Matrix</h3>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', flex: 1, margin: 0, lineHeight: 1.35 }}>{t('districtPerformanceMatrix')}</h3>
           <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#717972', background: '#f3f4f0', padding: '5px 11px', borderRadius: 6, whiteSpace: 'nowrap' }}>
-            5 districts • {totalPending.toLocaleString('en-IN')} pending • {totalAlerts} alerts
+            {t('districtsSummary', { pending: totalPending.toLocaleString('en-IN'), alerts: totalAlerts })}
           </span>
         </div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 720 }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>District</th>
-                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>Officer</th>
-                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'right', textTransform: 'uppercase', fontWeight: 700 }}>Talukas</th>
-                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'right', textTransform: 'uppercase', fontWeight: 700 }}>Funds (Cr)</th>
-                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'right', textTransform: 'uppercase', fontWeight: 700 }}>Disbursed</th>
-                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'right', textTransform: 'uppercase', fontWeight: 700 }}>Pending</th>
-                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>Status</th>
+                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{t('district')}</th>
+                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{t('officer')}</th>
+                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'right', textTransform: 'uppercase', fontWeight: 700 }}>{t('talukas')}</th>
+                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'right', textTransform: 'uppercase', fontWeight: 700 }}>{t('fundsCr')}</th>
+                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'right', textTransform: 'uppercase', fontWeight: 700 }}>{t('disbursed')}</th>
+                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'right', textTransform: 'uppercase', fontWeight: 700 }}>{t('pending')}</th>
+                <th style={{ padding: '14px 24px', fontSize: 10, letterSpacing: '0.1em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{t('status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -326,9 +328,9 @@ const DivisionDashboard = () => {
           </div>
           <div style={{ flex: 1 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
-              Divisional PFMS Disbursement Queues
+              {t('divisionalPfmsDisbursementQueues')}
             </h3>
-            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>District-cleared, high-confidence batches ready for release</p>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>{t('districtClearedBatches')}</p>
           </div>
           <button
             type="button"
@@ -336,7 +338,7 @@ const DivisionDashboard = () => {
             className="district-dsc-btn"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>verified_user</span>
-            Authorize Release
+            {t('authorizeRelease')}
           </button>
         </div>
 
@@ -344,12 +346,12 @@ const DivisionDashboard = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                <th className="district-table-header">Batch ID</th>
-                <th className="district-table-header">Scheme Name</th>
-                <th className="district-table-header" style={{ textAlign: 'right' }}>Beneficiaries</th>
-                <th className="district-table-header" style={{ textAlign: 'right' }}>Amount (Cr)</th>
-                <th className="district-table-header" style={{ textAlign: 'right' }}>AI Confidence</th>
-                <th className="district-table-header" style={{ textAlign: 'center' }}>Status</th>
+                <th className="district-table-header">{t('batchId')}</th>
+                <th className="district-table-header">{t('schemeName')}</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>{t('beneficiaries')}</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>{t('amountCr')}</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>{t('aiConfidence')}</th>
+                <th className="district-table-header" style={{ textAlign: 'center' }}>{t('status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -368,7 +370,7 @@ const DivisionDashboard = () => {
                     </div>
                   </td>
                   <td style={{ padding: '18px 28px', textAlign: 'center' }}>
-                    <span className="district-status-pill" style={{ color: '#396940', background: 'rgba(186,240,188,0.3)', border: '1px solid rgba(57,105,64,0.2)' }}>Ready</span>
+                    <span className="district-status-pill" style={{ color: '#396940', background: 'rgba(186,240,188,0.3)', border: '1px solid rgba(57,105,64,0.2)' }}>{t('ready')}</span>
                   </td>
                 </tr>
               ))}

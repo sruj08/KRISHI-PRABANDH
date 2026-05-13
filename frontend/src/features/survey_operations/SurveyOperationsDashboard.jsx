@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import SurveyTriageQueue from './SurveyTriageQueue';
 import SurveyEvidenceReview from './SurveyEvidenceReview';
 
@@ -8,6 +9,7 @@ import SurveyEvidenceReview from './SurveyEvidenceReview';
  * Acts as the Command Center for handling incoming field surveys.
  */
 const SurveyOperationsDashboard = () => {
+  const { t } = useLanguage();
   const [selectedSurvey, setSelectedSurvey] = useState(null);
 
   return (

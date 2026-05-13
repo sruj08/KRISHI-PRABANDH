@@ -12,7 +12,7 @@ const ApplicationCard = ({
   status,
   isUrgent = false
 }) => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   
   let borderClass = 'card-bordered-primary';
   if (status?.toLowerCase()?.includes('pending')) borderClass = 'card-bordered-amber';

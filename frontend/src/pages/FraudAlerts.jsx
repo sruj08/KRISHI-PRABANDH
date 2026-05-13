@@ -30,7 +30,7 @@ const FraudAlerts = () => {
       setAlerts(data);
     } catch (err) {
       console.error('FraudAlerts load error:', err);
-      addToast('Could not load fraud alerts', 'error');
+      addToast(t('Could not load fraud alerts', lang), 'error');
     } finally {
       setLoading(false);
     }
@@ -49,10 +49,10 @@ const FraudAlerts = () => {
       if (selectedApp?.application_id === alert.application_id) {
         setSelectedApp(prev => ({ ...prev, ...updated }));
       }
-      addToast(`Investigation opened for ${alert.farmer_id}`, 'success');
+      addToast(t(`Investigation opened for ${alert.farmer_id}`, lang), 'success');
     } catch (err) {
       console.error(err);
-      addToast(err.message || 'Action failed', 'error');
+      addToast(err.message || t('Action failed', lang), 'error');
     } finally {
       setActionLoading(null);
     }
@@ -69,17 +69,17 @@ const FraudAlerts = () => {
         <div>
           <h2 className="text-xl fw-bold text-error">{t('Fraud Alerts', lang)}</h2>
           <p className="text-sm text-muted">
-            {loading ? 'Loading…' : `${alerts.length} Actionable Items`}
+            {loading ? t('Loading…', lang) : `${alerts.length} ${t('Actionable Items', lang)}`}
           </p>
         </div>
       </header>
 
-      {loading && <div className="text-center text-muted p-4">Loading fraud alerts…</div>}
+      {loading && <div className="text-center text-muted p-4">{t('Loading fraud alerts…', lang)}</div>}
 
       {!loading && alerts.length === 0 && (
         <div className="text-center text-muted p-6">
           <span className="material-symbols-outlined" style={{ fontSize: '48px', opacity: 0.3 }}>verified_user</span>
-          <p className="mt-2">No fraud alerts detected.</p>
+          <p className="mt-2">{t('No fraud alerts detected.', lang)}</p>
         </div>
       )}
 
@@ -95,42 +95,42 @@ const FraudAlerts = () => {
               <div className="flex justify-between items-start mb-3">
                 <h3 className="fw-bold text-md">{t('Possible duplicate application detected', lang)}</h3>
                 <span className="badge" style={{ backgroundColor: '#ffebee', color: '#c62828', fontSize: '11px' }}>
-                  Urgent Priority
+                  {t('Urgent Priority', lang)}
                 </span>
               </div>
 
               {/* Data grid — component-first */}
               <div className="alert-detail-grid">
                 <div>
-                  <div className="alert-detail-label">Farmer ID</div>
+                  <div className="alert-detail-label">{t('Farmer ID', lang)}</div>
                   <div className="alert-detail-value fw-bold">{alert.farmer_id || '—'}</div>
                 </div>
                 <div>
-                  <div className="alert-detail-label">Status</div>
+                  <div className="alert-detail-label">{t('Status', lang)}</div>
                   <StatusBadge status={alert.status || 'Unknown'} />
                 </div>
                 <div className="alert-detail-full">
-                  <div className="alert-detail-label">Component</div>
+                  <div className="alert-detail-label">{t('Component', lang)}</div>
                   <div className="alert-detail-value fw-bold">{alert.component || '—'}</div>
                 </div>
                 <div className="alert-detail-full">
-                  <div className="alert-detail-label">Scheme</div>
+                  <div className="alert-detail-label">{t('Scheme', lang)}</div>
                   <div className="alert-detail-value">{alert.scheme_name || '—'}</div>
                 </div>
                 <div>
-                  <div className="alert-detail-label">Category</div>
+                  <div className="alert-detail-label">{t('Category', lang)}</div>
                   <span className="badge badge-grey" style={{ fontSize: '10px' }}>{alert.scheme_category || '—'}</span>
                 </div>
               </div>
 
               {/* Rejection reason */}
               <div style={{ margin: '12px 0', backgroundColor: '#ffebee', borderRadius: 'var(--radius)', padding: '8px 12px', border: '1px solid #ffcdd2', fontSize: '12px', color: '#c62828' }}>
-                <strong>Rejection Reason:</strong> {alert.rejection_reason}
+                <strong>{t('Rejection Reason:', lang)}</strong> {alert.rejection_reason}
               </div>
 
               {/* System explanation */}
               <div style={{ backgroundColor: '#fff3e0', borderRadius: 'var(--radius)', padding: '8px 12px', fontSize: '12px', color: '#e65100', marginBottom: '12px' }}>
-                {alert.explanation || '⚠️ Possible duplicate application detected. This farmer may have submitted the same application under multiple IDs.'}
+                {alert.explanation || t('⚠️ Possible duplicate application detected. This farmer may have submitted the same application under multiple IDs.', lang)}
               </div>
 
               {/* Actions */}
@@ -139,17 +139,17 @@ const FraudAlerts = () => {
                   variant="error"
                   fullWidth
                   icon="policy"
-                  onClick={() => canInvestigate ? handleInvestigate(alert) : addToast('No further action possible for this status', 'info')}
+                  onClick={() => canInvestigate ? handleInvestigate(alert) : addToast(t('No further action possible for this status', lang), 'info')}
                   disabled={isBusy}
                 >
-                  {isBusy ? 'Processing…' : t('Investigate Case', lang)}
+                  {isBusy ? t('Processing…', lang) : t('Investigate Case', lang)}
                 </Button>
                 <button
                   className="btn btn-outline"
                   style={{ flexShrink: 0, padding: '0 16px' }}
                   onClick={() => setSelectedApp({ ...alert, priority: 'LOW' })}
                 >
-                  View Details
+                  {t('View Details', lang)}
                 </button>
               </div>
             </div>

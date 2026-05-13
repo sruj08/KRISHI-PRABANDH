@@ -6,6 +6,7 @@ import {
   mockSuspiciousPatterns,
   mockEscalationQueue,
 } from '../../mock/dao-analytics';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PANEL = '#e2e3df';
 const MUTED = '#717972';
@@ -15,6 +16,7 @@ const AMBER = '#b45309';
 
 const FraudTrends = () => {
   const { addToast } = useToast();
+  const { t } = useLanguage();
 
   const colMax = useMemo(() => {
     const keys = ['high_risk', 'invoice', 'bhade_khat', 'bank'];
@@ -31,16 +33,16 @@ const FraudTrends = () => {
   return (
     <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ background: '#fff', border: `1px solid ${PANEL}`, borderRadius: 16, padding: '22px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-        <h1 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: TEXT }}>Fraud Trends</h1>
+        <h1 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: TEXT }}>{t('Fraud Trends')}</h1>
         <p style={{ margin: '8px 0 0', fontSize: 11, color: MUTED, lineHeight: 1.45 }}>
-          Month-on-month pressure signals and escalation posture for the district command view.
+          {t('Month-on-month pressure signals and escalation posture for the district command view.')}
         </p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
         {mockFraudTrendSummaryCards.map((c) => (
           <div key={c.title} style={{ background: '#fff', border: `1px solid ${PANEL}`, borderRadius: 16, padding: '20px 22px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, textTransform: 'uppercase' }}>{c.title}</div>
+            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, textTransform: 'uppercase' }}>{t(c.title)}</div>
             <div style={{ fontSize: 22, fontWeight: 800, color: TEXT, marginTop: 10, lineHeight: 1.2 }}>{c.line1}</div>
             <div
               style={{
@@ -58,17 +60,17 @@ const FraudTrends = () => {
 
       <div style={{ background: '#fff', border: `1px solid ${PANEL}`, borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ padding: '18px 22px', borderBottom: `1px solid ${PANEL}` }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>Monthly Trend</h3>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>{t('Monthly Trend')}</h3>
         </div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: `1px solid ${PANEL}` }}>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Month</th>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>High risk</th>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Invoice fraud</th>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Bhade Khat</th>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Bank issues</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Month')}</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>{t('High risk')}</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>{t('Invoice fraud')}</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>{t('Bhade Khat')}</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>{t('Bank issues')}</th>
               </tr>
             </thead>
             <tbody>
@@ -131,7 +133,7 @@ const FraudTrends = () => {
       </div>
 
       <div style={{ background: '#fff', border: `1px solid ${PANEL}`, borderRadius: 16, padding: '22px 22px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-        <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: '0 0 14px' }}>Suspicious Pattern Alerts</h3>
+        <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: '0 0 14px' }}>{t('Suspicious Pattern Alerts')}</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {mockSuspiciousPatterns.map((p, i) => {
             const border = p.tone === 'red' ? RED : AMBER;
@@ -146,11 +148,11 @@ const FraudTrends = () => {
                   background: '#fafbf9',
                 }}
               >
-                <div style={{ fontSize: 10, fontWeight: 800, color: border, letterSpacing: '0.08em' }}>{p.severity}</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: TEXT, marginTop: 6 }}>{p.title}</div>
-                <div style={{ fontSize: 12, color: MUTED, marginTop: 6, lineHeight: 1.5 }}>{p.body}</div>
+                <div style={{ fontSize: 10, fontWeight: 800, color: border, letterSpacing: '0.08em' }}>{t(p.severity)}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: TEXT, marginTop: 6 }}>{t(p.title)}</div>
+                <div style={{ fontSize: 12, color: MUTED, marginTop: 6, lineHeight: 1.5 }}>{t(p.body)}</div>
                 <button type="button" className="btn btn-outline" style={{ marginTop: 12 }} onClick={patternToast}>
-                  {p.cta}
+                  {t(p.cta)}
                 </button>
               </div>
             );
@@ -160,16 +162,16 @@ const FraudTrends = () => {
 
       <div style={{ background: '#fff', border: `1px solid ${PANEL}`, borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ padding: '18px 22px', borderBottom: `1px solid ${PANEL}` }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>Escalation Queue ({mockEscalationQueue.length} active)</h3>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>{t('Escalation Queue')} ({mockEscalationQueue.length} {t('active')})</h3>
         </div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: `1px solid ${PANEL}` }}>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Case</th>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Severity</th>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Description</th>
-                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Action</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Case')}</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Severity')}</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Description')}</th>
+                <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>{t('Action')}</th>
               </tr>
             </thead>
             <tbody>
@@ -177,12 +179,12 @@ const FraudTrends = () => {
                 <tr key={e.id} style={{ borderBottom: `1px solid #f3f4f0` }}>
                   <td style={{ padding: '12px 14px', fontSize: 12, fontWeight: 800, color: TEXT }}>{e.id}</td>
                   <td style={{ padding: '12px 14px', fontSize: 11, fontWeight: 800, color: e.severity === 'critical' ? RED : AMBER }}>
-                    {e.severity === 'critical' ? '🔴 CRITICAL' : '🟡 HIGH'}
+                    {e.severity === 'critical' ? <>&#x1F534; {t('CRITICAL')}</> : <>&#x1F7E1; {t('HIGH')}</>}
                   </td>
                   <td style={{ padding: '12px 14px', fontSize: 12, color: TEXT, maxWidth: 420 }}>{e.description}</td>
                   <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                     <button type="button" className="btn btn-outline btn-sm" onClick={escalationToast}>
-                      Review
+                      {t('Review')}
                     </button>
                   </td>
                 </tr>

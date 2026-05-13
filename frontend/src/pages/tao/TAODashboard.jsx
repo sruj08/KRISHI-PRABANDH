@@ -6,6 +6,7 @@ import TAOMap from './components/TAOMap';
 import TAOAnomalyModal from './components/TAOAnomalyModal';
 import '../district/district.css';
 import './tao.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 /* ── Shared design primitives ───────────────────────────────────────────────── */
 const PANEL_BORDER = '#e2e3df';
@@ -62,6 +63,7 @@ const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972',
 
 const TAODashboard = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { getReportingChain } = useKrishiData();
   const reportsTo = user?.user_id != null ? getReportingChain(user.user_id)[1] : null;
 
@@ -97,13 +99,13 @@ const TAODashboard = () => {
           }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>account_tree</span>
-          <span style={{ fontWeight: 700 }}>Reporting line</span>
+          <span style={{ fontWeight: 700 }}>{t('Reporting line')}</span>
           <span style={{ color: '#717972' }}>
-            You report to <strong style={{ color: '#1a1c1a' }}>{reportsTo.label || reportsTo.name || 'DAO'}</strong>
+            {t('You report to')} <strong style={{ color: '#1a1c1a' }}>{reportsTo.label || reportsTo.name || t('DAO')}</strong>
             {user?.taluka_name && (
               <>
                 {' '}
-                · Taluka: <strong style={{ color: '#1a1c1a' }}>{user.taluka_name}</strong>
+                · {t('Taluka')}: <strong style={{ color: '#1a1c1a' }}>{user.taluka_name}</strong>
               </>
             )}
           </span>
@@ -112,15 +114,15 @@ const TAODashboard = () => {
 
       {/* KPI strip */}
       <div className="tao-kpi-grid">
-        <KpiCard icon="folder_open" label="Files processed (YTD)" value="1,402" sub="FY 2024-25" />
-        <KpiCard icon="pending_actions" label="Pending at TAO" value="89" sub="Across circles" subIcon="schedule" />
-        <KpiCard icon="shield" label="Fraud reviews" value="7" sub="Open this week" subColor="#ba1a1a" />
-        <KpiCard icon="groups" label="Field visits" value="124" unit="/wk" sub="Geo-tagged" />
+        <KpiCard icon="folder_open" label={t('Files processed (YTD)')} value="1,402" sub={t('FY 2024-25')} />
+        <KpiCard icon="pending_actions" label={t('Pending at TAO')} value="89" sub={t('Across circles')} subIcon="schedule" />
+        <KpiCard icon="shield" label={t('Fraud reviews')} value="7" sub={t('Open this week')} subColor="#ba1a1a" />
+        <KpiCard icon="groups" label={t('Field visits')} value="124" unit={t('/wk')} sub={t('Geo-tagged')} />
         <KpiCard
           icon="gavel"
-          label="Sample anomaly"
-          value="Open"
-          sub="Duplicate 7/12 demo"
+          label={t('Sample anomaly')}
+          value={t('Open')}
+          sub={t('Duplicate 7/12 demo')}
           onClick={() => setSelectedAppId(demoAnomalyApp?.id)}
         />
       </div>
@@ -134,57 +136,57 @@ const TAODashboard = () => {
         <div className="tao-command-rail">
           <div className="tao-rail-panel">
             <div style={{ marginBottom: 18 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Fraud &amp; anomaly pulse</h3>
-              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>System flagged inconsistencies</p>
+              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>{t('Fraud &amp; anomaly pulse')}</h3>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>{t('System flagged inconsistencies')}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ba1a1a' }} />
-                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>Duplicate 7/12 extracts</span>
-                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#ba1a1a' }}>18%</span>
+                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>{t('Duplicate 7/12 extracts')}</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#ba1a1a' }}>{t('18%')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#d97706' }} />
-                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>Aadhaar name mismatch</span>
-                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#d97706' }}>24%</span>
+                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>{t('Aadhaar name mismatch')}</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#d97706' }}>{t('24%')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#717972' }} />
-                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>Geo-fencing breaches</span>
-                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#717972' }}>5%</span>
+                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>{t('Geo-fencing breaches')}</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#717972' }}>{t('5%')}</span>
               </div>
             </div>
           </div>
 
           <div className="tao-rail-panel">
             <div style={{ marginBottom: 18 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Audit recommendations</h3>
-              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>AI-driven actionable insights</p>
+              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>{t('Audit recommendations')}</h3>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>{t('AI-driven actionable insights')}</p>
             </div>
             <div style={{ borderLeft: '4px solid #0055A4', background: '#f0f3f2', borderRadius: '0 10px 10px 0', padding: '14px 16px' }}>
-              <p style={{ fontSize: 12.5, fontWeight: 700, color: '#1a1c1a', margin: 0, marginBottom: 6 }}>Initiate immediate audit in Loni Kalbhor.</p>
-              <p style={{ fontSize: 11.5, color: '#444742', lineHeight: 1.6, margin: 0 }}>High volume of pending files (89) combined with 7 fraud alerts requires intervention.</p>
+              <p style={{ fontSize: 12.5, fontWeight: 700, color: '#1a1c1a', margin: 0, marginBottom: 6 }}>{t('Initiate immediate audit in Loni Kalbhor.')}</p>
+              <p style={{ fontSize: 11.5, color: '#444742', lineHeight: 1.6, margin: 0 }}>{t('High volume of pending files (89) combined with 7 fraud alerts requires intervention.')}</p>
             </div>
           </div>
 
           <div className="tao-rail-panel tao-rail-panel--grow">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, flexShrink: 0 }}>
               <div>
-                <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Grievance routing</h3>
-                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>Farmer dispute escalation</p>
+                <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>{t('Grievance routing')}</h3>
+                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>{t('Farmer dispute escalation')}</p>
               </div>
-              <span style={{ fontSize: 9, fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 9px', borderRadius: 6 }}>Action req</span>
+              <span style={{ fontSize: 9, fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 9px', borderRadius: 6 }}>{t('Action req')}</span>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
               {MOCK_GRIEVANCES.slice(0, 1).map((g) => (
                 <div key={g.id}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#717972' }}>ID · {g.id}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#ba1a1a' }}>High priority</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: '#717972' }}>{t('ID')} · {g.id}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: '#ba1a1a' }}>{t('High priority')}</span>
                   </div>
                   <p style={{ fontSize: 12.5, color: '#1a1c19', fontStyle: 'italic', marginBottom: 16 }}>&ldquo;{g.text}&rdquo;</p>
                   <div style={{ background: '#f9fafa', border: '1px solid #e2e3df', borderRadius: 10, padding: '12px 14px' }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: '#033621', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>AI translation</span>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: '#033621', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>{t('AI translation')}</span>
                     <p style={{ fontSize: 11.5, color: '#444742', margin: 0 }}>&ldquo;{g.translated}&rdquo;</p>
                   </div>
                 </div>
@@ -202,20 +204,20 @@ const TAODashboard = () => {
           </div>
           <div style={{ flex: 1 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
-              Circle agriculture officer performance
+              {t('Circle agriculture officer performance')}
             </h3>
-            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>File velocity and accountability under this taluka</p>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>{t('File velocity and accountability under this taluka')}</p>
           </div>
         </div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                <th className="district-table-header">Officer name</th>
-                <th className="district-table-header">Circle</th>
-                <th className="district-table-header" style={{ textAlign: 'right' }}>Pending files</th>
-                <th className="district-table-header" style={{ textAlign: 'center' }}>Fraud alerts</th>
-                <th className="district-table-header" style={{ textAlign: 'right' }}>Actions</th>
+                <th className="district-table-header">{t('Officer name')}</th>
+                <th className="district-table-header">{t('Circle')}</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>{t('Pending files')}</th>
+                <th className="district-table-header" style={{ textAlign: 'center' }}>{t('Fraud alerts')}</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>{t('Actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -224,10 +226,10 @@ const TAODashboard = () => {
                 <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Wagholi</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>42</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>3 High</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>{t('3 High')}</span>
                 </td>
                 <td style={{ padding: '18px 28px', textAlign: 'right' }}>
-                  <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>Review</button>
+                  <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>{t('Review')}</button>
                 </td>
               </tr>
               <tr className="district-table-row" style={{ borderBottom: '1px solid #f3f4f0', background: '#fafafa' }}>
@@ -235,10 +237,10 @@ const TAODashboard = () => {
                 <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Khed Shivapur</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>15</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#717972', background: '#f3f4f0', padding: '4px 10px', borderRadius: 6 }}>0</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#717972', background: '#f3f4f0', padding: '4px 10px', borderRadius: 6 }}>{t('0')}</span>
                 </td>
                 <td style={{ padding: '18px 28px', textAlign: 'right' }}>
-                  <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>Review</button>
+                  <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>{t('Review')}</button>
                 </td>
               </tr>
               <tr className="district-table-row">
@@ -246,10 +248,10 @@ const TAODashboard = () => {
                 <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Loni Kalbhor</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>52</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>6 High</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>{t('6 High')}</span>
                 </td>
                 <td style={{ padding: '18px 28px', textAlign: 'right' }}>
-                  <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>Review</button>
+                  <button type="button" onClick={() => setSelectedAppId(demoAnomalyApp?.id)} style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>{t('Review')}</button>
                 </td>
               </tr>
             </tbody>

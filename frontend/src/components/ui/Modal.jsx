@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Modal = ({ isOpen, onClose, title, children }) => {
+  const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -28,7 +30,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3>{title}</h3>
-          <button className="btn-icon" onClick={onClose} aria-label="Close modal">
+          <button className="btn-icon" onClick={onClose} aria-label={t('Close modal')}>
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>

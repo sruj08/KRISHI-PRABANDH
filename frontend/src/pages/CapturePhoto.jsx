@@ -36,7 +36,7 @@ const CapturePhoto = () => {
     } catch (err) {
       console.error('Camera error:', err);
       setCameraError(true);
-      addToast('Camera not available — use file picker instead', 'error');
+      addToast(t('Camera not available — use file picker instead', lang), 'error');
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -77,14 +77,14 @@ const CapturePhoto = () => {
 
     canvas.toBlob(blob => {
       if (!blob) {
-        addToast('Could not capture frame — try again', 'error');
+        addToast(t('Could not capture frame — try again', lang), 'error');
         setIsCapturing(false);
         return;
       }
       setCapturedBlob(blob);
       setPreviewUrl(URL.createObjectURL(blob));
       setIsCapturing(false);
-      addToast('Photo captured!', 'success');
+      addToast(t('Photo captured!', lang), 'success');
     }, 'image/jpeg', 0.9);
   };
 
@@ -94,12 +94,12 @@ const CapturePhoto = () => {
     const f = e.target.files?.[0];
     if (!f) return;
     if (!f.type.startsWith('image/')) {
-      addToast('Please select an image file', 'error');
+      addToast(t('Please select an image file', lang), 'error');
       return;
     }
     setCapturedBlob(f);
     setPreviewUrl(URL.createObjectURL(f));
-    addToast('Image selected', 'info');
+    addToast(t('Image selected', lang), 'info');
   };
 
   const handleRetake = () => {
@@ -120,11 +120,11 @@ const CapturePhoto = () => {
 
   const handleUpload = async () => {
     if (!capturedBlob) {
-      addToast('Capture or select a photo first', 'error');
+      addToast(t('Capture or select a photo first', lang), 'error');
       return;
     }
     if (!applicationId) {
-      addToast('No application selected — go back and select one', 'error');
+      addToast(t('No application selected — go back and select one', lang), 'error');
       return;
     }
 
@@ -143,12 +143,12 @@ const CapturePhoto = () => {
         details: 'Field photo captured and uploaded',
       }); */
 
-      addToast('Photo uploaded successfully!', 'success');
+      addToast(t('Photo uploaded successfully!', lang), 'success');
       stopStream();
       navigate('/applications');
     } catch (err) {
       console.error('Upload error:', err);
-      addToast(err.message || 'Upload failed — please retry', 'error');
+      addToast(err.message || t('Upload failed — please retry', lang), 'error');
     } finally {
       setIsUploading(false);
     }
@@ -185,15 +185,15 @@ const CapturePhoto = () => {
         <div className="flex items-center gap-2">
           {isCapturing && <div className="recording-indicator" />}
           {applicationId
-            ? <span className="text-sm fw-bold" style={{ color: '#4CAF50' }}>App: {applicationId}</span>
-            : <span className="text-sm" style={{ color: '#ef5350' }}>⚠ No application selected</span>
+            ? <span className="text-sm fw-bold" style={{ color: '#4CAF50' }}>{t('App', lang)}: {applicationId}</span>
+            : <span className="text-sm" style={{ color: '#ef5350' }}>{t('⚠ No application selected', lang)}</span>
           }
         </div>
         <button
           className="btn-icon"
           style={{ color: 'white', backgroundColor: 'transparent' }}
           onClick={() => fileInputRef.current?.click()}
-          title="Pick from gallery"
+          title={t('Pick from gallery', lang)}
         >
           <span className="material-symbols-outlined">photo_library</span>
         </button>
@@ -222,13 +222,13 @@ const CapturePhoto = () => {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', color: '#aaa' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: '64px', opacity: 0.4 }}>no_photography</span>
-                <p className="text-sm">Camera unavailable</p>
+                <p className="text-sm">{t('Camera unavailable', lang)}</p>
                 <button
                   className="btn btn-primary"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <span className="material-symbols-outlined">upload_file</span>
-                  Choose from Gallery
+                  {t('Choose from Gallery', lang)}
                 </button>
               </div>
             )}
@@ -293,7 +293,7 @@ const CapturePhoto = () => {
               <span className="material-symbols-outlined">
                 {isUploading ? 'hourglass_top' : 'cloud_upload'}
               </span>
-              {isUploading ? 'Uploading…' : t('Upload', lang)}
+              {isUploading ? t('Uploading…', lang) : t('Upload', lang)}
             </button>
           </>
         ) : (
@@ -303,7 +303,7 @@ const CapturePhoto = () => {
               className="btn text-white bg-transparent"
               onClick={() => fileInputRef.current?.click()}
             >
-              Gallery
+              {t('Gallery', lang)}
             </button>
 
             <button

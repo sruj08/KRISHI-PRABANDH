@@ -1,6 +1,8 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const StatusBadge = ({ status, className = '' }) => {
+  const { t } = useLanguage();
   let badgeClass = 'badge-grey';
   let icon = '';
 

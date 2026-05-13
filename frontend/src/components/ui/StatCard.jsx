@@ -9,7 +9,7 @@ const StatCard = ({
   variant = 'primary', // 'primary', 'success', 'amber', 'error'
   onClick
 }) => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   
   const iconBgMap = {
     primary: 'var(--primary-light)',
