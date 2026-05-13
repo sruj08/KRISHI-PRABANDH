@@ -9,13 +9,17 @@
  *   • TopoJSON input (division level) — parsed via topojson-client
  *   • GeoJSON input (state / taluka) — used directly
  *   • Inverted polygon mask to isolate the active region
- *   • Canvas KDE heatmap (leaflet.heat) with strict boundary clipping
+ *   • Voronoi mesh per division polygon (clipped), when division overlay or
+ *     division-level boundary is used — same approach as DAO district / TAO taluka
+ *   • Canvas KDE heatmap (leaflet.heat) when Voronoi mesh is not active
  *   • Three interactive metric modes: Scheme penetration / Crop health / Grievance heat
  *   • Zoom/pan locked to active boundary
  *   • Top-3 centroid pins (most critical locations per mode)
  *
- * Z-index overlay order:
- *   TileLayer (base) → Heatmap Canvas → Inverted Mask → Dashed Geofence → Centroid Pins
+ * Z-index overlay order (Leaflet overlayPane ≈ 400 — mask must sit above it or heat /
+ *   Voronoi “leaks” past the state geofence; same pattern as TAO taluka focus mask):
+ *   TileLayer → Division choropleth → Division Voronoi (+ Pune rims) → KDE (overlayPane)
+ *   → Inverted mask (state/taluka hole punch) → Dashed geofence → Centroid pins / tooltips
  */
 
 import React, {
@@ -37,6 +41,8 @@ import {
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import * as topojson from 'topojson-client';
+import { buildDivisionVoronoiHeatmap, divisionHeatMetric01 } from '../../utils/divisionVoronoiHeatmap';
+import { buildPuneDivisionDistrictFeatureCollection } from '../../utils/puneDivisionDistrictMesh';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -227,12 +233,23 @@ function buildMockPoints(rings, mode, layerType) {
   return pts;
 }
 
-/** Match demo matrix row to division name from overlay GeoJSON (handles naming variants). */
-function matrixRowForDivision(divisionMatrix, geoDivisionName) {
-  if (!divisionMatrix?.length || !geoDivisionName) return null;
-  const direct = divisionMatrix.find((r) => r.division === geoDivisionName);
+/** Match demo matrix row to division or district name from GeoJSON / Voronoi (handles naming variants). */
+function matrixRowForDivision(divisionMatrix, geoName, geoCode) {
+  if (!divisionMatrix?.length) return null;
+  if (geoCode) {
+    const s = String(geoCode);
+    const bare = s.replace(/^DIV-/i, '');
+    const byCode = divisionMatrix.find(
+      (r) => r.code === s || r.code === bare || `DIV-${r.code}` === s,
+    );
+    if (byCode) return byCode;
+  }
+  if (!geoName) return null;
+  const direct = divisionMatrix.find((r) => r.division === geoName);
   if (direct) return direct;
-  if (geoDivisionName === 'Chhatrapati Sambhajinagar') {
+  const asDistrict = divisionMatrix.find((r) => r.district === geoName);
+  if (asDistrict) return asDistrict;
+  if (geoName === 'Chhatrapati Sambhajinagar' || geoName === 'Chhatrapati Sambhaji Nagar') {
     return divisionMatrix.find((r) => r.division === 'Chh. Sambhajinagar') || null;
   }
   return null;
@@ -372,7 +389,7 @@ function buildInvertedMask(featureCollection) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Fits + locks map to the active boundary */
-function FitBounds({ featureCollection }) {
+function FitBounds({ featureCollection, fitBoundsOptions }) {
   const map = useMap();
   useEffect(() => {
     if (!featureCollection?.features?.length) return;
@@ -382,13 +399,16 @@ function FitBounds({ featureCollection }) {
 
     map.setMinZoom(0);
     map.setMaxBounds(null);
-    map.fitBounds(b, { padding: [20, 20], animate: false });
+    const fitOpts = fitBoundsOptions
+      ? { animate: false, ...fitBoundsOptions }
+      : { padding: [20, 20], animate: false };
+    map.fitBounds(b, fitOpts);
 
     const fitZoom = map.getZoom();
     map.setMinZoom(Math.max(4, fitZoom - 1));
     map.setMaxBounds(b.pad(0.08));
     map.options.maxBoundsViscosity = 1.0;
-  }, [featureCollection, map]);
+  }, [featureCollection, fitBoundsOptions, map]);
   return null;
 }
 
@@ -459,6 +479,99 @@ function GeofenceLayer({ featureCollection }) {
   );
 }
 
+const DIV_VORONOI_CELL_HOVER = {
+  color: '#1a1c1a',
+  weight: 2,
+  opacity: 0.85,
+  fillOpacity: 0.55,
+};
+
+function DivisionVoronoiHeatLayer({
+  geo,
+  layerKey,
+  showHeat,
+  divisionMatrix,
+  onSelectDivision,
+}) {
+  const styleFn = useCallback((feature) => {
+    const t = typeof feature?.properties?.heat === 'number' ? feature.properties.heat : 0;
+    return {
+      color: '#5c6560',
+      weight: 1,
+      opacity: 0.55,
+      fillColor: fillColorForNormalizedMetric(t),
+      fillOpacity: 0.14 + t * 0.48,
+    };
+  }, []);
+
+  const bindLayer = useCallback(
+    (feature, layer) => {
+      const p = feature?.properties;
+      if (!p || p.kind !== 'division-heat-cell') return;
+      const t = typeof p.heat === 'number' ? p.heat : 0;
+      const pct = Math.round(t * 100);
+      const html = `
+      <div style="min-width:168px;line-height:1.45;position:relative;padding-right:12px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#222">${p.regionName || 'Division'}</div>
+        <div style="font-size:11px;color:#222">Scheme penetration: <b>${p.schemePenetration}%</b></div>
+        <div style="font-size:11px;color:#222">NDVI stress: <b>${p.ndviStress}%</b></div>
+        <div style="font-size:11px;color:#222">Grievance index: <b>${p.grievanceIdx}</b></div>
+        <div style="font-size:11px;color:#222;margin-top:4px">Local intensity: <b>${pct}%</b></div>
+        <span style="position:absolute;right:4px;bottom:2px;width:8px;height:8px;border-radius:50%;background:${fillColorForNormalizedMetric(t)};display:inline-block" aria-hidden="true"></span>
+      </div>`;
+      layer.bindTooltip(html, {
+        sticky: true,
+        direction: 'auto',
+        opacity: 1,
+        className: 'district-taluka-tooltip',
+      });
+      layer.on({
+        click: () => {
+          const row = matrixRowForDivision(divisionMatrix, p.regionName, p.code);
+          onSelectDivision({
+            properties: {
+              name: p.regionName,
+              tag: p.tag,
+              schemePenetration: p.schemePenetration,
+              ndviStress: p.ndviStress,
+              grievanceIdx: p.grievanceIdx,
+              officer: p.officer,
+              districts: p.districts,
+              fundsCr: p.fundsCr,
+              disbursedPct: p.disbursedPct,
+              fraudAlerts: p.fraudAlerts,
+              code: p.code,
+            },
+            matrixRow: row,
+          });
+        },
+        mouseover: (e) => {
+          const lyr = e.target;
+          const heat = typeof lyr.feature?.properties?.heat === 'number' ? lyr.feature.properties.heat : 0;
+          lyr.setStyle({
+            ...DIV_VORONOI_CELL_HOVER,
+            fillColor: fillColorForNormalizedMetric(heat),
+          });
+          lyr.bringToFront();
+        },
+        mouseout: (e) => {
+          const lyr = e.target;
+          lyr.setStyle(styleFn(lyr.feature));
+        },
+      });
+    },
+    [divisionMatrix, onSelectDivision, styleFn],
+  );
+
+  if (!showHeat || !geo?.features?.length) return null;
+
+  return (
+    <Pane name="divisionVoronoiHeat" style={{ zIndex: 415 }}>
+      <GeoJSON key={layerKey} data={geo} style={styleFn} onEachFeature={bindLayer} />
+    </Pane>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────────────────────
@@ -469,7 +582,8 @@ function GeofenceLayer({ featureCollection }) {
  * @param {string} props.layerType   - 'state' | 'division' | 'taluka'
  * @param {string} props.boundaryUrl - URL to GeoJSON or TopoJSON boundary file
  * @param {string} [props.divisionOverlayUrl] - Optional second GeoJSON (division polygons only used client-side; file on disk unchanged)
- * @param {Array} [props.divisionMatrix] - Optional DIVISION_MATRIX-style rows for info box + matrix merge
+ * @param {Array} [props.divisionMatrix] - Optional matrix rows (`division` or `district` key) for desk merge + tooltips
+ * @param {object} [props.fitBoundsOptions] - Optional Leaflet `fitBounds` options (e.g. asymmetric padding to bias framing)
  * @param {string} [props.title]     - Optional header title
  * @param {string} [props.subtitle]  - Optional header subtitle
  */
@@ -478,6 +592,7 @@ const RegionalMap = ({
   boundaryUrl,
   divisionOverlayUrl = null,
   divisionMatrix = null,
+  fitBoundsOptions = null,
   title,
   subtitle,
 }) => {
@@ -565,13 +680,31 @@ const RegionalMap = ({
     [featureCollection],
   );
 
-  // ── Mock heatmap points: division-weighted inside each division when overlay present ──
+  /** Division polygons for Voronoi: overlay file, or Pune division boundary → five district meshes. */
+  const divisionVoronoiSourceFc = useMemo(() => {
+    if (divisionCollection?.features?.length) return divisionCollection;
+    if (layerType === 'division' && featureCollection?.features?.length) {
+      const mesh = buildPuneDivisionDistrictFeatureCollection(featureCollection);
+      if (mesh?.features?.length) return mesh;
+    }
+    return null;
+  }, [divisionCollection, layerType, featureCollection]);
+
+  const divisionVoronoiGeo = useMemo(
+    () => (divisionVoronoiSourceFc ? buildDivisionVoronoiHeatmap(divisionVoronoiSourceFc, mapMode) : null),
+    [divisionVoronoiSourceFc, mapMode],
+  );
+
+  const showDivisionVoronoi = Boolean(showHeat && divisionVoronoiGeo?.features?.length);
+
+  // ── Mock heatmap points (KDE) — skipped when Voronoi division mesh is active ──
   const heatPoints = useMemo(() => {
+    if (divisionVoronoiGeo?.features?.length) return [];
     if (divisionCollection?.features?.length) {
       return buildDivisionHeatPoints(divisionCollection, mapMode, layerType, allRings);
     }
     return buildMockPoints(allRings, mapMode, layerType);
-  }, [allRings, divisionCollection, mapMode, layerType]);
+  }, [divisionVoronoiGeo, allRings, divisionCollection, mapMode, layerType]);
 
   const selectedDivisionKey = selectedDivision?.properties?.code
     || selectedDivision?.properties?.name
@@ -579,6 +712,16 @@ const RegionalMap = ({
 
   const divisionStyleFn = useCallback(
     (feature) => {
+      if (showDivisionVoronoi && divisionCollection?.features?.length) {
+        return {
+          fillOpacity: 0,
+          fillColor: '#000000',
+          color: '#0f172a',
+          weight: 1.35,
+          opacity: 0.72,
+          interactive: false,
+        };
+      }
       const p = feature?.properties || {};
       const n = metricNormalizedFromProps(p, mapMode);
       const fill = fillColorForNormalizedMetric(n);
@@ -592,13 +735,13 @@ const RegionalMap = ({
         opacity: 1,
       };
     },
-    [mapMode, selectedDivisionKey],
+    [mapMode, selectedDivisionKey, showDivisionVoronoi, divisionCollection],
   );
 
   const bindDivisionLayer = useCallback(
     (feature, layer) => {
       const p = feature?.properties || {};
-      const row = matrixRowForDivision(divisionMatrix, p.name);
+      const row = matrixRowForDivision(divisionMatrix, p.name, p.code);
       layer.on({
         click: () => setSelectedDivision({ properties: p, matrixRow: row }),
         mouseover: (e) => {
@@ -638,6 +781,23 @@ const RegionalMap = ({
       }
       return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
     }
+    if (layerType === 'division' && divisionVoronoiSourceFc?.features?.length) {
+      const pins = [];
+      for (const f of divisionVoronoiSourceFc.features) {
+        const ring = getOuterRing(f.geometry);
+        const c = ringCentroid(ring);
+        if (!c) continue;
+        const p = f.properties || {};
+        pins.push({
+          id: p.code || p.name,
+          label: p.name || 'Division',
+          lat: c.lat,
+          lng: c.lng,
+          metric: divisionHeatMetric01(mapMode, p),
+        });
+      }
+      return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
+    }
     if (!featureCollection?.features) return [];
     const pins = [];
     for (const f of featureCollection.features) {
@@ -656,7 +816,7 @@ const RegionalMap = ({
       }
     }
     return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
-  }, [divisionCollection, featureCollection, mapMode]);
+  }, [divisionCollection, divisionVoronoiSourceFc, layerType, featureCollection, mapMode]);
 
 
   const maskStyle = useCallback(() => ({
@@ -854,7 +1014,7 @@ const RegionalMap = ({
               />
 
               {/* 2 ── KDE Heatmap (division-weighted or state-clipped mock) */}
-              {showHeat && heatPoints.length > 0 && (
+              {showHeat && heatPoints.length > 0 && !showDivisionVoronoi && (
                 <KdeHeatLayer
                   points={heatPoints}
                   layerType={layerType}
@@ -863,10 +1023,51 @@ const RegionalMap = ({
                 />
               )}
 
-              {/* 3 ── Inverted mask (hides exterior) */}
+              {/* 3b ── Division choropleth + borders (below Voronoi & mask) */}
+              {divisionCollection?.features?.length > 0 && (
+                <Pane name="divisionChoroplethPane" style={{ zIndex: 405 }}>
+                  <GeoJSON
+                    data={divisionCollection}
+                    style={divisionStyleFn}
+                    onEachFeature={bindDivisionLayer}
+                  />
+                </Pane>
+              )}
+
+              {showDivisionVoronoi && (
+                <DivisionVoronoiHeatLayer
+                  geo={divisionVoronoiGeo}
+                  layerKey={`div-voronoi-${mapMode}`}
+                  showHeat={showHeat}
+                  divisionMatrix={divisionMatrix}
+                  onSelectDivision={setSelectedDivision}
+                />
+              )}
+
+              {showDivisionVoronoi &&
+                layerType === 'division' &&
+                !divisionCollection?.features?.length &&
+                divisionVoronoiSourceFc?.features?.length > 1 && (
+                <Pane name="puneDistrictRim" style={{ zIndex: 422, pointerEvents: 'none' }}>
+                  <GeoJSON
+                    key={`pune-rim-${divisionVoronoiSourceFc.features.length}`}
+                    data={divisionVoronoiSourceFc}
+                    interactive={false}
+                    style={() => ({
+                      fillOpacity: 0,
+                      color: '#0d47a1',
+                      weight: 1.65,
+                      opacity: 0.82,
+                      interactive: false,
+                    })}
+                  />
+                </Pane>
+              )}
+
+              {/* 3 ── Inverted mask (above overlayPane ≈400 so heat/Voronoi cannot paint outside geofence) */}
               <Pane
                 name="invertedMaskPane"
-                style={{ zIndex: 350, pointerEvents: 'none' }}
+                style={{ zIndex: 510, pointerEvents: 'none' }}
               >
                 {invertedMask && (
                   <GeoJSON
@@ -877,27 +1078,16 @@ const RegionalMap = ({
                 )}
               </Pane>
 
-              {/* 3b ── Division choropleth + borders (overlay only; does not alter state boundary GeoJSON) */}
-              {divisionCollection?.features?.length > 0 && (
-                <Pane name="divisionChoroplethPane" style={{ zIndex: 360 }}>
-                  <GeoJSON
-                    data={divisionCollection}
-                    style={divisionStyleFn}
-                    onEachFeature={bindDivisionLayer}
-                  />
-                </Pane>
-              )}
-
-              {/* 4 ── Dashed geofence (state outline from boundaryUrl) */}
+              {/* 4 ── Dashed geofence (state outline) — above mask so the fence stays crisp */}
               <Pane
                 name="geofencePane"
-                style={{ zIndex: 400, pointerEvents: 'none' }}
+                style={{ zIndex: 530, pointerEvents: 'none' }}
               >
                 <GeofenceLayer featureCollection={featureCollection} />
               </Pane>
 
               {/* 5 ── Centroid pins (top 3 divisions or regions) */}
-              <Pane name="centroidPinsPane" style={{ zIndex: 650 }}>
+              <Pane name="centroidPinsPane" style={{ zIndex: 640 }}>
                 {centroidPins.map((pin) => (
                   <CircleMarker
                     key={pin.id}
@@ -913,7 +1103,7 @@ const RegionalMap = ({
                     <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
                       <div style={{ fontWeight: 700, fontSize: 12 }}>{pin.label}</div>
                       <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
-                        {divisionCollection?.features?.length
+                        {(divisionCollection?.features?.length || showDivisionVoronoi)
                           ? `High metric · ${mapMode === 'penetration' ? 'Scheme signal' : mapMode === 'ndvi' ? 'NDVI stress' : 'Grievance load'}`
                           : `Priority area · ${mapMode === 'penetration' ? 'Low uptake' : mapMode === 'ndvi' ? 'High stress' : 'High grievances'}`}
                       </div>
@@ -922,7 +1112,7 @@ const RegionalMap = ({
                 ))}
               </Pane>
 
-              <FitBounds featureCollection={featureCollection} />
+              <FitBounds featureCollection={featureCollection} fitBoundsOptions={fitBoundsOptions} />
             </MapContainer>
 
             {overlayUiInMap && (
@@ -979,7 +1169,9 @@ const RegionalMap = ({
 
             {selectedDivision?.properties && (() => {
               const p = selectedDivision.properties;
-              const row = selectedDivision.matrixRow;
+              const row =
+                selectedDivision.matrixRow
+                ?? matrixRowForDivision(divisionMatrix, p.name, p.code);
               const dp = row?.disbursedPct ?? p.disbursedPct;
               const disbursedText = dp == null || dp === '' ? '—' : `${String(dp).replace(/%$/, '')}%`;
               const pen = p.schemePenetration;
@@ -996,6 +1188,7 @@ const RegionalMap = ({
                   marginLeft: 'auto',
                   maxHeight: 'min(42vh, 380px)',
                   zIndex: 2000,
+                  pointerEvents: 'auto',
                   background: 'rgba(255, 255, 255, 0.98)',
                   backdropFilter: 'saturate(1.1) blur(12px)',
                   WebkitBackdropFilter: 'saturate(1.1) blur(12px)',
@@ -1013,11 +1206,16 @@ const RegionalMap = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#717972', textTransform: 'uppercase' }}>
-                      Division overview
+                      {layerType === 'state' ? 'Statewide division desk' : 'Division overview'}
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.25, marginTop: 4, color: '#0f172a' }}>
                       {p.name}
                     </div>
+                    {layerType === 'state' && (
+                      <div style={{ fontSize: 10, color: '#717972', marginTop: 6, lineHeight: 1.45 }}>
+                        Heat and analytics are clipped to the state geofence; click a division or heat cell for desk context.
+                      </div>
+                    )}
                     {p.tag && (
                       <div style={{ fontSize: 11, color: '#414943', marginTop: 8, lineHeight: 1.5 }}>
                         {p.tag}
@@ -1133,7 +1331,13 @@ const RegionalMap = ({
           margin:     0,
           lineHeight: 1.5,
         }}>
-          Division choropleth + KDE heat use <strong>tighter blur</strong>, <strong>state-polygon–clipped</strong> samples, and a capped heat <strong>max zoom</strong> so glow stays inside the Maharashtra frame. State boundary file is unchanged.
+          {showDivisionVoronoi
+            ? 'Voronoi mesh per division: each cell is intersected with its division polygon so intensity never crosses an admin ring (same approach as the DAO district map). Division outlines stay visible; click a cell for the desk panel. State boundary file is unchanged.'
+            : (
+              <>
+                Division choropleth + KDE heat use <strong>tighter blur</strong>, <strong>state-polygon–clipped</strong> samples, and a capped heat <strong>max zoom</strong> so glow stays inside the Maharashtra frame. State boundary file is unchanged.
+              </>
+            )}
         </p>
       ) : (
       <p style={{
@@ -1142,9 +1346,11 @@ const RegionalMap = ({
         margin:     0,
         lineHeight: 1.5,
       }}>
-        {divisionCollection?.features?.length
-          ? 'Division choropleth + KDE samples use metrics shipped inside the division overlay GeoJSON; the state outline asset is unchanged. Click a division for the info panel.'
-          : 'Canvas KDE heatmap (leaflet.heat) with boundary-clipped samples.'}{' '}
+        {divisionVoronoiGeo?.features?.length
+          ? 'Voronoi cells per division polygon, each clipped to its ring (no cross-boundary bleed). Click a cell to open the division desk when the mesh is shown; heat toggle turns the mesh off.'
+          : divisionCollection?.features?.length
+            ? 'Division choropleth + KDE samples use metrics shipped inside the division overlay GeoJSON; the state outline asset is unchanged. Click a division for the info panel.'
+            : 'Canvas KDE heatmap (leaflet.heat) with boundary-clipped samples.'}{' '}
         Showing <strong>top 3 priority locations</strong> for current mode.{' '}
         {layerType === 'division' && 'TopoJSON boundary decoded via topojson-client.'}
         {layerType === 'state' && 'State-level aggregation (Maharashtra).'}

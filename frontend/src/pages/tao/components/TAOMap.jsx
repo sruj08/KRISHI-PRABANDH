@@ -1,23 +1,31 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Tooltip, GeoJSON, Pane, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { geoAsset } from '../../../utils/geoAsset';
+import { buildMandalHeatmapClippedToTaluka } from '../../../utils/taoMandalHeatmap';
 
-/** Baramati Assembly Constituency boundary (same asset as CAO circle map). */
+/** Baramati Assembly Constituency boundary — outer fence; mandals are Voronoi-clipped inside this ring. */
 const GEO_URL = geoAsset('geo/baramati-ac.json');
+
+/** Choropleth fill from 0 (low load) → 1 (high load), never outside taluka geometry. */
+const heatFillColor = (t) => {
+  const h = Math.max(0, Math.min(1, t));
+  if (h < 0.36) return '#2e7d32';
+  if (h < 0.68) return '#f57c00';
+  return '#c62828';
+};
+
+const heatFillOpacity = (t) => {
+  const h = Math.max(0, Math.min(1, t));
+  return 0.14 + h * 0.5;
+};
 
 const getStatusColor = (status) => {
   if (status === 'Clear') return '#2e7d32';
   if (status === 'Warning') return '#f57c00';
   if (status === 'Critical') return '#d32f2f';
   return '#1976d2';
-};
-
-const STATUS_FILL = {
-  Clear: 'rgba(46, 125, 50, 0.10)',
-  Warning: 'rgba(245, 124, 0, 0.14)',
-  Critical: 'rgba(211, 47, 47, 0.18)',
 };
 
 /**
@@ -40,55 +48,79 @@ function FitTaluka({ bounds }) {
   return null;
 }
 
-/** Default + hover styling for mandal polygons. Matches DAO taluka pattern. */
 const MANDAL_HOVER = {
-  color: '#0d47a1',
-  weight: 4,
-  opacity: 1,
-  fillOpacity: 0.28,
+  color: '#1a1c1a',
+  weight: 2,
+  opacity: 0.85,
+  fillOpacity: 0.55,
 };
 
-function MandalBoundariesLayer({ mandalGeo }) {
+function MandalBoundariesLayer({ mandalGeo, onSelectMandal }) {
   const gjRef = useRef(null);
 
   const styleFn = useCallback((feature) => {
     const p = feature?.properties || {};
+    const heat = typeof p.heat === 'number' ? p.heat : typeof p.intensity === 'number' ? p.intensity : 0.2;
     return {
-      color: '#1565c0',
-      weight: 1.6,
-      opacity: 0.45,
-      fillColor: getStatusColor(p.status),
-      fillOpacity: STATUS_FILL[p.status] ? 0.18 : 0.08,
+      color: '#5c6560',
+      weight: 1,
+      opacity: 0.55,
+      fillColor: heatFillColor(heat),
+      fillOpacity: heatFillOpacity(heat),
     };
   }, []);
 
   const bindLayer = useCallback((feature, layer) => {
     const p = feature?.properties;
     if (!p || p.kind !== 'mandal') return;
-    const color = getStatusColor(p.status);
+    const heat = typeof p.heat === 'number' ? p.heat : 0;
+    const fill = heatFillColor(heat);
+    const pct = Math.round(heat * 100);
+    /* Compact panel — same structure as district taluka tooltip (readable, solid white). */
     const html = `
-      <div style="min-width:200px;line-height:1.5">
-        <div style="font-weight:700;font-size:13px;color:${color};margin-bottom:2px">${p.name} Mandal</div>
-        <div style="font-size:11px;color:#444;margin-bottom:6px">${p.marathi || ''}</div>
-        <div style="font-size:11px;color:#222">CAO: <b>${p.caoName}</b></div>
-        <div style="font-size:11px;color:#222">Status: <b style="color:${color}">${p.status}</b></div>
-        <div style="font-size:11px;color:#222">Pending files: <b>${p.pending}</b></div>
-        <div style="font-size:11px;color:#222">Fraud alerts: <b>${p.fraudAlerts}</b></div>
-        ${p.description ? `<div style="font-size:10.5px;color:#555;margin-top:6px;font-style:italic">${p.description}</div>` : ''}
+      <div style="min-width:172px;line-height:1.45;position:relative;padding-right:14px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#222">${p.name} Mandal</div>
+        <div style="font-size:11px;color:#222">Load index: <b>${pct}%</b></div>
+        <div style="font-size:11px;color:#222">Pending files: <b>${p.pending ?? 0}</b></div>
+        <div style="font-size:11px;color:#222">Fraud alerts: <b>${p.fraudAlerts ?? 0}</b></div>
+        <span style="position:absolute;right:6px;bottom:2px;width:8px;height:8px;border-radius:50%;background:${fill};display:inline-block" aria-hidden="true"></span>
       </div>`;
-    layer.bindTooltip(html, { sticky: true, direction: 'auto', opacity: 0.97, className: 'tao-mandal-tooltip' });
+    layer.bindTooltip(html, {
+      sticky: false,
+      direction: 'auto',
+      opacity: 1,
+      className: 'tao-mandal-tooltip district-taluka-tooltip',
+    });
     layer.on({
+      click: () => {
+        onSelectMandal?.({
+          id: p.id,
+          name: p.name,
+          marathi: p.marathi,
+          caoName: p.caoName || '—',
+          status: p.status || 'Clear',
+          pending: p.pending ?? 0,
+          fraudAlerts: p.fraudAlerts ?? 0,
+          description: p.description,
+          heat: heat,
+        });
+      },
       mouseover: (e) => {
         const lyr = e.target;
-        lyr.setStyle({ ...MANDAL_HOVER, fillColor: getStatusColor(p.status) });
+        lyr.setStyle({ ...MANDAL_HOVER, fillColor: heatFillColor(heat) });
         lyr.bringToFront();
       },
       mouseout: (e) => {
-        const ref = gjRef.current;
-        if (ref && typeof ref.resetStyle === 'function') ref.resetStyle(e.target);
+        const lyr = e.target;
+        const f = lyr?.feature;
+        if (f) lyr.setStyle(styleFn(f));
+        else {
+          const ref = gjRef.current;
+          if (ref && typeof ref.resetStyle === 'function') ref.resetStyle(lyr);
+        }
       },
     });
-  }, []);
+  }, [onSelectMandal, styleFn]);
 
   if (!mandalGeo?.features?.length) return null;
 
@@ -132,41 +164,20 @@ const TAOMap = () => {
     return geoData;
   }, [geoData]);
 
+  /**
+   * Mandal polygons: use `kind: mandal` from GeoJSON when present (e.g. Haveli demo file),
+   * otherwise build Voronoi cells from seed points and **clip strictly** to the outer boundary
+   * so heat never spills outside the taluka / AC fence.
+   */
   const mandalGeo = useMemo(() => {
-    if (!geoData?.features) return null;
-    return {
-      type: 'FeatureCollection',
-      features: geoData.features.filter((f) => f?.properties?.kind === 'mandal'),
-    };
-  }, [geoData]);
-
-  const mandalPinsFromGeo = useMemo(() => {
-    if (!mandalGeo?.features?.length) return [];
-    const rank = { Critical: 3, Warning: 2, Clear: 1 };
-    const pins = [];
-    for (const f of mandalGeo.features) {
-      const p = f.properties || {};
-      try {
-        const gj = L.geoJSON(f);
-        const c = gj.getBounds().getCenter();
-        pins.push({
-          id: p.id || p.name || String(pins.length),
-          name: p.name || 'Mandal',
-          marathi: p.marathi,
-          caoName: p.caoName || '—',
-          status: p.status || 'Clear',
-          pending: p.pending ?? 0,
-          fraudAlerts: p.fraudAlerts ?? 0,
-          description: p.description,
-          lat: c.lat,
-          lng: c.lng,
-        });
-      } catch {
-        /* skip invalid geometry */
-      }
+    if (!boundaryGeo?.features?.length) return null;
+    const fileMandals = (geoData?.features || []).filter((f) => f?.properties?.kind === 'mandal');
+    if (fileMandals.length) {
+      return { type: 'FeatureCollection', features: fileMandals };
     }
-    return pins.sort((a, b) => (rank[b.status] || 0) - (rank[a.status] || 0)).slice(0, 8);
-  }, [mandalGeo]);
+    const outer = boundaryGeo.features[0];
+    return buildMandalHeatmapClippedToTaluka(outer);
+  }, [boundaryGeo, geoData]);
 
   /** Fence outline + bounds derived from boundary features. */
   const boundaryBounds = useMemo(() => {
@@ -216,18 +227,21 @@ const TAOMap = () => {
     <div className="card tao-map-root" style={{ padding: '0', overflow: 'hidden', border: 'none', borderRadius: 0, background: 'transparent', display: 'flex', flexDirection: 'column', width: '100%', minHeight: 480 }}>
       <div style={{ padding: '18px 28px', background: '#fff', borderBottom: '1px solid #e2e3df', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', flexWrap: 'wrap', minHeight: '70px' }}>
         <div style={{ minWidth: 0 }}>
-          <h3 className="fw-bold m-0" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)', lineHeight: 1.3 }}>Baramati AC Geo-Verification</h3>
-          <p className="text-sm text-muted m-0" style={{ marginTop: '5px', fontSize: '11.5px', lineHeight: 1.4 }}>Constituency boundary from GeoJSON</p>
+          <h3 className="fw-bold m-0" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)', lineHeight: 1.3 }}>Baramati taluka — mandal load map</h3>
+          <p className="text-sm text-muted m-0" style={{ marginTop: '5px', fontSize: '11.5px', lineHeight: 1.4 }}>Voronoi mandal cells clipped to the published boundary · choropleth by pending + fraud</p>
         </div>
         <div style={{ display: 'flex', gap: '20px', fontSize: '11.5px', color: 'var(--text-muted)', flexShrink: 0, alignItems: 'center' }}>
            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', lineHeight: 1 }}>
-             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#2e7d32', display: 'inline-block', flexShrink: 0 }}></span> Clear
+             <span style={{ width: 14, height: 8, borderRadius: 2, background: 'linear-gradient(90deg,#2e7d32,#f57c00,#c62828)', display: 'inline-block', flexShrink: 0 }}></span> Load index
            </div>
            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', lineHeight: 1 }}>
-             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f57c00', display: 'inline-block', flexShrink: 0 }}></span> Warning
+             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#2e7d32', display: 'inline-block', flexShrink: 0 }}></span> Low
            </div>
            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', lineHeight: 1 }}>
-             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#d32f2f', display: 'inline-block', flexShrink: 0 }}></span> Critical
+             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f57c00', display: 'inline-block', flexShrink: 0 }}></span> Mid
+           </div>
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', lineHeight: 1 }}>
+             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#c62828', display: 'inline-block', flexShrink: 0 }}></span> High
            </div>
         </div>
       </div>
@@ -272,35 +286,14 @@ const TAOMap = () => {
 
             <FitTaluka bounds={boundaryBounds} />
 
-            {/* Mandal boundaries when GeoJSON includes `kind: mandal` (optional second source later). */}
-            {mandalGeo?.features?.length > 0 && (
-              <MandalBoundariesLayer mandalGeo={mandalGeo} />
-            )}
+            <Pane name="taoMandalHeat" style={{ zIndex: 380 }}>
+              {mandalGeo?.features?.length > 0 && (
+                <MandalBoundariesLayer mandalGeo={mandalGeo} onSelectMandal={setSelectedPoint} />
+              )}
+            </Pane>
 
-            {/* Outer dashed AC / taluka fence */}
+            {/* Outer dashed AC / taluka fence — drawn above heat cells */}
             <GeoJSON data={boundaryGeo} style={styleBoundaryFence} />
-
-            {/* Mandal centroid markers — rendered into Leaflet's default
-                markerPane (z 500, DOM order before the tooltipPane), so any
-                tooltip or popup naturally paints above these dots. */}
-            {mandalPinsFromGeo.map((pt) => {
-                const color = getStatusColor(pt.status);
-                return (
-                  <CircleMarker
-                    key={pt.id}
-                    center={[pt.lat, pt.lng]}
-                    radius={6}
-                    pathOptions={{ fillColor: color, fillOpacity: 0.92, color: '#ffffff', weight: 1.5 }}
-                    eventHandlers={{ click: () => setSelectedPoint(pt) }}
-                  >
-                    <Tooltip direction="top" offset={[0, -6]} opacity={1} className="tao-mandal-tooltip">
-                      <strong style={{ color }}>{pt.name}</strong><br/>
-                      CAO: {pt.caoName}<br/>
-                      Pending Files: {pt.pending}
-                    </Tooltip>
-                  </CircleMarker>
-                );
-              })}
           </MapContainer>
         )}
 
@@ -311,7 +304,7 @@ const TAOMap = () => {
             position: 'absolute', bottom: '20px', right: '20px', zIndex: 2000,
             background: 'var(--surface)', padding: '16px', borderRadius: '8px',
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)', minWidth: '250px',
-            borderLeft: `4px solid ${getStatusColor(selectedPoint.status)}`
+            borderLeft: `4px solid ${typeof selectedPoint.heat === 'number' ? heatFillColor(selectedPoint.heat) : getStatusColor(selectedPoint.status)}`
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                <h4 className="fw-bold m-0 text-sm">{selectedPoint.name}</h4>
@@ -324,6 +317,12 @@ const TAOMap = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '13px' }}>
               <div><span className="text-muted">CAO:</span> <strong>{selectedPoint.caoName}</strong></div>
               <div><span className="text-muted">Status:</span> <strong>{selectedPoint.status}</strong></div>
+              {typeof selectedPoint.heat === 'number' && (
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <span className="text-muted">Load index:</span>{' '}
+                  <strong style={{ color: heatFillColor(selectedPoint.heat) }}>{Math.round(selectedPoint.heat * 100)}%</strong>
+                </div>
+              )}
               <div><span className="text-muted">Pending:</span> <strong>{selectedPoint.pending}</strong></div>
               <div><span className="text-muted">Fraud Alerts:</span> <strong style={{ color: selectedPoint.fraudAlerts > 0 ? '#d32f2f' : '#2e7d32' }}>{selectedPoint.fraudAlerts}</strong></div>
             </div>

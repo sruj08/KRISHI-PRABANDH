@@ -196,17 +196,17 @@ const TAODashboard = () => {
         </div>
       </div>
 
-      {/* CAO performance table */}
-      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+      {/* Mandal-wise performance — Baramati taluka (demo) */}
+      <div style={{ background: '#fff', border: 'none', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(57, 105, 64, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>leaderboard</span>
           </div>
           <div style={{ flex: 1 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
-              {t('Circle agriculture officer performance')}
+              {t('Mandal officer performance — Baramati taluka')}
             </h3>
-            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>{t('File velocity and accountability under this taluka')}</p>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>{t('Pending files and fraud alerts by mandal under this taluka')}</p>
           </div>
         </div>
         <div style={{ overflowX: 'auto' }}>
@@ -214,7 +214,7 @@ const TAODashboard = () => {
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
                 <th className="district-table-header">{t('Officer name')}</th>
-                <th className="district-table-header">{t('Circle')}</th>
+                <th className="district-table-header">{t('Mandal')}</th>
                 <th className="district-table-header" style={{ textAlign: 'right' }}>{t('Pending files')}</th>
                 <th className="district-table-header" style={{ textAlign: 'center' }}>{t('Fraud alerts')}</th>
                 <th className="district-table-header" style={{ textAlign: 'right' }}>{t('Actions')}</th>
@@ -223,7 +223,7 @@ const TAODashboard = () => {
             <tbody>
               <tr className="district-table-row" style={{ borderBottom: '1px solid #f3f4f0' }}>
                 <td style={{ padding: '18px 28px', fontSize: '13px', fontWeight: 700, color: '#1a1c1a' }}>Ramesh Patil</td>
-                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Wagholi</td>
+                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Malegaon BK</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>42</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
                   <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>3 {t('High')}</span>
@@ -234,7 +234,7 @@ const TAODashboard = () => {
               </tr>
               <tr className="district-table-row" style={{ borderBottom: '1px solid #f3f4f0', background: '#fafafa' }}>
                 <td style={{ padding: '18px 28px', fontSize: '13px', fontWeight: 700, color: '#1a1c1a' }}>Sunita Deshmukh</td>
-                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Khed Shivapur</td>
+                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Hol</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>15</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
                   <span style={{ fontSize: '10px', fontWeight: 700, color: '#717972', background: '#f3f4f0', padding: '4px 10px', borderRadius: 6 }}>0</span>
@@ -245,7 +245,7 @@ const TAODashboard = () => {
               </tr>
               <tr className="district-table-row">
                 <td style={{ padding: '18px 28px', fontSize: '13px', fontWeight: 700, color: '#1a1c1a' }}>Vijay More</td>
-                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Loni Kalbhor</td>
+                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Vadgaon Nimbalkar</td>
                 <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>52</td>
                 <td style={{ padding: '18px 28px', textAlign: 'center' }}>
                   <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>6 {t('High')}</span>

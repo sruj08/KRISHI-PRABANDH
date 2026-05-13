@@ -16,7 +16,7 @@ const Placeholder = ({ title, icon = 'dashboard', sections = [], tabs = [], isDa
           <h1 className={`text-[24px] font-bold tracking-tight leading-none ${isDark ? 'text-white' : 'text-on-background'}`}>{title}</h1>
         </div>
         <p className={`mt-2.5 text-[11px] font-bold uppercase tracking-widest leading-none ${isDark ? 'text-gray-400' : 'text-on-surface-variant'}`}>
-          {t('KrishiNetra Intelligence System • Module Active')}
+          {t('Krishi Prabandh Intelligence System • Module Active')}
         </p>
 
         {tabs.length > 0 && (

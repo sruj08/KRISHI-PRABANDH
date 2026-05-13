@@ -14,8 +14,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'KrishiNetra Field App',
-        short_name: 'KrishiNetra',
+        name: 'Krishi Prabandh Field App',
+        short_name: 'Krishi Prabandh',
         description: 'Government Agriculture Officer Field Portal - Maharashtra',
         theme_color: '#0055A4',
         background_color: '#f7fbf0',

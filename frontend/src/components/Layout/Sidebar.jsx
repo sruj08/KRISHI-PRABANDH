@@ -4,7 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
 
-const Sidebar = ({ isOpen }) => {
+const Sidebar = ({ isOpen, isDark = false }) => {
   const { t, cycleLanguage, lang, langLabels } = useLanguage();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -24,6 +24,20 @@ const Sidebar = ({ isOpen }) => {
   };
 
   const getMenuSections = (role) => {
+    if (role === 'farmer') {
+      return [
+        {
+          id: 'farmer_modules',
+          label: 'MODULES',
+          items: [
+            { to: '/farmer', icon: 'dashboard', label: 'Dashboard' },
+            { to: '/gram-sabha', icon: 'diversity_3', label: 'Gram Sabha' },
+            { to: '/settings', icon: 'settings', label: 'Settings' },
+          ],
+        },
+      ];
+    }
+
     if (role === 'state') {
       return [
         {
@@ -247,10 +261,8 @@ const Sidebar = ({ isOpen }) => {
     }
   }, [location.pathname, user?.role]);
 
-  const isDark = user?.role === 'state';
-
   return (
-    <aside className={`sidebar flex flex-col shrink-0 z-40 ${isOpen ? 'open' : ''} ${isDark ? 'bg-[#0a0f0d] border-[#1f2924]' : 'bg-white border-[#E2E9E6]'} border-r`}>
+    <aside className={`sidebar flex flex-col shrink-0 z-40 ${isOpen ? 'open' : ''} bg-white border-[#E2E9E6] border-r`}>
 
       {/* ── Nav links ── */}
       <div className="flex-1 overflow-y-auto py-6 px-3">
@@ -264,8 +276,8 @@ const Sidebar = ({ isOpen }) => {
                   onClick={() => toggleSection(section.id)}
                   aria-expanded={isExpanded}
                 >
-                  <p className={`sidebar-section-label ${isDark ? 'text-gray-400' : ''}`}>{t(section.label)}</p>
-                  <span className={`material-symbols-outlined sidebar-section-icon ${isExpanded ? 'expanded' : ''} ${isDark ? 'text-gray-500' : ''}`}>
+                  <p className="sidebar-section-label">{t(section.label)}</p>
+                  <span className={`material-symbols-outlined sidebar-section-icon ${isExpanded ? 'expanded' : ''}`}>
                     expand_more
                   </span>
                 </button>
@@ -275,7 +287,7 @@ const Sidebar = ({ isOpen }) => {
                       <NavLink
                         key={link.to}
                         to={link.to}
-                        end={link.to === '/' || link.to === '/tao' || link.to === '/dao' || link.to === '/cao'}
+                        end={link.to === '/' || link.to === '/tao' || link.to === '/dao' || link.to === '/cao' || link.to === '/farmer'}
                         className={({ isActive }) => {
                           let active = isActive;
                           if (
@@ -285,9 +297,8 @@ const Sidebar = ({ isOpen }) => {
                           ) {
                             active = true;
                           }
-                          return `sidebar-link ${active ? 'sidebar-link--active' : ''} ${isDark ? (active ? 'bg-[#111814] text-[#4ade80]' : 'text-gray-300 hover:bg-[#111814] hover:text-white') : ''}`;
+                          return `sidebar-link ${active ? 'sidebar-link--active' : ''}`;
                         }}
-                        style={isDark ? { background: 'transparent' } : {}}
                       >
                         {({ isActive }) => {
                           let active = isActive;
@@ -302,11 +313,11 @@ const Sidebar = ({ isOpen }) => {
                           <>
                             <span
                               className="material-symbols-outlined"
-                              style={{ fontSize: 18, color: isDark ? (active ? '#4ade80' : '#9ca3af') : (active ? '#1f4d36' : '#717972'), flexShrink: 0 }}
+                              style={{ fontSize: 18, color: active ? '#1f4d36' : '#717972', flexShrink: 0 }}
                             >
                               {link.icon}
                             </span>
-                            <span className={`sidebar-link-label ${isDark && active ? 'text-[#4ade80]' : ''}`}>{t(link.label)}</span>
+                            <span className="sidebar-link-label">{t(link.label)}</span>
                           </>
                           );
                         }}
@@ -321,32 +332,24 @@ const Sidebar = ({ isOpen }) => {
       </div>
 
       {/* ── Footer ── */}
-      <div className={`sidebar-footer ${isDark ? 'border-[#1f2924]' : ''}`}>
-        <NavLink
-          to="/roles"
-          className={`sidebar-link ${isDark ? 'text-gray-300 hover:bg-[#111814] hover:text-white' : ''}`}
-          style={isDark ? { background: 'transparent' } : {}}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: isDark ? '#9ca3af' : '#717972', flexShrink: 0 }}>badge</span>
+      <div className="sidebar-footer">
+        <NavLink to="/roles" className="sidebar-link">
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972', flexShrink: 0 }}>badge</span>
           <span className="sidebar-link-label">{t('User Roles')}</span>
         </NavLink>
-        <NavLink
-          to="/settings"
-          className={`sidebar-link ${isDark ? 'text-gray-300 hover:bg-[#111814] hover:text-white' : ''}`}
-          style={isDark ? { background: 'transparent' } : {}}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: isDark ? '#9ca3af' : '#717972', flexShrink: 0 }}>settings</span>
+        <NavLink to="/settings" className="sidebar-link">
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972', flexShrink: 0 }}>settings</span>
           <span className="sidebar-link-label">{t('System Controls')}</span>
         </NavLink>
 
         <div className={`sidebar-lang-row ${isDark ? 'border-[#1f2924]' : ''}`}>
           <span className={`sidebar-lang-label ${isDark ? 'text-gray-400' : ''}`}>{t('Language')}</span>
-          <button className={`sidebar-lang-btn ${isDark ? 'bg-[#111814] border-[#1f2924] text-gray-300 hover:bg-[#1a241d]' : ''}`} onClick={cycleLanguage}>
+          <button type="button" className={`sidebar-lang-btn ${isDark ? 'bg-[#111814] border-[#1f2924] text-gray-300 hover:bg-[#1a241d]' : ''}`} onClick={cycleLanguage}>
             {langLabels[lang] || lang}
           </button>
         </div>
 
-        <button onClick={handleLogout} className={`sidebar-logout-btn ${isDark ? 'text-gray-300 hover:bg-[#2a1114] hover:text-red-400' : ''}`}>
+        <button onClick={handleLogout} className="sidebar-logout-btn">
           <span className="material-symbols-outlined" style={{ fontSize: 20, flexShrink: 0 }}>power_settings_new</span>
           <span className="sidebar-link-label">System Logout</span>
         </button>

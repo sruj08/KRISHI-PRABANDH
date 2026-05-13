@@ -62,8 +62,8 @@ const App = () => {
         <Routes>
           <Route path="/gate" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LandingPage />} />
-          <Route path="/farmer" element={<FarmerDashboard />} />
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+            <Route path="/farmer" element={<FarmerDashboard />} />
             <Route path="/" element={<DashboardRouter />} />
             <Route path="/cao" element={<CAODashboard />} />
             <Route path="/district" element={<Navigate to="/dao" replace />} />

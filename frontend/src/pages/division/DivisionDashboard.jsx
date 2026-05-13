@@ -233,6 +233,7 @@ const DivisionDashboard = () => {
             <RegionalMap
               layerType="division"
               boundaryUrl="/geo/maharashtra-division.topo.json"
+              divisionMatrix={DISTRICT_MATRIX}
             />
           </div>
         </div>

@@ -98,6 +98,12 @@ const STATUS_CHIP = {
   'Lagging':  { color: '#ba1a1a', bg: 'rgba(255,218,214,0.45)' },
 };
 
+/** Asymmetric fitBounds padding: extra top inset clears the floating map controls (modes + legend). */
+const STATE_MAP_FIT_BOUNDS_OPTIONS = {
+  paddingTopLeft: [22, 118],
+  paddingBottomRight: [22, 20],
+};
+
 const StateDashboard = () => {
   const { addToast } = useToast();
   const { t } = useLanguage();
@@ -224,6 +230,7 @@ const StateDashboard = () => {
               boundaryUrl={geoAsset('geo/state-boundary.json')}
               divisionOverlayUrl={geoAsset('geo/maharashtra-divisions.geojson')}
               divisionMatrix={DIVISION_MATRIX}
+              fitBoundsOptions={STATE_MAP_FIT_BOUNDS_OPTIONS}
             />
           </div>
         </div>

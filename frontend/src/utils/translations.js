@@ -1,5 +1,5 @@
 // =========================================================
-// KrishiNetra — Translations (EN ↔ MR ↔ HI)
+// Krishi Prabandh — Translations (EN ↔ MR ↔ HI)
 // =========================================================
 
 /**
@@ -24,16 +24,15 @@ export const translations = {
   "Back": { mr: "मागे", hi: "वापस" },
   "View All": { mr: "सर्व पहा", hi: "सभी देखें" },
   "Full View": { mr: "संपूर्ण दृश्य", hi: "पूर्ण दृश्य" },
-
-  // ─── App Name / Branding ───────────────────────────────────────
+  "AgriField Gov": { mr: "कृषी-प्रबंध", hi: "कृषी-प्रबंध" },
+  "Krishi Prabandh Field App": { mr: "कृषी प्रबंध क्षेत्र अॅप", hi: "कृषि प्रबंध क्षेत्र ऐप" },
   "Krishi Prabandh": { mr: "कृषी प्रबंध", hi: "कृषि प्रबंध" },
+  "Krishi Prabandh -": { mr: "कृषी प्रबंध -", hi: "कृषि प्रबंध -" },
   "KrishiNetra Field App": { mr: "कृषिनेत्र क्षेत्र अॅप", hi: "कृषिनेत्र क्षेत्र ऐप" },
   "KrishiPrabandh": { mr: "कृषीप्रबंध", hi: "कृषिप्रबंध" },
   "Secure Government Officer Portal": { mr: "सुरक्षित सरकारी अधिकारी पोर्टल", hi: "सुरक्षित सरकारी अधिकारी पोर्टल" },
   "KrishiNetra -": { mr: "कृषिनेत्र -", hi: "कृषिनेत्र -" },
   "STATE COMMAND": { mr: "राज्य कमांड", hi: "राज्य कमांड" },
-  "STATE COMMAND": { mr: "राज्य कमांड", hi: "राज्य कमांड" },
-  "DIVISION": { mr: "विभाग", hi: "प्रभाग" },
   "DIVISION": { mr: "विभाग", hi: "प्रभाग" },
   "DAO": { mr: "DAO", hi: "DAO" },
   "OFFICER": { mr: "अधिकारी", hi: "अधिकारी" },
@@ -548,6 +547,15 @@ export const translations = {
 
   // ─── Placeholder ────────────────────────────────────────────
   "KrishiNetra Intelligence System • Module Active": { mr: "कृषिनेत्र बुद्धिमत्ता प्रणाली • मॉड्यूल सक्रिय", hi: "कृषिनेत्र बुद्धिमत्ता प्रणाली • मॉड्यूल सक्रिय" },
+  "Krishi Prabandh Intelligence System • Module Active": { mr: "कृषी प्रबंध बुद्धिमत्ता प्रणाली • मॉड्यूल सक्रिय", hi: "कृषि प्रबंध बुद्धिमत्ता प्रणाली • मॉड्यूल सक्रिय" },
+  "The requested path does not exist or you do not have the required clearance to access this sector of the Krishi Prabandh intelligence platform.": { mr: "मागवलेला मार्ग अस्तित्वात नाही किंवा कृषी प्रबंध बुद्धिमत्ता व्यासपीठाच्या या विभागात प्रवेशासाठी आवश्यक परवानगी नाही.", hi: "अनुरोधित पथ मौजूद नहीं है या कृषि प्रबंध बुद्धिमत्ता मंच के इस क्षेत्र तक पहुँचने के लिए आवश्यक अनुमति नहीं है।" },
+  "System Module Not Found": { mr: "प्रणाली मॉड्यूल सापडले नाही", hi: "सिस्टम मॉड्यूल नहीं मिला" },
+  "Return to Command Center": { mr: "कमांड केंद्रावर परत जा", hi: "कमांड केंद्र पर लौटें" },
+  "MahaDBT · Farmer services": { mr: "महाडीबीटी · शेतकरी सेवा", hi: "महाडीबीटी · किसान सेवाएँ" },
+  "Mandal officer performance — Baramati taluka": { mr: "मंडळ अधिकारी कामगिरी — बारामती तालुका", hi: "मंडल अधिकारी प्रदर्शन — बारामती तालुका" },
+  "Pending files and fraud alerts by mandal under this taluka": { mr: "या तालुक्यातील मंडळांनुसार प्रलंबित फाइल्स व फसवणूक इशारे", hi: "इस तालुके के मंडलों के अनुसार लंबित फाइलें व धोखाधड़ी चेतावनी" },
+  "Mandal": { mr: "मंडळ", hi: "मंडल" },
+  "Fraud alerts": { mr: "फसवणूक इशारे", hi: "धोखाधड़ी चेतावनी" },
   "ID": { mr: "आयडी", hi: "आईडी" },
   "Status": { mr: "स्थिती", hi: "स्थिति" },
   "Action": { mr: "कृती", hi: "कार्रवाई" },
@@ -585,11 +593,7 @@ export const translations = {
   "Grievance routing": { mr: "तक्रार मार्गक्रमण", hi: "शिकायत रूटिंग" },
   "Farmer dispute escalation": { mr: "शेतकरी वाद वाढवणे", hi: "किसान विवाद प्रवर्धन" },
   "AI translation": { mr: "एआय भाषांतर", hi: "AI अनुवाद" },
-  "Circle agriculture officer performance": { mr: "मंडल कृषी अधिकारी कामगिरी", hi: "मंडल कृषि अधिकारी प्रदर्शन" },
   "File velocity and accountability under this taluka": { mr: "या तालुक्यातील फाइल गती आणि जबाबदारी", hi: "इस तालुके में फ़ाइल गति और जवाबदेही" },
-  "Officer name": { mr: "अधिकारी नाव", hi: "अधिकारी का नाम" },
-  "Circle": { mr: "मंडल", hi: "मंडल" },
-  "Pending files": { mr: "प्रलंबित फाइली", hi: "लंबित फ़ाइलें" },
 
   // ─── CAO Dashboard ──────────────────────────────────────────
   "Pending Files": { mr: "प्रलंबित फाइली", hi: "लंबित फ़ाइलें" },
@@ -879,7 +883,6 @@ export const translations = {
   // ─── Division Dashboard ─────────────────────────────────────
   "Division Dashboard": { mr: "विभाग डॅशबोर्ड", hi: "प्रभाग डैशबोर्ड" },
   "Joint Director of Agriculture": { mr: "कृषी संयुक्त संचालक", hi: "कृषि संयुक्त निदेशक" },
-  "Overview": { mr: "आढावा", hi: "अवलोकन" },
   "District Performance": { mr: "जिल्हा कामगिरी", hi: "जिला प्रदर्शन" },
   "Resource Allocation": { mr: "संसाधन वाटप", hi: "संसाधन आवंटन" },
   "Cross-District Fraud": { mr: "क्रॉस-जिल्हा फसवणूक", hi: "अंतर-जिला धोखाधड़ी" },
