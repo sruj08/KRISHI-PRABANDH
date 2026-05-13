@@ -2,12 +2,12 @@ from typing import Any
 from uuid import UUID
 
 from config.constants import (
-    CIRCLE_AUTHORITY,
-    DISTRICT_AUTHORITY,
-    DIVISIONAL_AUTHORITY,
-    STATE_AUTHORITY,
-    TALUKA_AUTHORITY,
-    VILLAGE_AUTHORITY,
+    ROLE_CAO as CIRCLE_AUTHORITY,
+    ROLE_DISTRICT as DISTRICT_AUTHORITY,
+    ROLE_DIVISION as DIVISIONAL_AUTHORITY,
+    ROLE_STATE as STATE_AUTHORITY,
+    ROLE_TAO as TALUKA_AUTHORITY,
+    ROLE_VILLAGE as VILLAGE_AUTHORITY,
 )
 from db.repositories.survey_repository import SurveyRepository
 from schemas.auth import JwtUserClaims

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Tooltip, GeoJSON, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MOCK_HAVELI_MANDALS } from '../../../utils/taoMapMockData';
+const MOCK_HAVELI_MANDALS = [];
 
 const GEO_URL = '/geo/haveli-taluka-mandals.geojson';
 

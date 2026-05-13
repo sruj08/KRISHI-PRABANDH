@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { MOCK_TAO_STATS, MOCK_APPLICATIONS, MOCK_GRIEVANCES } from '../../utils/taoMockData';
-import RegionalMap from '../../components/maps/RegionalMap';
+import TAOMap from './components/TAOMap';
 import CAOMatrix from './components/CAOMatrix';
 import TAOAnomalyModal from './components/TAOAnomalyModal';
 
@@ -62,6 +62,9 @@ const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972',
 const TAODashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { getReportingChain, stats } = useKrishiData();
+  const reportsTo = user?.user_id != null ? getReportingChain(user.user_id)[1] : null;
 
   const [selectedAppId, setSelectedAppId] = useState(null);
   const selectedApp = MOCK_APPLICATIONS.find(app => app.id === selectedAppId);
@@ -75,25 +78,21 @@ const TAODashboard = () => {
         />
       )}
 
-      {/* ── KPI Strip ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
-        <KpiCard icon="folder_open" label="Files Processed" value="1,402" sub="YTD 2024-25" />
-        <KpiCard icon="pending_actions" label="Pending Audits" value="84" sub="Target: < 50" progress={12} subColor="#ba1a1a" />
-        <KpiCard icon="satellite_alt" label="Geo-Verification" value="Active" sub="Telemetry stable" subIcon="check_circle" subColor="#396940" />
-        <KpiCard icon="shield_locked" label="Leakage Prevented" value="42.5" unit="L" sub="Across all schemes" />
-        <KpiCard icon="warning" label="Fraud Alerts" value="12" sub="9 batches pending" subIcon="warning" subColor="#ba1a1a" />
-        <KpiCard icon="queue" label="Verification Queue" value="315" sub="Next pass in 2h" subIcon="schedule" />
-      </div>
-
-      {/* ── Main Grid: Map + Right Panel ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, flex: 1, minHeight: 0 }}>
-        
-        {/* Map Card */}
-        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 520 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
-            <div>
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>Haveli Taluka — Geo Verification Map</h2>
-              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>Live spatial analytics and field officer telemetry</p>
+      {/* Main Content Area */}
+      <div className="flex flex-col gap-6" style={{ padding: '24px 32px 32px 36px' }}>
+        {/* KPI Row */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
+          {/* Card 1: Files Processed */}
+          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '160px' }}>
+            <div className="flex items-center gap-2" style={{ marginBottom: '16px', minHeight: '22px' }}>
+              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>folder_open</span>
+              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Files Processed</span>
+            </div>
+            <div className="flex items-end" style={{ minHeight: '40px' }}>
+              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">1,402</span>
+            </div>
+            <div className="mt-auto flex items-center" style={{ paddingTop: '14px', minHeight: '26px' }}>
+              <p className="font-body-main text-[11px] text-on-surface-variant font-medium">YTD 2024-25</p>
             </div>
           </div>
           <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
@@ -106,7 +105,7 @@ const TAODashboard = () => {
 
         {/* ── Right Panel ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          
+
           {/* Fraud Pulse Widget */}
           <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, padding: '24px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
             <div style={{ marginBottom: 18 }}>

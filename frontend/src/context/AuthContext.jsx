@@ -8,6 +8,8 @@ export const AuthProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
+  const [token, setToken] = useState(() => localStorage.getItem('krishiToken') || null);
+
   useEffect(() => {
     if (user) {
       localStorage.setItem('krishiUser', JSON.stringify(user));
@@ -16,16 +18,26 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const login = (userData) => {
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('krishiToken', token);
+    } else {
+      localStorage.removeItem('krishiToken');
+    }
+  }, [token]);
+
+  const login = (userData, accessToken) => {
     setUser(userData);
+    setToken(accessToken ?? null);
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

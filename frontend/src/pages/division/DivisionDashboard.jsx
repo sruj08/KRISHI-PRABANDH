@@ -8,6 +8,8 @@ import {
   DIVISION_PROFILE,
 } from '../../utils/divisionMockData';
 import { useToast } from '../../hooks/useToast.jsx';
+import { useAuth } from '../../context/AuthContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
 import '../district/district.css';
 
 /* ── Shared design primitives ───────────────────────────────────────────────── */
@@ -98,6 +100,14 @@ const STATUS_CHIP = {
 
 const DivisionDashboard = () => {
   const { addToast } = useToast();
+  const { user } = useAuth();
+  const { stats, mandals } = useKrishiData();
+  const circlesInDivision =
+    user?.division_id != null
+      ? mandals.filter(
+          (m) => Number(m.division_id) === Number(user.division_id),
+        ).length
+      : null;
 
   const onDscAuthorize = () => {
     const total = PFMS_BATCHES.reduce((a, b) => a + b.beneficiaries, 0);
@@ -109,6 +119,41 @@ const DivisionDashboard = () => {
 
   return (
     <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+      {(user?.division_name || circlesInDivision != null || stats?.totalSurveys != null) && (
+        <div
+          style={{
+            background: '#fff',
+            border: '1px solid #e2e3df',
+            borderRadius: 12,
+            padding: '12px 18px',
+            fontSize: 12,
+            color: '#1a1c1a',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 12,
+            alignItems: 'center',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>dataset</span>
+          <span style={{ fontWeight: 700 }}>CSV scope (division)</span>
+          {user?.division_name && (
+            <span style={{ color: '#717972' }}>
+              Division: <strong>{user.division_name}</strong>
+            </span>
+          )}
+          {circlesInDivision != null && (
+            <span style={{ color: '#717972' }}>
+              Agriculture circles in dataset: <strong>{circlesInDivision}</strong>
+            </span>
+          )}
+          {stats?.totalSurveys != null && (
+            <span style={{ color: '#717972', marginLeft: 'auto' }}>
+              Statewide surveys (CSV): {Number(stats.totalSurveys).toLocaleString('en-IN')}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* ── KPI Strip ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>

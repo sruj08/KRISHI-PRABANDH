@@ -1,11 +1,13 @@
 import React from 'react';
-import RegionalMap from '../../components/maps/RegionalMap';
+import DistrictCommandMap from './components/DistrictCommandMap';
 import {
   EXEC_KPIS,
   PFMS_BATCHES,
   FRICTION_MONTH,
 } from '../../utils/districtMockData';
 import { useToast } from '../../hooks/useToast.jsx';
+import { useAuth } from '../../context/AuthContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
 import './district.css';
 
 /* ── KPI Card ── */
@@ -94,6 +96,12 @@ const FrictionRow = ({ label, pct, color }) => (
 /* ── Dashboard ── */
 const DistrictDashboard = () => {
   const { addToast } = useToast();
+  const { user } = useAuth();
+  const { stats } = useKrishiData();
+  const evidenceInDistrict =
+    user?.district_id != null && stats?.evidenceCountByDistrict
+      ? stats.evidenceCountByDistrict[String(user.district_id)]
+      : null;
 
   const onDscAuthorize = () => {
     const total = PFMS_BATCHES.reduce((a, b) => a + b.beneficiaries, 0);
@@ -102,6 +110,71 @@ const DistrictDashboard = () => {
 
   return (
     <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+      {(surveyCount != null ||
+        user?.district_name ||
+        stats?.totalSurveyEvidence != null) && (
+          <div
+            style={{
+              background: '#fff',
+              border: '1px solid #e2e3df',
+              borderRadius: 12,
+              padding: '12px 18px',
+              fontSize: 12,
+              color: '#1a1c1a',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 12,
+              alignItems: 'center',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>hub</span>
+            <span style={{ fontWeight: 700 }}>CSV dataset scope</span>
+            {user?.district_name && (
+              <span style={{ color: '#717972' }}>
+                District: <strong style={{ color: '#1a1c1a' }}>{user.district_name}</strong>
+              </span>
+            )}
+            {surveyCount != null && (
+              <span style={{ color: '#717972' }}>
+                Surveys in dataset (linked via farms → villages → districts):{' '}
+                <strong style={{ color: '#1a1c1a' }}>{surveyCount.toLocaleString('en-IN')}</strong>
+              </span>
+            )}
+            {evidenceInDistrict != null && (
+              <span style={{ color: '#717972' }}>
+                Evidence rows (this district via surveys):{' '}
+                <strong style={{ color: '#1a1c1a' }}>
+                  {evidenceInDistrict.toLocaleString('en-IN')}
+                </strong>
+              </span>
+            )}
+            {evidenceInDistrict == null && stats?.totalSurveyEvidence != null && (
+              <span style={{ color: '#717972' }}>
+                Evidence rows (CSV, statewide):{' '}
+                <strong style={{ color: '#1a1c1a' }}>
+                  {Number(stats.totalSurveyEvidence).toLocaleString('en-IN')}
+                </strong>
+              </span>
+            )}
+            {stats?.paymentsByStatus && (
+              <span style={{ color: '#717972' }}>
+                DBT: completed{' '}
+                <strong>
+                  {Number(stats.paymentsByStatus.COMPLETED || 0).toLocaleString('en-IN')}
+                </strong>{' '}
+                · failed{' '}
+                <strong>{Number(stats.paymentsByStatus.FAILED || 0).toLocaleString('en-IN')}</strong>
+              </span>
+            )}
+            {stats?.totalSurveys != null && (
+              <span style={{ color: '#717972', marginLeft: 'auto' }}>
+                Statewide surveys in CSV:{' '}
+                {Number(stats.totalSurveys).toLocaleString('en-IN')}
+              </span>
+            )}
+          </div>
+        )}
 
       {/* ── KPI Strip ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>

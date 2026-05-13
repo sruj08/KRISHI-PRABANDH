@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useHierarchy } from '../../context/HierarchyContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
 import ActionMap from './components/ActionMap';
 import ShopTracker from './components/ShopTracker';
 import SahayakMatrix from './components/SahayakMatrix';
 import PMFBYPanel from './components/PMFBYPanel';
-import {
-  CAO_PROFILE, DASHBOARD_KPIS, SAHAYAKS, PMFBY_EVENTS
-} from '../../utils/caoMockData';
+const DASHBOARD_KPIS = {};
+const PMFBY_EVENTS = [];
 import {
   fetchMandalSummary,
   fetchVistarAnalytics,
@@ -74,9 +74,9 @@ const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972',
 
 const RiskBadge = ({ risk }) => {
   const cfg = {
-    HIGH:     { bg: '#fff0ee', color: '#ba1a1a', border: '#ffdad6', label: 'HIGH RISK' },
+    HIGH: { bg: '#fff0ee', color: '#ba1a1a', border: '#ffdad6', label: 'HIGH RISK' },
     MODERATE: { bg: '#fef3c7', color: '#92400e', border: '#fde68a', label: 'MODERATE' },
-    CLEAN:    { bg: '#e8f0ea', color: '#1f4d36', border: '#c8e0d0', label: 'CLEAN' },
+    CLEAN: { bg: '#e8f0ea', color: '#1f4d36', border: '#c8e0d0', label: 'CLEAN' },
   }[risk] || { bg: '#f3f4f0', color: TEXT_MUTED, border: PANEL_BORDER, label: risk };
   return (
     <span style={{
@@ -355,8 +355,8 @@ const VistarSupervisionPanel = ({ vistar, fraudSes }) => {
             const pct = Math.round(p.overall_compliance_ratio * 100);
             const barColor =
               p.overall_risk === 'HIGH' ? '#ba1a1a' :
-              p.overall_risk === 'MODERATE' ? '#b45309' :
-              '#1f4d36';
+                p.overall_risk === 'MODERATE' ? '#b45309' :
+                  '#1f4d36';
             return (
               <div key={p.sahayak_id} style={{
                 padding: '12px 0',
@@ -564,9 +564,9 @@ const MandalOverviewPanel = ({ summary, appIntel, vistar }) => {
               const pct = Math.round((count / total) * 100);
               const clr =
                 status === 'Approved' ? '#1f4d36' :
-                status === 'Rejected' ? '#ba1a1a' :
-                status === 'Under Scrutiny' ? '#b45309' :
-                '#5b7c8d';
+                  status === 'Rejected' ? '#ba1a1a' :
+                    status === 'Under Scrutiny' ? '#b45309' :
+                      '#5b7c8d';
               return (
                 <div key={status}>
                   <div style={{
@@ -679,28 +679,74 @@ const MandalOverviewPanel = ({ summary, appIntel, vistar }) => {
 const CAODashboard = () => {
   const [pmfbyOpen, setPmfbyOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('sahayak');
-  const [summary, setSummary]     = useState(null);
-  const [vistar, setVistar]       = useState(null);
-  const [fraudSes, setFraudSes]   = useState([]);
-  const [appIntel, setAppIntel]   = useState(null);
-  const [loading, setLoading]     = useState(true);
+  const [summary, setSummary] = useState(null);
+  const [vistar, setVistar] = useState(null);
+  const [fraudSes, setFraudSes] = useState([]);
+  const [appIntel, setAppIntel] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-  const { mandals } = useHierarchy();
+  const { mandals, currentMandal } = useHierarchy();
+  const { buildSahayakMatrixForMandal, stats } = useKrishiData();
 
-  // Use M002 as default mandal for CAO (matches CAO_PROFILE.mandal)
-  const mandal = mandals?.find(m => m.mandal_id === 'M002') || { mandal_id: 'M002' };
-  const mid = mandal.mandal_id;
+  const mandal = useMemo(() => {
+    if (currentMandal) return currentMandal;
+    if (user?.district_id) {
+      const m = mandals.find(
+        (x) => Number(x.district_id) === Number(user.district_id),
+      );
+      if (m) return m;
+    }
+    return (
+      mandals[0] || {
+        mandal_id: 'C001',
+        name: 'Agriculture circle',
+        circle_id: 1,
+        district_name: '',
+        taluka_name: '',
+      }
+    );
+  }, [currentMandal, mandals, user?.district_id]);
 
-  // Synthesize fallback data from SAHAYAKS mock so the panel always shows content
-  // when the backend API is unreachable (demo / standalone mode).
-  const buildFallbackData = () => {
+  const mid = mandal?.mandal_id || 'C001';
+
+  const sahayakMatrixRows = useMemo(
+    () => buildSahayakMatrixForMandal(mandal),
+    [mandal, buildSahayakMatrixForMandal],
+  );
+
+  const buildFallbackData = useCallback(() => {
+    const rows =
+      sahayakMatrixRows.length > 0
+        ? sahayakMatrixRows
+        : [
+          {
+            id: 'KS0',
+            name: 'Demo Sahayak',
+            status: 'good',
+            verifications_week: 12,
+            avg_days: 3,
+            overdue_15d: 1,
+            circle: mandal?.name || '—',
+            villages: ['Demo village'],
+            trend: [3, 4, 5, 4, 3, 5, 4],
+            total_pending: 8,
+            last_field_visit: '—',
+            whatsapp: '919999999999',
+          },
+        ];
+    const totalSurveys = stats?.totalSurveys ?? 4046;
     const fallbackSummary = {
-      total_applications: 142,
-      by_status: { Applied: 18, 'Under Scrutiny': 12, Approved: 95, Rejected: 17 },
-      fraud_alerts: SAHAYAKS.reduce((sum, s) => sum + s.overdue_15d, 0),
-      sahayak_breakdown: SAHAYAKS.map(s => ({
+      total_applications: Math.min(900, Math.round(totalSurveys / 5)),
+      by_status: {
+        Applied: 18,
+        'Under Scrutiny': 12,
+        Approved: 95,
+        Rejected: 17,
+      },
+      fraud_alerts: rows.reduce((sum, s) => sum + s.overdue_15d, 0),
+      sahayak_breakdown: rows.map((s) => ({
         sahayak_id: s.id,
         name: s.name,
         total: s.verifications_week + s.total_pending,
@@ -714,22 +760,32 @@ const CAODashboard = () => {
       avg_digital_attendance: 31,
       fraud_flagged_count: 5,
       overall_gap_pct: 26,
-      sahayak_performance: SAHAYAKS.map(s => ({
+      sahayak_performance: rows.map((s) => ({
         sahayak_id: s.id,
         sahayak_name: s.name,
         total_sessions: Math.round(s.verifications_week * 1.3),
-        overall_compliance_ratio: s.status === 'excellent' ? 0.92 : s.status === 'good' ? 0.78 : 0.55,
+        overall_compliance_ratio:
+          s.status === 'excellent'
+            ? 0.92
+            : s.status === 'good'
+              ? 0.78
+              : 0.55,
         fraud_flags: s.overdue_15d,
-        overall_risk: s.status === 'excellent' ? 'CLEAN' : s.status === 'good' ? 'MODERATE' : 'HIGH',
+        overall_risk:
+          s.status === 'excellent'
+            ? 'CLEAN'
+            : s.status === 'good'
+              ? 'MODERATE'
+              : 'HIGH',
       })),
       insights: [
-        'Suresh Mane has 2 overdue verifications older than 15 days — recommend on-site review.',
-        'Wagholi mandal attendance gap is 26 % — exceeds the 20 % policy threshold.',
-        'Priya Desai is the strongest performer this week (35 verifications, avg 1.8 days).',
+        `${mandal?.district_name || 'District'} — ${mandal?.name || 'circle'} linked to CSV hierarchy (${rows.length} Krushi Sahayak profile${rows.length === 1 ? '' : 's'}).`,
+        'Attendance and verification metrics below are synthesized for demo when the API is offline.',
+        `Statewide survey records in dataset: ${totalSurveys.toLocaleString('en-IN')}.`,
       ],
     };
     const fallbackAppIntel = {
-      total_applications: 142,
+      total_applications: fallbackSummary.total_applications,
       by_status: fallbackSummary.by_status,
       by_scheme_category: {
         'Drip Irrigation': 38,
@@ -737,11 +793,11 @@ const CAODashboard = () => {
         'Seed Subsidy': 31,
         'PMFBY Insurance': 27,
         'Fertilizer DBT': 16,
-        'Other': 8,
+        Other: 8,
       },
     };
     return { fallbackSummary, fallbackVistar, fallbackAppIntel };
-  };
+  }, [sahayakMatrixRows, mandal, stats]);
 
   useEffect(() => {
     setLoading(true);
@@ -751,18 +807,19 @@ const CAODashboard = () => {
       fetchVistarFraudAlerts(mid),
       fetchMKAApplicationIntelligence(mid),
     ]).then(([s, v, f, a]) => {
-      const { fallbackSummary, fallbackVistar, fallbackAppIntel } = buildFallbackData();
+      const { fallbackSummary, fallbackVistar, fallbackAppIntel } =
+        buildFallbackData();
       setSummary(s.status === 'fulfilled' && s.value ? s.value : fallbackSummary);
       setVistar(v.status === 'fulfilled' && v.value ? v.value : fallbackVistar);
       setFraudSes(f.status === 'fulfilled' ? (f.value?.alerts || []) : []);
       setAppIntel(a.status === 'fulfilled' && a.value ? a.value : fallbackAppIntel);
     }).finally(() => setLoading(false));
-  }, [mid]);
+  }, [mid, buildFallbackData]);
 
   const SUPERVISION_TABS = [
-    { id: 'sahayak', icon: 'group',      label: 'Sahayaks' },
-    { id: 'vistar',  icon: 'school',     label: 'Krishi Vistar' },
-    { id: 'mandal',  icon: 'dashboard',  label: 'Mandal Info' },
+    { id: 'sahayak', icon: 'group', label: 'Sahayaks' },
+    { id: 'vistar', icon: 'school', label: 'Krishi Vistar' },
+    { id: 'mandal', icon: 'dashboard', label: 'Mandal Info' },
   ];
 
   return (
@@ -779,7 +836,7 @@ const CAODashboard = () => {
 
       {/* ── Main Grid: Map + Right Panel ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, flex: 1, minHeight: 0 }}>
-        
+
         {/* Map Card */}
         <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 480 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
@@ -793,97 +850,115 @@ const CAODashboard = () => {
           </div>
         </div>
 
-        {/* ── Right Panel ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          
-          {/* Supervision Tabs Widget */}
-          <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', height: 410 }}>
-            <div style={{ display: 'flex', background: '#f7f8f4', borderBottom: '1px solid #e2e3df', padding: '12px 12px', gap: 8 }}>
-              {SUPERVISION_TABS.map(tab => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    style={{
-                      flex: 1,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 10,
-                      gap: 4,
-                      padding: '8px 4px',
-                      background: isActive ? '#033621' : 'transparent',
-                      color: isActive ? '#ffffff' : '#717972',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{tab.icon}</span>
-                    <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{tab.label}</span>
-                  </button>
-                );
-              })}
+        {/* Sahayak Matrix */}
+        <div className="surface-card surface-card-static overflow-hidden flex flex-col min-w-0">
+          <div className="flex justify-between items-center hairline" style={{ padding: '22px 24px', gap: '16px', minHeight: '64px', borderBottomWidth: '1px', borderBottomStyle: 'solid' }}>
+            <div className="flex items-center min-w-0" style={{ gap: '12px' }}>
+              <span className="material-symbols-outlined text-on-surface-variant flex-shrink-0" style={{ fontSize: '22px' }}>leaderboard</span>
+              <h3 className="font-section-header font-bold text-base text-on-background tracking-tight truncate" style={{ lineHeight: 1.3 }}>Sahayak Accountability Matrix</h3>
             </div>
-
-            {loading ? (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 32, color: '#717972' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 32, opacity: 0.4 }}>hourglass_top</span>
-                <span style={{ fontSize: 13, fontWeight: 500 }}>Loading...</span>
-              </div>
-            ) : (
-              <div style={{ flex: 1, overflowY: 'auto' }}>
-                {activeTab === 'sahayak' && <SahayakSupervisionPanel summary={summary} vistar={vistar} />}
-                {activeTab === 'vistar' && <VistarSupervisionPanel vistar={vistar} fraudSes={fraudSes} />}
-                {activeTab === 'mandal' && <MandalOverviewPanel summary={summary} appIntel={appIntel} vistar={vistar} />}
-              </div>
-            )}
+            <span className="inline-flex items-center font-bold flex-shrink-0 whitespace-nowrap" style={{ background: '#fff4e6', color: '#b45309', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '4px 10px', borderRadius: '8px', fontSize: '10.5px', letterSpacing: '0.04em' }}>
+              {DASHBOARD_KPIS.sahayaks_critical} Critical
+            </span>
           </div>
-
-          {/* Shop Tracker Widget - Condensed */}
-          <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid #f3f4f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>storefront</span>
-                <h3 style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Krushi Seva Kendra</h3>
-              </div>
-              <span style={{ fontSize: 9, fontWeight: 700, color: '#b45309', background: 'rgba(255,244,230,0.6)', padding: '3px 8px', borderRadius: 6 }}>{DASHBOARD_KPIS.shops_overdue} Overdue</span>
-            </div>
-            <div style={{ padding: '0px' }}>
-              <ShopTracker condensed />
-            </div>
+          <div className="p-0 overflow-x-auto w-full">
+            <SahayakMatrix sahayaks={SAHAYAKS} />
           </div>
         </div>
       </div>
 
-      {/* ── Sahayak Accountability Table (Full Width) ── */}
-      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(3, 54, 33, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#033621' }}>leaderboard</span>
+      {/* Right Column (Spans 4 cols) */}
+      <div className="lg:col-span-4 flex flex-col gap-6 min-w-0">
+
+        {/* Supervision Tabs Widget */}
+        <div className="surface-card surface-card-static flex flex-col min-w-0" style={{ height: '410px' }}>
+          {/* Tab bar */}
+          <div className="flex hairline rounded-t-[16px]" style={{ gap: '8px', padding: '14px 14px', background: '#f7f8f4', borderBottomWidth: '1px', borderBottomStyle: 'solid' }}>
+            {SUPERVISION_TABS.map(tab => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="flex-1 flex flex-col items-center justify-center rounded-lg transition-all duration-200"
+                  style={{
+                    gap: '6px',
+                    padding: '10px 6px',
+                    minHeight: '52px',
+                    background: isActive ? '#033621' : 'transparent',
+                    color: isActive ? '#ffffff' : '#717972',
+                    boxShadow: isActive ? '0 2px 8px rgba(3, 54, 33, 0.18)' : 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#eef2ee'; }}
+                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'inherit' }}>{tab.icon}</span>
+                  <span style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.04em', color: 'inherit' }}>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
-          <div style={{ flex: 1 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
-              Sahayak Accountability Matrix
-            </h3>
-            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>Live performance and compliance telemetry across the circle</p>
-          </div>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#b45309', background: '#fff4e6', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '6px 12px', borderRadius: 8 }}>
-            {DASHBOARD_KPIS.sahayaks_critical} Critical Sahayaks
-          </span>
+
+          {loading ? (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 32, color: '#717972' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 32, opacity: 0.4 }}>hourglass_top</span>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Loading...</span>
+            </div>
+          ) : (
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {activeTab === 'sahayak' && <SahayakSupervisionPanel summary={summary} vistar={vistar} />}
+              {activeTab === 'vistar' && <VistarSupervisionPanel vistar={vistar} fraudSes={fraudSes} />}
+              {activeTab === 'mandal' && <MandalOverviewPanel summary={summary} appIntel={appIntel} vistar={vistar} />}
+            </div>
+          )}
         </div>
-        <div style={{ overflowX: 'auto' }}>
-          <SahayakMatrix sahayaks={SAHAYAKS} />
+
+        {/* Shop Tracker Widget - Condensed */}
+        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid #f3f4f0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>storefront</span>
+              <h3 style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Krushi Seva Kendra</h3>
+            </div>
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#b45309', background: 'rgba(255,244,230,0.6)', padding: '3px 8px', borderRadius: 6 }}>{DASHBOARD_KPIS.shops_overdue} Overdue</span>
+          </div>
+          <div style={{ padding: '0px' }}>
+            <ShopTracker condensed />
+          </div>
         </div>
       </div>
-
-      {/* ── PMFBY Overlay ── */}
-      {pmfbyOpen && (
-        <PMFBYPanel events={PMFBY_EVENTS} onClose={() => setPmfbyOpen(false)} />
-      )}
     </div>
+
+      {/* ── Sahayak Accountability Table (Full Width) ── */ }
+  <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
+      <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(3, 54, 33, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#033621' }}>leaderboard</span>
+      </div>
+      <div style={{ flex: 1 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
+          Sahayak Accountability Matrix
+        </h3>
+        <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>Live performance and compliance telemetry across the circle</p>
+      </div>
+      <span style={{ fontSize: 10, fontWeight: 700, color: '#b45309', background: '#fff4e6', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '6px 12px', borderRadius: 8 }}>
+        {DASHBOARD_KPIS.sahayaks_critical} Critical Sahayaks
+      </span>
+    </div>
+    <div style={{ overflowX: 'auto' }}>
+      <SahayakMatrix sahayaks={SAHAYAKS} />
+    </div>
+  </div>
+
+  {/* ── PMFBY Overlay ── */ }
+  {
+    pmfbyOpen && (
+      <PMFBYPanel events={PMFBY_EVENTS} onClose={() => setPmfbyOpen(false)} />
+    )
+  }
+    </div >
   );
 };
 
