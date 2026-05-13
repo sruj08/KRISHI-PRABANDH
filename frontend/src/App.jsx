@@ -16,7 +16,12 @@ import SurveyOperationsDashboard from './features/survey_operations/SurveyOperat
 import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
 import TAODashboard from './pages/tao/TAODashboard';
+import TaoAIFlaggedCases from './pages/tao/TaoAIFlaggedCases';
+import { TaoPendingApplicationsPage, TaoFieldVerificationPage } from './pages/tao/TaoWorkflowListPage';
 import DistrictDashboard from './pages/district/DistrictDashboard';
+import DistrictAnalytics from './pages/district/DistrictAnalytics';
+import TalukaComparison from './pages/district/TalukaComparison';
+import FraudTrends from './pages/district/FraudTrends';
 import DivisionDashboard from './pages/division/DivisionDashboard';
 import StateDashboard from './pages/state/StateDashboard';
 import AdvancedTools from './pages/AdvancedTools';
@@ -45,7 +50,7 @@ const DashboardRouter = () => {
   if (user?.role === 'farmer') return <Navigate to="/farmer" replace />;
   if (user?.role === 'cao')    return <Navigate to="/cao" replace />;
   if (user?.role === 'tao')    return <Navigate to="/tao" replace />;
-  if (user?.role === 'district') return <Navigate to="/district" replace />;
+  if (user?.role === 'district') return <Navigate to="/dao" replace />;
   return <Navigate to="/officer" replace />;
 };
 
@@ -61,13 +66,20 @@ const App = () => {
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/" element={<DashboardRouter />} />
             <Route path="/cao" element={<CAODashboard />} />
-            <Route path="/district" element={<DistrictDashboard />} />
+            <Route path="/district" element={<Navigate to="/dao" replace />} />
+            <Route path="/dao" element={<DistrictDashboard />} />
+            <Route path="/dao/district-analytics" element={<DistrictAnalytics />} />
+            <Route path="/dao/taluka-comparison" element={<TalukaComparison />} />
+            <Route path="/dao/fraud-trends" element={<FraudTrends />} />
+            <Route path="/tao" element={<TAODashboard />} />
+            <Route path="/tao/pending-applications" element={<TaoPendingApplicationsPage />} />
+            <Route path="/tao/ai-flagged-cases" element={<TaoAIFlaggedCases />} />
+            <Route path="/tao/field-verification-requests" element={<TaoFieldVerificationPage />} />
             <Route path="/officer" element={<SahayakDashboard />} />
             <Route path="/officer/gr-assistant" element={<GRAssistantPage />} />
             <Route path="/officer/scan-document" element={<ScanDocumentPage />} />
             <Route path="/officer/ai-verification" element={<AIVerificationPage />} />
             <Route path="/survey" element={<SurveyOperationsDashboard />} />
-            <Route path="/tao" element={<TAODashboard />} />
             <Route path="/mandal" element={<MandalDashboard />} />
             <Route path="/applications" element={<Applications />} />
             <Route path="/capture-photo" element={<CapturePhoto />} />

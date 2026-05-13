@@ -31,7 +31,7 @@ const LandingPage = () => {
     else if (selectedRole === 'farmer') navigate('/farmer');
     else if (selectedRole === 'cao') navigate('/cao');
     else if (selectedRole === 'tao') navigate('/tao');
-    else if (selectedRole === 'district') navigate('/district');
+    else if (selectedRole === 'district') navigate('/dao');
     else navigate('/officer');
   };
 

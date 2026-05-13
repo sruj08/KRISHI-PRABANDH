@@ -115,27 +115,59 @@ const Sidebar = ({ isOpen }) => {
       ];
     }
 
-    if (role === 'district' || role === 'tao' || role === 'cao') {
+    if (role === 'cao') {
       return [
         {
           id: 'dao_overview',
           label: 'OVERVIEW',
           items: [
-            { to: `/${role === 'district' ? 'district' : role}`, icon: 'dashboard', label: 'Dashboard' },
+            { to: '/cao', icon: 'dashboard', label: 'Dashboard' },
             { to: '/map', icon: 'map', label: 'Command Map' },
-          ]
+          ],
         },
         {
           id: 'dao_modules',
           label: 'MODULES',
           items: [
-            { to: '/survey',       icon: 'bar_chart',       label: 'Scheme Analytics' },
-            { to: '/geo',          icon: 'eco',             label: 'Crop Health / NDVI' },
+            { to: '/survey', icon: 'bar_chart', label: 'Scheme Analytics' },
+            { to: '/geo', icon: 'eco', label: 'Crop Health / NDVI' },
             { to: '/applications', icon: 'account_balance', label: 'PFMS Monitoring' },
-            { to: '/grievances',   icon: 'priority_high',   label: 'Grievance Escalation' },
-            { to: '/audit-logs',   icon: 'history',         label: 'Audit Logs' },
-          ]
-        }
+            { to: '/grievances', icon: 'priority_high', label: 'Grievance Escalation' },
+            { to: '/audit-logs', icon: 'history', label: 'Audit Logs' },
+          ],
+        },
+      ];
+    }
+
+    if (role === 'tao') {
+      return [
+        {
+          id: 'tao_nav',
+          label: 'MODULES',
+          items: [
+            { to: '/tao', icon: 'dashboard', label: 'Dashboard' },
+            { to: '/tao/pending-applications', icon: 'pending_actions', label: 'Pending Applications' },
+            { to: '/tao/ai-flagged-cases', icon: 'flag', label: 'AI Flagged Cases' },
+            { to: '/tao/field-verification-requests', icon: 'assignment_turned_in', label: 'Field Verification Requests' },
+            { to: '/survey', icon: 'bar_chart', label: 'Scheme Analytics' },
+          ],
+        },
+      ];
+    }
+
+    if (role === 'district') {
+      return [
+        {
+          id: 'dao_nav',
+          label: 'MODULES',
+          items: [
+            { to: '/dao', icon: 'dashboard', label: 'Dashboard' },
+            { to: '/dao/district-analytics', icon: 'analytics', label: 'District Analytics' },
+            { to: '/dao/taluka-comparison', icon: 'compare', label: 'Taluka Comparison' },
+            { to: '/dao/fraud-trends', icon: 'trending_up', label: 'Fraud Trends' },
+            { to: '/survey', icon: 'bar_chart', label: 'Scheme Monitoring' },
+          ],
+        },
       ];
     }
 
@@ -243,7 +275,7 @@ const Sidebar = ({ isOpen }) => {
                       <NavLink
                         key={link.to}
                         to={link.to}
-                        end={link.to === '/'}
+                        end={link.to === '/' || link.to === '/tao' || link.to === '/dao' || link.to === '/cao'}
                         className={({ isActive }) => {
                           let active = isActive;
                           if (
