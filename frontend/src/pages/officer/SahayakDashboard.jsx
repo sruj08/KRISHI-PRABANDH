@@ -66,6 +66,55 @@ function buildDatasetFarmersForSahayak(user, officers, farmerProfiles, villages)
   });
 }
 
+/** Agristack mock farmers scoped to this sahayak’s district / taluka */
+function buildAgristackFarmerCards(user, agristackFarmers) {
+  if (!user || !agristackFarmers?.length) return [];
+  const did = user.district_id != null ? num(user.district_id) : null;
+  const tid = user.taluka_id != null ? num(user.taluka_id) : null;
+  const dname = (user.district_name || '').trim().toLowerCase();
+
+  let pool = [];
+  if (did != null) {
+    pool = agristackFarmers.filter(
+      (r) => r.district_id != null && num(r.district_id) === did,
+    );
+    if (tid != null && pool.length) {
+      const tSub = pool.filter(
+        (r) => r.taluka_id != null && num(r.taluka_id) === tid,
+      );
+      if (tSub.length) pool = tSub;
+    }
+  }
+  if (!pool.length && dname) {
+    pool = agristackFarmers.filter(
+      (r) => (r.district || '').trim().toLowerCase() === dname,
+    );
+  }
+  if (!pool.length && user.taluka_name) {
+    const tnorm = String(user.taluka_name).replace(/_/g, ' ').toLowerCase();
+    const hint = tnorm.split(/\s+/).filter(Boolean)[0] || tnorm;
+    pool = agristackFarmers.filter((r) => {
+      const rt = (r.taluka || '').toLowerCase();
+      return rt.includes(hint) || hint.includes(rt.split(/[_\s]/)[0]);
+    });
+  }
+  if (!pool.length) return [];
+
+  return pool.slice(0, 60).map((r) => ({
+    application_id: `agristack-${r.farmer_id}`,
+    farmer_id: r.farmer_id,
+    farmer_name: r.full_name,
+    component: `${r.village} · ${r.taluka}`,
+    scheme_name: `Agristack mock · ${r.primary_crop || 'Profile'}`,
+    scheme_category: `${r.category || '—'} · ${r.land_holding_ha} ha · ${r.soil_type || ''}`,
+    remarks: [r.mobile, r.status, r.registration_date].filter(Boolean).join(' · '),
+    status: r.status === 'Active' ? 'Approved' : 'Under Scrutiny',
+    application_date: (r.registration_date || '2024-01-01').slice(0, 10),
+    _fromDataset: true,
+    _agristack: true,
+  }));
+}
+
 function buildDatasetSummary(rows) {
   const byStatus = { Approved: 0, Rejected: 0, 'Under Scrutiny': 0 };
   for (const r of rows) {
@@ -108,12 +157,26 @@ const SahayakDashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { officers, farmerProfiles, villages } = useKrishiData();
+  const { officers, farmerProfiles, villages, agristackFarmers } = useKrishiData();
 
-  const csvFarmers = useMemo(
-    () => buildDatasetFarmersForSahayak(user, officers, farmerProfiles, villages),
-    [user, officers, farmerProfiles, villages],
-  );
+  const datasetFarmers = useMemo(() => {
+    const core = buildDatasetFarmersForSahayak(
+      user,
+      officers,
+      farmerProfiles,
+      villages,
+    );
+    const ag = buildAgristackFarmerCards(user, agristackFarmers);
+    const seen = new Set(core.map((c) => String(c.farmer_id)));
+    const out = [...core];
+    for (const row of ag) {
+      if (!seen.has(String(row.farmer_id))) {
+        seen.add(String(row.farmer_id));
+        out.push(row);
+      }
+    }
+    return out.slice(0, 120);
+  }, [user, officers, farmerProfiles, villages, agristackFarmers]);
 
   const [selectedApp, setSelectedApp] = useState(null);
   const [summary, setSummary] = useState(null);
@@ -142,17 +205,21 @@ const SahayakDashboard = () => {
     load();
   }, []);
 
-  /** When API returns no rows, show farmers from merged CSV (same sahayak / circle / taluka) */
+  /** When API returns no rows, show dataset (registry + Agristack mock) */
   useEffect(() => {
     if (loading) return;
     if (eligibleFarmers.length > 0) return;
-    if (!csvFarmers.length) return;
-    setEligibleFarmers(csvFarmers);
-    setSummary((prev) => prev || buildDatasetSummary(csvFarmers));
-  }, [loading, eligibleFarmers.length, csvFarmers]);
+    if (!datasetFarmers.length) return;
+    setEligibleFarmers(datasetFarmers);
+    setSummary((prev) => prev || buildDatasetSummary(datasetFarmers));
+  }, [loading, eligibleFarmers.length, datasetFarmers]);
 
   const handleFarmerClick = async (app) => {
-    if (app._fromDataset || String(app.application_id || '').startsWith('csv-farmer-')) {
+    if (
+      app._fromDataset ||
+      String(app.application_id || '').startsWith('csv-farmer-') ||
+      String(app.application_id || '').startsWith('agristack-')
+    ) {
       setSelectedApp({
         ...app,
         priority: getPriority(app),
@@ -203,7 +270,7 @@ const SahayakDashboard = () => {
 
         <div className="cao-header-right">
           <span className="badge badge-verified" style={{ fontSize: '11px', marginRight: '8px' }}>
-            {apiOnline ? 'API Live' : eligibleFarmers.some((f) => f._fromDataset) ? 'CSV roster' : 'Offline Mode'}
+            {apiOnline ? 'API Live' : eligibleFarmers.some((f) => f._fromDataset) ? 'CSV + Agristack' : 'Offline Mode'}
           </span>
           <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>notifications</span>
           <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>settings</span>

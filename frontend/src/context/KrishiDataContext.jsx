@@ -26,6 +26,7 @@ const EMPTY = {
   weatherAnalytics: [],
   satelliteAnalytics: [],
   compensationPayments: [],
+  agristackFarmers: [],
 };
 
 function buildMatrixRow(s, mandalName, villageNamesInCircle, idx) {
@@ -197,6 +198,7 @@ export function KrishiDataProvider({ children }) {
       weatherAnalytics: dataset?.weatherAnalytics ?? EMPTY.weatherAnalytics,
       satelliteAnalytics: dataset?.satelliteAnalytics ?? EMPTY.satelliteAnalytics,
       compensationPayments: dataset?.compensationPayments ?? EMPTY.compensationPayments,
+      agristackFarmers: dataset?.agristackFarmers ?? EMPTY.agristackFarmers,
       getReportingChain,
       pickOfficerForUiRole,
       loginPayloadFromOfficer,

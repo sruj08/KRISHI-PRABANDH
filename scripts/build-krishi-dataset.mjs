@@ -66,6 +66,12 @@ function read(name) {
   return parseCSV(fs.readFileSync(p, 'utf8'));
 }
 
+function readOptional(name) {
+  const p = path.join(CSV_DIR, name);
+  if (!fs.existsSync(p)) return [];
+  return parseCSV(fs.readFileSync(p, 'utf8'));
+}
+
 function num(v, d = 0) {
   const n = Number(v);
   return Number.isFinite(n) ? n : d;
@@ -464,6 +470,66 @@ function main() {
     kyc_status: p.kyc_status,
   }));
 
+  const districtNameToId = Object.fromEntries(
+    districts.map((d) => [String(d.name || '').trim().toLowerCase(), num(d.district_id)]),
+  );
+  const talukasByDistrictId = {};
+  for (const t of talukas) {
+    const key = String(t.district_id);
+    if (!talukasByDistrictId[key]) talukasByDistrictId[key] = [];
+    talukasByDistrictId[key].push(t);
+  }
+
+  function resolveTalukaIdForAgristack(districtId, talukaLabel) {
+    if (!districtId || !talukaLabel) return null;
+    const list = talukasByDistrictId[String(districtId)] || [];
+    const needle = String(talukaLabel).trim().toLowerCase().replace(/_/g, ' ');
+    const token = needle.split(/\s+/)[0];
+    const hit = list.find((t) => {
+      const nm = String(t.name || '').toLowerCase();
+      return nm.includes(needle) || nm.includes(token) || needle.includes(nm.split('_')[0]);
+    });
+    return hit ? num(hit.taluka_id) : null;
+  }
+
+  const agristackRaw = readOptional('agristack_mock_farmers.csv');
+  const agristackFarmers = agristackRaw.map((row) => {
+    const dname = String(row.district || '').trim().toLowerCase();
+    const district_id = districtNameToId[dname] ?? null;
+    const taluka_id = district_id
+      ? resolveTalukaIdForAgristack(district_id, row.taluka)
+      : null;
+    return {
+      farmer_id: row.farmer_id,
+      username: row.username,
+      full_name: row.full_name,
+      gender: row.gender,
+      age: num(row.age),
+      category: row.category,
+      mobile: row.mobile,
+      district: row.district,
+      district_id,
+      taluka: row.taluka,
+      taluka_id,
+      village: row.village,
+      pincode: row.pincode,
+      land_holding_ha: num(row.land_holding_ha),
+      primary_crop: row.primary_crop,
+      secondary_crop: row.secondary_crop,
+      registration_date: row.registration_date,
+      status: row.status,
+      soil_type: row.soil_type,
+      irrigation_source: row.irrigation_source,
+      source: 'agristack_mock',
+    };
+  });
+
+  const agristackByDistrictName = {};
+  for (const r of agristackFarmers) {
+    const k = (r.district || 'Unknown').trim() || 'Unknown';
+    agristackByDistrictName[k] = (agristackByDistrictName[k] || 0) + 1;
+  }
+
   const datasetSummary = read('dataset_summary.csv');
 
   const dataset = {
@@ -480,6 +546,7 @@ function main() {
     mandals,
     sahayaks,
     farmerProfiles: farmerProfilesLite,
+    agristackFarmers,
     farms: farmsLite,
     surveys: surveysLite,
     surveyEvidence,
@@ -495,6 +562,8 @@ function main() {
       totalFarms: farms.length,
       totalFarmers: farmerUsers.length,
       totalOfficers: officers.length,
+      totalAgristackFarmers: agristackFarmers.length,
+      agristackByDistrictName,
       totalSurveyEvidence: surveyEvidence.length,
       totalSurveyApprovals: surveyApprovals.length,
       totalAuditLogs: auditLogs.length,
