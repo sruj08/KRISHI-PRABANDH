@@ -1,0 +1,5 @@
+{
+  "consumer_name": "(?:Consumer|Name|ग्राहक|नाव)\\s*[:\\-]?\\s*([A-Za-z\\u0900-\\u097F\\s]{3,80})",
+  "address": "(?:Address|पत्ता)\\s*[:\\-]?\\s*([A-Za-z0-9\\u0900-\\u097F\\s,\\-\\/]{8,200})",
+  "consumer_number": "(?:Consumer\\s*(?:No|Number|ID)|ग्राहक क्रमांक)\\s*[:\\-]?\\s*([A-Z0-9\\-]{5,30})"
+}
