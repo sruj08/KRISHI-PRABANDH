@@ -67,7 +67,8 @@ export default defineConfig({
           }
         ]
       },
-      devOptions: { enabled: true }
+      // Disable PWA service worker in dev — it can cache stale CSS/JS and break icons/layout.
+      devOptions: { enabled: false },
     })
   ],
   server: {
