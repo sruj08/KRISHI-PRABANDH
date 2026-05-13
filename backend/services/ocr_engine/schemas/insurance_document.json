@@ -1,0 +1,6 @@
+{
+  "policy_number": "(?:Policy|पॉलिसी)\\s*(?:No|नं)?\\s*[:\\-]?\\s*([A-Z0-9\\/\\-]{6,32})",
+  "insured_name": "(?:Insured|Proposer|नाव)\\s*[:\\-]?\\s*([A-Za-z\\u0900-\\u097F\\s]{3,80})",
+  "coverage_amount": "(?:Sum Insured|Coverage|विमा रक्कम)\\s*[:\\-]?\\s*(?:Rs\\.?|₹)?\\s*([\\d,]+\\.?[\\d]*)",
+  "validity": "(?:Valid|Validity|पर्यंत)\\s*(?:Till|To|Up to)?\\s*[:\\-]?\\s*([\\d]{1,2}[/\\-\\.][\\d]{1,2}[/\\-\\.][\\d]{2,4})"
+}

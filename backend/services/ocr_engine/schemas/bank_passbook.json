@@ -1,0 +1,6 @@
+{
+  "account_number": "(?:A/?c|Account|खाते)\\s*(?:No|नं)?\\s*[:\\-]?\\s*([0-9]{9,18})",
+  "ifsc": "(?:IFSC)\\s*[:\\-]?\\s*([A-Z]{4}0[A-Z0-9]{6})",
+  "account_holder_name": "(?:Name|Holder|नाव)\\s*[:\\-]?\\s*([A-Za-z\\s]{3,60})",
+  "bank_name": "(?:Bank|बँक)\\s*[:\\-]?\\s*([A-Za-z\\s]{3,60})"
+}

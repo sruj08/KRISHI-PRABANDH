@@ -1,0 +1,18 @@
+{
+  "case_id": "(?i)case_id\\s*[:\\-]\\s*([A-Za-z0-9_\\-]+)",
+  "link": "(?i)link\\s*[:\\-]\\s*(.+?)(?:\\n|$)",
+  "procedure_code": "(?i)procedure_code\\s*[:\\-]\\s*([A-Za-z0-9_]+)",
+  "page_number": "(?i)page_number\\s*[:\\-]\\s*(\\d+)",
+  "clinical_notes": "(?i)clinical_notes\\s*[:\\-]\\s*([01])",
+  "cbc_hb_report": "(?i)cbc_hb_report\\s*[:\\-]\\s*([01])",
+  "indoor_case": "(?i)indoor_case\\s*[:\\-]\\s*([01])",
+  "treatment_details": "(?i)treatment_details\\s*[:\\-]\\s*([01])",
+  "post_hb_report": "(?i)post_hb_report\\s*[:\\-]\\s*([01])",
+  "discharge_summary": "(?i)discharge_summary\\s*[:\\-]\\s*([01])",
+  "severe_anemia": "(?i)severe_anemia\\s*[:\\-]\\s*([01])",
+  "common_signs": "(?i)common_signs\\s*[:\\-]\\s*([01])",
+  "significant_signs": "(?i)significant_signs\\s*[:\\-]\\s*([01])",
+  "life_threatening_signs": "(?i)life_threatening_signs\\s*[:\\-]\\s*([01])",
+  "extra_document": "(?i)extra_document\\s*[:\\-]\\s*([01])",
+  "document_rank": "(?i)document_rank\\s*[:\\-]\\s*(\\d+)"
+}

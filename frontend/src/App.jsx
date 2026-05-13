@@ -24,6 +24,9 @@ import VisitPlanner from './pages/VisitPlanner';
 import Placeholder from './pages/Placeholder';
 import NotFound from './pages/NotFound';
 import SahayakDashboard from './pages/officer/SahayakDashboard';
+import GRAssistantPage from './pages/officer/GRAssistantPage';
+import ScanDocumentPage from './pages/officer/ScanDocumentPage';
+import AIVerificationPage from './pages/officer/AIVerificationPage';
 import GramSabha from './pages/GramSabha';
 
 // Protected Route Wrapper
@@ -60,6 +63,9 @@ const App = () => {
             <Route path="/cao" element={<CAODashboard />} />
             <Route path="/district" element={<DistrictDashboard />} />
             <Route path="/officer" element={<SahayakDashboard />} />
+            <Route path="/officer/gr-assistant" element={<GRAssistantPage />} />
+            <Route path="/officer/scan-document" element={<ScanDocumentPage />} />
+            <Route path="/officer/ai-verification" element={<AIVerificationPage />} />
             <Route path="/survey" element={<SurveyOperationsDashboard />} />
             <Route path="/tao" element={<TAODashboard />} />
             <Route path="/mandal" element={<MandalDashboard />} />

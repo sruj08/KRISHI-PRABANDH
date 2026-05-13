@@ -3,34 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 
 import CircularGauge from '../../components/ui/CircularGauge';
-import InsightModal from '../../components/ui/InsightModal';
-import { fetchSummary, fetchEligibleFarmers, fetchApplication } from '../../utils/api';
-
-
-const getDaysSince = (dateStr) => {
-  if (!dateStr) return 0;
-  const parts = dateStr.split('-');
-  const date = parts.length === 3 ? new Date(`${parts[2]}-${parts[1]}-${parts[0]}`) : new Date(dateStr);
-  if (isNaN(date.getTime())) return 0;
-  return Math.max(0, Math.floor((new Date() - date) / 86400000));
-};
-
-const getPriority = (app) => {
-  const status = app.status || '';
-  const remarks = app.remarks || '';
-  if (status === 'Under Scrutiny' && remarks.includes('Field')) return 'HIGH';
-  if (status === 'Applied') return 'MEDIUM';
-  if (status === 'Rejected') return 'LOW';
-  return 'NORMAL';
-};
+import { fetchSummary } from '../../utils/api';
 
 const SahayakDashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
 
-  const [selectedApp, setSelectedApp] = useState(null);
   const [summary, setSummary] = useState(null);
-  const [eligibleFarmers, setEligibleFarmers] = useState([]);
   const [apiOnline, setApiOnline] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -38,9 +17,8 @@ const SahayakDashboard = () => {
     const load = async () => {
       setLoading(true);
       try {
-        const [s, e] = await Promise.all([fetchSummary(), fetchEligibleFarmers(8)]);
+        const s = await fetchSummary();
         setSummary(s);
-        setEligibleFarmers(e.results || []);
         setApiOnline(true);
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
@@ -51,16 +29,6 @@ const SahayakDashboard = () => {
     };
     load();
   }, []);
-
-  const handleFarmerClick = async (app) => {
-    try {
-      const full = await fetchApplication(app.application_id);
-      setSelectedApp({ ...full, priority: getPriority(full), daysSince: getDaysSince(full.application_date) });
-    } catch (error) {
-      console.error('Failed to load application:', error);
-      setSelectedApp({ ...app, priority: getPriority(app), daysSince: getDaysSince(app.application_date) });
-    }
-  };
 
   const displayName = 'Sahayak Krushi Adhikari';
   const displayLocation = 'Assigned: 5 Villages';
@@ -73,10 +41,39 @@ const SahayakDashboard = () => {
     { icon: 'check_circle',  label: 'Approved',           value: summary?.by_status?.Approved,        color: '#396940', bg: 'rgba(57,105,64,0.06)', path: '/applications' },
   ];
 
+  const pendingAlerts = Number(summary?.fraud_alerts) || 0;
+
+  const docIntelCards = [
+    {
+      icon: 'description',
+      label: 'GR ASSISTANT',
+      subtitle: 'Upload & understand GR documents',
+      path: '/officer/gr-assistant',
+      badgeNew: true,
+      color: 'var(--primary)',
+      bg: 'rgba(3,54,33,0.06)',
+    },
+    {
+      icon: 'document_scanner',
+      label: 'SCAN DOCUMENT',
+      subtitle: 'Aadhaar • Satbara • Bank Passbook',
+      path: '/officer/scan-document',
+      color: 'var(--amber)',
+      bg: 'rgba(180,83,9,0.06)',
+    },
+    {
+      icon: 'verified_user',
+      label: 'AI VERIFICATION',
+      subtitle: 'View flagged anomalies',
+      path: '/officer/ai-verification',
+      color: 'var(--tertiary)',
+      bg: 'rgba(77,32,36,0.06)',
+      countBadge: pendingAlerts > 0 ? pendingAlerts : null,
+    },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-8)', animation: 'fadeIn 0.4s ease' }}>
-      <InsightModal app={selectedApp} onClose={() => setSelectedApp(null)} />
-
       {/* ── Header ── */}
       <header className="cao-header" style={{ marginLeft: '-var(--sp-6)', marginRight: '-var(--sp-6)', marginTop: '-var(--sp-6)', marginBottom: 'var(--sp-6)' }}>
         <div className="cao-header-left">
@@ -87,7 +84,7 @@ const SahayakDashboard = () => {
         </div>
 
         <div className="cao-header-center" style={{ flex: 1, display: 'flex', justifyContent: 'center', fontSize: '13px', color: 'var(--text-muted)', gap: '16px' }}>
-          <span>{t(displayLocation, lang)}</span> • 
+          <span>{t(displayLocation, lang)}</span> •
           <span>{t(displayName, lang)}</span>
         </div>
 
@@ -159,7 +156,7 @@ const SahayakDashboard = () => {
                 style={{ cursor: 'pointer' }}
               >
                 <div className="kpi-card-header">
-                  <span className="material-symbols-outlined" style={{ color: item.color }}>{item.icon}</span> 
+                  <span className="material-symbols-outlined" style={{ color: item.color }}>{item.icon}</span>
                   <span style={{ color: item.color }}>{item.label}</span>
                 </div>
                 <div className="kpi-card-value" style={{ color: item.color }}>
@@ -191,61 +188,71 @@ const SahayakDashboard = () => {
         </div>
       </section>
 
-      {/* ── Eligible Farmers ── */}
+      {/* ── Document Intelligence (replaces Eligible Farmers block) ── */}
       <section style={{ marginBottom: 'var(--sp-6)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
-          <h3 className="section-title" style={{ margin: 0 }}>{t('Eligible Farmers', lang)}</h3>
-          <button
-            style={{
-              background: 'transparent', border: 'none',
-              color: 'var(--primary)', fontFamily: 'var(--font-data)',
-              fontSize: 'var(--font-size-xs)', fontWeight: 700,
-              textTransform: 'uppercase', letterSpacing: '0.06em',
-              cursor: 'pointer',
-            }}
-            onClick={() => navigate('/applications')}
-          >
-            {t('View All', lang)}
-          </button>
+          <h3 className="section-title" style={{ margin: 0 }}>{t('Document Intelligence', lang)}</h3>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
-          {eligibleFarmers.length === 0 && !loading && (
-            <div style={{
-              textAlign: 'center', color: 'var(--text-muted)', padding: 'var(--sp-6)',
-              fontFamily: 'var(--font-data)', fontSize: 'var(--font-size-sm)',
-            }}>
-              No eligible farmers found.
-            </div>
-          )}
-          {eligibleFarmers.map((app, index) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--sp-4)' }}>
+          {docIntelCards.map((item, i) => (
             <div
-              key={index}
-              className="card"
-              style={{
-                padding: 'var(--sp-4) var(--sp-5)', cursor: 'pointer',
-                borderLeft: `4px solid ${getPriority(app) === 'HIGH' ? 'var(--error)' : 'var(--primary)'}`,
-              }}
-              onClick={() => handleFarmerClick(app)}
+              key={i}
+              className="quick-action-btn"
+              onClick={() => navigate(item.path)}
+              style={{ position: 'relative' }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 'var(--font-size-sm)', color: 'var(--text-dark)' }}>
-                    {app.farmer_id || '—'}
-                  </div>
-                  <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    {app.component || '—'}
-                  </div>
-                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)' }}>
-                    {app.scheme_name || '—'}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                  <span className="badge badge-grey" style={{ fontSize: '10px' }}>{app.scheme_category || '—'}</span>
-                  <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    {app.remarks || 'No remarks'}
-                  </span>
-                </div>
+              {item.badgeNew && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    background: 'var(--success)',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  NEW
+                </span>
+              )}
+              {item.countBadge != null && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    background: 'var(--error)',
+                    color: 'white',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    minWidth: '22px',
+                    height: '22px',
+                    borderRadius: '999px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {item.countBadge}
+                </span>
+              )}
+              <div style={{
+                width: '48px', height: '48px',
+                borderRadius: 'var(--radius-lg)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: item.bg,
+                color: item.color,
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>{item.icon}</span>
               </div>
+              <span className="quick-action-label">{item.label}</span>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', textAlign: 'center', marginTop: '4px', lineHeight: 1.35 }}>
+                {item.subtitle}
+              </span>
             </div>
           ))}
         </div>
