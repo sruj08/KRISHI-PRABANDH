@@ -5,10 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
 
 import CircularGauge from '../../components/ui/CircularGauge';
-import { fetchSummary } from '../../utils/api';
 import InsightModal from '../../components/ui/InsightModal';
 import { fetchSummary, fetchEligibleFarmers, fetchApplication } from '../../utils/api';
-import InsightModal from '../../components/ui/InsightModal';
 
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
