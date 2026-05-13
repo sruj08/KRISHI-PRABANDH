@@ -103,6 +103,11 @@ const DistrictDashboard = () => {
       ? stats.evidenceCountByDistrict[String(user.district_id)]
       : null;
 
+  const surveyCount =
+    user?.district_id != null && stats?.surveyCountByDistrict
+      ? stats.surveyCountByDistrict[String(user.district_id)]
+      : null;
+
   const onDscAuthorize = () => {
     const total = PFMS_BATCHES.reduce((a, b) => a + b.beneficiaries, 0);
     addToast(`DSC release queued for ${total.toLocaleString('en-IN')} beneficiaries across ${PFMS_BATCHES.length} PFMS batches (demo).`, 'success', 4200);

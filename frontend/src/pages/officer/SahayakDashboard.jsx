@@ -5,9 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
 
 import CircularGauge from '../../components/ui/CircularGauge';
-import { fetchSummary } from '../../utils/api';
-import InsightModal from '../../components/ui/InsightModal';
 import { fetchSummary, fetchEligibleFarmers, fetchApplication } from '../../utils/api';
+import InsightModal from '../../components/ui/InsightModal';
 
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
@@ -182,6 +181,8 @@ const SahayakDashboard = () => {
   const [summary, setSummary] = useState(null);
   const [apiOnline, setApiOnline] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [eligibleFarmers, setEligibleFarmers] = useState([]);
+  const [selectedApp, setSelectedApp] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -204,8 +205,6 @@ const SahayakDashboard = () => {
     load();
   }, []);
 
-  const displayName = 'Sahayak Krushi Adhikari';
-  const displayLocation = 'Assigned: 5 Villages';
   /** When API returns no rows, show dataset (registry + Agristack mock) */
   useEffect(() => {
     if (loading) return;
@@ -458,6 +457,20 @@ const SahayakDashboard = () => {
                 color: item.color,
               }}>
                 <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>{item.icon}</span>
+              </div>
+              <span className="quick-action-label">{item.label}</span>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', textAlign: 'center', marginTop: '4px', lineHeight: 1.35 }}>
+                {item.subtitle}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 'var(--sp-6)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
+          <h3 className="section-title" style={{ margin: 0 }}>{t('Eligible Farmers', lang)}</h3>
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
           {eligibleFarmers.length === 0 && !loading && (
             <div style={{
@@ -499,14 +512,14 @@ const SahayakDashboard = () => {
                   </span>
                 </div>
               </div>
-              <span className="quick-action-label">{item.label}</span>
-              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', textAlign: 'center', marginTop: '4px', lineHeight: 1.35 }}>
-                {item.subtitle}
-              </span>
             </div>
           ))}
         </div>
       </section>
+
+      {selectedApp && (
+        <InsightModal app={selectedApp} onClose={() => setSelectedApp(null)} />
+      )}
     </div>
   );
 };

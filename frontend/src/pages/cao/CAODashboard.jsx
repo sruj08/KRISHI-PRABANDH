@@ -929,36 +929,32 @@ const CAODashboard = () => {
           </div>
         </div>
       </div>
-    </div>
 
-      {/* ── Sahayak Accountability Table (Full Width) ── */ }
-  <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
-      <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(3, 54, 33, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#033621' }}>leaderboard</span>
+      {/* ── Sahayak Accountability Table (Full Width) ── */}
+      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(3, 54, 33, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#033621' }}>leaderboard</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
+              Sahayak Accountability Matrix
+            </h3>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>Live performance and compliance telemetry across the circle</p>
+          </div>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#b45309', background: '#fff4e6', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '6px 12px', borderRadius: 8 }}>
+            {DASHBOARD_KPIS.sahayaks_critical} Critical Sahayaks
+          </span>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <SahayakMatrix sahayaks={SAHAYAKS} />
+        </div>
       </div>
-      <div style={{ flex: 1 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
-          Sahayak Accountability Matrix
-        </h3>
-        <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>Live performance and compliance telemetry across the circle</p>
-      </div>
-      <span style={{ fontSize: 10, fontWeight: 700, color: '#b45309', background: '#fff4e6', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '6px 12px', borderRadius: 8 }}>
-        {DASHBOARD_KPIS.sahayaks_critical} Critical Sahayaks
-      </span>
-    </div>
-    <div style={{ overflowX: 'auto' }}>
-      <SahayakMatrix sahayaks={SAHAYAKS} />
-    </div>
-  </div>
 
-  {/* ── PMFBY Overlay ── */ }
-  {
-    pmfbyOpen && (
-      <PMFBYPanel events={PMFBY_EVENTS} onClose={() => setPmfbyOpen(false)} />
-    )
-  }
-    </div >
+      {pmfbyOpen && (
+        <PMFBYPanel events={PMFBY_EVENTS} onClose={() => setPmfbyOpen(false)} />
+      )}
+    </div>
   );
 };
 
