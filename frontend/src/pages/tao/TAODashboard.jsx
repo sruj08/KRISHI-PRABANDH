@@ -6,15 +6,71 @@ import TAOMap from './components/TAOMap';
 import CAOMatrix from './components/CAOMatrix';
 import TAOAnomalyModal from './components/TAOAnomalyModal';
 
+/* ── Shared design primitives ───────────────────────────────────────────────── */
+const PANEL_BORDER = '#e2e3df';
+const TEXT_PRIMARY = '#1a1c1a';
+const TEXT_MUTED = '#717972';
+
+const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972', progress, children, onClick }) => (
+  <div
+    onClick={onClick}
+    style={{
+      background: '#fff',
+      border: `1px solid ${PANEL_BORDER}`,
+      borderRadius: 16,
+      padding: '20px 22px',
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 152,
+      boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+      cursor: onClick ? 'pointer' : 'default',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 28, marginBottom: 14 }}>
+      <div style={{ width: 26, height: 26, borderRadius: 6, background: '#f3f4f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#717972' }}>{icon}</span>
+      </div>
+      <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#717972', lineHeight: 1.3 }}>{label}</span>
+    </div>
+    {children ? (
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>{children}</div>
+    ) : (
+      <>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+          <span style={{ fontSize: 28, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1 }}>{value}</span>
+          {unit && <span style={{ fontSize: 14, fontWeight: 500, color: TEXT_MUTED }}>{unit}</span>}
+        </div>
+        {progress !== undefined && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+            <div style={{ flex: 1, height: 6, background: '#f3f4f0', borderRadius: 99, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: '#396940', borderRadius: 99, width: `${progress}%` }} />
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 500, color: TEXT_MUTED, fontVariantNumeric: 'tabular-nums' }}>{progress}%</span>
+          </div>
+        )}
+        {sub && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, marginTop: 'auto', paddingTop: 12, color: subColor }}>
+            {subIcon && <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{subIcon}</span>}
+            {sub}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
+
 const TAODashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { getReportingChain, stats } = useKrishiData();
+  const reportsTo = user?.user_id != null ? getReportingChain(user.user_id)[1] : null;
 
   const [selectedAppId, setSelectedAppId] = useState(null);
   const selectedApp = MOCK_APPLICATIONS.find(app => app.id === selectedAppId);
 
   return (
-    <div className="min-h-full bg-[#f3f4f0] animate-fade-in">
+    <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
       {selectedApp && (
         <TAOAnomalyModal
           application={selectedApp}
@@ -39,233 +95,140 @@ const TAODashboard = () => {
               <p className="font-body-main text-[11px] text-on-surface-variant font-medium">YTD 2024-25</p>
             </div>
           </div>
-          
-          {/* Card 2: Pending Audits */}
-          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '160px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '16px', minHeight: '22px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>pending_actions</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Pending Audits</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '40px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">84</span>
-            </div>
-            <div className="mt-auto flex items-center" style={{ paddingTop: '14px', minHeight: '26px', gap: '10px', width: '100%' }}>
-              <span className="text-[11px] text-on-surface-variant font-medium whitespace-nowrap">Target: &lt; 50</span>
-              <div className="flex-1 bg-surface-variant rounded-full overflow-hidden" style={{ height: '5px' }}>
-                <div className="bg-primary h-full rounded-full" style={{ width: '12%' }}></div>
-              </div>
-              <span className="text-[10px] text-on-surface-variant font-data-tabular font-medium flex-shrink-0" style={{ fontVariantNumeric: 'tabular-nums', minWidth: '22px', textAlign: 'right' }}>12%</span>
-            </div>
-          </div>
-          
-          {/* Card 3: Geo-Verification Status */}
-          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '160px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '16px', minHeight: '22px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>satellite_alt</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Geo-Verification</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '40px' }}>
-              <span className="font-display-lg text-[28px] font-bold text-primary leading-none tracking-tight">Active</span>
-            </div>
-            <div className="mt-auto flex items-center gap-1.5 min-w-0" style={{ paddingTop: '14px', minHeight: '26px' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>
-              <span className="text-[11px] text-on-surface-variant font-body-main font-medium truncate">Telemetry stable</span>
-            </div>
-          </div>
-          
-          {/* Card 4: Leakage Prevented */}
-          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '160px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '16px', minHeight: '22px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>shield_locked</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Leakage Prevented</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '40px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight flex items-baseline gap-1">₹42.5<span className="text-lg">L</span></span>
-            </div>
-            <div className="mt-auto flex items-center min-w-0" style={{ paddingTop: '14px', minHeight: '26px' }}>
-              <p className="font-body-main text-[11px] text-on-surface-variant font-medium leading-tight truncate">Across all schemes</p>
-            </div>
-          </div>
-          
-          {/* Card 5: Fraud Alerts */}
-          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '160px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '16px', minHeight: '22px' }}>
-              <span className="material-symbols-outlined text-error" style={{ fontSize: '18px' }}>warning</span>
-              <span className="font-label-caps text-[10px] text-error tracking-wider uppercase font-semibold truncate">Fraud Alerts</span>
-            </div>
-            <div className="flex items-end gap-2" style={{ minHeight: '40px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-error leading-none tracking-tight">12</span>
-              <span className="text-[13px] font-bold text-error" style={{ marginBottom: '4px' }}>High</span>
-            </div>
-            <div className="mt-auto flex items-center min-w-0" style={{ paddingTop: '14px', minHeight: '26px' }}>
-              <p className="font-body-main text-[11px] text-on-surface-variant font-medium leading-tight truncate">9 batches pending</p>
-            </div>
-          </div>
-          
-          {/* Card 6: Verification Queue */}
-          <div className="bg-white rounded-[16px] flex flex-col shadow-sm border border-[#e2e3df] relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '160px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '16px', minHeight: '22px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>queue</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Verification Queue</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '40px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">315</span>
-            </div>
-            <div className="mt-auto flex items-center gap-1.5 min-w-0" style={{ paddingTop: '14px', minHeight: '26px' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span>
-              <span className="text-[11px] text-on-surface-variant font-body-main font-medium truncate">Next pass in 2h</span>
-            </div>
+          <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
+            <RegionalMap
+              layerType="taluka"
+              boundaryUrl="/geo/baramati-ac.json"
+            />
           </div>
         </div>
 
-        {/* Main Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" style={{ marginTop: '8px' }}>
-          {/* Left Column (Spans 8 cols) */}
-          <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
-            {/* Map Container */}
-            <div className="bg-white rounded-[16px] overflow-hidden flex flex-col border border-[#e2e3df] shadow-sm min-w-0">
-              <div className="flex justify-between items-center z-10 border-b border-[#e2e3df]" style={{ padding: '24px 28px', gap: '16px', minHeight: '88px' }}>
-                <div className="min-w-0">
-                  <h2 className="font-section-header font-bold text-base text-on-background tracking-tight truncate" style={{ lineHeight: 1.3 }}>Haveli Taluka — Geo Verification Map</h2>
-                  <p className="font-body-main text-xs text-on-surface-variant font-medium truncate" style={{ marginTop: '6px', lineHeight: 1.4 }}>Live spatial analytics and field officer telemetry</p>
-                </div>
-              </div>
-              <div className="relative h-[500px] bg-[#f0f3f2] w-full">
-                <TAOMap />
-              </div>
-            </div>
+        {/* ── Right Panel ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-            {/* Performance Table */}
-            <div className="bg-white rounded-[16px] overflow-hidden border border-[#e2e3df] shadow-sm flex flex-col min-w-0">
-              <div className="border-b border-[#e2e3df] flex items-center" style={{ padding: '24px 28px', minHeight: '76px' }}>
-                <h3 className="font-section-header font-bold text-base text-on-background tracking-tight truncate" style={{ lineHeight: 1.3 }}>Circle Agriculture Officer Performance</h3>
+          {/* Fraud Pulse Widget */}
+          <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, padding: '24px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
+            <div style={{ marginBottom: 18 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Fraud & Anomaly Pulse</h3>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>System flagged inconsistencies</p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ba1a1a' }} />
+                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>Duplicate 7/12 Extracts</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#ba1a1a' }}>18%</span>
               </div>
-              <div className="overflow-x-auto w-full">
-                <table className="w-full text-left border-collapse min-w-[600px]" style={{ tableLayout: 'auto' }}>
-                  <thead>
-                    <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                      <th className="font-label-caps font-bold uppercase whitespace-nowrap" style={{ padding: '16px 28px', verticalAlign: 'middle', fontSize: '10px', letterSpacing: '0.1em', color: '#717972', textAlign: 'left' }}>Officer Name</th>
-                      <th className="font-label-caps font-bold uppercase whitespace-nowrap" style={{ padding: '16px 28px', verticalAlign: 'middle', fontSize: '10px', letterSpacing: '0.1em', color: '#717972', textAlign: 'left' }}>Circle</th>
-                      <th className="font-label-caps font-bold uppercase whitespace-nowrap" style={{ padding: '16px 28px', verticalAlign: 'middle', fontSize: '10px', letterSpacing: '0.1em', color: '#717972', textAlign: 'right', width: '140px' }}>Pending Files</th>
-                      <th className="font-label-caps font-bold uppercase whitespace-nowrap" style={{ padding: '16px 28px', verticalAlign: 'middle', fontSize: '10px', letterSpacing: '0.1em', color: '#717972', textAlign: 'left', width: '160px' }}>Fraud Alerts</th>
-                      <th className="font-label-caps font-bold uppercase whitespace-nowrap" style={{ padding: '16px 28px', verticalAlign: 'middle', fontSize: '10px', letterSpacing: '0.1em', color: '#717972', textAlign: 'right', width: '120px' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="font-body-main">
-                    <tr className="hover:bg-surface-container-lowest transition-colors" style={{ borderBottom: '1px solid #ebece8' }}>
-                      <td className="whitespace-nowrap font-medium text-on-background" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '14px' }}>Ramesh Patil</td>
-                      <td className="whitespace-nowrap text-on-surface-variant" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '13.5px' }}>Wagholi</td>
-                      <td className="whitespace-nowrap font-bold text-on-background" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '14px', fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>42</td>
-                      <td className="whitespace-nowrap" style={{ padding: '22px 28px', verticalAlign: 'middle' }}>
-                        <span className="inline-flex items-center rounded text-error bg-error-container font-bold" style={{ padding: '4px 10px', fontSize: '11px', letterSpacing: '0.02em' }}>3 High</span>
-                      </td>
-                      <td className="whitespace-nowrap" style={{ padding: '22px 28px', verticalAlign: 'middle', textAlign: 'right' }}>
-                        <button className="text-primary hover:underline font-bold text-[13px]">Review</button>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-surface-container-lowest transition-colors" style={{ background: '#fafafa', borderBottom: '1px solid #ebece8' }}>
-                      <td className="whitespace-nowrap font-medium text-on-background" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '14px' }}>Sunita Deshmukh</td>
-                      <td className="whitespace-nowrap text-on-surface-variant" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '13.5px' }}>Khed Shivapur</td>
-                      <td className="whitespace-nowrap font-bold text-on-background" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '14px', fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>15</td>
-                      <td className="whitespace-nowrap" style={{ padding: '22px 28px', verticalAlign: 'middle' }}>
-                        <span className="inline-flex items-center rounded font-bold" style={{ padding: '4px 10px', fontSize: '11px', letterSpacing: '0.02em', color: '#444742', background: '#f3f4f0' }}>0</span>
-                      </td>
-                      <td className="whitespace-nowrap" style={{ padding: '22px 28px', verticalAlign: 'middle', textAlign: 'right' }}>
-                        <button className="text-primary hover:underline font-bold text-[13px]">Review</button>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-surface-container-lowest transition-colors">
-                      <td className="whitespace-nowrap font-medium text-on-background" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '14px' }}>Vijay More</td>
-                      <td className="whitespace-nowrap text-on-surface-variant" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '13.5px' }}>Loni Kalbhor</td>
-                      <td className="whitespace-nowrap font-bold text-on-background" style={{ padding: '22px 28px', verticalAlign: 'middle', fontSize: '14px', fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>52</td>
-                      <td className="whitespace-nowrap" style={{ padding: '22px 28px', verticalAlign: 'middle' }}>
-                        <span className="inline-flex items-center rounded text-error bg-error-container font-bold" style={{ padding: '4px 10px', fontSize: '11px', letterSpacing: '0.02em' }}>6 High</span>
-                      </td>
-                      <td className="whitespace-nowrap" style={{ padding: '22px 28px', verticalAlign: 'middle', textAlign: 'right' }}>
-                        <button className="text-primary hover:underline font-bold text-[13px]">Review</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#d97706' }} />
+                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>Aadhar Name Mismatch</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#d97706' }}>24%</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#717972' }} />
+                <span style={{ fontSize: 12.5, fontWeight: 500, color: '#444742', flex: 1 }}>Geo-fencing Breaches</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#717972' }}>5%</span>
               </div>
             </div>
           </div>
 
-          {/* Right Column (Spans 4 cols) */}
-          <div className="lg:col-span-4 flex flex-col gap-6 min-w-0">
-            {/* Fraud Pulse Widget */}
-            <div className="bg-white rounded-[16px] border border-[#e2e3df] shadow-sm flex flex-col min-w-0" style={{ padding: '24px 24px' }}>
-              <div style={{ marginBottom: '20px' }}>
-                <h3 className="font-bold text-[15px] text-[#1a1c19] tracking-tight truncate" style={{ marginBottom: '6px', lineHeight: 1.3 }}>Fraud &amp; Anomaly Pulse</h3>
-                <p className="text-[10px] text-[#717972] font-bold tracking-wider uppercase truncate" style={{ letterSpacing: '0.12em', lineHeight: 1.3 }}>System flagged inconsistencies</p>
-              </div>
-
-              <div className="flex flex-col" style={{ gap: '14px' }}>
-                <div className="flex items-center min-w-0 w-full" style={{ gap: '12px', minHeight: '22px' }}>
-                  <div className="w-2 h-2 rounded-full bg-[#ba1a1a] flex-shrink-0"></div>
-                  <span className="text-[12.5px] font-medium text-[#444742] flex-1 min-w-0 truncate" style={{ lineHeight: 1.3 }}>Duplicate 7/12 Extracts</span>
-                  <span className="text-[12.5px] font-bold text-[#ba1a1a] flex-shrink-0" style={{ fontVariantNumeric: 'tabular-nums', minWidth: '36px', textAlign: 'right' }}>18%</span>
-                </div>
-                <div className="flex items-center min-w-0 w-full" style={{ gap: '12px', minHeight: '22px' }}>
-                  <div className="w-2 h-2 rounded-full bg-[#d97706] flex-shrink-0"></div>
-                  <span className="text-[12.5px] font-medium text-[#444742] flex-1 min-w-0 truncate" style={{ lineHeight: 1.3 }}>Aadhar Name Mismatch</span>
-                  <span className="text-[12.5px] font-bold text-[#d97706] flex-shrink-0" style={{ fontVariantNumeric: 'tabular-nums', minWidth: '36px', textAlign: 'right' }}>24%</span>
-                </div>
-                <div className="flex items-center min-w-0 w-full" style={{ gap: '12px', minHeight: '22px' }}>
-                  <div className="w-2 h-2 rounded-full bg-[#717972] flex-shrink-0"></div>
-                  <span className="text-[12.5px] font-medium text-[#444742] flex-1 min-w-0 truncate" style={{ lineHeight: 1.3 }}>Geo-fencing Breaches</span>
-                  <span className="text-[12.5px] font-bold text-[#717972] flex-shrink-0" style={{ fontVariantNumeric: 'tabular-nums', minWidth: '36px', textAlign: 'right' }}>5%</span>
-                </div>
-              </div>
+          {/* Audit Recommendations */}
+          <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, padding: '24px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
+            <div style={{ marginBottom: 18 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Audit Recommendations</h3>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>AI-driven actionable insights</p>
             </div>
-
-            {/* Recommendations Widget */}
-            <div className="bg-white rounded-[16px] border border-[#e2e3df] shadow-sm flex flex-col min-w-0" style={{ padding: '24px 24px' }}>
-              <div style={{ marginBottom: '18px' }}>
-                <h3 className="font-bold text-[15px] text-[#1a1c19] tracking-tight truncate" style={{ marginBottom: '6px', lineHeight: 1.3 }}>Audit Recommendations</h3>
-                <p className="text-[10px] text-[#717972] font-bold tracking-wider uppercase truncate" style={{ letterSpacing: '0.12em', lineHeight: 1.3 }}>AI-driven actionable insights</p>
-              </div>
-
-              <div className="rounded-xl" style={{ background: '#f0f3f2', borderLeft: '4px solid #0055A4', padding: '16px 18px' }}>
-                <p className="font-bold text-[12.5px] text-[#1a1c19]" style={{ marginBottom: '8px', lineHeight: 1.4 }}>Initiate immediate audit in Loni Kalbhor.</p>
-                <p className="text-[11.5px] text-[#444742]" style={{ lineHeight: 1.6, margin: 0 }}>
-                  High volume of pending files (89) combined with 7 fraud alerts requires intervention. Re-assign 2 field officers.
-                </p>
-              </div>
-            </div>
-
-            {/* Grievance Section Widget */}
-            <div className="bg-white rounded-[16px] flex-1 flex flex-col border border-[#e2e3df] shadow-sm min-w-0" style={{ padding: '24px 24px' }}>
-              <div className="flex justify-between items-start" style={{ marginBottom: '18px', gap: '12px' }}>
-                <div className="min-w-0">
-                  <h3 className="font-bold text-[15px] text-[#1a1c19] tracking-tight truncate" style={{ marginBottom: '6px', lineHeight: 1.3 }}>Grievance Routing</h3>
-                  <p className="text-[10px] text-[#717972] font-bold tracking-wider uppercase truncate" style={{ letterSpacing: '0.12em', lineHeight: 1.3 }}>Farmer dispute escalation</p>
-                </div>
-                <span className="inline-flex items-center rounded text-[10px] font-bold bg-[#ffdad6] text-[#ba1a1a] flex-shrink-0 whitespace-nowrap" style={{ padding: '5px 10px', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: '2px' }}>
-                  Action Req
-                </span>
-              </div>
-
-              <div className="flex-1 flex flex-col">
-                {/* Ticket Card */}
-                {MOCK_GRIEVANCES.slice(0, 1).map(g => (
-                  <div key={g.id} className="flex flex-col">
-                    <div className="flex justify-between items-center" style={{ marginBottom: '12px', minHeight: '20px' }}>
-                      <span className="text-[10px] font-bold text-[#717972] uppercase" style={{ letterSpacing: '0.1em', lineHeight: 1.3 }}>ID · {g.id}</span>
-                      <span className="text-[10px] font-bold text-[#ba1a1a] uppercase" style={{ letterSpacing: '0.08em', lineHeight: 1.3 }}>High Priority</span>
-                    </div>
-                    <p className="text-[13px] text-[#1a1c19] italic font-medium" style={{ marginBottom: '18px', lineHeight: 1.6, margin: '0 0 18px 0' }}>"{g.text}"</p>
-                    <div className="rounded-lg border" style={{ background: '#f9fafa', borderColor: '#e2e3df', padding: '14px 16px' }}>
-                      <span className="text-[9px] font-bold text-[#033621] uppercase block" style={{ marginBottom: '8px', letterSpacing: '0.14em', lineHeight: 1.3 }}>AI Translation</span>
-                      <p className="text-[12px] text-[#444742] font-medium" style={{ lineHeight: 1.6, margin: 0 }}>
-                        "{g.translated}"
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div style={{ borderLeft: '4px solid #0055A4', background: '#f0f3f2', borderRadius: '0 10px 10px 0', padding: '14px 16px' }}>
+              <p style={{ fontSize: 12.5, fontWeight: 700, color: '#1a1c1a', margin: 0, marginBottom: 6 }}>Initiate immediate audit in Loni Kalbhor.</p>
+              <p style={{ fontSize: 11.5, color: '#444742', lineHeight: 1.6, margin: 0 }}>High volume of pending files (89) combined with 7 fraud alerts requires intervention.</p>
             </div>
           </div>
+
+          {/* Grievance Routing */}
+          <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, padding: '24px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.04)', flex: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
+              <div>
+                <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Grievance Routing</h3>
+                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6 }}>Farmer dispute escalation</p>
+              </div>
+              <span style={{ fontSize: 9, fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 9px', borderRadius: 6 }}>Action Req</span>
+            </div>
+            {MOCK_GRIEVANCES.slice(0, 1).map(g => (
+              <div key={g.id}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#717972' }}>ID · {g.id}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#ba1a1a' }}>High Priority</span>
+                </div>
+                <p style={{ fontSize: 12.5, color: '#1a1c19', fontStyle: 'italic', marginBottom: 16 }}>"{g.text}"</p>
+                <div style={{ background: '#f9fafa', border: '1px solid #e2e3df', borderRadius: 10, padding: '12px 14px' }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: '#033621', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>AI Translation</span>
+                  <p style={{ fontSize: 11.5, color: '#444742', margin: 0 }}>"{g.translated}"</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Officer Performance Table (Full Width) ── */}
+      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(57, 105, 64, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>leaderboard</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
+              Circle Agriculture Officer Performance
+            </h3>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>Monitoring file processing velocity and accountability metrics</p>
+          </div>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
+                <th className="district-table-header">Officer Name</th>
+                <th className="district-table-header">Circle</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>Pending Files</th>
+                <th className="district-table-header" style={{ textAlign: 'center' }}>Fraud Alerts</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="district-table-row" style={{ borderBottom: '1px solid #f3f4f0' }}>
+                <td style={{ padding: '18px 28px', fontSize: '13px', fontWeight: 700, color: '#1a1c1a' }}>Ramesh Patil</td>
+                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Wagholi</td>
+                <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>42</td>
+                <td style={{ padding: '18px 28px', textAlign: 'center' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>3 High</span>
+                </td>
+                <td style={{ padding: '18px 28px', textAlign: 'right' }}>
+                  <button style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>Review</button>
+                </td>
+              </tr>
+              <tr className="district-table-row" style={{ borderBottom: '1px solid #f3f4f0', background: '#fafafa' }}>
+                <td style={{ padding: '18px 28px', fontSize: '13px', fontWeight: 700, color: '#1a1c1a' }}>Sunita Deshmukh</td>
+                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Khed Shivapur</td>
+                <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>15</td>
+                <td style={{ padding: '18px 28px', textAlign: 'center' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#717972', background: '#f3f4f0', padding: '4px 10px', borderRadius: 6 }}>0</span>
+                </td>
+                <td style={{ padding: '18px 28px', textAlign: 'right' }}>
+                  <button style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>Review</button>
+                </td>
+              </tr>
+              <tr className="district-table-row">
+                <td style={{ padding: '18px 28px', fontSize: '13px', fontWeight: 700, color: '#1a1c1a' }}>Vijay More</td>
+                <td style={{ padding: '18px 28px', fontSize: '13px', color: '#717972' }}>Loni Kalbhor</td>
+                <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right' }}>52</td>
+                <td style={{ padding: '18px 28px', textAlign: 'center' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#ba1a1a', background: '#ffdad6', padding: '4px 10px', borderRadius: 6 }}>6 High</span>
+                </td>
+                <td style={{ padding: '18px 28px', textAlign: 'right' }}>
+                  <button style={{ color: '#396940', fontWeight: 700, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer' }}>Review</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

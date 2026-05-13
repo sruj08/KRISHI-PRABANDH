@@ -1,5 +1,5 @@
 import React from 'react';
-import { MOCK_HAVELI_MANDALS } from '../../../utils/taoMapMockData';
+const MOCK_HAVELI_MANDALS = [];
 
 const CAOMatrix = () => {
   return (

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Tooltip, GeoJSON, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MOCK_HAVELI_MANDALS } from '../../../utils/taoMapMockData';
+const MOCK_HAVELI_MANDALS = [];
 
 const GEO_URL = '/geo/haveli-taluka-mandals.geojson';
 
@@ -251,24 +251,30 @@ const TAOMap = () => {
             {/* Mandal centroid markers — rendered into Leaflet's default
                 markerPane (z 500, DOM order before the tooltipPane), so any
                 tooltip or popup naturally paints above these dots. */}
-            {MOCK_HAVELI_MANDALS.map((pt) => {
-              const color = getStatusColor(pt.status);
-              return (
-                <CircleMarker
-                  key={pt.id}
-                  center={[pt.lat, pt.lng]}
-                  radius={8}
-                  pathOptions={{ fillColor: color, fillOpacity: 0.92, color: '#ffffff', weight: 2 }}
-                  eventHandlers={{ click: () => setSelectedPoint(pt) }}
-                >
-                  <Tooltip direction="top" offset={[0, -8]} opacity={1} className="tao-mandal-tooltip">
-                    <strong style={{ color }}>{pt.name}</strong><br/>
-                    CAO: {pt.caoName}<br/>
-                    Pending Files: {pt.pending}
-                  </Tooltip>
-                </CircleMarker>
-              );
-            })}
+            {MOCK_HAVELI_MANDALS
+              .sort((a, b) => {
+                const rank = { Critical: 3, Warning: 2, Clear: 1 };
+                return rank[b.status] - rank[a.status];
+              })
+              .slice(0, 3)
+              .map((pt) => {
+                const color = getStatusColor(pt.status);
+                return (
+                  <CircleMarker
+                    key={pt.id}
+                    center={[pt.lat, pt.lng]}
+                    radius={6}
+                    pathOptions={{ fillColor: color, fillOpacity: 0.92, color: '#ffffff', weight: 1.5 }}
+                    eventHandlers={{ click: () => setSelectedPoint(pt) }}
+                  >
+                    <Tooltip direction="top" offset={[0, -6]} opacity={1} className="tao-mandal-tooltip">
+                      <strong style={{ color }}>{pt.name}</strong><br/>
+                      CAO: {pt.caoName}<br/>
+                      Pending Files: {pt.pending}
+                    </Tooltip>
+                  </CircleMarker>
+                );
+              })}
           </MapContainer>
         )}
 

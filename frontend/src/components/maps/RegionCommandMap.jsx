@@ -92,6 +92,18 @@ function ringBBoxMeters(ring) {
   return { minLng, maxLng, minLat, maxLat, wM: (maxLng - minLng) * mPerDegLng, hM: (maxLat - minLat) * mPerDegLat, midLat };
 }
 
+function pointInPolygon(lat, lng, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1];
+    const xj = ring[j][0], yj = ring[j][1];
+    const intersect = ((yi > lat) !== (yj > lat)) &&
+        (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
 function gaussianGridHeatPoints(ring, intensity01, gridN = 26) {
   const box = ringBBoxMeters(ring);
   const c = ringCentroid(ring);
@@ -112,7 +124,11 @@ function gaussianGridHeatPoints(ring, intensity01, gridN = 26) {
       const dy = (lat - c.lat) * mLat;
       const g = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
       const w = g * (0.08 + 0.92 * peak);
-      if (w > 0.018) pts.push([lat, lng, w]);
+      
+      // Strict Clipping: Only add points that are inside the actual polygon ring
+      if (w > 0.018 && pointInPolygon(lat, lng, ring)) {
+        pts.push([lat, lng, w]);
+      }
     }
   }
   return pts;
@@ -154,7 +170,7 @@ function KdeHeatLayer({ points, mapMode }) {
       await import('leaflet.heat/dist/leaflet-heat.js');
       if (cancelled || !map || typeof L.heatLayer !== 'function') return;
       teardown();
-      const layer = L.heatLayer(points, { radius: 40, blur: 30, minOpacity: 0.22, max: 0.55, maxZoom: 20, gradient: HEAT_GRADIENT });
+      const layer = L.heatLayer(points, { radius: 25, blur: 15, minOpacity: 0.1, max: 0.4, maxZoom: 20, gradient: HEAT_GRADIENT });
       layer.addTo(map);
       layer.bringToBack();
       layerRef.current = layer;
@@ -214,6 +230,7 @@ const RegionCommandMap = ({ geoUrl, outerKind, innerKind, innerLabel, defaultZoo
   const [geoData, setGeoData] = useState(null);
   const [loadErr, setLoadErr] = useState(null);
   const [mapMode, setMapMode] = useState('penetration');
+  const [showHeat, setShowHeat] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -274,10 +291,19 @@ const RegionCommandMap = ({ geoUrl, outerKind, innerKind, innerLabel, defaultZoo
     for (const f of innerGeo.features) {
       const ring = getPolygonOuterRing(f.geometry);
       const c = ringCentroid(ring);
-      if (c) pins.push({ id: f.properties?.code || f.properties?.name, lat: c.lat, lng: c.lng, props: f.properties || {} });
+      if (c) {
+        pins.push({ 
+          id: f.properties?.code || f.properties?.name, 
+          lat: c.lat, 
+          lng: c.lng, 
+          props: f.properties || {},
+          metric: heatMetric01(mapMode, f.properties || {})
+        });
+      }
     }
-    return pins;
-  }, [innerGeo]);
+    // Only keep top 3 priority regions for the current mode
+    return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
+  }, [innerGeo, mapMode]);
 
   const styleOuterFence = useCallback((feature) => {
     if (feature?.properties?.kind === outerKind) {
@@ -304,7 +330,22 @@ const RegionCommandMap = ({ geoUrl, outerKind, innerKind, innerLabel, defaultZoo
             <span>{m.label}</span>
           </button>
         ))}
-        <span className="cao-panel-badge green" style={{ marginLeft: 'auto' }}>KDE heatmap</span>
+        <button
+          type="button"
+          onClick={() => setShowHeat(!showHeat)}
+          className="district-map-mode-btn"
+          style={{ 
+            marginLeft: 'auto', 
+            background: showHeat ? '#e8f5e9' : '#fff',
+            borderColor: showHeat ? '#2e7d32' : 'var(--outline-variant)',
+            color: showHeat ? '#2e7d32' : 'var(--text-muted)'
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+            {showHeat ? 'layers' : 'layers_clear'}
+          </span>
+          <span>Heatmap</span>
+        </button>
       </div>
 
       <div className="district-heat-legend-strip" aria-hidden style={{ marginTop: 2 }}>
@@ -338,7 +379,7 @@ const RegionCommandMap = ({ geoUrl, outerKind, innerKind, innerLabel, defaultZoo
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               noWrap
             />
-            <KdeHeatLayer points={heatPoints} mapMode={mapMode} />
+            {showHeat && <KdeHeatLayer points={heatPoints} mapMode={mapMode} />}
             <Pane name="regionFocusMask" className="geo-focus-mask-pane" style={{ zIndex: 350, pointerEvents: 'none' }}>
               {focusMaskGeo && (
                 <GeoJSON
@@ -353,8 +394,8 @@ const RegionCommandMap = ({ geoUrl, outerKind, innerKind, innerLabel, defaultZoo
               <CircleMarker
                 key={pin.id}
                 center={[pin.lat, pin.lng]}
-                radius={6}
-                pathOptions={{ color: '#ffffff', weight: 2, fillColor: '#e91e63', fillOpacity: 0.95 }}
+                radius={5}
+                pathOptions={{ color: '#ffffff', weight: 1.5, fillColor: '#e91e63', fillOpacity: 0.95 }}
               >
                 <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
                   <div style={{ fontWeight: 700, fontSize: '12px' }}>{pin.props.name}</div>

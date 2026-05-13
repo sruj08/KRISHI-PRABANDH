@@ -30,3 +30,18 @@ class FarmerRepository:
         if not res.data:
             return None
         return res.data[0]
+
+    def get_by_email(self, email: str) -> Optional[dict[str, Any]]:
+        try:
+            res = (
+                self._sb.table("farmer_profiles")
+                .select("*")
+                .eq("email", email)
+                .limit(1)
+                .execute()
+            )
+            if res.data:
+                return res.data[0]
+        except Exception:
+            pass
+        return None

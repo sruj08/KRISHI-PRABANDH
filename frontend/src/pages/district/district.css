@@ -120,9 +120,50 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
-.data-card {
-  background-color: #ffffff;
-  border: 1px solid #f3f4f0;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+.district-table-row:hover {
+  background-color: #fcfcfc !important;
+}
+
+.district-table-header {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #717972;
+  padding: 14px 28px;
+  border-bottom: 1px solid #e2e3df;
+}
+
+.district-panel-section {
+  border-bottom: 1px solid #f3f4f0;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.district-panel-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.district-stat-value {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.district-status-pill {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.geo-blur-mask {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }

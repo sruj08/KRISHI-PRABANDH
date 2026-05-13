@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  build: {
+    chunkSizeWarningLimit: 2000,
+  },
   plugins: [
     tailwindcss(),
     react(),
@@ -27,6 +30,7 @@ export default defineConfig({
         categories: ['government', 'productivity', 'utilities']
       },
       workbox: {
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
         runtimeCaching: [
           {

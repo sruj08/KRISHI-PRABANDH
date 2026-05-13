@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from uuid import UUID
 
-from config.constants import FARMER
+from config.constants import ROLE_FARMER as FARMER
 from db.repositories.farm_repository import FarmRepository
 from db.repositories.farmer_repository import FarmerRepository
 from db.repositories.survey_repository import SurveyRepository

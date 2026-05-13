@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
+    "gen:data": "node ../scripts/build-krishi-dataset.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -20,6 +21,7 @@
     "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.30.3",
+    "topojson-client": "^3.1.0",
     "workbox-window": "^7.4.0"
   },
   "devDependencies": {

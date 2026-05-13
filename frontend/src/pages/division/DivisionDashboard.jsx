@@ -1,5 +1,5 @@
 import React from 'react';
-import RegionCommandMap from '../../components/maps/RegionCommandMap';
+import RegionalMap from '../../components/maps/RegionalMap';
 import {
   EXEC_KPIS,
   PFMS_BATCHES,
@@ -8,11 +8,30 @@ import {
   DIVISION_PROFILE,
 } from '../../utils/divisionMockData';
 import { useToast } from '../../hooks/useToast.jsx';
+import { useAuth } from '../../context/AuthContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
 import '../district/district.css';
 
-/* ── KPI Card (identical visual contract to DistrictDashboard) ── */
-const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972', progress, children }) => (
-  <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, padding: '20px 22px', display: 'flex', flexDirection: 'column', minHeight: 152, boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
+/* ── Shared design primitives ───────────────────────────────────────────────── */
+const PANEL_BORDER = '#e2e3df';
+const TEXT_PRIMARY = '#1a1c1a';
+const TEXT_MUTED = '#717972';
+
+const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972', progress, children, onClick }) => (
+  <div
+    onClick={onClick}
+    style={{
+      background: '#fff',
+      border: `1px solid ${PANEL_BORDER}`,
+      borderRadius: 16,
+      padding: '20px 22px',
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 152,
+      boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+      cursor: onClick ? 'pointer' : 'default',
+    }}
+  >
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 28, marginBottom: 14 }}>
       <div style={{ width: 26, height: 26, borderRadius: 6, background: '#f3f4f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#717972' }}>{icon}</span>
@@ -24,15 +43,15 @@ const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972',
     ) : (
       <>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-          <span style={{ fontSize: 28, fontWeight: 700, color: '#1a1c1a', lineHeight: 1 }}>₹{value}</span>
-          {unit && <span style={{ fontSize: 14, fontWeight: 500, color: '#717972' }}>{unit}</span>}
+          <span style={{ fontSize: 28, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1 }}>{value.startsWith('₹') ? value : `₹${value}`}</span>
+          {unit && <span style={{ fontSize: 14, fontWeight: 500, color: TEXT_MUTED }}>{unit}</span>}
         </div>
         {progress !== undefined && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
             <div style={{ flex: 1, height: 6, background: '#f3f4f0', borderRadius: 99, overflow: 'hidden' }}>
               <div style={{ height: '100%', background: '#396940', borderRadius: 99, width: `${progress}%` }} />
             </div>
-            <span style={{ fontSize: 11, fontWeight: 500, color: '#717972', fontVariantNumeric: 'tabular-nums' }}>{progress}%</span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: TEXT_MUTED, fontVariantNumeric: 'tabular-nums' }}>{progress}%</span>
           </div>
         )}
         {sub && (
@@ -81,6 +100,14 @@ const STATUS_CHIP = {
 
 const DivisionDashboard = () => {
   const { addToast } = useToast();
+  const { user } = useAuth();
+  const { stats, mandals } = useKrishiData();
+  const circlesInDivision =
+    user?.division_id != null
+      ? mandals.filter(
+          (m) => Number(m.division_id) === Number(user.division_id),
+        ).length
+      : null;
 
   const onDscAuthorize = () => {
     const total = PFMS_BATCHES.reduce((a, b) => a + b.beneficiaries, 0);
@@ -93,8 +120,43 @@ const DivisionDashboard = () => {
   return (
     <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
+      {(user?.division_name || circlesInDivision != null || stats?.totalSurveys != null) && (
+        <div
+          style={{
+            background: '#fff',
+            border: '1px solid #e2e3df',
+            borderRadius: 12,
+            padding: '12px 18px',
+            fontSize: 12,
+            color: '#1a1c1a',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 12,
+            alignItems: 'center',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>dataset</span>
+          <span style={{ fontWeight: 700 }}>CSV scope (division)</span>
+          {user?.division_name && (
+            <span style={{ color: '#717972' }}>
+              Division: <strong>{user.division_name}</strong>
+            </span>
+          )}
+          {circlesInDivision != null && (
+            <span style={{ color: '#717972' }}>
+              Agriculture circles in dataset: <strong>{circlesInDivision}</strong>
+            </span>
+          )}
+          {stats?.totalSurveys != null && (
+            <span style={{ color: '#717972', marginLeft: 'auto' }}>
+              Statewide surveys (CSV): {Number(stats.totalSurveys).toLocaleString('en-IN')}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* ── KPI Strip ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
         <KpiCard
           icon="account_balance_wallet"
           label={"Division Allocated\nFunds"}
@@ -126,13 +188,21 @@ const DivisionDashboard = () => {
           unit=""
         >
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-            <span style={{ fontSize: 28, fontWeight: 700, color: '#1a1c1a', lineHeight: 1 }}>{EXEC_KPIS.projectedUnutilizedPct}</span>
-            <span style={{ fontSize: 14, fontWeight: 500, color: '#717972' }}>%</span>
+            <span style={{ fontSize: 28, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1 }}>{EXEC_KPIS.projectedUnutilizedPct}</span>
+            <span style={{ fontSize: 14, fontWeight: 500, color: TEXT_MUTED }}>%</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#717972', paddingTop: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: TEXT_MUTED, paddingTop: 12 }}>
             Across all schemes
           </div>
         </KpiCard>
+        <KpiCard
+          icon="warning"
+          label={"Fraud\nRisk Alerts"}
+          value={totalAlerts.toString()}
+          sub={`${DISTRICT_MATRIX.filter(d => d.status === 'Watch' || d.status === 'Lagging').length} districts at risk`}
+          subIcon="report_problem"
+          subColor="#ba1a1a"
+        />
         <KpiCard
           icon="satellite_alt"
           label="Satellite Status"
@@ -140,7 +210,7 @@ const DivisionDashboard = () => {
           unit=""
         >
           <div style={{ fontSize: 28, fontWeight: 700, color: '#396940', lineHeight: 1 }}>Active</div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#717972', display: 'flex', alignItems: 'center', gap: 4, paddingTop: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: TEXT_MUTED, display: 'flex', alignItems: 'center', gap: 4, paddingTop: 12 }}>
             <span style={{ color: '#396940', fontSize: 10 }}>●</span> Next pass in 2h
           </div>
         </KpiCard>
@@ -158,13 +228,9 @@ const DivisionDashboard = () => {
             </div>
           </div>
           <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
-            <RegionCommandMap
-              geoUrl="/geo/pune-division-districts.geojson"
-              outerKind="division"
-              innerKind="district"
-              innerLabel="District"
-              defaultZoom={7}
-              centerOverride={[17.5, 74.5]}
+            <RegionalMap
+              layerType="division"
+              boundaryUrl="/geo/maharashtra-division.topo.json"
             />
           </div>
         </div>
@@ -252,42 +318,62 @@ const DivisionDashboard = () => {
         </div>
       </div>
 
-      {/* ── PFMS Row ── */}
-      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', padding: '22px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18, flexWrap: 'wrap' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972', flexShrink: 0 }}>account_balance_wallet</span>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', flex: 1, minWidth: 200, margin: 0, lineHeight: 1.35 }}>
-            Consolidated PFMS disbursement queues (district-cleared, high confidence)
-          </h3>
-          <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#396940', background: 'rgba(186,240,188,0.3)', padding: '5px 11px', borderRadius: 6, border: '1px solid #baf0bc', flexShrink: 0, whiteSpace: 'nowrap' }}>
-            {PFMS_BATCHES.length} Batches Ready
-          </span>
-          <button type="button" onClick={onDscAuthorize} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#396940', color: '#fff', borderRadius: 10, fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer', boxShadow: '0 2px 8px rgba(57,105,64,.25)', flexShrink: 0, whiteSpace: 'nowrap' }}>
+      {/* ── PFMS Disbursement Table ── */}
+      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(57,105,64,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>account_balance_wallet</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
+              Divisional PFMS Disbursement Queues
+            </h3>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>District-cleared, high-confidence batches ready for release</p>
+          </div>
+          <button
+            type="button"
+            onClick={onDscAuthorize}
+            className="district-dsc-btn"
+          >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>verified_user</span>
-            Single DSC — release all
+            Authorize Release
           </button>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {PFMS_BATCHES.map((b) => (
-            <div key={b.id} style={{ border: '1px solid #e2e3df', borderRadius: 12, padding: '18px 20px', background: '#f9faf6' }}>
-              <p style={{ fontSize: 9, fontWeight: 700, color: '#717972', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0, lineHeight: 1.3 }}>{b.id}</p>
-              <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', margin: 0, marginTop: 6, lineHeight: 1.35 }}>{b.scheme}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 16px', marginTop: 16 }}>
-                <div>
-                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', lineHeight: 1.3 }}>Beneficiaries</span>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0, marginTop: 4 }}>{b.beneficiaries.toLocaleString('en-IN')}</p>
-                </div>
-                <div>
-                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', lineHeight: 1.3 }}>Amount</span>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0, marginTop: 4 }}>₹{b.amountCr} Cr</p>
-                </div>
-                <div style={{ gridColumn: 'span 2' }}>
-                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', lineHeight: 1.3 }}>Mean AI confidence</span>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0, marginTop: 4 }}>{(b.avgConfidence * 100).toFixed(1)}%</p>
-                </div>
-              </div>
-            </div>
-          ))}
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
+                <th className="district-table-header">Batch ID</th>
+                <th className="district-table-header">Scheme Name</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>Beneficiaries</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>Amount (Cr)</th>
+                <th className="district-table-header" style={{ textAlign: 'right' }}>AI Confidence</th>
+                <th className="district-table-header" style={{ textAlign: 'center' }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PFMS_BATCHES.map((b, idx) => (
+                <tr key={b.id} className="district-table-row" style={{ borderBottom: idx === PFMS_BATCHES.length - 1 ? 'none' : '1px solid #f3f4f0', background: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
+                  <td style={{ padding: '18px 28px', fontSize: '12px', fontWeight: 700, color: '#717972', fontVariantNumeric: 'tabular-nums' }}>{b.id}</td>
+                  <td style={{ padding: '18px 28px', fontSize: '13px', fontWeight: 600, color: '#1a1c1a' }}>{b.scheme}</td>
+                  <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{b.beneficiaries.toLocaleString('en-IN')}</td>
+                  <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>₹{b.amountCr}</td>
+                  <td style={{ padding: '18px 28px', textAlign: 'right' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+                      <div style={{ width: 60, height: 4, background: '#e2e3df', borderRadius: 2 }}>
+                        <div style={{ height: '100%', background: '#396940', borderRadius: 2, width: `${b.avgConfidence * 100}%` }} />
+                      </div>
+                      <span className="district-stat-value" style={{ fontSize: '12px', color: '#396940', minWidth: 36 }}>{(b.avgConfidence * 100).toFixed(0)}%</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: '18px 28px', textAlign: 'center' }}>
+                    <span className="district-status-pill" style={{ color: '#396940', background: 'rgba(186,240,188,0.3)', border: '1px solid rgba(57,105,64,0.2)' }}>Ready</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
