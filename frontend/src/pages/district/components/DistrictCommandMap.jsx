@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { geoAsset } from '../../../utils/geoAsset';
 
-const TALUKAS_GEO_URL = '/geo/pune-district-talukas.geojson';
-const DISTRICT_GEO_URL = '/geo/pune-boundary.json';
+const TALUKAS_GEO_URL = geoAsset('geo/pune-district-talukas.geojson');
+const DISTRICT_GEO_URL = geoAsset('geo/pune-boundary.json');
 
 /** Reference-style ramp: cool blue → green → yellow → orange → deep red */
 const HEAT_GRADIENT = {
@@ -400,25 +401,21 @@ const DistrictCommandMap = () => {
     return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
   }, [talukaGeo, mapMode]);
 
-  const styleDistrictFence = useCallback((feature) => {
-    if (feature?.properties?.kind === 'district') {
-      return {
-        color: '#003978',
-        weight: 3.5,
-        fillColor: '#0055A4',
-        fillOpacity: 0.04,
-        dashArray: '10 6',
-        interactive: false,
-      };
-    }
-    return { stroke: false, fillOpacity: 0, interactive: false };
-  }, []);
+  /** District outline file (`pune-boundary.json`) has no `kind`; talukas file uses `kind: 'district'` for outer ring. */
+  const styleDistrictFence = useCallback(() => ({
+    color: '#003978',
+    weight: 3.5,
+    fillColor: '#0055A4',
+    fillOpacity: 0.04,
+    dashArray: '10 6',
+    interactive: false,
+  }), []);
 
   const legend = useMemo(() => legendForMode(mapMode), [mapMode]);
   const center = useMemo(() => [18.52, 73.86], []);
 
   return (
-    <div className="map-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '12px', padding: '16px 20px 20px' }}>
+    <div className="map-container district-command-map-root" style={{ display: 'flex', flexDirection: 'column', width: '100%', minHeight: 520, gap: '12px', padding: '16px 20px 20px' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 }}>
         {MAP_MODES.map((m) => (
           <button
@@ -465,7 +462,7 @@ const DistrictCommandMap = () => {
         ))}
       </div>
 
-      <div style={{ flex: 1, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--outline-variant)', minHeight: '480px', position: 'relative', marginTop: 4 }}>
+      <div style={{ width: '100%', height: 480, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--outline-variant)', position: 'relative', marginTop: 4 }}>
         {loadErr && (
           <div style={{ padding: '24px', color: 'var(--error)', fontSize: '13px' }}>{loadErr}</div>
         )}

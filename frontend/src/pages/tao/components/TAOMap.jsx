@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Tooltip, GeoJSON, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-const MOCK_HAVELI_MANDALS = [];
+import { geoAsset } from '../../../utils/geoAsset';
 
-const GEO_URL = '/geo/haveli-taluka-mandals.geojson';
+/** Baramati Assembly Constituency boundary (same asset as CAO circle map). */
+const GEO_URL = geoAsset('geo/baramati-ac.json');
 
 const getStatusColor = (status) => {
   if (status === 'Clear') return '#2e7d32';
@@ -114,16 +115,21 @@ const TAOMap = () => {
         return r.json();
       })
       .then((j) => { if (!cancelled) setGeoData(j); })
-      .catch((e) => { if (!cancelled) setLoadErr(e.message || 'Failed to load mandal geofence'); });
+      .catch((e) => { if (!cancelled) setLoadErr(e.message || 'Failed to load Baramati AC boundary'); });
     return () => { cancelled = true; };
   }, []);
 
-  const talukaGeo = useMemo(() => {
-    if (!geoData?.features) return null;
-    return {
-      type: 'FeatureCollection',
-      features: geoData.features.filter((f) => f?.properties?.kind === 'taluka'),
-    };
+  /**
+   * Outer fence for fit / mask: explicit `kind: taluka` features (legacy Haveli file),
+   * or the whole collection when using AC GeoJSON (e.g. baramati-ac.json) with no `kind`.
+   */
+  const boundaryGeo = useMemo(() => {
+    if (!geoData?.features?.length) return null;
+    const talukaOnly = geoData.features.filter((f) => f?.properties?.kind === 'taluka');
+    if (talukaOnly.length) {
+      return { type: 'FeatureCollection', features: talukaOnly };
+    }
+    return geoData;
   }, [geoData]);
 
   const mandalGeo = useMemo(() => {
@@ -134,19 +140,47 @@ const TAOMap = () => {
     };
   }, [geoData]);
 
-  /** Fence outline + bounds derived from the taluka feature. */
-  const talukaBounds = useMemo(() => {
-    if (!talukaGeo?.features?.length) return null;
-    const gj = L.geoJSON(talukaGeo);
+  const mandalPinsFromGeo = useMemo(() => {
+    if (!mandalGeo?.features?.length) return [];
+    const rank = { Critical: 3, Warning: 2, Clear: 1 };
+    const pins = [];
+    for (const f of mandalGeo.features) {
+      const p = f.properties || {};
+      try {
+        const gj = L.geoJSON(f);
+        const c = gj.getBounds().getCenter();
+        pins.push({
+          id: p.id || p.name || String(pins.length),
+          name: p.name || 'Mandal',
+          marathi: p.marathi,
+          caoName: p.caoName || '—',
+          status: p.status || 'Clear',
+          pending: p.pending ?? 0,
+          fraudAlerts: p.fraudAlerts ?? 0,
+          description: p.description,
+          lat: c.lat,
+          lng: c.lng,
+        });
+      } catch {
+        /* skip invalid geometry */
+      }
+    }
+    return pins.sort((a, b) => (rank[b.status] || 0) - (rank[a.status] || 0)).slice(0, 8);
+  }, [mandalGeo]);
+
+  /** Fence outline + bounds derived from boundary features. */
+  const boundaryBounds = useMemo(() => {
+    if (!boundaryGeo?.features?.length) return null;
+    const gj = L.geoJSON(boundaryGeo);
     const b = gj.getBounds();
     return b.isValid() ? b : null;
-  }, [talukaGeo]);
+  }, [boundaryGeo]);
 
-  /** World-sized polygon with the taluka cut out as a hole. */
+  /** World-sized polygon with the area cut out as a hole. */
   const focusMaskGeo = useMemo(() => {
-    if (!talukaGeo?.features?.length) return null;
+    if (!boundaryGeo?.features?.length) return null;
     const holes = [];
-    for (const f of talukaGeo.features) {
+    for (const f of boundaryGeo.features) {
       const g = f.geometry;
       if (!g) continue;
       if (g.type === 'Polygon') holes.push(g.coordinates[0]);
@@ -164,30 +198,26 @@ const TAOMap = () => {
         ],
       },
     };
-  }, [talukaGeo]);
+  }, [boundaryGeo]);
 
-  const styleTalukaFence = useCallback((feature) => {
-    if (feature?.properties?.kind === 'taluka') {
-      return {
-        color: '#003978',
-        weight: 3,
-        fillColor: '#0055A4',
-        fillOpacity: 0.04,
-        dashArray: '8 5',
-        interactive: false,
-      };
-    }
-    return { stroke: false, fillOpacity: 0, interactive: false };
-  }, []);
+  const styleBoundaryFence = useCallback(() => ({
+    color: '#003978',
+    weight: 3,
+    fillColor: '#0055A4',
+    fillOpacity: 0.04,
+    dashArray: '8 5',
+    interactive: false,
+  }), []);
 
-  const center = [18.49, 73.92];
+  /** Initial center inside Baramati AC; FitTaluka snaps to GeoJSON bounds. */
+  const center = [18.22, 74.35];
 
   return (
-    <div className="card" style={{ padding: '0', overflow: 'hidden', border: 'none', borderRadius: 0, background: 'transparent', display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="card tao-map-root" style={{ padding: '0', overflow: 'hidden', border: 'none', borderRadius: 0, background: 'transparent', display: 'flex', flexDirection: 'column', width: '100%', minHeight: 480 }}>
       <div style={{ padding: '18px 28px', background: '#fff', borderBottom: '1px solid #e2e3df', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', flexWrap: 'wrap', minHeight: '70px' }}>
         <div style={{ minWidth: 0 }}>
-          <h3 className="fw-bold m-0" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)', lineHeight: 1.3 }}>Haveli Taluka Geo-Verification</h3>
-          <p className="text-sm text-muted m-0" style={{ marginTop: '5px', fontSize: '11.5px', lineHeight: 1.4 }}>Live mapping of Mandals (Circles) and CAO regions</p>
+          <h3 className="fw-bold m-0" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)', lineHeight: 1.3 }}>Baramati AC Geo-Verification</h3>
+          <p className="text-sm text-muted m-0" style={{ marginTop: '5px', fontSize: '11.5px', lineHeight: 1.4 }}>Constituency boundary from GeoJSON</p>
         </div>
         <div style={{ display: 'flex', gap: '20px', fontSize: '11.5px', color: 'var(--text-muted)', flexShrink: 0, alignItems: 'center' }}>
            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', lineHeight: 1 }}>
@@ -202,14 +232,14 @@ const TAOMap = () => {
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: '380px', width: '100%', position: 'relative' }}>
+      <div style={{ width: '100%', height: 440, minHeight: 360, position: 'relative' }}>
         {loadErr && (
           <div style={{ padding: '24px', color: 'var(--error)', fontSize: '13px' }}>{loadErr}</div>
         )}
         {!geoData && !loadErr && (
-          <div style={{ padding: '24px', color: 'var(--text-muted)', fontSize: '13px' }}>Loading Haveli mandal geofence…</div>
+          <div style={{ padding: '24px', color: 'var(--text-muted)', fontSize: '13px', minHeight: 200 }}>Loading Baramati AC boundary…</div>
         )}
-        {geoData && talukaGeo && mandalGeo && (
+        {geoData && boundaryGeo?.features?.length > 0 && (
           <MapContainer
             center={center}
             zoom={11}
@@ -240,24 +270,20 @@ const TAOMap = () => {
               )}
             </Pane>
 
-            <FitTaluka bounds={talukaBounds} />
+            <FitTaluka bounds={boundaryBounds} />
 
-            {/* Mandal boundaries with hover tooltips (mirrors DAO taluka layer) */}
-            <MandalBoundariesLayer mandalGeo={mandalGeo} />
+            {/* Mandal boundaries when GeoJSON includes `kind: mandal` (optional second source later). */}
+            {mandalGeo?.features?.length > 0 && (
+              <MandalBoundariesLayer mandalGeo={mandalGeo} />
+            )}
 
-            {/* Outer dashed taluka fence */}
-            <GeoJSON data={talukaGeo} style={styleTalukaFence} />
+            {/* Outer dashed AC / taluka fence */}
+            <GeoJSON data={boundaryGeo} style={styleBoundaryFence} />
 
             {/* Mandal centroid markers — rendered into Leaflet's default
                 markerPane (z 500, DOM order before the tooltipPane), so any
                 tooltip or popup naturally paints above these dots. */}
-            {MOCK_HAVELI_MANDALS
-              .sort((a, b) => {
-                const rank = { Critical: 3, Warning: 2, Clear: 1 };
-                return rank[b.status] - rank[a.status];
-              })
-              .slice(0, 3)
-              .map((pt) => {
+            {mandalPinsFromGeo.map((pt) => {
                 const color = getStatusColor(pt.status);
                 return (
                   <CircleMarker

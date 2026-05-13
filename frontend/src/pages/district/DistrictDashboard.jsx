@@ -98,6 +98,10 @@ const DistrictDashboard = () => {
   const { addToast } = useToast();
   const { user } = useAuth();
   const { stats } = useKrishiData();
+  const surveyCount =
+    user?.district_id != null && stats?.surveyCountByDistrict
+      ? stats.surveyCountByDistrict[String(user.district_id)]
+      : null;
   const evidenceInDistrict =
     user?.district_id != null && stats?.evidenceCountByDistrict
       ? stats.evidenceCountByDistrict[String(user.district_id)]
@@ -109,7 +113,10 @@ const DistrictDashboard = () => {
   };
 
   return (
-    <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div
+      className="district-dash-root"
+      style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}
+    >
 
       {(surveyCount != null ||
         user?.district_name ||
@@ -177,7 +184,7 @@ const DistrictDashboard = () => {
         )}
 
       {/* ── KPI Strip ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
+      <div className="district-kpi-grid">
         <KpiCard
           icon="account_balance_wallet"
           label={"Total Allocated\nFunds"}
@@ -229,11 +236,11 @@ const DistrictDashboard = () => {
         </KpiCard>
       </div>
 
-      {/* ── Main Grid: Map + Right Panel ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, flex: 1, minHeight: 0 }}>
+      {/* ── Main: map + right rail ── */}
+      <div className="district-command-row">
 
         {/* Map Card */}
-        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 480 }}>
+        <div className="district-map-column" style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
           {/* Map Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
@@ -243,16 +250,13 @@ const DistrictDashboard = () => {
           </div>
 
           {/* Map body */}
-          <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
-            <RegionalMap
-              layerType="district"
-              boundaryUrl="/geo/pune-district-boundary.json"
-            />
+          <div className="district-map-slot">
+            <DistrictCommandMap />
           </div>
         </div>
 
-        {/* ── Right Panel ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* ── Right rail ── */}
+        <div className="district-command-rail">
 
           {/* Friction Logger */}
           <PanelSection title="Friction Logger" subtitle="System Integration Errors">
