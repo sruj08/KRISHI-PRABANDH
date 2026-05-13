@@ -200,14 +200,20 @@ const Sidebar = ({ isOpen }) => {
     const currentPath = location.pathname;
     const activeSection = menuSections.find(sec =>
       sec.items.some(item => {
-        if (item.to === '/') return currentPath === '/';
+        if (item.to === '/') {
+          return (
+            currentPath === '/' ||
+            currentPath === '/officer' ||
+            currentPath.startsWith('/officer/')
+          );
+        }
         return currentPath.startsWith(item.to);
       })
     );
     if (activeSection) {
       setExpandedSection(activeSection.id);
     }
-  }, [location.pathname]);
+  }, [location.pathname, user?.role]);
 
   const isDark = user?.role === 'state';
 
@@ -238,22 +244,40 @@ const Sidebar = ({ isOpen }) => {
                         key={link.to}
                         to={link.to}
                         end={link.to === '/'}
-                        className={({ isActive }) =>
-                          `sidebar-link ${isActive ? 'sidebar-link--active' : ''} ${isDark ? (isActive ? 'bg-[#111814] text-[#4ade80]' : 'text-gray-300 hover:bg-[#111814] hover:text-white') : ''}`
-                        }
+                        className={({ isActive }) => {
+                          let active = isActive;
+                          if (
+                            link.to === '/' &&
+                            (user?.role === 'officer' || user?.role === 'mandal_officer') &&
+                            (location.pathname === '/officer' || location.pathname.startsWith('/officer/'))
+                          ) {
+                            active = true;
+                          }
+                          return `sidebar-link ${active ? 'sidebar-link--active' : ''} ${isDark ? (active ? 'bg-[#111814] text-[#4ade80]' : 'text-gray-300 hover:bg-[#111814] hover:text-white') : ''}`;
+                        }}
                         style={isDark ? { background: 'transparent' } : {}}
                       >
-                        {({ isActive }) => (
+                        {({ isActive }) => {
+                          let active = isActive;
+                          if (
+                            link.to === '/' &&
+                            (user?.role === 'officer' || user?.role === 'mandal_officer') &&
+                            (location.pathname === '/officer' || location.pathname.startsWith('/officer/'))
+                          ) {
+                            active = true;
+                          }
+                          return (
                           <>
                             <span
                               className="material-symbols-outlined"
-                              style={{ fontSize: 18, color: isDark ? (isActive ? '#4ade80' : '#9ca3af') : (isActive ? '#1f4d36' : '#717972'), flexShrink: 0 }}
+                              style={{ fontSize: 18, color: isDark ? (active ? '#4ade80' : '#9ca3af') : (active ? '#1f4d36' : '#717972'), flexShrink: 0 }}
                             >
                               {link.icon}
                             </span>
-                            <span className={`sidebar-link-label ${isDark && isActive ? 'text-[#4ade80]' : ''}`}>{t(link.label)}</span>
+                            <span className={`sidebar-link-label ${isDark && active ? 'text-[#4ade80]' : ''}`}>{t(link.label)}</span>
                           </>
-                        )}
+                          );
+                        }}
                       </NavLink>
                     ))}
                   </div>

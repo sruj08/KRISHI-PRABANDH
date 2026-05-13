@@ -1,0 +1,7 @@
+{
+  "tenant_name": "(?:Tenant|Lessee|भाडेकर|भाडेकरू)\\s*[:\\-]?\\s*([A-Za-z\\u0900-\\u097F\\s]{3,80})",
+  "owner_name": "(?:Owner|Landlord|मालक)\\s*[:\\-]?\\s*([A-Za-z\\u0900-\\u097F\\s]{3,80})",
+  "survey_number": "(?:Survey|सर्वे)\\s*(?:No|नं)?\\s*[:\\-]?\\s*([\\d\\/A-Za-z]+)",
+  "lease_duration": "(?:Period|Duration|कालावधी|मुदत)\\s*[:\\-]?\\s*([\\d]{1,2}[/\\-\\.][\\d]{1,2}[/\\-\\.][\\d]{2,4}\\s*[-–]\\s*[\\d]{1,2}[/\\-\\.][\\d]{1,2}[/\\-\\.][\\d]{2,4}|[\\d]+\\s*(?:Year|Month|वर्ष|महिने))",
+  "signature_detected": "(?:Signature|सही|अंगठा)\\s*[:\\-]?\\s*(Present|Yes|आहे|नाही)?"
+}

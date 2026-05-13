@@ -1,0 +1,21 @@
+# Core OCR & image processing
+opencv-python-headless==4.10.0.84
+pillow==10.4.0
+pytesseract==0.3.13
+easyocr==1.7.2
+numpy>=1.26.4,<3
+
+# PDF first-page rasterization (no poppler dependency)
+pymupdf==1.24.14
+
+# API
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# Frontend & HTTP
+streamlit==1.41.1
+requests==2.32.3
+
+# Field extraction (import as ``dateparser``; PyPI package name is ``dateparser``)
+dateparser==1.2.0

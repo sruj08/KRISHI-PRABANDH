@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
 
 import CircularGauge from '../../components/ui/CircularGauge';
+import { fetchSummary } from '../../utils/api';
 import InsightModal from '../../components/ui/InsightModal';
 import { fetchSummary, fetchEligibleFarmers, fetchApplication } from '../../utils/api';
 
@@ -178,9 +179,7 @@ const SahayakDashboard = () => {
     return out.slice(0, 120);
   }, [user, officers, farmerProfiles, villages, agristackFarmers]);
 
-  const [selectedApp, setSelectedApp] = useState(null);
   const [summary, setSummary] = useState(null);
-  const [eligibleFarmers, setEligibleFarmers] = useState([]);
   const [apiOnline, setApiOnline] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -205,6 +204,8 @@ const SahayakDashboard = () => {
     load();
   }, []);
 
+  const displayName = 'Sahayak Krushi Adhikari';
+  const displayLocation = 'Assigned: 5 Villages';
   /** When API returns no rows, show dataset (registry + Agristack mock) */
   useEffect(() => {
     if (loading) return;
@@ -250,10 +251,39 @@ const SahayakDashboard = () => {
     { icon: 'check_circle',  label: 'Approved',           value: summary?.by_status?.Approved,        color: '#396940', bg: 'rgba(57,105,64,0.06)', path: '/applications' },
   ];
 
+  const pendingAlerts = Number(summary?.fraud_alerts) || 0;
+
+  const docIntelCards = [
+    {
+      icon: 'description',
+      label: 'GR ASSISTANT',
+      subtitle: 'Upload & understand GR documents',
+      path: '/officer/gr-assistant',
+      badgeNew: true,
+      color: 'var(--primary)',
+      bg: 'rgba(3,54,33,0.06)',
+    },
+    {
+      icon: 'document_scanner',
+      label: 'SCAN DOCUMENT',
+      subtitle: 'Aadhaar • Satbara • Bank Passbook',
+      path: '/officer/scan-document',
+      color: 'var(--amber)',
+      bg: 'rgba(180,83,9,0.06)',
+    },
+    {
+      icon: 'verified_user',
+      label: 'AI VERIFICATION',
+      subtitle: 'View flagged anomalies',
+      path: '/officer/ai-verification',
+      color: 'var(--tertiary)',
+      bg: 'rgba(77,32,36,0.06)',
+      countBadge: pendingAlerts > 0 ? pendingAlerts : null,
+    },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-8)', animation: 'fadeIn 0.4s ease' }}>
-      <InsightModal app={selectedApp} onClose={() => setSelectedApp(null)} />
-
       {/* ── Header ── */}
       <header className="cao-header" style={{ marginLeft: '-var(--sp-6)', marginRight: '-var(--sp-6)', marginTop: '-var(--sp-6)', marginBottom: 'var(--sp-6)' }}>
         <div className="cao-header-left">
@@ -264,7 +294,7 @@ const SahayakDashboard = () => {
         </div>
 
         <div className="cao-header-center" style={{ flex: 1, display: 'flex', justifyContent: 'center', fontSize: '13px', color: 'var(--text-muted)', gap: '16px' }}>
-          <span>{t(displayLocation, lang)}</span> • 
+          <span>{t(displayLocation, lang)}</span> •
           <span>{t(displayName, lang)}</span>
         </div>
 
@@ -336,7 +366,7 @@ const SahayakDashboard = () => {
                 style={{ cursor: 'pointer' }}
               >
                 <div className="kpi-card-header">
-                  <span className="material-symbols-outlined" style={{ color: item.color }}>{item.icon}</span> 
+                  <span className="material-symbols-outlined" style={{ color: item.color }}>{item.icon}</span>
                   <span style={{ color: item.color }}>{item.label}</span>
                 </div>
                 <div className="kpi-card-value" style={{ color: item.color }}>
@@ -368,23 +398,66 @@ const SahayakDashboard = () => {
         </div>
       </section>
 
-      {/* ── Eligible Farmers ── */}
+      {/* ── Document Intelligence (replaces Eligible Farmers block) ── */}
       <section style={{ marginBottom: 'var(--sp-6)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
-          <h3 className="section-title" style={{ margin: 0 }}>{t('Eligible Farmers', lang)}</h3>
-          <button
-            style={{
-              background: 'transparent', border: 'none',
-              color: 'var(--primary)', fontFamily: 'var(--font-data)',
-              fontSize: 'var(--font-size-xs)', fontWeight: 700,
-              textTransform: 'uppercase', letterSpacing: '0.06em',
-              cursor: 'pointer',
-            }}
-            onClick={() => navigate('/applications')}
-          >
-            {t('View All', lang)}
-          </button>
+          <h3 className="section-title" style={{ margin: 0 }}>{t('Document Intelligence', lang)}</h3>
         </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--sp-4)' }}>
+          {docIntelCards.map((item, i) => (
+            <div
+              key={i}
+              className="quick-action-btn"
+              onClick={() => navigate(item.path)}
+              style={{ position: 'relative' }}
+            >
+              {item.badgeNew && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    background: 'var(--success)',
+                    color: 'white',
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  NEW
+                </span>
+              )}
+              {item.countBadge != null && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    background: 'var(--error)',
+                    color: 'white',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    minWidth: '22px',
+                    height: '22px',
+                    borderRadius: '999px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {item.countBadge}
+                </span>
+              )}
+              <div style={{
+                width: '48px', height: '48px',
+                borderRadius: 'var(--radius-lg)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: item.bg,
+                color: item.color,
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>{item.icon}</span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-3)' }}>
           {eligibleFarmers.length === 0 && !loading && (
             <div style={{
@@ -426,6 +499,10 @@ const SahayakDashboard = () => {
                   </span>
                 </div>
               </div>
+              <span className="quick-action-label">{item.label}</span>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', textAlign: 'center', marginTop: '4px', lineHeight: 1.35 }}>
+                {item.subtitle}
+              </span>
             </div>
           ))}
         </div>
