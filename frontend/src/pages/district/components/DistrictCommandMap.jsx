@@ -3,7 +3,8 @@ import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Pane, useMap }
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-const GEO_URL = '/geo/pune-district-talukas.geojson';
+const TALUKAS_GEO_URL = '/geo/pune-district-talukas.geojson';
+const DISTRICT_GEO_URL = '/geo/pune-boundary.json';
 
 /** Reference-style ramp: cool blue → green → yellow → orange → deep red */
 const HEAT_GRADIENT = {
@@ -68,6 +69,18 @@ function ringBBoxMeters(ring) {
   return { minLng, maxLng, minLat, maxLat, wM, hM, midLat };
 }
 
+function pointInPolygon(lat, lng, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1];
+    const xj = ring[j][0], yj = ring[j][1];
+    const intersect = ((yi > lat) !== (yj > lat)) &&
+        (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
 /** Dense Gaussian-weighted samples → smooth KDE-style field when fed to L.heatLayer */
 function gaussianGridHeatPoints(ring, intensity01, gridN = 26) {
   const box = ringBBoxMeters(ring);
@@ -90,7 +103,11 @@ function gaussianGridHeatPoints(ring, intensity01, gridN = 26) {
       const dy = (lat - c.lat) * mLat;
       const g = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
       const w = g * (0.08 + 0.92 * peak);
-      if (w > 0.018) pts.push([lat, lng, w]);
+      
+      // Strict Clipping: Only add points that are inside the actual polygon ring
+      if (w > 0.018 && pointInPolygon(lat, lng, ring)) {
+        pts.push([lat, lng, w]);
+      }
     }
   }
   return pts;
@@ -158,10 +175,10 @@ function DistrictKdeHeatLayer({ points, mapMode }) {
 
       teardown();
       const layer = L.heatLayer(points, {
-        radius: 40,
-        blur: 30,
-        minOpacity: 0.22,
-        max: 0.55,
+        radius: 25,
+        blur: 15,
+        minOpacity: 0.1,
+        max: 0.4,
         maxZoom: 20,
         gradient: HEAT_GRADIENT,
       });
@@ -265,101 +282,123 @@ const legendForMode = (mapMode) => {
 };
 
 const DistrictCommandMap = () => {
-  const [geoData, setGeoData] = useState(null);
+  const [talukaData, setTalukaData] = useState(null);
+  const [districtBoundary, setDistrictBoundary] = useState(null);
   const [loadErr, setLoadErr] = useState(null);
   const [mapMode, setMapMode] = useState('penetration');
+  const [showHeat, setShowHeat] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    fetch(GEO_URL)
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((j) => {
-        if (!cancelled) setGeoData(j);
-      })
-      .catch((e) => {
-        if (!cancelled) setLoadErr(e.message || 'Failed to load geofence');
-      });
+    
+    const loadData = async () => {
+      try {
+        const [talukasRes, districtRes] = await Promise.all([
+          fetch(TALUKAS_GEO_URL),
+          fetch(DISTRICT_GEO_URL)
+        ]);
+
+        if (!talukasRes.ok || !districtRes.ok) {
+          throw new Error(`HTTP Error: Talukas ${talukasRes.status}, District ${districtRes.status}`);
+        }
+
+        const talukasJson = await talukasRes.json();
+        const districtJson = await districtRes.json();
+
+        if (!cancelled) {
+          setTalukaData(talukasJson);
+          setDistrictBoundary(districtJson);
+        }
+      } catch (e) {
+        if (!cancelled) setLoadErr(e.message || 'Failed to load geodata');
+      }
+    };
+
+    loadData();
     return () => { cancelled = true; };
   }, []);
 
-  const districtGeo = useMemo(() => {
-    if (!geoData?.features) return null;
-    return {
-      type: 'FeatureCollection',
-      features: geoData.features.filter((f) => f?.properties?.kind === 'district'),
-    };
-  }, [geoData]);
-
   const talukaGeo = useMemo(() => {
-    if (!geoData?.features) return null;
+    if (!talukaData?.features) return null;
     return {
       type: 'FeatureCollection',
-      features: geoData.features.filter((f) => f?.properties?.kind === 'taluka'),
+      features: talukaData.features.filter((f) => f?.properties?.kind === 'taluka'),
     };
-  }, [geoData]);
+  }, [talukaData]);
 
   /**
-   * Builds a "spotlight" mask: one giant world-sized polygon with the
-   * DAO's district punched out as a hole. Rendered above the basemap
-   * tiles so everything outside the district appears dim + softly blurred,
-   * focusing the eye on the district and its talukas.
+   * Builds a "strict regional isolation" mask: one giant world-sized polygon 
+   * with the district boundary punched out as a hole. 
+   * Blends with background (#F4F5F7) to hide neighboring districts.
    */
   const focusMaskGeo = useMemo(() => {
-    if (!districtGeo?.features?.length) return null;
+    if (!districtBoundary?.features?.length) return null;
     const holes = [];
-    for (const f of districtGeo.features) {
+    
+    // Inverted Polygon Mask: extract district rings as holes
+    for (const f of districtBoundary.features) {
       const g = f.geometry;
       if (!g) continue;
       if (g.type === 'Polygon') {
         holes.push(g.coordinates[0]);
       } else if (g.type === 'MultiPolygon') {
-        for (const poly of g.coordinates) holes.push(poly[0]);
+        for (const poly of g.coordinates) {
+          holes.push(poly[0]);
+        }
       }
     }
+    
     if (!holes.length) return null;
-    const worldRing = [
-      [-180, -85],
-      [180, -85],
-      [180, 85],
-      [-180, 85],
-      [-180, -85],
+
+    // Global "outer ring" (world coordinates)
+    const worldOuterRing = [
+      [-180, -90],
+      [180, -90],
+      [180, 90],
+      [-180, 90],
+      [-180, -90],
     ];
+
     return {
       type: 'Feature',
-      properties: { kind: 'focus-mask' },
+      properties: { kind: 'inverted-mask' },
       geometry: {
         type: 'Polygon',
-        coordinates: [worldRing, ...holes],
+        coordinates: [worldOuterRing, ...holes],
       },
     };
-  }, [districtGeo]);
+  }, [districtBoundary]);
 
   const heatPoints = useMemo(() => {
-    if (!geoData?.features) return [];
+    if (!talukaGeo?.features) return [];
     const all = [];
-    for (const f of geoData.features) {
-      if (f?.properties?.kind !== 'taluka') continue;
+    for (const f of talukaGeo.features) {
       const ring = getPolygonOuterRing(f.geometry);
       const int01 = heatMetric01(mapMode, f.properties);
       all.push(...gaussianGridHeatPoints(ring, int01, 26));
     }
     return all;
-  }, [geoData, mapMode]);
+  }, [talukaGeo, mapMode]);
 
   const centroidPins = useMemo(() => {
-    if (!geoData?.features) return [];
+    if (!talukaGeo?.features) return [];
     const pins = [];
-    for (const f of geoData.features) {
-      if (f?.properties?.kind !== 'taluka') continue;
+    for (const f of talukaGeo.features) {
       const ring = getPolygonOuterRing(f.geometry);
       const c = ringCentroid(ring);
-      if (c) pins.push({ id: f.properties.name, lat: c.lat, lng: c.lng, props: f.properties });
+      if (c) {
+        pins.push({ 
+          id: f.properties.name, 
+          lat: c.lat, 
+          lng: c.lng, 
+          props: f.properties,
+          metric: heatMetric01(mapMode, f.properties)
+        });
+      }
     }
-    return pins;
-  }, [geoData]);
+    // Only keep top 3 priority regions for the current mode
+    return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
+  }, [talukaGeo, mapMode]);
 
   const styleDistrictFence = useCallback((feature) => {
     if (feature?.properties?.kind === 'district') {
@@ -394,7 +433,22 @@ const DistrictCommandMap = () => {
             <span>{m.label}</span>
           </button>
         ))}
-        <span className="cao-panel-badge green" style={{ marginLeft: 'auto' }}>KDE heatmap</span>
+        <button
+          type="button"
+          onClick={() => setShowHeat(!showHeat)}
+          className="district-map-mode-btn"
+          style={{ 
+            marginLeft: 'auto', 
+            background: showHeat ? '#e8f5e9' : '#fff',
+            borderColor: showHeat ? '#2e7d32' : 'var(--outline-variant)',
+            color: showHeat ? '#2e7d32' : 'var(--text-muted)'
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+            {showHeat ? 'layers' : 'layers_clear'}
+          </span>
+          <span>Heatmap</span>
+        </button>
       </div>
 
       <div className="district-heat-legend-strip" aria-hidden style={{ marginTop: 2 }}>
@@ -415,10 +469,10 @@ const DistrictCommandMap = () => {
         {loadErr && (
           <div style={{ padding: '24px', color: 'var(--error)', fontSize: '13px' }}>{loadErr}</div>
         )}
-        {!geoData && !loadErr && (
-          <div style={{ padding: '24px', color: 'var(--text-muted)', fontSize: '13px' }}>Loading Pune district geofence…</div>
+        {!talukaData && !loadErr && (
+          <div style={{ padding: '24px', color: 'var(--text-muted)', fontSize: '13px' }}>Loading Pune district command center…</div>
         )}
-        {geoData && districtGeo && talukaGeo && (
+        {talukaData && districtBoundary && talukaGeo && (
           <MapContainer
             center={center}
             zoom={9}
@@ -432,17 +486,16 @@ const DistrictCommandMap = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               noWrap
             />
-            <DistrictKdeHeatLayer points={heatPoints} mapMode={mapMode} />
+            {showHeat && <DistrictKdeHeatLayer points={heatPoints} mapMode={mapMode} />}
             <Pane name="districtFocusMask" className="geo-focus-mask-pane" style={{ zIndex: 350, pointerEvents: 'none' }}>
               {focusMaskGeo && (
                 <GeoJSON
                   data={focusMaskGeo}
-                  style={() => ({
+                   style={() => ({
                     stroke: false,
-                    color: 'transparent',
-                    weight: 0,
-                    fillColor: '#0b1416',
-                    fillOpacity: 0.55,
+                    fillColor: '#ffffff',
+                    fillOpacity: 0.65,
+                    className: 'geo-blur-mask',
                     interactive: false,
                   })}
                 />
@@ -454,10 +507,10 @@ const DistrictCommandMap = () => {
                 <CircleMarker
                   key={pin.id}
                   center={[pin.lat, pin.lng]}
-                  radius={6}
+                  radius={5}
                   pathOptions={{
                     color: '#ffffff',
-                    weight: 2,
+                    weight: 1.5,
                     fillColor: '#e91e63',
                     fillOpacity: 0.95,
                   }}
@@ -468,8 +521,8 @@ const DistrictCommandMap = () => {
                 </CircleMarker>
               ))}
             </Pane>
-            <FitDistrict geoData={districtGeo} />
-            <GeoJSON data={districtGeo} style={styleDistrictFence} />
+            <FitDistrict geoData={districtBoundary} />
+            <GeoJSON data={districtBoundary} style={styleDistrictFence} />
           </MapContainer>
         )}
       </div>

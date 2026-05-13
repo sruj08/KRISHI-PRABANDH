@@ -1,5 +1,5 @@
 import React from 'react';
-import DistrictCommandMap from './components/DistrictCommandMap';
+import RegionalMap from '../../components/maps/RegionalMap';
 import {
   EXEC_KPIS,
   PFMS_BATCHES,
@@ -171,7 +171,10 @@ const DistrictDashboard = () => {
 
           {/* Map body */}
           <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
-            <DistrictCommandMap />
+            <RegionalMap
+              layerType="district"
+              boundaryUrl="/geo/pune-district-boundary.json"
+            />
           </div>
         </div>
 
@@ -230,64 +233,64 @@ const DistrictDashboard = () => {
         </div>
       </div>
 
-      {/* ── PFMS Row ── */}
-      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', padding: '22px 24px' }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18, flexWrap: 'wrap' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972', flexShrink: 0 }}>account_balance_wallet</span>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', flex: 1, minWidth: 200, margin: 0, lineHeight: 1.35 }}>
-            Automated PFMS disbursement queues (TAO-cleared, high confidence)
-          </h3>
-          <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#396940', background: 'rgba(186,240,188,0.3)', padding: '5px 11px', borderRadius: 6, border: '1px solid #baf0bc', flexShrink: 0, whiteSpace: 'nowrap' }}>
-            {PFMS_BATCHES.length} Batches Ready
-          </span>
+      {/* ── PFMS Disbursement Table ── */}
+      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+        {/* Table Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(57,105,64,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>account_balance_wallet</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
+              Automated PFMS Disbursement Queues
+            </h3>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>TAO-cleared, high-confidence batches ready for release</p>
+          </div>
           <button
             type="button"
             onClick={onDscAuthorize}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 16px',
-              background: '#396940',
-              color: '#fff',
-              borderRadius: 10,
-              fontSize: 12,
-              fontWeight: 700,
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(57,105,64,.25)',
-              flexShrink: 0,
-              whiteSpace: 'nowrap',
-            }}
+            className="district-dsc-btn"
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>verified_user</span>
-            Single DSC — release all
+            Authorize Release
           </button>
         </div>
 
-        {/* Batch cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {PFMS_BATCHES.map((b) => (
-            <div key={b.id} style={{ border: '1px solid #e2e3df', borderRadius: 12, padding: '18px 20px', background: '#f9faf6' }}>
-              <p style={{ fontSize: 9, fontWeight: 700, color: '#717972', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0, lineHeight: 1.3 }}>{b.id}</p>
-              <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', margin: 0, marginTop: 6, lineHeight: 1.35 }}>{b.scheme}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 16px', marginTop: 16 }}>
-                <div>
-                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', lineHeight: 1.3 }}>Beneficiaries</span>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0, marginTop: 4 }}>{b.beneficiaries.toLocaleString('en-IN')}</p>
-                </div>
-                <div>
-                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', lineHeight: 1.3 }}>Amount</span>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0, marginTop: 4 }}>₹{b.amountCr} Cr</p>
-                </div>
-                <div style={{ gridColumn: 'span 2' }}>
-                  <span style={{ fontSize: 9, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', lineHeight: 1.3 }}>Mean AI confidence</span>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0, marginTop: 4 }}>{(b.avgConfidence * 100).toFixed(1)}%</p>
-                </div>
-              </div>
-            </div>
-          ))}
+        {/* Dense Data Table */}
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Batch ID</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Scheme Name</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>Beneficiaries</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>Amount (Cr)</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'right' }}>AI Confidence</th>
+                <th style={{ padding: '14px 28px', fontSize: '10px', fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PFMS_BATCHES.map((b, idx) => (
+                <tr key={b.id} style={{ borderBottom: idx === PFMS_BATCHES.length - 1 ? 'none' : '1px solid #f3f4f0', background: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
+                  <td style={{ padding: '18px 28px', fontSize: '12px', fontWeight: 700, color: '#717972', fontVariantNumeric: 'tabular-nums' }}>{b.id}</td>
+                  <td style={{ padding: '18px 28px', fontSize: '13px', fontWeight: 600, color: '#1a1c1a' }}>{b.scheme}</td>
+                  <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{b.beneficiaries.toLocaleString('en-IN')}</td>
+                  <td style={{ padding: '18px 28px', fontSize: '14px', fontWeight: 700, color: '#1a1c1a', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>₹{b.amountCr}</td>
+                  <td style={{ padding: '18px 28px', textAlign: 'right' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+                      <div style={{ width: 60, height: 4, background: '#e2e3df', borderRadius: 2 }}>
+                        <div style={{ height: '100%', background: '#396940', borderRadius: 2, width: `${b.avgConfidence * 100}%` }} />
+                      </div>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#396940', fontVariantNumeric: 'tabular-nums', minWidth: 36 }}>{(b.avgConfidence * 100).toFixed(0)}%</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: '18px 28px', textAlign: 'center' }}>
+                    <span style={{ fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', color: '#396940', background: 'rgba(186,240,188,0.3)', padding: '4px 10px', borderRadius: 6, border: '1px solid rgba(57,105,64,0.2)' }}>Ready</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

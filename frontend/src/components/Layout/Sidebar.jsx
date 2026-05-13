@@ -31,60 +31,40 @@ const Sidebar = ({ isOpen }) => {
           label: 'STATE COMMAND',
           items: [
             { to: '/state/dashboard', icon: 'public', label: 'State Dashboard' },
-            { to: '/state/map', icon: 'map', label: 'Maharashtra Map' },
+            { to: '/state/map', icon: 'map', label: 'Maharashtra Live Map' },
           ]
         },
         {
-          id: 'scheme_gov',
-          label: 'SCHEME GOVERNANCE',
+          id: 'governance',
+          label: 'GOVERNANCE',
           items: [
-            { to: '/state/schemes', icon: 'account_tree', label: 'Active Schemes' },
-            { to: '/state/new-scheme', icon: 'add_box', label: 'New Scheme Creation' },
-            { to: '/state/lottery', icon: 'casino', label: 'Beneficiary Lottery' },
+            { to: '/state/schemes', icon: 'account_tree', label: 'Schemes' },
+            { to: '/state/fund-monitoring', icon: 'account_balance_wallet', label: 'Fund Monitoring' },
+            { to: '/state/approvals', icon: 'check_circle', label: 'Approvals' },
           ]
         },
         {
-          id: 'budget_pfms',
-          label: 'BUDGET & PFMS',
+          id: 'intelligence',
+          label: 'INTELLIGENCE',
           items: [
-            { to: '/state/budget', icon: 'account_balance_wallet', label: 'Budget Allocation' },
-            { to: '/state/pfms', icon: 'account_balance', label: 'PFMS Monitoring' },
-            { to: '/state/utilization', icon: 'pie_chart', label: 'Utilization Analytics' },
-          ]
-        },
-        {
-          id: 'ai_intelligence',
-          label: 'AI INTELLIGENCE',
-          items: [
-            { to: '/state/fraud', icon: 'shield_locked', label: 'Fraud Prevention' },
-            { to: '/state/friction', icon: 'timeline', label: 'Policy Friction' },
-            { to: '/state/risk', icon: 'warning', label: 'AI Risk Signals' },
-          ]
-        },
-        {
-          id: 'disaster',
-          label: 'DISASTER MONITORING',
-          items: [
-            { to: '/state/drought', icon: 'wb_sunny', label: 'Drought Heatmap' },
-            { to: '/state/flood', icon: 'flood', label: 'Flood Monitoring' },
-            { to: '/state/crop-failure', icon: 'compost', label: 'Crop Failure Alerts' },
+            { to: '/state/fraud', icon: 'shield_locked', label: 'Fraud Network' },
+            { to: '/state/insights', icon: 'lightbulb', label: 'AI Insights' },
+            { to: '/state/disaster', icon: 'warning', label: 'Disaster Watch' },
           ]
         },
         {
           id: 'reports',
           label: 'REPORTS',
           items: [
-            { to: '/state/reports', icon: 'summarize', label: 'State Reports' },
-            { to: '/state/division-perf', icon: 'leaderboard', label: 'Division Performance' },
-            { to: '/state/export', icon: 'file_download', label: 'Export Center' },
+            { to: '/state/analytics', icon: 'bar_chart', label: 'Analytics' },
+            { to: '/state/audit', icon: 'history', label: 'Audit Logs' },
           ]
         },
         {
           id: 'system',
           label: 'SYSTEM',
           items: [
-            { to: '/state/users', icon: 'manage_accounts', label: 'User Governance' },
-            { to: '/state/audit', icon: 'history', label: 'Audit Trails' },
+            { to: '/state/users', icon: 'manage_accounts', label: 'User Control' },
             { to: '/state/settings', icon: 'settings', label: 'Settings' },
           ]
         }
@@ -97,59 +77,39 @@ const Sidebar = ({ isOpen }) => {
           id: 'div_overview',
           label: 'DIVISION OVERVIEW',
           items: [
-            { to: '/division/dashboard', icon: 'dashboard_customize', label: 'Division Dashboard' },
-            { to: '/division/map', icon: 'map', label: 'Division Map' },
+            { to: '/division/dashboard', icon: 'dashboard', label: 'Overview' },
+            { to: '/division/map', icon: 'map', label: 'Geo Command Map' },
           ]
         },
         {
           id: 'dist_ops',
           label: 'DISTRICT OPERATIONS',
           items: [
-            { to: '/division/district-matrix', icon: 'table_chart', label: 'District Matrix' },
-            { to: '/division/pendency', icon: 'pending_actions', label: 'Pendency Monitoring' },
-            { to: '/division/officer-perf', icon: 'bar_chart', label: 'Officer Performance' },
+            { to: '/division/district-perf', icon: 'leaderboard', label: 'District Performance' },
+            { to: '/division/resources', icon: 'engineering', label: 'Resource Allocation' },
           ]
         },
         {
-          id: 'fraud_alerts',
-          label: 'FRAUD & ALERTS',
+          id: 'alerts_fraud',
+          label: 'ALERTS & FRAUD',
           items: [
-            { to: '/division/cross-fraud', icon: 'share_location', label: 'Cross-District Fraud' },
-            { to: '/division/ai-red-flags', icon: 'flag', label: 'AI Red Flags' },
+            { to: '/division/fraud', icon: 'share_location', label: 'Cross-District Fraud' },
             { to: '/division/escalations', icon: 'priority_high', label: 'Escalations' },
-          ]
-        },
-        {
-          id: 'resource',
-          label: 'RESOURCE MANAGEMENT',
-          items: [
-            { to: '/division/staff', icon: 'engineering', label: 'Staff Deployment' },
-            { to: '/division/task-redist', icon: 'move_up', label: 'Task Redistribution' },
-            { to: '/division/emergency', icon: 'local_hospital', label: 'Emergency Assignments' },
           ]
         },
         {
           id: 'field_intel',
           label: 'FIELD INTELLIGENCE',
           items: [
-            { to: '/division/rainfall', icon: 'rainy', label: 'Rainfall Monitoring' },
-            { to: '/division/crop-distress', icon: 'eco', label: 'Crop Distress' },
-            { to: '/division/verification-trends', icon: 'trending_up', label: 'Verification Trends' },
+            { to: '/division/crop-stress', icon: 'eco', label: 'Crop Stress' },
+            { to: '/division/survey-monitoring', icon: 'verified', label: 'Survey Monitoring' },
           ]
         },
         {
           id: 'div_reports',
           label: 'REPORTS',
           items: [
-            { to: '/division/reports', icon: 'summarize', label: 'Division Reports' },
-            { to: '/division/comparison', icon: 'compare_arrows', label: 'District Comparison' },
-          ]
-        },
-        {
-          id: 'div_settings',
-          label: 'SETTINGS',
-          items: [
-            { to: '/division/settings', icon: 'settings', label: 'Division Controls' },
+            { to: '/division/analytics', icon: 'summarize', label: 'Division Analytics' },
           ]
         }
       ];

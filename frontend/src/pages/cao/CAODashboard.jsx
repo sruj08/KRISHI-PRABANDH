@@ -17,13 +17,60 @@ import {
 } from '../../utils/api';
 import './cao.css';
 
-// ── Shared design primitives ─────────────────────────────────────────────────
-
+/* ── Shared design primitives ───────────────────────────────────────────────── */
 const PANEL_BORDER = '#e2e3df';
 const PANEL_DIVIDER = '#ebece8';
 const TEXT_PRIMARY = '#1a1c1a';
 const TEXT_MUTED = '#717972';
 const LABEL_GREY = '#9aa19c';
+
+const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972', progress, children, onClick }) => (
+  <div
+    onClick={onClick}
+    style={{
+      background: '#fff',
+      border: `1px solid ${PANEL_BORDER}`,
+      borderRadius: 16,
+      padding: '20px 22px',
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 152,
+      boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+      cursor: onClick ? 'pointer' : 'default',
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 28, marginBottom: 14 }}>
+      <div style={{ width: 26, height: 26, borderRadius: 6, background: '#f3f4f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#717972' }}>{icon}</span>
+      </div>
+      <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#717972', lineHeight: 1.3 }}>{label}</span>
+    </div>
+    {children ? (
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>{children}</div>
+    ) : (
+      <>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+          <span style={{ fontSize: 28, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1 }}>{value}</span>
+          {unit && <span style={{ fontSize: 14, fontWeight: 500, color: TEXT_MUTED }}>{unit}</span>}
+        </div>
+        {progress !== undefined && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+            <div style={{ flex: 1, height: 6, background: '#f3f4f0', borderRadius: 99, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: '#396940', borderRadius: 99, width: `${progress}%` }} />
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 500, color: TEXT_MUTED, fontVariantNumeric: 'tabular-nums' }}>{progress}%</span>
+          </div>
+        )}
+        {sub && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, marginTop: 'auto', paddingTop: 12, color: subColor }}>
+            {subIcon && <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{subIcon}</span>}
+            {sub}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
 
 const RiskBadge = ({ risk }) => {
   const cfg = {
@@ -719,205 +766,116 @@ const CAODashboard = () => {
   ];
 
   return (
-    <div className="min-h-full dashboard-bg animate-fade-in">
+    <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* ── KPI Strip ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
+        <KpiCard icon="description" label="Pending Files" value="71" sub="Target: < 50" progress={12} subColor="#ba1a1a" />
+        <KpiCard icon="warning" label="Red Alerts" value="3" sub="9 batches pending" subIcon="warning" subColor="#ba1a1a" />
+        <KpiCard icon="security" label="Fraud Prevented" value="1.05" unit="L" sub="Across all schemes" />
+        <KpiCard icon="storefront" label="Shops Overdue" value="2" sub="Require inspections" />
+        <KpiCard icon="account_balance" label="PMFBY Claims" value="318" sub="Processed this month" onClick={() => setPmfbyOpen(true)} />
+        <KpiCard icon="schedule" label="Avg Approval" value="4.2" unit="d" sub="Target: 3d" />
+      </div>
 
-      {/* Main Content Area */}
-      <div className="flex flex-col gap-6" style={{ padding: '24px 32px 32px 36px' }}>
-        {/* KPI Row */}
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
-          {/* Card 1: Pending Files */}
-          <div className="surface-card surface-card-static flex flex-col relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '152px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '14px', minHeight: '20px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>description</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Pending Files</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '38px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">71</span>
-            </div>
-            <div className="mt-auto pt-3 flex items-center gap-2" style={{ width: '100%' }}>
-              <span className="text-[11px] text-on-surface-variant font-medium whitespace-nowrap">Target: &lt; 50</span>
-              <div className="flex-1 bg-surface-variant h-1 rounded-full overflow-hidden ml-1">
-                <div className="bg-error h-full rounded-full" style={{ width: '12%' }}></div>
-              </div>
-              <span className="text-[10px] text-error font-data-tabular font-medium flex-shrink-0">12%</span>
+      {/* ── Main Grid: Map + Right Panel ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, flex: 1, minHeight: 0 }}>
+        
+        {/* Map Card */}
+        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 480 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
+            <div>
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>Circle — Geo-fenced Command Map</h2>
+              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>Live spatial analytics and telemetry</p>
             </div>
           </div>
-          
-          {/* Card 2: Red Alerts */}
-          <div className="surface-card surface-card-static flex flex-col relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '152px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '14px', minHeight: '20px' }}>
-              <span className="material-symbols-outlined text-error" style={{ fontSize: '18px' }}>warning</span>
-              <span className="font-label-caps text-[10px] text-error tracking-wider uppercase font-semibold truncate">Red Alerts</span>
-            </div>
-            <div className="flex items-end gap-2" style={{ minHeight: '38px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-error leading-none tracking-tight">3</span>
-              <span className="text-[13px] font-bold text-error" style={{ marginBottom: '3px' }}>High</span>
-            </div>
-            <div className="mt-auto pt-3">
-              <span className="text-[11px] text-on-surface-variant font-medium">9 batches pending</span>
-            </div>
-          </div>
-          
-          {/* Card 3: Fraud Prevented */}
-          <div className="surface-card surface-card-static flex flex-col relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '152px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '14px', minHeight: '20px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>security</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Fraud Prevented</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '38px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight flex items-baseline gap-1">₹1.05<span className="text-xl">L</span></span>
-            </div>
-            <div className="mt-auto pt-3">
-              <p className="font-body-main text-[11px] text-on-surface-variant font-medium">Across all schemes</p>
-            </div>
-          </div>
-          
-          {/* Card 4: Shops Overdue */}
-          <div className="surface-card surface-card-static flex flex-col relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '152px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '14px', minHeight: '20px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>storefront</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Shops Overdue</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '38px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">2</span>
-            </div>
-            <div className="mt-auto pt-3">
-              <p className="font-body-main text-[11px] text-on-surface-variant font-medium">Require inspections</p>
-            </div>
-          </div>
-          
-          {/* Card 5: PMFBY Claims */}
-          <div className="surface-card flex flex-col cursor-pointer relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '152px' }} onClick={() => setPmfbyOpen(true)}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '14px', minHeight: '20px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>account_balance</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">PMFBY Claims</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '38px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">318</span>
-            </div>
-            <div className="mt-auto pt-3 flex items-center gap-1.5 min-w-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant flex-shrink-0"></span>
-              <span className="font-body-main text-[11px] text-on-surface-variant font-medium truncate">Processed this month</span>
-            </div>
-          </div>
-          
-          {/* Card 6: Avg Approval */}
-          <div className="surface-card surface-card-static flex flex-col relative overflow-hidden" style={{ padding: '22px 22px', minHeight: '152px' }}>
-            <div className="flex items-center gap-2" style={{ marginBottom: '14px', minHeight: '20px' }}>
-              <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: '18px' }}>schedule</span>
-              <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider uppercase font-semibold truncate">Avg Approval</span>
-            </div>
-            <div className="flex items-end" style={{ minHeight: '38px' }}>
-              <span className="font-display-lg text-[32px] font-bold text-on-background leading-none tracking-tight">4.2d</span>
-            </div>
-            <div className="mt-auto pt-3">
-              <p className="font-body-main text-[11px] text-on-surface-variant font-medium">Target: 3d</p>
-            </div>
+          <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
+            <ActionMap />
           </div>
         </div>
 
-        {/* Main Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" style={{ marginTop: '8px' }}>
-          {/* Left Column (Spans 8 cols) */}
-          <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
-            {/* Map Container */}
-            <div className="surface-card surface-card-static surface-card-lg overflow-hidden flex flex-col min-w-0" style={{ height: '520px' }}>
-              <div className="flex justify-between items-center z-10 hairline" style={{ padding: '22px 24px', gap: '16px', borderBottomWidth: '1px', borderBottomStyle: 'solid' }}>
-                <div className="min-w-0">
-                  <h2 className="font-section-header font-bold text-base text-on-background tracking-tight truncate" style={{ lineHeight: 1.3 }}>Circle — Geo-fenced Command Map</h2>
-                  <p className="font-body-main text-xs text-on-surface-variant font-medium truncate" style={{ marginTop: '4px', lineHeight: 1.4 }}>Live spatial analytics and telemetry</p>
-                </div>
-                <button className="btn-secondary-soft flex-shrink-0">
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>layers</span> Layers
-                </button>
-              </div>
-              <div className="relative flex-1 bg-[#f0f3f2] w-full">
-                <ActionMap />
-              </div>
+        {/* ── Right Panel ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          
+          {/* Supervision Tabs Widget */}
+          <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', height: 410 }}>
+            <div style={{ display: 'flex', background: '#f7f8f4', borderBottom: '1px solid #e2e3df', padding: '12px 12px', gap: 8 }}>
+              {SUPERVISION_TABS.map(tab => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                      gap: 4,
+                      padding: '8px 4px',
+                      background: isActive ? '#033621' : 'transparent',
+                      color: isActive ? '#ffffff' : '#717972',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{tab.icon}</span>
+                    <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Sahayak Matrix */}
-            <div className="surface-card surface-card-static overflow-hidden flex flex-col min-w-0">
-              <div className="flex justify-between items-center hairline" style={{ padding: '22px 24px', gap: '16px', minHeight: '64px', borderBottomWidth: '1px', borderBottomStyle: 'solid' }}>
-                <div className="flex items-center min-w-0" style={{ gap: '12px' }}>
-                  <span className="material-symbols-outlined text-on-surface-variant flex-shrink-0" style={{ fontSize: '22px' }}>leaderboard</span>
-                  <h3 className="font-section-header font-bold text-base text-on-background tracking-tight truncate" style={{ lineHeight: 1.3 }}>Sahayak Accountability Matrix</h3>
-                </div>
-                <span className="inline-flex items-center font-bold flex-shrink-0 whitespace-nowrap" style={{ background: '#fff4e6', color: '#b45309', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '4px 10px', borderRadius: '8px', fontSize: '10.5px', letterSpacing: '0.04em' }}>
-                  {DASHBOARD_KPIS.sahayaks_critical} Critical
-                </span>
+            {loading ? (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 32, color: '#717972' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 32, opacity: 0.4 }}>hourglass_top</span>
+                <span style={{ fontSize: 13, fontWeight: 500 }}>Loading...</span>
               </div>
-              <div className="p-0 overflow-x-auto w-full">
-                <SahayakMatrix sahayaks={SAHAYAKS} />
+            ) : (
+              <div style={{ flex: 1, overflowY: 'auto' }}>
+                {activeTab === 'sahayak' && <SahayakSupervisionPanel summary={summary} vistar={vistar} />}
+                {activeTab === 'vistar' && <VistarSupervisionPanel vistar={vistar} fraudSes={fraudSes} />}
+                {activeTab === 'mandal' && <MandalOverviewPanel summary={summary} appIntel={appIntel} vistar={vistar} />}
               </div>
-            </div>
+            )}
           </div>
 
-          {/* Right Column (Spans 4 cols) */}
-          <div className="lg:col-span-4 flex flex-col gap-6 min-w-0">
-            
-            {/* Supervision Tabs Widget */}
-            <div className="surface-card surface-card-static flex flex-col min-w-0" style={{ height: '410px' }}>
-              {/* Tab bar */}
-              <div className="flex hairline rounded-t-[16px]" style={{ gap: '8px', padding: '14px 14px', background: '#f7f8f4', borderBottomWidth: '1px', borderBottomStyle: 'solid' }}>
-                {SUPERVISION_TABS.map(tab => {
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className="flex-1 flex flex-col items-center justify-center rounded-lg transition-all duration-200"
-                      style={{
-                        gap: '6px',
-                        padding: '10px 6px',
-                        minHeight: '52px',
-                        background: isActive ? '#033621' : 'transparent',
-                        color: isActive ? '#ffffff' : '#717972',
-                        boxShadow: isActive ? '0 2px 8px rgba(3, 54, 33, 0.18)' : 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                      }}
-                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#eef2ee'; }}
-                      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'inherit' }}>{tab.icon}</span>
-                      <span style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.04em', color: 'inherit' }}>{tab.label}</span>
-                    </button>
-                  );
-                })}
+          {/* Shop Tracker Widget - Condensed */}
+          <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid #f3f4f0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>storefront</span>
+                <h3 style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Krushi Seva Kendra</h3>
               </div>
-
-              {loading ? (
-                <div className="flex-1 flex flex-col items-center justify-center" style={{ gap: '12px', padding: '32px', color: '#717972' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '32px', opacity: 0.4 }}>hourglass_top</span>
-                  <span style={{ fontSize: '13px', fontWeight: 500 }}>Loading supervision data…</span>
-                </div>
-              ) : (
-                <>
-                  {activeTab === 'sahayak' && <SahayakSupervisionPanel summary={summary} vistar={vistar} />}
-                  {activeTab === 'vistar' && <VistarSupervisionPanel vistar={vistar} fraudSes={fraudSes} />}
-                  {activeTab === 'mandal' && <MandalOverviewPanel summary={summary} appIntel={appIntel} vistar={vistar} />}
-                </>
-              )}
+              <span style={{ fontSize: 9, fontWeight: 700, color: '#b45309', background: 'rgba(255,244,230,0.6)', padding: '3px 8px', borderRadius: 6 }}>{DASHBOARD_KPIS.shops_overdue} Overdue</span>
             </div>
-
-            {/* Shop Tracker Widget */}
-            <div className="surface-card surface-card-static flex flex-col overflow-hidden min-w-0">
-              <div className="flex justify-between items-center hairline" style={{ padding: '22px 24px', gap: '16px', minHeight: '64px', borderBottomWidth: '1px', borderBottomStyle: 'solid' }}>
-                <div className="flex items-center min-w-0" style={{ gap: '12px' }}>
-                  <span className="material-symbols-outlined text-on-surface-variant flex-shrink-0" style={{ fontSize: '22px' }}>storefront</span>
-                  <h3 className="font-section-header font-bold text-base text-on-background tracking-tight truncate" style={{ lineHeight: 1.3 }}>Krushi Seva Kendra</h3>
-                </div>
-                <span className="inline-flex items-center font-bold flex-shrink-0 whitespace-nowrap" style={{ background: '#fff4e6', color: '#b45309', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '4px 10px', borderRadius: '8px', fontSize: '10.5px', letterSpacing: '0.04em' }}>
-                  {DASHBOARD_KPIS.shops_overdue} Overdue
-                </span>
-              </div>
-              <div className="p-0 overflow-x-auto w-full">
-                <ShopTracker />
-              </div>
+            <div style={{ padding: '0px' }}>
+              <ShopTracker condensed />
             </div>
-
           </div>
+        </div>
+      </div>
+
+      {/* ── Sahayak Accountability Table (Full Width) ── */}
+      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(3, 54, 33, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#033621' }}>leaderboard</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
+              Sahayak Accountability Matrix
+            </h3>
+            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>Live performance and compliance telemetry across the circle</p>
+          </div>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#b45309', background: '#fff4e6', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '6px 12px', borderRadius: 8 }}>
+            {DASHBOARD_KPIS.sahayaks_critical} Critical Sahayaks
+          </span>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <SahayakMatrix sahayaks={SAHAYAKS} />
         </div>
       </div>
 
