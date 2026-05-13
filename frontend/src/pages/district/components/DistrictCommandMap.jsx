@@ -1,23 +1,46 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { geoAsset } from '../../../utils/geoAsset';
+import { buildDistrictVoronoiHeatmap, districtHeatMetric01 } from '../../../utils/districtVoronoiHeatmap';
 
 const TALUKAS_GEO_URL = geoAsset('geo/pune-district-talukas.geojson');
 const DISTRICT_GEO_URL = geoAsset('geo/pune-boundary.json');
 
-/** Reference-style ramp: cool blue → green → yellow → orange → deep red */
-const HEAT_GRADIENT = {
-  0.0: 'rgba(173, 216, 230, 0.15)',
-  0.12: '#87ceeb',
-  0.28: '#aed581',
-  0.45: '#fff176',
-  0.62: '#ffb74d',
-  0.78: '#ff7043',
-  0.92: '#e53935',
-  1.0: '#7f0000',
-};
+/**
+ * Metric ramp for Voronoi cell fills: cool blue → green → yellow → orange → deep red
+ * (same legend strip as the command map). Cells are clipped per taluka — no bleed.
+ */
+const TALUKA_HEAT_RGB_STOPS = [
+  [0.0, [199, 228, 245]],
+  [0.12, [135, 206, 235]],
+  [0.28, [174, 213, 129]],
+  [0.45, [255, 241, 118]],
+  [0.62, [255, 183, 77]],
+  [0.78, [255, 112, 67]],
+  [0.92, [229, 57, 53]],
+  [1.0, [127, 0, 0]],
+];
+
+function clamp01(x) {
+  return Math.min(1, Math.max(0, x));
+}
+
+function heatColorFromMetric01(t01) {
+  const t = clamp01(t01);
+  const stops = TALUKA_HEAT_RGB_STOPS;
+  let i = 0;
+  while (i < stops.length - 2 && t >= stops[i + 1][0]) i += 1;
+  const [t0, c0] = stops[i];
+  const [t1, c1] = stops[i + 1];
+  const span = t1 - t0 || 1;
+  const u = clamp01((t - t0) / span);
+  const r = Math.round(c0[0] + (c1[0] - c0[0]) * u);
+  const g = Math.round(c0[1] + (c1[1] - c0[1]) * u);
+  const b = Math.round(c0[2] + (c1[2] - c0[2]) * u);
+  return `rgb(${r},${g},${b})`;
+}
 
 function getPolygonOuterRing(geometry) {
   if (!geometry) return null;
@@ -42,85 +65,6 @@ function ringCentroid(ring) {
   }
   const n = coords.length;
   return { lat: sumLat / n, lng: sumLng / n };
-}
-
-function ringBBoxMeters(ring) {
-  if (!ring?.length) return null;
-  let coords = ring;
-  const first = ring[0];
-  const last = ring[ring.length - 1];
-  if (first[0] === last[0] && first[1] === last[1] && ring.length > 1) {
-    coords = ring.slice(0, -1);
-  }
-  let minLng = Infinity;
-  let maxLng = -Infinity;
-  let minLat = Infinity;
-  let maxLat = -Infinity;
-  for (const [lng, lat] of coords) {
-    minLng = Math.min(minLng, lng);
-    maxLng = Math.max(maxLng, lng);
-    minLat = Math.min(minLat, lat);
-    maxLat = Math.max(maxLat, lat);
-  }
-  const midLat = (minLat + maxLat) / 2;
-  const mPerDegLat = 111320;
-  const mPerDegLng = 111320 * Math.cos((midLat * Math.PI) / 180);
-  const wM = (maxLng - minLng) * mPerDegLng;
-  const hM = (maxLat - minLat) * mPerDegLat;
-  return { minLng, maxLng, minLat, maxLat, wM, hM, midLat };
-}
-
-function pointInPolygon(lat, lng, ring) {
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const xi = ring[i][0], yi = ring[i][1];
-    const xj = ring[j][0], yj = ring[j][1];
-    const intersect = ((yi > lat) !== (yj > lat)) &&
-        (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi);
-    if (intersect) inside = !inside;
-  }
-  return inside;
-}
-
-/** Dense Gaussian-weighted samples → smooth KDE-style field when fed to L.heatLayer */
-function gaussianGridHeatPoints(ring, intensity01, gridN = 26) {
-  const box = ringBBoxMeters(ring);
-  const c = ringCentroid(ring);
-  if (!box || !c) return [];
-  const { minLng, maxLng, minLat, maxLat, wM, hM, midLat } = box;
-  const mLng = 111320 * Math.cos((midLat * Math.PI) / 180);
-  const mLat = 111320;
-  const sigma = Math.max(wM, hM) * 0.36;
-  const pts = [];
-  const clamp01 = (x) => Math.min(1, Math.max(0, x));
-  const peak = clamp01(intensity01);
-  for (let i = 0; i < gridN; i += 1) {
-    for (let j = 0; j < gridN; j += 1) {
-      const u = (i + 0.5) / gridN;
-      const v = (j + 0.5) / gridN;
-      const lng = minLng + u * (maxLng - minLng);
-      const lat = minLat + v * (maxLat - minLat);
-      const dx = (lng - c.lng) * mLng;
-      const dy = (lat - c.lat) * mLat;
-      const g = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
-      const w = g * (0.08 + 0.92 * peak);
-      
-      // Strict Clipping: Only add points that are inside the actual polygon ring
-      if (w > 0.018 && pointInPolygon(lat, lng, ring)) {
-        pts.push([lat, lng, w]);
-      }
-    }
-  }
-  return pts;
-}
-
-function heatMetric01(mapMode, props) {
-  const v = mapMode === 'penetration'
-    ? props.penetration
-    : mapMode === 'ndvi'
-      ? props.ndviStress
-      : props.grievanceIdx;
-  return Math.min(1, Math.max(0, v / 100));
 }
 
 /**
@@ -150,53 +94,6 @@ function FitDistrict({ geoData }) {
   return null;
 }
 
-/** Canvas heatmap (leaflet.heat); kept under vector taluka / district outlines */
-function DistrictKdeHeatLayer({ points, mapMode }) {
-  const map = useMap();
-  const layerRef = useRef(null);
-
-  useEffect(() => {
-    if (!map || !points?.length) return undefined;
-
-    let cancelled = false;
-
-    const teardown = () => {
-      if (layerRef.current) {
-        map.removeLayer(layerRef.current);
-        layerRef.current = null;
-      }
-    };
-
-    (async () => {
-      if (typeof window !== 'undefined') {
-        window.L = L;
-      }
-      await import('leaflet.heat/dist/leaflet-heat.js');
-      if (cancelled || !map || typeof L.heatLayer !== 'function') return;
-
-      teardown();
-      const layer = L.heatLayer(points, {
-        radius: 25,
-        blur: 15,
-        minOpacity: 0.1,
-        max: 0.4,
-        maxZoom: 20,
-        gradient: HEAT_GRADIENT,
-      });
-      layer.addTo(map);
-      layer.bringToBack();
-      layerRef.current = layer;
-    })();
-
-    return () => {
-      cancelled = true;
-      teardown();
-    };
-  }, [map, points, mapMode]);
-
-  return null;
-}
-
 const TALUKA_DEFAULT = {
   color: '#1565c0',
   weight: 1.5,
@@ -213,8 +110,108 @@ const TALUKA_HOVER = {
   fillOpacity: 0.16,
 };
 
-function TalukaBoundariesLayer({ talukaGeo }) {
-  const gjRef = useRef(null);
+/** With Voronoi heat on: taluka rings as light admin outlines above cells. */
+function talukaBoundaryBaseStyle(feature, showHeat) {
+  const p = feature?.properties;
+  if (!p || p.kind !== 'taluka') return TALUKA_DEFAULT;
+  if (showHeat) {
+    return {
+      color: '#0d47a1',
+      weight: 1.25,
+      opacity: 0.55,
+      fillColor: '#1976d2',
+      fillOpacity: 0,
+    };
+  }
+  return TALUKA_DEFAULT;
+}
+
+function talukaBoundaryHoverStyle(feature, showHeat) {
+  const p = feature?.properties;
+  if (!p || p.kind !== 'taluka') return TALUKA_HOVER;
+  if (showHeat) {
+    return {
+      color: '#003978',
+      weight: 2.75,
+      opacity: 1,
+      fillColor: '#1976d2',
+      fillOpacity: 0,
+    };
+  }
+  return TALUKA_HOVER;
+}
+
+const DISTRICT_CELL_HOVER = {
+  color: '#1a1c1a',
+  weight: 2,
+  opacity: 0.85,
+  fillOpacity: 0.55,
+};
+
+function DistrictVoronoiHeatLayer({ layerKey, heatGeo, showHeat }) {
+  const styleFn = useCallback((feature) => {
+    const p = feature?.properties || {};
+    const t = typeof p.heat === 'number' ? p.heat : 0;
+    return {
+      color: '#5c6560',
+      weight: 1,
+      opacity: 0.55,
+      fillColor: heatColorFromMetric01(t),
+      fillOpacity: 0.14 + t * 0.48,
+    };
+  }, []);
+
+  const bindLayer = useCallback((feature, layer) => {
+    const p = feature?.properties;
+    if (!p || p.kind !== 'district-heat-cell') return;
+    const t = typeof p.heat === 'number' ? p.heat : 0;
+    const pct = Math.round(t * 100);
+    const html = `
+      <div style="min-width:172px;line-height:1.45;position:relative;padding-right:12px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#222">${p.talukaName} Taluka</div>
+        <div style="font-size:11px;color:#222">Scheme penetration: <b>${p.penetration}%</b></div>
+        <div style="font-size:11px;color:#222">NDVI stress index: <b>${p.ndviStress}</b></div>
+        <div style="font-size:11px;color:#222">Grievance index: <b>${p.grievanceIdx}</b></div>
+        <div style="font-size:11px;color:#222;margin-top:4px">Map intensity (local): <b>${pct}%</b></div>
+        <span style="position:absolute;right:4px;bottom:2px;width:8px;height:8px;border-radius:50%;background:${heatColorFromMetric01(t)};display:inline-block" aria-hidden="true"></span>
+      </div>`;
+    layer.bindTooltip(html, {
+      sticky: false,
+      direction: 'auto',
+      opacity: 1,
+      className: 'district-taluka-tooltip',
+    });
+    layer.on({
+      mouseover: (e) => {
+        const lyr = e.target;
+        const heat = typeof lyr.feature?.properties?.heat === 'number' ? lyr.feature.properties.heat : 0;
+        lyr.setStyle({
+          ...DISTRICT_CELL_HOVER,
+          fillColor: heatColorFromMetric01(heat),
+        });
+        lyr.bringToFront();
+      },
+      mouseout: (e) => {
+        const lyr = e.target;
+        lyr.setStyle(styleFn(lyr.feature));
+      },
+    });
+  }, [styleFn]);
+
+  if (!showHeat || !heatGeo?.features?.length) return null;
+
+  return (
+    <Pane name="districtVoronoiHeat" style={{ zIndex: 375 }}>
+      <GeoJSON key={layerKey} data={heatGeo} style={styleFn} onEachFeature={bindLayer} />
+    </Pane>
+  );
+}
+
+function TalukaBoundariesLayer({ talukaGeo, showHeat }) {
+  const baseStyle = useCallback(
+    (feature) => talukaBoundaryBaseStyle(feature, showHeat),
+    [showHeat],
+  );
 
   const bindLayer = useCallback((feature, layer) => {
     const p = feature?.properties;
@@ -230,27 +227,26 @@ function TalukaBoundariesLayer({ talukaGeo }) {
     layer.on({
       mouseover: (e) => {
         const lyr = e.target;
-        lyr.setStyle(TALUKA_HOVER);
+        lyr.setStyle(talukaBoundaryHoverStyle(lyr.feature, showHeat));
         lyr.bringToFront();
       },
       mouseout: (e) => {
-        const ref = gjRef.current;
-        if (ref && typeof ref.resetStyle === 'function') {
-          ref.resetStyle(e.target);
-        }
+        const lyr = e.target;
+        lyr.setStyle(baseStyle(lyr.feature));
       },
     });
-  }, []);
+  }, [showHeat, baseStyle]);
 
   if (!talukaGeo?.features?.length) return null;
 
   return (
-    <GeoJSON
-      ref={gjRef}
-      data={talukaGeo}
-      style={() => TALUKA_DEFAULT}
-      onEachFeature={bindLayer}
-    />
+    <Pane name="districtTalukaStrokes" style={{ zIndex: 385 }}>
+      <GeoJSON
+        data={talukaGeo}
+        style={baseStyle}
+        onEachFeature={bindLayer}
+      />
+    </Pane>
   );
 }
 
@@ -327,6 +323,12 @@ const DistrictCommandMap = () => {
     };
   }, [talukaData]);
 
+  /** Per-taluka Voronoi clipped to each ring (same approach as TAO mandal map). */
+  const districtHeatGeo = useMemo(
+    () => buildDistrictVoronoiHeatmap(talukaGeo, mapMode),
+    [talukaGeo, mapMode],
+  );
+
   /**
    * Builds a "strict regional isolation" mask: one giant world-sized polygon 
    * with the district boundary punched out as a hole. 
@@ -370,17 +372,6 @@ const DistrictCommandMap = () => {
     };
   }, [districtBoundary]);
 
-  const heatPoints = useMemo(() => {
-    if (!talukaGeo?.features) return [];
-    const all = [];
-    for (const f of talukaGeo.features) {
-      const ring = getPolygonOuterRing(f.geometry);
-      const int01 = heatMetric01(mapMode, f.properties);
-      all.push(...gaussianGridHeatPoints(ring, int01, 26));
-    }
-    return all;
-  }, [talukaGeo, mapMode]);
-
   const centroidPins = useMemo(() => {
     if (!talukaGeo?.features) return [];
     const pins = [];
@@ -393,7 +384,7 @@ const DistrictCommandMap = () => {
           lat: c.lat, 
           lng: c.lng, 
           props: f.properties,
-          metric: heatMetric01(mapMode, f.properties)
+          metric: districtHeatMetric01(mapMode, f.properties)
         });
       }
     }
@@ -483,7 +474,6 @@ const DistrictCommandMap = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               noWrap
             />
-            {showHeat && <DistrictKdeHeatLayer points={heatPoints} mapMode={mapMode} />}
             <Pane name="districtFocusMask" className="geo-focus-mask-pane" style={{ zIndex: 350, pointerEvents: 'none' }}>
               {focusMaskGeo && (
                 <GeoJSON
@@ -498,7 +488,12 @@ const DistrictCommandMap = () => {
                 />
               )}
             </Pane>
-            <TalukaBoundariesLayer talukaGeo={talukaGeo} />
+            <DistrictVoronoiHeatLayer
+              layerKey={`district-heat-${mapMode}`}
+              heatGeo={districtHeatGeo}
+              showHeat={showHeat}
+            />
+            <TalukaBoundariesLayer talukaGeo={talukaGeo} showHeat={showHeat} />
             <Pane name="districtCentroidPins" style={{ zIndex: 650 }}>
               {centroidPins.map((pin) => (
                 <CircleMarker
@@ -525,7 +520,7 @@ const DistrictCommandMap = () => {
       </div>
 
       <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
-        Canvas KDE heat (leaflet.heat) from taluka-weighted samples; hover taluka borders for emphasis and tooltips. District dashed line is the geofence (simplified demo boundary).
+        Voronoi mesh per taluka, each cell intersected with its taluka polygon so heat never crosses an admin ring (same pattern as the TAO mandal map). Toggle heat off for a neutral taluka outline. District dashed line is the geofence (simplified demo boundary).
       </p>
     </div>
   );

@@ -1,5 +1,5 @@
 {
-  "name": "krishinetra-field-app",
+  "name": "krishi-prabandh-field-app",
   "version": "2.0.0",
   "private": true,
   "type": "module",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
+    "@turf/turf": "^7.3.5",
     "chart.js": "^4.5.1",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",

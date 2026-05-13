@@ -1,5 +1,5 @@
 // =========================================================
-// KrishiNetra — Translations (EN ↔ MR)
+// Krishi Prabandh — Translations (EN ↔ MR)
 // Ported from legacy i18n.js into a static map
 // =========================================================
 
@@ -18,7 +18,7 @@ export const translations = {
 
   // App Name
   "AgriField Gov": "कृषी-प्रबंध",
-  "KrishiNetra Field App": "कृषिनेत्र क्षेत्र अॅप",
+  "Krishi Prabandh Field App": "कृषी प्रबंध क्षेत्र अॅप",
   "Secure Government Officer Portal": "सुरक्षित सरकारी अधिकारी पोर्टल",
 
   // Officer Profile

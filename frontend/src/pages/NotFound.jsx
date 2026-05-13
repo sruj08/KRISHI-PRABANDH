@@ -12,7 +12,7 @@ const NotFound = () => {
         </span>
         <h2 className="text-2xl font-bold text-[#1a202c] mb-2 tracking-tight">System Module Not Found</h2>
         <p className="text-[#718096] text-sm mb-6">
-          The requested path does not exist or you do not have the required clearance to access this sector of the KrishiNetra intelligence platform.
+          The requested path does not exist or you do not have the required clearance to access this sector of the Krishi Prabandh intelligence platform.
         </p>
         <button 
           onClick={() => navigate('/')}

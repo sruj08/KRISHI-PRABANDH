@@ -2,22 +2,21 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cvEngine } from '../../utils/cvEngine';
 import { useAuth } from '../../context/AuthContext';
+import './farmer-dashboard.css';
 
 const FCFS_UPLOAD_CALLOUT = (
   <>
-    <strong style={{ color: '#92400e' }}>Important:</strong> MahaDBT operates on a{' '}
-    <strong>First-Come, First-Served</strong> basis. If you upload a blurry document, your application
-    may be rejected by the officer later, and you will <strong>lose your priority spot</strong>. Our
-    smart scanner checks your document <strong>right now</strong> so it can be approved on the{' '}
-    <strong>first try</strong>.
+    <strong style={{ color: '#4a4429' }}>Note:</strong> MahaDBT works on a first-come, first-served basis.
+    Unclear documents are often returned, which moves you back in the queue. Use a steady photo or PDF
+    and let the on-device check finish before you continue.
   </>
 );
 
 const BLUR_FEEDBACK =
-  '❌ Document is blurry or over-compressed. An officer will reject this, causing a 3-week delay. Please wipe your camera lens and retake the photo. Do not use WhatsApp to compress.';
+  'This image is too soft or heavily compressed for reliable reading. Retake with good light, a clean lens, and avoid sending through chat apps that shrink files.';
 
 const CLEAR_FEEDBACK =
-  '✅ Perfect! 100% Readable. We have automatically adjusted the file size for you. Your application is safe from document-rejection.';
+  'Readability check passed. File size has been adjusted to stay within the usual upload limit for this portal.';
 
 /** Shown when scan is usable but quality is uncertain — farmer chooses retake or attach */
 const RISKY_QUALITY_INTRO =
@@ -29,7 +28,7 @@ const RISKY_QUALITY_CHOICE =
 const COMPRESSION_LINE = 'Compressing to Government limits (500 KB)… Done.';
 
 const SUBMIT_SUCCESS =
-  'Your application file is complete. Equipment receipt and fee are on record. You will not face document-related rejections for readability at the steps you cleared with the smart scanner.';
+  'Receipt and fee are on record. Your file is ready for office processing on readability checks you cleared at upload.';
 
 /** Stages before filing the application record (no receipt yet) */
 const APPLICATION_STAGES = [
@@ -73,25 +72,8 @@ const initialSlotState = () => ({
 
 function ReadabilityCallout() {
   return (
-    <div
-      role="status"
-      style={{
-        display: 'flex',
-        gap: 12,
-        alignItems: 'flex-start',
-        padding: '14px 16px',
-        marginBottom: 14,
-        borderRadius: 12,
-        border: '1px solid #fcd34d',
-        background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-        color: '#78350f',
-        fontSize: 13,
-        lineHeight: 1.55,
-      }}
-    >
-      <span className="material-symbols-outlined" style={{ fontSize: 22, color: '#d97706', flexShrink: 0 }}>
-        warning
-      </span>
+    <div className="farmer-dash-callout farmer-dash-callout--queue" role="status">
+      <span className="material-symbols-outlined">info</span>
       <div>{FCFS_UPLOAD_CALLOUT}</div>
     </div>
   );
@@ -102,25 +84,11 @@ function ScanFeedbackBox({ variant, children }) {
   return (
     <div
       role="alert"
-      style={{
-        marginTop: 12,
-        padding: '14px 16px',
-        borderRadius: 12,
-        border: `2px solid ${isBlur ? '#fecaca' : '#86efac'}`,
-        background: isBlur ? '#fef2f2' : '#f0fdf4',
-        color: isBlur ? '#7f1d1d' : '#14532d',
-        fontSize: 13,
-        lineHeight: 1.55,
-        display: 'flex',
-        gap: 10,
-        alignItems: 'flex-start',
-      }}
+      className={`farmer-dash-scan-feedback ${isBlur ? 'farmer-dash-scan-feedback--error' : 'farmer-dash-scan-feedback--ok'}`}
     >
-      <span className="material-symbols-outlined" style={{ fontSize: 22, flexShrink: 0 }}>
-        {isBlur ? 'dangerous' : 'verified'}
-      </span>
+      <span className="material-symbols-outlined">{isBlur ? 'front_hand' : 'verified'}</span>
       <div>
-        <div style={{ fontWeight: 800, marginBottom: 4 }}>{isBlur ? 'Needs retake' : 'Smart scan passed'}</div>
+        <div className="farmer-dash-scan-feedback-title">{isBlur ? 'Needs a clearer copy' : 'Check passed'}</div>
         {children}
       </div>
     </div>
@@ -138,13 +106,14 @@ function SmartUploadSlot({
   onFileChange,
 }) {
   return (
-    <div style={{ marginBottom: 20 }}>
-      <h4 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 4px', color: 'var(--text-dark, #1a202c)' }}>{title}</h4>
-      {subtitle && (
-        <p style={{ fontSize: 12, color: 'var(--text-muted, #64748b)', margin: '0 0 12px', lineHeight: 1.45 }}>{subtitle}</p>
-      )}
+    <div className="farmer-dash-upload-block">
+      <h4 className="farmer-dash-upload-title">{title}</h4>
+      {subtitle && <p className="farmer-dash-upload-sub">{subtitle}</p>}
       {showFcfsCallout && <ReadabilityCallout />}
-      <div className="drag-drop-zone" style={{ position: 'relative', opacity: disabled ? 0.55 : 1, pointerEvents: disabled ? 'none' : 'auto' }}>
+      <div
+        className="drag-drop-zone farmer-dash-drag"
+        style={{ position: 'relative', opacity: disabled ? 0.55 : 1, pointerEvents: disabled ? 'none' : 'auto' }}
+      >
         <input
           id={inputId}
           type="file"
@@ -160,11 +129,9 @@ function SmartUploadSlot({
         <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Max 500 KB after optimization · PDF accepted</span>
       </div>
       {isProcessing && (
-        <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--primary, #033621)', fontWeight: 600, fontSize: 13 }}>
-          <span className="material-symbols-outlined" style={{ animation: 'spin 1s linear infinite' }}>
-            progress_activity
-          </span>
-          Smart scanner is reading your document…
+        <div className="farmer-dash-processing">
+          <span className="material-symbols-outlined farmer-dash-spin">progress_activity</span>
+          Document check in progress…
         </div>
       )}
       {slotState.feedback === 'blur' && (
@@ -174,44 +141,23 @@ function SmartUploadSlot({
         <ScanFeedbackBox variant="clear">
           <div>{CLEAR_FEEDBACK}</div>
           {slotState.compressNote && (
-            <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: '#166534' }}>{COMPRESSION_LINE}</div>
+            <div className="farmer-dash-hint" style={{ marginTop: 10, fontWeight: 600, color: '#2d5a34' }}>
+              {COMPRESSION_LINE}
+            </div>
           )}
         </ScanFeedbackBox>
       )}
       {slotState.attached && !slotState.feedback && (
-        <div
-          style={{
-            marginTop: 12,
-            padding: '10px 14px',
-            borderRadius: 10,
-            background: 'rgba(57,105,64,0.08)',
-            border: '1px solid rgba(57,105,64,0.25)',
-            fontSize: 13,
-            fontWeight: 600,
-            color: '#14532d',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
+        <div className="farmer-dash-attached">
+          <div className="farmer-dash-attached-row">
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+              check_circle
+            </span>
             Attached — {((slotState.attached.size ?? 0) / 1024).toFixed(1)} KB
           </div>
           {slotState.lowQualityAck && (
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#92400e',
-                lineHeight: 1.45,
-                padding: '8px 10px',
-                background: '#fffbeb',
-                borderRadius: 8,
-                border: '1px solid #fde68a',
-              }}
-            >
-              You chose to attach a photo the scanner flagged as unclear. Keep a clearer copy ready if the office asks.
+            <div className="farmer-dash-attached-note">
+              You attached a file that was flagged as marginal quality. Keep a clearer copy with you if the office requests it.
             </div>
           )}
         </div>
@@ -224,33 +170,15 @@ function SmartUploadSlot({
 function ApplicationProgressBar({ activeIndex, totalStages }) {
   const pct = Math.min(100, Math.round(((activeIndex + 1) / totalStages) * 100));
   return (
-    <div style={{ marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-        <span style={{ fontSize: 12, fontWeight: 800, color: '#033621', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          Application progress
-        </span>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+    <div className="farmer-dash-progress-wrap">
+      <div className="farmer-dash-progress-head">
+        <span className="farmer-dash-progress-label">Application progress</span>
+        <span className="farmer-dash-progress-meta">
           Stage {activeIndex + 1} of {totalStages}
         </span>
       </div>
-      <div
-        style={{
-          height: 10,
-          borderRadius: 999,
-          background: '#e2e8f0',
-          overflow: 'hidden',
-          border: '1px solid #cbd5e1',
-        }}
-      >
-        <div
-          style={{
-            height: '100%',
-            width: `${pct}%`,
-            borderRadius: 999,
-            background: 'linear-gradient(90deg, #033621, #22c55e)',
-            transition: 'width 0.35s ease',
-          }}
-        />
+      <div className="farmer-dash-progress-track">
+        <div className="farmer-dash-progress-fill" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -258,42 +186,20 @@ function ApplicationProgressBar({ activeIndex, totalStages }) {
 
 function StageChecklist({ stages, activeIndex }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        marginBottom: 20,
-        padding: '12px 14px',
-        background: '#fff',
-        borderRadius: 12,
-        border: '1px solid #e2e8f0',
-      }}
-    >
+    <div className="farmer-dash-checklist">
       {stages.map((s, i) => {
         const done = i < activeIndex;
         const current = i === activeIndex;
         return (
           <div
             key={s.key}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              fontSize: 12,
-              fontWeight: done ? 600 : current ? 700 : 500,
-              color: done ? '#166534' : current ? '#033621' : '#94a3b8',
-            }}
+            className={`farmer-dash-checklist-row ${done ? 'farmer-dash-checklist-row--done' : ''} ${current ? 'farmer-dash-checklist-row--current' : ''}`}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+            <span className="material-symbols-outlined">
               {done ? 'check_circle' : current ? 'radio_button_checked' : 'radio_button_unchecked'}
             </span>
             <span>{s.label}</span>
-            {current && (
-              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#ca8a04' }}>
-                Now
-              </span>
-            )}
+            {current && <span className="farmer-dash-now-badge">Current</span>}
           </div>
         );
       })}
@@ -306,14 +212,12 @@ function PostSubmitProgressBar({ receiptOk, feePaid, dossierComplete, postSubmit
     ? 100
     : Math.round(((1 + (receiptOk ? 1 : 0) + (feePaid ? 1 : 0)) / 3) * 100);
   return (
-    <div style={{ marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-        <span style={{ fontSize: 12, fontWeight: 800, color: '#033621', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          Application status
-        </span>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>{pct}% complete</span>
+    <div className="farmer-dash-progress-wrap">
+      <div className="farmer-dash-progress-head">
+        <span className="farmer-dash-progress-label">Application status</span>
+        <span className="farmer-dash-progress-meta">{pct}% complete</span>
       </div>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+      <div className="farmer-dash-segments">
         {POST_SUBMIT_STEPS.map((s, i) => {
           const submittedMilestone = i === 0;
           const receiptStep = i === 1;
@@ -330,44 +234,16 @@ function PostSubmitProgressBar({ receiptOk, feePaid, dossierComplete, postSubmit
           return (
             <div
               key={s.key}
-              style={{
-                flex: 1,
-                padding: '10px 8px',
-                borderRadius: 10,
-                textAlign: 'center',
-                fontSize: 10,
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                background: done ? 'rgba(57,105,64,0.18)' : current ? '#033621' : '#f1f5f9',
-                color: done ? '#14532d' : current ? '#fff' : '#94a3b8',
-                border: current ? 'none' : '1px solid #e2e8f0',
-              }}
+              className={`farmer-dash-segment ${done ? 'farmer-dash-segment--done' : ''} ${current ? 'farmer-dash-segment--active' : ''}`}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 18, display: 'block', margin: '0 auto 4px' }}>{s.icon}</span>
+              <span className="material-symbols-outlined">{s.icon}</span>
               {s.label}
             </div>
           );
         })}
       </div>
-      <div
-        style={{
-          height: 10,
-          borderRadius: 999,
-          background: '#e2e8f0',
-          overflow: 'hidden',
-          border: '1px solid #cbd5e1',
-        }}
-      >
-        <div
-          style={{
-            height: '100%',
-            width: `${pct}%`,
-            borderRadius: 999,
-            background: 'linear-gradient(90deg, #033621, #22c55e)',
-            transition: 'width 0.35s ease',
-          }}
-        />
+      <div className="farmer-dash-progress-track">
+        <div className="farmer-dash-progress-fill" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -375,59 +251,29 @@ function PostSubmitProgressBar({ receiptOk, feePaid, dossierComplete, postSubmit
 
 function PostSubmitChecklist({ receiptOk, feePaid, postSubmitPhaseIndex }) {
   return (
-    <div
-      style={{
-        marginBottom: 20,
-        padding: '14px 16px',
-        background: '#fff',
-        borderRadius: 12,
-        border: '1px solid #e2e8f0',
-      }}
-    >
-      <div style={{ fontSize: 11, fontWeight: 800, color: '#64748b', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>
-        Your steps after submission
+    <div className="farmer-dash-post-steps">
+      <div className="farmer-dash-post-steps-title">Steps after submission</div>
+      <div className="farmer-dash-post-step farmer-dash-post-step--done">
+        <span className="material-symbols-outlined">check_circle</span>
+        Application filed — queue position recorded
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, color: '#166534' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
-          Application submitted — you are in the queue
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            fontSize: 13,
-            fontWeight: postSubmitPhaseIndex === 0 && !receiptOk ? 700 : 600,
-            color: receiptOk ? '#166534' : postSubmitPhaseIndex === 0 ? '#033621' : '#94a3b8',
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-            {receiptOk ? 'check_circle' : postSubmitPhaseIndex === 0 ? 'edit_calendar' : 'radio_button_unchecked'}
-          </span>
-          Upload photo receipt / dealer bill for equipment
-          {postSubmitPhaseIndex === 0 && !receiptOk && (
-            <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#ca8a04' }}>Now</span>
-          )}
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            fontSize: 13,
-            fontWeight: postSubmitPhaseIndex === 1 && !feePaid ? 700 : 600,
-            color: feePaid ? '#166534' : postSubmitPhaseIndex === 1 ? '#033621' : '#94a3b8',
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-            {feePaid ? 'check_circle' : postSubmitPhaseIndex === 1 ? 'payments' : 'radio_button_unchecked'}
-          </span>
-          Pay ₹23.60 processing fee (UPI / QR)
-          {postSubmitPhaseIndex === 1 && !feePaid && receiptOk && (
-            <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#ca8a04' }}>Now</span>
-          )}
-        </div>
+      <div
+        className={`farmer-dash-post-step ${receiptOk ? 'farmer-dash-post-step--done' : postSubmitPhaseIndex === 0 ? 'farmer-dash-post-step--current' : 'farmer-dash-post-step--pending'}`}
+      >
+        <span className="material-symbols-outlined">
+          {receiptOk ? 'check_circle' : postSubmitPhaseIndex === 0 ? 'edit_calendar' : 'radio_button_unchecked'}
+        </span>
+        Upload dealer bill / equipment receipt
+        {postSubmitPhaseIndex === 0 && !receiptOk && <span className="farmer-dash-now-badge">Current</span>}
+      </div>
+      <div
+        className={`farmer-dash-post-step ${feePaid ? 'farmer-dash-post-step--done' : postSubmitPhaseIndex === 1 ? 'farmer-dash-post-step--current' : 'farmer-dash-post-step--pending'}`}
+      >
+        <span className="material-symbols-outlined">
+          {feePaid ? 'check_circle' : postSubmitPhaseIndex === 1 ? 'payments' : 'radio_button_unchecked'}
+        </span>
+        Pay ₹23.60 processing fee (UPI / QR)
+        {postSubmitPhaseIndex === 1 && !feePaid && receiptOk && <span className="farmer-dash-now-badge">Current</span>}
       </div>
     </div>
   );
@@ -435,7 +281,7 @@ function PostSubmitChecklist({ receiptOk, feePaid, postSubmitPhaseIndex }) {
 
 const FarmerDashboard = () => {
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  const { user } = useAuth();
 
   /** 'register' = profile only; 'application' = staged dossier after registration */
   const [phase, setPhase] = useState('register');
@@ -589,11 +435,6 @@ const FarmerDashboard = () => {
     setPreviewTarget(null);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const receiptOk = slots.equipmentReceipt.attached;
   const canCompleteDossier = receiptOk && feePaid;
 
@@ -641,164 +482,97 @@ const FarmerDashboard = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface-lowest, #f8fafc)', color: 'var(--text-dark, #1a202c)' }}>
-      <header
-        style={{
-          padding: '14px 20px',
-          background: 'linear-gradient(90deg, #033621 0%, #14532d 100%)',
-          color: 'white',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 12,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 26 }}>agriculture</span>
-          <div>
-            <h1 style={{ fontSize: 17, margin: 0, fontWeight: 800 }}>Krishi Prabandh — Farmer</h1>
-            <p style={{ margin: 0, fontSize: 11, opacity: 0.9 }}>
-              {phase === 'register'
-                ? 'Registration (demo)'
-                : dossierComplete
-                  ? `Dossier complete · ${applicationId || ''}`
-                  : phase === 'application'
-                    ? `Before submit · ${applicationId || ''}`
-                    : phase === 'postSubmit'
-                      ? `After submit · ${applicationId || ''}`
-                      : applicationId || ''}
-            </p>
-          </div>
+    <div className="farmer-dash-root">
+      {!scannerReady && (
+        <div className="farmer-dash-sync-banner">
+          <span className="material-symbols-outlined farmer-dash-spin">hourglass_top</span>
+          Preparing document check…
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {!scannerReady && (
-            <span style={{ fontSize: 11, opacity: 0.95, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, animation: 'spin 1.2s linear infinite' }}>
-                hourglass_top
-              </span>
-              Loading smart scanner…
-            </span>
-          )}
-          <button
-            type="button"
-            className="btn-outline btn-sm text-white"
-            style={{ borderColor: 'rgba(255,255,255,0.45)', color: 'white' }}
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
-      </header>
+      )}
 
-      <main style={{ padding: '20px 18px 40px', maxWidth: 720, margin: '0 auto' }}>
-        <div style={{ marginBottom: 18 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: '#033621', margin: '0 0 6px' }}>
-            Namaste, {user?.name || 'Farmer'}
-          </h2>
-          <p style={{ margin: 0, fontSize: 13, color: 'var(--text-muted, #64748b)' }}>
+      <main className="farmer-dash-main">
+        <header className="farmer-dash-page-head">
+          <h1 className="farmer-dash-page-title">Namaste, {user?.name || 'Farmer'}</h1>
+          <p className="farmer-dash-page-meta">
             Farmer ID: <strong>{user?.agristack_id || user?.username || 'MH-AGR-2026-0001'}</strong>
             {(phase === 'application' || phase === 'postSubmit' || dossierComplete) && applicationId && (
               <>
                 {' '}
-                · <strong style={{ color: '#033621' }}>{applicationId}</strong>
-                {dossierComplete && <span style={{ color: '#166534', fontWeight: 600 }}> · Dossier complete</span>}
-                {!dossierComplete && phase === 'postSubmit' && (
-                  <span style={{ color: '#64748b', fontWeight: 500 }}> · Filed</span>
-                )}
+                · <span className="farmer-dash-ref">{applicationId}</span>
+                {dossierComplete && <span> · Dossier complete</span>}
+                {!dossierComplete && phase === 'postSubmit' && <span> · Filed</span>}
               </>
             )}
           </p>
-        </div>
+        </header>
 
-        {globalError && (
-          <div
-            style={{
-              marginBottom: 16,
-              padding: '12px 14px',
-              background: '#fef2f2',
-              border: '1px solid #fecaca',
-              borderRadius: 10,
-              color: '#991b1b',
-              fontSize: 13,
-            }}
-          >
-            {globalError}
-          </div>
-        )}
+        {globalError && <div className="farmer-dash-alert farmer-dash-alert--error">{globalError}</div>}
 
         {/* ── REGISTRATION: only AgriStack + profile (no bank proof) ── */}
         {phase === 'register' && regStep === 1 && (
-          <div className="card" style={{ padding: 20 }}>
-            <h3 style={{ fontSize: 17, fontWeight: 800, margin: '0 0 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="material-symbols-outlined" style={{ color: '#396940' }}>verified_user</span>
-              Registration — Step 1 of 2 · AgriStack
-            </h3>
-            <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, marginBottom: 16 }}>
-              You are signed in with Farmer ID + OTP (demo). We fetch your profile from AgriStack so you do not re-type land and crop data.
-            </p>
+          <div className="farmer-dash-card">
+            <div className="farmer-dash-card-head">
+              <div className="farmer-dash-card-head-icon">
+                <span className="material-symbols-outlined">verified_user</span>
+              </div>
+              <div>
+                <span className="farmer-dash-eyebrow">Registration · Step 1 of 2</span>
+                <h2 className="farmer-dash-card-title">AgriStack profile</h2>
+                <p className="farmer-dash-card-lead">
+                  You are signed in with Farmer ID and OTP. Land and crop references are pulled from AgriStack so you do not re-enter them here.
+                </p>
+              </div>
+            </div>
             {!agriStackSimulated ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#033621', fontWeight: 600 }}>
-                <span className="material-symbols-outlined" style={{ animation: 'spin 1s linear infinite' }}>sync</span>
-                Fetching your data from AgriStack…
+              <div className="farmer-dash-loading-row">
+                <span className="material-symbols-outlined farmer-dash-spin">sync</span>
+                Retrieving profile from AgriStack…
               </div>
             ) : (
-              <div
-                style={{
-                  padding: 16,
-                  borderRadius: 12,
-                  background: '#f0fdf4',
-                  border: '1px solid #bbf7d0',
-                  fontSize: 13,
-                  lineHeight: 1.55,
-                }}
-              >
-                <strong style={{ color: '#14532d' }}>Profile auto-filled (~50%)</strong>
-                <ul style={{ margin: '10px 0 0', paddingLeft: 20, color: '#166534' }}>
+              <div className="farmer-dash-info-panel">
+                <strong>Profile pre-filled from registry</strong>
+                <ul>
                   <li>7/12 land extract — linked</li>
-                  <li>Crop declaration (Pik Pahani) — season Kharif 2026</li>
-                  <li>Bank name on record — verified mask ••••4120</li>
+                  <li>Crop declaration (Pik Pahani) — Kharif 2026</li>
+                  <li>Bank on record — masked account ending 4120</li>
                 </ul>
               </div>
             )}
-            <button type="button" className="btn btn-success" style={{ marginTop: 18, width: '100%' }} disabled={!agriStackSimulated} onClick={() => setRegStep(2)}>
-              Continue to profile
-            </button>
+            <div className="farmer-dash-actions" style={{ marginTop: 18 }}>
+              <button type="button" className="btn btn-success" style={{ width: '100%' }} disabled={!agriStackSimulated} onClick={() => setRegStep(2)}>
+                Continue to certificates
+              </button>
+            </div>
           </div>
         )}
 
         {phase === 'register' && regStep === 2 && (
-          <div className="card" style={{ padding: 20 }}>
-            <div style={{ marginBottom: 14 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#64748b', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                Registration — Step 2 of 2
-              </span>
-              <h3 style={{ fontSize: 17, fontWeight: 800, margin: '6px 0 0' }}>Profile &amp; certificates</h3>
-            <p style={{ fontSize: 13, color: '#64748b', marginTop: 8, lineHeight: 1.5 }}>
-              Complete this step to <strong>open your application workspace</strong>. You will choose scheme and submit the application first; <strong>equipment receipt and fee</strong> come <strong>after</strong> submission on your status page.
+          <div className="farmer-dash-card">
+            <span className="farmer-dash-eyebrow">Registration · Step 2 of 2</span>
+            <h2 className="farmer-dash-card-title" style={{ marginTop: 6 }}>
+              Category and certificates
+            </h2>
+            <p className="farmer-dash-card-lead" style={{ marginBottom: 18 }}>
+              Complete this step to open the application workspace. Scheme choice and filing come first; equipment receipt and fee are recorded after submission.
             </p>
-            </div>
 
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8, color: '#475569' }}>Category</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 10,
-                border: '1px solid #e2e8f0',
-                marginBottom: 20,
-                fontSize: 14,
-                background: '#fff',
-              }}
-            >
-              <option value="">Select category</option>
-              <option value="SC">SC</option>
-              <option value="ST">ST</option>
-              <option value="OBC">OBC</option>
-              <option value="GENERAL">General</option>
-            </select>
+            <div className="farmer-dash-field-group">
+              <label className="farmer-dash-label" htmlFor="farmer-category">
+                Category
+              </label>
+              <select
+                id="farmer-category"
+                className="farmer-dash-select"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="">Select category</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="OBC">OBC</option>
+                <option value="GENERAL">General</option>
+              </select>
+            </div>
 
             <SmartUploadSlot
               title="Caste / category certificate"
@@ -822,18 +596,16 @@ const FarmerDashboard = () => {
               onFileChange={(e) => handleUpload(e, 'disability')}
             />
 
-            <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+            <div className="farmer-dash-actions" style={{ marginTop: 8 }}>
               <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setRegStep(1)}>
                 Back
               </button>
               <button type="button" className="btn btn-success" style={{ flex: 2 }} disabled={!profileSaveOk} onClick={registerApplication}>
-                Register application
+                Open application workspace
               </button>
             </div>
             {!profileSaveOk && (
-              <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10, textAlign: 'center' }}>
-                Choose category and attach a verified caste certificate to register.
-              </p>
+              <p className="farmer-dash-hint farmer-dash-hint--center">Select category and attach a valid caste certificate where applicable.</p>
             )}
           </div>
         )}
@@ -844,145 +616,129 @@ const FarmerDashboard = () => {
             <ApplicationProgressBar activeIndex={activeAppStage} totalStages={totalAppStages} />
             <StageChecklist stages={APPLICATION_STAGES} activeIndex={activeAppStage} />
 
-            <div
-              className="card"
-              style={{
-                padding: 22,
-                borderLeft: '4px solid #033621',
-                boxShadow: '0 4px 20px rgba(3,54,33,0.08)',
-              }}
-            >
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '6px 12px',
-                  borderRadius: 999,
-                  background: '#fef9c3',
-                  color: '#854d0e',
-                  fontSize: 11,
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  marginBottom: 12,
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>flag</span>
-                What you need to do now
+            <div className="farmer-dash-card">
+              <div className="farmer-dash-card__top">
+                <div className="farmer-dash-step-pill">
+                  <span className="material-symbols-outlined">edit_note</span>
+                  Current task
+                </div>
+                <h2 className="farmer-dash-stage-title">{currentStage.headline}</h2>
+                <p className="farmer-dash-stage-desc">{currentStage.description}</p>
               </div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>{currentStage.headline}</h3>
-              <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.6, margin: '0 0 20px' }}>{currentStage.description}</p>
 
               {currentStage.key === 'scheme' && (
                 <>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Scheme line</label>
-                  <select
-                    value={scheme}
-                    onChange={(e) => {
-                      setScheme(e.target.value);
-                      setSubComponent('');
-                    }}
-                    style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 16 }}
-                  >
-                    <option value="">Select scheme type</option>
-                    <option value="mech">Agricultural mechanization</option>
-                    <option value="irrigation">Micro irrigation</option>
-                    <option value="seeds">Certified seeds &amp; inputs</option>
-                  </select>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Sub-component</label>
-                  <select
-                    value={subComponent}
-                    onChange={(e) => setSubComponent(e.target.value)}
-                    style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0' }}
-                    disabled={!scheme}
-                  >
-                    <option value="">{scheme ? 'Select sub-component' : 'Choose scheme first'}</option>
-                    {scheme === 'mech' && (
-                      <>
-                        <option value="tractor">Tractor / power tiller</option>
-                        <option value="thresher">Thresher</option>
-                      </>
-                    )}
-                    {scheme === 'irrigation' && (
-                      <>
-                        <option value="drip">Drip irrigation</option>
-                        <option value="sprinkler">Sprinkler system</option>
-                      </>
-                    )}
-                    {scheme === 'seeds' && (
-                      <>
-                        <option value="hybrid">Hybrid seed kit</option>
-                        <option value="biofert">Bio-fertilizer pack</option>
-                      </>
-                    )}
-                  </select>
+                  <div className="farmer-dash-field-group">
+                    <label className="farmer-dash-label" htmlFor="farmer-scheme-line">
+                      Scheme line
+                    </label>
+                    <select
+                      id="farmer-scheme-line"
+                      className="farmer-dash-select"
+                      value={scheme}
+                      onChange={(e) => {
+                        setScheme(e.target.value);
+                        setSubComponent('');
+                      }}
+                    >
+                      <option value="">Select scheme type</option>
+                      <option value="mech">Agricultural mechanization</option>
+                      <option value="irrigation">Micro irrigation</option>
+                      <option value="seeds">Certified seeds &amp; inputs</option>
+                    </select>
+                  </div>
+                  <div className="farmer-dash-field-group">
+                    <label className="farmer-dash-label" htmlFor="farmer-subcomponent">
+                      Sub-component
+                    </label>
+                    <select
+                      id="farmer-subcomponent"
+                      className="farmer-dash-select"
+                      value={subComponent}
+                      onChange={(e) => setSubComponent(e.target.value)}
+                      disabled={!scheme}
+                    >
+                      <option value="">{scheme ? 'Select sub-component' : 'Choose scheme line first'}</option>
+                      {scheme === 'mech' && (
+                        <>
+                          <option value="tractor">Tractor / power tiller</option>
+                          <option value="thresher">Thresher</option>
+                        </>
+                      )}
+                      {scheme === 'irrigation' && (
+                        <>
+                          <option value="drip">Drip irrigation</option>
+                          <option value="sprinkler">Sprinkler system</option>
+                        </>
+                      )}
+                      {scheme === 'seeds' && (
+                        <>
+                          <option value="hybrid">Hybrid seed kit</option>
+                          <option value="biofert">Bio-fertilizer pack</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
                 </>
               )}
 
               {currentStage.key === 'requirements' && (
                 <>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Quantity / size</label>
-                  <input
-                    type="text"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    placeholder="e.g. 120 m pipe, 35 HP"
-                    style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 16 }}
-                  />
-                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', fontSize: 13, lineHeight: 1.45 }}>
-                    <input type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} style={{ marginTop: 3 }} />
+                  <div className="farmer-dash-field-group">
+                    <label className="farmer-dash-label" htmlFor="farmer-quantity">
+                      Quantity / size
+                    </label>
+                    <input
+                      id="farmer-quantity"
+                      type="text"
+                      className="farmer-dash-input"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      placeholder="e.g. 120 m pipe, 35 HP"
+                    />
+                  </div>
+                  <label className="farmer-dash-checkbox-row">
+                    <input type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
                     <span>I accept the Terms &amp; Conditions and confirm the details are correct.</span>
                   </label>
                 </>
               )}
 
               {currentStage.key === 'submitApp' && (
-                <div
-                  style={{
-                    padding: 16,
-                    borderRadius: 12,
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    fontSize: 13,
-                    color: '#475569',
-                    lineHeight: 1.55,
-                  }}
-                >
-                  <strong style={{ color: '#0f172a' }}>Summary</strong>
-                  <ul style={{ margin: '10px 0 0', paddingLeft: 20 }}>
+                <div className="farmer-dash-summary-box">
+                  <strong>Summary</strong>
+                  <ul>
                     <li>Scheme: {scheme ? `${scheme} / ${subComponent}` : '—'}</li>
                     <li>Quantity / note: {quantity || '—'}</li>
                     <li>Terms accepted: {termsAccepted ? 'Yes' : 'No'}</li>
                   </ul>
-                  <p style={{ margin: '12px 0 0', fontSize: 12, color: '#64748b' }}>
-                    Submitting files your application in the queue. You will then upload your equipment receipt and pay the fee on the next screen.
+                  <p style={{ margin: '12px 0 0', fontSize: 12, color: '#717972' }}>
+                    Submitting places the application in the queue. You will then upload the equipment receipt and pay the fee on the following screens.
                   </p>
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: 10, marginTop: 22, flexWrap: 'wrap' }}>
-                <button type="button" className="btn btn-outline" style={{ flex: '0 1 auto', minWidth: 100 }} onClick={goPrevStage} disabled={activeAppStage === 0}>
+              <div className="farmer-dash-actions">
+                <button type="button" className="btn btn-outline" style={{ minWidth: 100 }} onClick={goPrevStage} disabled={activeAppStage === 0}>
                   Back
                 </button>
                 {currentStage.key === 'submitApp' ? (
                   <button
                     type="button"
                     className="btn btn-success"
-                    style={{ flex: 1, minWidth: 160 }}
                     disabled={!stageAdvanceGuard}
                     onClick={fileApplicationRecord}
                   >
                     Submit application
                   </button>
                 ) : (
-                  <button type="button" className="btn btn-success" style={{ flex: 1, minWidth: 160 }} disabled={!stageAdvanceGuard} onClick={goNextStage}>
+                  <button type="button" className="btn btn-success" disabled={!stageAdvanceGuard} onClick={goNextStage}>
                     Save &amp; continue
                   </button>
                 )}
               </div>
               {currentStage.key === 'submitApp' && !stageAdvanceGuard && (
-                <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>Complete scheme and requirements to enable submit.</p>
+                <p className="farmer-dash-hint">Complete scheme and declaration to enable submit.</p>
               )}
             </div>
           </>
@@ -990,21 +746,13 @@ const FarmerDashboard = () => {
 
         {phase === 'postSubmit' && !dossierComplete && (
           <>
-            <div
-              className="card"
-              style={{
-                marginBottom: 18,
-                padding: 16,
-                background: 'linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%)',
-                border: '1px solid #86efac',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 28, color: '#166534' }}>task_alt</span>
+            <div className="farmer-dash-filed-banner">
+              <div className="farmer-dash-filed-inner">
+                <span className="material-symbols-outlined">task_alt</span>
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: '#14532d' }}>Application submitted</div>
-                  <div style={{ fontSize: 12, color: '#166534', marginTop: 4 }}>
-                    Reference <strong>{applicationId}</strong>. Your request is filed — finish the steps below (receipt, then fee).
+                  <div className="farmer-dash-filed-title">Application filed</div>
+                  <div className="farmer-dash-filed-meta">
+                    Reference <strong>{applicationId}</strong>. Complete receipt upload, then the processing fee.
                   </div>
                 </div>
               </div>
@@ -1019,40 +767,20 @@ const FarmerDashboard = () => {
             <PostSubmitChecklist receiptOk={receiptOk} feePaid={feePaid} postSubmitPhaseIndex={postSubmitPhaseIndex} />
 
             {postSubmitPhaseIndex === 0 && (
-              <div
-                className="card"
-                style={{
-                  padding: 22,
-                  borderLeft: '4px solid #033621',
-                  boxShadow: '0 4px 20px rgba(3,54,33,0.08)',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 12px',
-                    borderRadius: 999,
-                    background: '#fef9c3',
-                    color: '#854d0e',
-                    fontSize: 11,
-                    fontWeight: 800,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    marginBottom: 12,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>flag</span>
-                  What you need to do now
+              <div className="farmer-dash-card">
+                <div className="farmer-dash-card__top">
+                  <div className="farmer-dash-step-pill">
+                    <span className="material-symbols-outlined">receipt_long</span>
+                    Current task
+                  </div>
+                  <h2 className="farmer-dash-stage-title">Upload dealer bill or equipment receipt</h2>
+                  <p className="farmer-dash-stage-desc">
+                    Upload a legible photo of the bill, delivery challan, or dealer receipt for the equipment or material covered by this application.
+                  </p>
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>Upload proof of receipt / dealer bill</h3>
-                <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.6, margin: '0 0 20px' }}>
-                  Upload a clear photo of your bill, delivery challan, or dealer receipt for the farm equipment or material. Blurry bills delay approval — use the smart scanner.
-                </p>
                 <SmartUploadSlot
                   title="Dealer bill / equipment receipt"
-                  subtitle="Photo of bill, challan, or receipt for the farm equipment or material covered by this application."
+                  subtitle="Bill, challan, or receipt for the farm equipment or material under this application."
                   showFcfsCallout
                   disabled={!!processingSlot}
                   isProcessing={processingSlot === 'equipmentReceipt'}
@@ -1060,84 +788,45 @@ const FarmerDashboard = () => {
                   inputId="upload-equipment-receipt"
                   onFileChange={(e) => handleUpload(e, 'equipmentReceipt')}
                 />
-                <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
-                  <button type="button" className="btn btn-success" style={{ flex: 1, minWidth: 140 }} disabled={!receiptOk} onClick={() => setPostSubmitPhaseIndex(1)}>
+                <div className="farmer-dash-actions" style={{ marginTop: 8 }}>
+                  <button type="button" className="btn btn-success" style={{ width: '100%' }} disabled={!receiptOk} onClick={() => setPostSubmitPhaseIndex(1)}>
                     Save &amp; continue
                   </button>
                 </div>
-                {!receiptOk && (
-                  <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>Attach a receipt to continue to the fee step.</p>
-                )}
+                {!receiptOk && <p className="farmer-dash-hint">Attach a receipt to continue to the fee step.</p>}
               </div>
             )}
 
             {postSubmitPhaseIndex === 1 && (
-              <div
-                className="card"
-                style={{
-                  padding: 22,
-                  borderLeft: '4px solid #033621',
-                  boxShadow: '0 4px 20px rgba(3,54,33,0.08)',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 12px',
-                    borderRadius: 999,
-                    background: '#fef9c3',
-                    color: '#854d0e',
-                    fontSize: 11,
-                    fontWeight: 800,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    marginBottom: 12,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>flag</span>
-                  What you need to do now
+              <div className="farmer-dash-card">
+                <div className="farmer-dash-card__top">
+                  <div className="farmer-dash-step-pill">
+                    <span className="material-symbols-outlined">payments</span>
+                    Current task
+                  </div>
+                  <h2 className="farmer-dash-stage-title">Processing fee</h2>
+                  <p className="farmer-dash-stage-desc">
+                    Pay the <strong>₹23.60</strong> processing fee via UPI or QR (simulated for this demo). Then mark the dossier complete.
+                  </p>
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>Pay processing fee</h3>
-                <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.6, margin: '0 0 20px' }}>
-                  Pay the <strong>₹23.60</strong> processing fee via UPI / QR (simulated). Then mark your dossier complete.
-                </p>
                 {!feePaid ? (
                   <button type="button" className="btn btn-success" style={{ width: '100%', marginBottom: 12 }} onClick={() => setFeePaid(true)}>
-                    <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: 6 }}>qr_code_2</span>
-                    Simulate UPI payment — ₹23.60
+                    <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: 6, fontSize: 20 }}>
+                      qr_code_2
+                    </span>
+                    Pay ₹23.60 (demo)
                   </button>
                 ) : (
-                  <div
-                    style={{
-                      padding: 12,
-                      borderRadius: 10,
-                      background: '#ecfdf5',
-                      border: '1px solid #6ee7b7',
-                      marginBottom: 14,
-                      fontWeight: 600,
-                      color: '#065f46',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                    }}
-                  >
+                  <div className="farmer-dash-paid-strip">
                     <span className="material-symbols-outlined">payments</span>
-                    Payment received (demo)
+                    Payment recorded (demo)
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <div className="farmer-dash-actions">
                   <button type="button" className="btn btn-outline" onClick={() => setPostSubmitPhaseIndex(0)}>
                     Back
                   </button>
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    style={{ flex: 1, minWidth: 160 }}
-                    disabled={!canCompleteDossier}
-                    onClick={() => setDossierComplete(true)}
-                  >
+                  <button type="button" className="btn btn-success" disabled={!canCompleteDossier} onClick={() => setDossierComplete(true)}>
                     Complete application
                   </button>
                 </div>
@@ -1147,35 +836,31 @@ const FarmerDashboard = () => {
         )}
 
         {dossierComplete && (
-          <div
-            className="card"
-            style={{
-              padding: 24,
-              textAlign: 'left',
-              border: '2px solid #86efac',
-              background: 'linear-gradient(180deg, #f0fdf4 0%, #ffffff 55%)',
-            }}
-          >
-            <div style={{ fontSize: 40, lineHeight: 1, marginBottom: 12 }} aria-hidden>
-              🎉
+          <div className="farmer-dash-completion">
+            <div className="farmer-dash-completion-icon">
+              <span className="material-symbols-outlined">verified</span>
             </div>
-            <h3 style={{ fontSize: 18, fontWeight: 800, color: '#14532d', margin: '0 0 12px' }}>Application submitted</h3>
-            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>Reference: <strong>{applicationId}</strong></p>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: '#166534', margin: 0 }}>{SUBMIT_SUCCESS}</p>
-            <button type="button" className="btn btn-outline" style={{ marginTop: 20 }} onClick={() => navigate('/login')}>
-              Return to home
-            </button>
+            <h2 className="farmer-dash-completion-title">Application complete</h2>
+            <p className="farmer-dash-completion-ref">
+              Reference: <span className="farmer-dash-ref">{applicationId}</span>
+            </p>
+            <p className="farmer-dash-completion-body">{SUBMIT_SUCCESS}</p>
+            <div className="farmer-dash-actions" style={{ marginTop: 16 }}>
+              <button type="button" className="btn btn-outline" onClick={() => navigate('/login')}>
+                Return to home
+              </button>
+            </div>
           </div>
         )}
       </main>
 
       {previewData && previewData.blob && (previewData.type === 'pdf' || previewData.qualityTier) && (
         <div className="modal-overlay active">
-          <div className="modal-content" style={{ maxWidth: 820, width: '92%' }}>
+          <div className="modal-content farmer-dash-root" style={{ maxWidth: 820, width: '92%' }}>
             <div
               className="modal-header"
               style={{
-                borderBottom: '1px solid var(--outline-variant)',
+                borderBottom: '1px solid #e2e3df',
                 paddingBottom: 16,
                 marginBottom: 16,
                 display: 'flex',
@@ -1187,19 +872,21 @@ const FarmerDashboard = () => {
               <div>
                 {previewData.type === 'pdf' || previewData.qualityTier === 'clear' ? (
                   <>
-                    <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#14532d', margin: 0, fontSize: 17 }}>
+                    <h3 className="farmer-dash-modal-title farmer-dash-modal-title-ok">
                       <span className="material-symbols-outlined">verified</span>
-                      Snap &amp; check — document is readable
+                      Document check — acceptable
                     </h3>
-                    <p style={{ margin: '8px 0 0', fontSize: 13, color: '#64748b', lineHeight: 1.45 }}>{CLEAR_FEEDBACK}</p>
+                    <p className="farmer-dash-card-lead" style={{ marginTop: 8 }}>
+                      {CLEAR_FEEDBACK}
+                    </p>
                   </>
                 ) : (
                   <>
-                    <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#b45309', margin: 0, fontSize: 17 }}>
+                    <h3 className="farmer-dash-modal-title farmer-dash-modal-title-warn">
                       <span className="material-symbols-outlined">warning</span>
-                      Quality notice — your choice
+                      Quality notice
                     </h3>
-                    <p style={{ margin: '8px 0 0', fontSize: 13, color: '#78350f', lineHeight: 1.55 }}>
+                    <p className="farmer-dash-card-lead" style={{ marginTop: 8, color: '#5c4a1f' }}>
                       {RISKY_QUALITY_INTRO} {RISKY_QUALITY_CHOICE}
                     </p>
                   </>
@@ -1212,8 +899,10 @@ const FarmerDashboard = () => {
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
               <div style={{ flex: '1 1 280px' }}>
-                <h4 style={{ textAlign: 'center', fontWeight: 700, marginBottom: 8, fontSize: 13 }}>Original ({(previewData.originalSize / 1024).toFixed(1)} KB)</h4>
-                <div style={{ border: '1px solid #e2e8f0', borderRadius: 10, overflow: 'hidden', minHeight: 220, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <p className="farmer-dash-label" style={{ textAlign: 'center', marginBottom: 8 }}>
+                  Original ({(previewData.originalSize / 1024).toFixed(1)} KB)
+                </p>
+                <div className="farmer-dash-modal-preview">
                   {previewData.type === 'pdf' ? (
                     <iframe src={previewData.originalSrc} title="Original PDF" style={{ width: '100%', minHeight: 220, border: 'none' }} />
                   ) : (
@@ -1222,28 +911,18 @@ const FarmerDashboard = () => {
                 </div>
               </div>
               <div style={{ flex: '1 1 280px' }}>
-                <h4
+                <p
+                  className="farmer-dash-label"
                   style={{
                     textAlign: 'center',
-                    fontWeight: 700,
                     marginBottom: 8,
-                    fontSize: 13,
-                    color: previewData.qualityTier === 'risky' ? '#b45309' : '#166534',
+                    color: previewData.qualityTier === 'risky' ? '#6b4f1d' : '#2d5a34',
                   }}
                 >
-                  Optimized for upload ({(previewData.optimizedSize / 1024).toFixed(1)} KB)
-                </h4>
+                  Optimised for upload ({(previewData.optimizedSize / 1024).toFixed(1)} KB)
+                </p>
                 <div
-                  style={{
-                    border: previewData.qualityTier === 'risky' ? '2px solid #f59e0b' : '2px solid #22c55e',
-                    borderRadius: 10,
-                    overflow: 'hidden',
-                    minHeight: 220,
-                    background: '#f8fafc',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
+                  className={`farmer-dash-modal-preview ${previewData.qualityTier === 'risky' ? 'farmer-dash-modal-preview--warn' : 'farmer-dash-modal-preview--ok'}`}
                 >
                   {previewData.type === 'pdf' ? (
                     <iframe src={previewData.optimizedSrc} title="Optimized PDF" style={{ width: '100%', minHeight: 220, border: 'none' }} />
@@ -1251,34 +930,21 @@ const FarmerDashboard = () => {
                     <img src={previewData.optimizedSrc} alt="Optimized" style={{ maxWidth: '100%', maxHeight: 280, objectFit: 'contain' }} />
                   )}
                 </div>
-                {previewData.type !== 'pdf' && (
-                  <p style={{ fontSize: 12, fontWeight: 600, color: previewData.qualityTier === 'risky' ? '#b45309' : '#166534', marginTop: 10 }}>
-                    {COMPRESSION_LINE}
-                  </p>
-                )}
+                {previewData.type !== 'pdf' && <p className="farmer-dash-hint" style={{ marginTop: 10, textAlign: 'center', fontWeight: 600 }}>{COMPRESSION_LINE}</p>}
               </div>
             </div>
 
-            <div style={{ padding: 12, background: '#f8fafc', borderRadius: 10, marginBottom: 16, fontSize: 12, color: '#475569' }}>
-              <strong>Readability score:</strong> {previewData.readabilityScore}% · <strong>Raw variance (normalized):</strong> {previewData.rawVariance}
+            <div className="farmer-dash-modal-meta">
+              <strong>Readability score:</strong> {previewData.readabilityScore}% · <strong>Variance (normalised):</strong> {previewData.rawVariance}
             </div>
 
             {previewData.qualityTier === 'risky' && (
-              <p style={{ fontSize: 11, color: '#64748b', marginTop: -8, marginBottom: 16, lineHeight: 1.45 }}>
-                “Attach” or “Submit with application” both add this file to your application. Retake replaces it with a new photo.
+              <p className="farmer-dash-hint" style={{ marginTop: -8, marginBottom: 16 }}>
+                “Attach” or “Submit with application” both add this file. Retake replaces it with a new photo.
               </p>
             )}
 
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: 10,
-                flexWrap: 'wrap',
-                borderTop: '1px solid #e2e8f0',
-                paddingTop: 16,
-              }}
-            >
+            <div className="farmer-dash-modal-footer">
               <button type="button" className="btn btn-outline" onClick={() => dismissPreview(true)}>
                 Retake
               </button>
@@ -1287,19 +953,18 @@ const FarmerDashboard = () => {
                   <button type="button" className="btn btn-outline" onClick={handleConfirmAttach}>
                     Attach anyway
                   </button>
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    style={{ background: '#b45309', borderColor: '#b45309' }}
-                    onClick={handleConfirmAttach}
-                  >
-                    <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', fontSize: 18 }}>upload</span>
+                  <button type="button" className="btn btn-success farmer-dash-btn-caution" onClick={handleConfirmAttach}>
+                    <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', fontSize: 18 }}>
+                      upload
+                    </span>
                     Submit with application
                   </button>
                 </>
               ) : (
                 <button type="button" className="btn btn-success" onClick={handleConfirmAttach}>
-                  <span className="material-symbols-outlined" style={{ verticalAlign: 'middle' }}>check_circle</span>
+                  <span className="material-symbols-outlined" style={{ verticalAlign: 'middle' }}>
+                    check_circle
+                  </span>
                   Confirm &amp; attach
                 </button>
               )}
@@ -1307,8 +972,6 @@ const FarmerDashboard = () => {
           </div>
         </div>
       )}
-
-      <style dangerouslySetInnerHTML={{ __html: '@keyframes spin { 100% { transform: rotate(360deg); } }' }} />
     </div>
   );
 };

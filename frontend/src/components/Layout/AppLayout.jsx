@@ -9,20 +9,35 @@ const AppLayout = () => {
   const { isOpen, closeSidebar, toggleSidebar } = useSidebar();
   const { user } = useAuth();
 
+  const headerRoleSuffix =
+    user?.role === 'farmer'
+      ? 'FARMER'
+      : user?.role === 'state'
+        ? 'STATE OFFICER'
+        : user?.role === 'division'
+          ? 'DIVISIONAL OFFICER'
+          : user?.role === 'district'
+            ? 'DAO'
+            : user?.role === 'tao'
+              ? 'TAO'
+              : user?.role === 'cao'
+                ? 'CAO'
+                : user?.role?.toUpperCase() || 'OFFICER';
+
   return (
-    <div className={`flex flex-col min-h-screen ${user?.role === 'state' ? 'bg-[#0a0f0d] text-white' : 'bg-[#f3f4f0]'}`}>
+    <div className="flex flex-col min-h-screen bg-[#f3f4f0]">
 
       {/* ── Global Top Header ── */}
       <header
-        className={`h-16 flex items-center px-6 gap-4 sticky top-0 shrink-0 ${user?.role === 'state' ? 'bg-[#111814] border-b border-[#1f2924]' : 'bg-white border-b border-[#e2e9e6]'}`}
+        className="h-16 flex items-center px-6 gap-4 sticky top-0 shrink-0 bg-white border-b border-[#e2e9e6]"
         style={{
-          boxShadow: user?.role === 'state' ? 'none' : '0 1px 2px rgba(20, 40, 30, 0.025)',
+          boxShadow: '0 1px 2px rgba(20, 40, 30, 0.025)',
           zIndex: 1100,
         }}
       >
         {/* Mobile hamburger */}
         <button
-          className={`icon-btn-soft md:hidden ${user?.role === 'state' ? 'text-gray-300' : ''}`}
+          className="icon-btn-soft md:hidden"
           onClick={toggleSidebar}
           aria-label="Toggle menu"
         >
@@ -31,14 +46,9 @@ const AppLayout = () => {
 
         {/* Logo */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="material-symbols-outlined text-[22px]" style={{ color: user?.role === 'state' ? '#4ade80' : '#1f4d36' }}>public</span>
-          <span className={`font-bold text-[15px] tracking-tight ${user?.role === 'state' ? 'text-white' : 'text-[#1a1c1a]'}`}>
-            KrishiNetra - {
-              user?.role === 'state' ? 'STATE COMMAND' :
-              user?.role === 'division' ? 'DIVISION' :
-              user?.role === 'district' ? 'DAO' :
-              (user?.role?.toUpperCase() || 'OFFICER')
-            }
+          <span className="material-symbols-outlined text-[22px]" style={{ color: '#1f4d36' }}>public</span>
+          <span className="font-bold text-[15px] tracking-tight text-[#1a1c1a]">
+            Krishi Prabandh - {headerRoleSuffix}
           </span>
         </div>
 
@@ -46,7 +56,9 @@ const AppLayout = () => {
 
         {/* Breadcrumb */}
         <div className="hidden md:flex items-center gap-2 text-[13px] font-medium" style={{ color: '#717972' }}>
-          {user?.role === 'state' ? (
+          {user?.role === 'farmer' ? (
+            <span>MahaDBT · Farmer services</span>
+          ) : user?.role === 'state' ? (
             <span>Maharashtra State Command</span>
           ) : user?.role === 'division' ? (
             <>
@@ -104,13 +116,15 @@ const AppLayout = () => {
         <Sidebar isOpen={isOpen} />
 
         {/* Main content scrolls independently */}
-        <main className="flex-1 min-w-0 overflow-y-auto md:pb-0 pb-16">
+        <main
+          className={`flex-1 min-w-0 overflow-y-auto ${['farmer', 'state', 'division'].includes(user?.role) ? 'pb-0' : 'md:pb-0 pb-16'}`}
+        >
           <Outlet />
         </main>
       </div>
 
-      {/* Mobile bottom nav */}
-      <BottomNav />
+      {/* Mobile bottom nav — officer / Sahayak flows only */}
+      {!['farmer', 'state', 'division'].includes(user?.role) && <BottomNav />}
     </div>
   );
 };
