@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { MOCK_TAO_STATS, MOCK_APPLICATIONS, MOCK_GRIEVANCES } from '../../utils/taoMockData';
-import TAOMap from './components/TAOMap';
-import CAOMatrix from './components/CAOMatrix';
+import { useAuth } from '../../context/AuthContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
+import { MOCK_APPLICATIONS, MOCK_GRIEVANCES } from '../../utils/taoMockData';
+import RegionalMap from '../../components/maps/RegionalMap';
 import TAOAnomalyModal from './components/TAOAnomalyModal';
 
 /* ── Shared design primitives ───────────────────────────────────────────────── */
