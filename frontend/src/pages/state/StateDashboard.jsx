@@ -1,5 +1,6 @@
 import React from 'react';
 import RegionalMap from '../../components/maps/RegionalMap';
+import { geoAsset } from '../../utils/geoAsset';
 import {
   EXEC_KPIS,
   PFMS_BATCHES,
@@ -212,13 +213,15 @@ const StateDashboard = () => {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
               <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{STATE_PROFILE.state} — Statewide Command Map</h2>
-              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>Live spatial analytics • {STATE_PROFILE.officerTitle}</p>
+              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>Live spatial analytics • {STATE_PROFILE.officerTitle}. State outline from stored GeoJSON; division regions + heat overlay (click a division for the info panel).</p>
             </div>
           </div>
           <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
             <RegionalMap
               layerType="state"
-              boundaryUrl="/geo/state-boundary.json"
+              boundaryUrl={geoAsset('geo/state-boundary.json')}
+              divisionOverlayUrl={geoAsset('geo/maharashtra-divisions.geojson')}
+              divisionMatrix={DIVISION_MATRIX}
             />
           </div>
         </div>

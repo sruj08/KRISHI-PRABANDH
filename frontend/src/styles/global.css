@@ -426,3 +426,10 @@ input, textarea, select {
 .row-hover-soft:hover {
   background: rgba(20, 40, 30, 0.025) !important;
 }
+
+/* State / RegionalMap — keep tiles + heat canvas clipped to rounded map frame */
+.regional-map-frame,
+.regional-map-frame .leaflet-container {
+  overflow: hidden;
+  border-radius: inherit;
+}

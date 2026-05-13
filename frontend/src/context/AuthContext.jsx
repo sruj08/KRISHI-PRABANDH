@@ -2,11 +2,23 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
+function readStoredUser() {
+  try {
     const saved = localStorage.getItem('krishiUser');
-    return saved ? JSON.parse(saved) : null;
-  });
+    if (!saved) return null;
+    return JSON.parse(saved);
+  } catch {
+    try {
+      localStorage.removeItem('krishiUser');
+    } catch {
+      /* ignore */
+    }
+    return null;
+  }
+}
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(() => readStoredUser());
 
   const [token, setToken] = useState(() => localStorage.getItem('krishiToken') || null);
 

@@ -227,6 +227,72 @@ function buildMockPoints(rings, mode, layerType) {
   return pts;
 }
 
+/** Match demo matrix row to division name from overlay GeoJSON (handles naming variants). */
+function matrixRowForDivision(divisionMatrix, geoDivisionName) {
+  if (!divisionMatrix?.length || !geoDivisionName) return null;
+  const direct = divisionMatrix.find((r) => r.division === geoDivisionName);
+  if (direct) return direct;
+  if (geoDivisionName === 'Chhatrapati Sambhajinagar') {
+    return divisionMatrix.find((r) => r.division === 'Chh. Sambhajinagar') || null;
+  }
+  return null;
+}
+
+/** 0–1 intensity from division feature properties for current map mode */
+function metricNormalizedFromProps(props, mapMode) {
+  const p = props || {};
+  let v = 0.5;
+  if (mapMode === 'penetration') v = p.schemePenetration != null ? p.schemePenetration / 100 : 0.5;
+  else if (mapMode === 'ndvi') v = p.ndviStress != null ? p.ndviStress / 100 : 0.35;
+  else v = p.grievanceIdx != null ? p.grievanceIdx / 100 : 0.3;
+  return Math.max(0, Math.min(1, v));
+}
+
+function fillColorForNormalizedMetric(n) {
+  const x = Math.max(0, Math.min(1, n));
+  if (x < 0.25) return HEAT_GRADIENT[0.2];
+  if (x < 0.5) return HEAT_GRADIENT[0.5];
+  if (x < 0.75) return HEAT_GRADIENT[0.8];
+  return HEAT_GRADIENT[1.0];
+}
+
+/**
+ * KDE points sampled inside each division polygon, weighted by that division’s metric.
+ * When `stateRings` is provided, points must also lie inside the state outer boundary
+ * so heat blobs do not leak outside the masked map area.
+ */
+function buildDivisionHeatPoints(divisionFC, mapMode, layerType, stateRings = []) {
+  if (!divisionFC?.features?.length) return [];
+  const nDiv = divisionFC.features.length;
+  const baseCfg = HEAT_CONFIG[layerType] || HEAT_CONFIG.state;
+  const perDiv = Math.max(28, Math.floor(baseCfg.pointCount / nDiv));
+  const pts = [];
+  for (const f of divisionFC.features) {
+    const ring = getOuterRing(f.geometry);
+    if (!ring?.length) continue;
+    const p = f.properties || {};
+    const t = metricNormalizedFromProps(p, mapMode);
+    const seedStr = `${p.code || ''}${p.name || ''}${mapMode}`;
+    const seed = seedStr.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0) || 1;
+    const rand = seededRand(seed);
+    const box = ringBBox(ring);
+    let added = 0;
+    let attempts = 0;
+    while (added < perDiv && attempts < perDiv * 30) {
+      attempts += 1;
+      const lat = box.minLat + rand() * (box.maxLat - box.minLat);
+      const lng = box.minLng + rand() * (box.maxLng - box.minLng);
+      if (!pointInPolygon(lat, lng, ring)) continue;
+      if (stateRings.length && !pointInAnyRing(lat, lng, stateRings)) continue;
+      const jitter = 0.1 + rand() * 0.22;
+      const intensity = Math.min(0.98, Math.max(0.16, t * 0.82 + jitter * 0.28));
+      pts.push([lat, lng, intensity]);
+      added += 1;
+    }
+  }
+  return pts;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // TopoJSON / GeoJSON parsing
 // ─────────────────────────────────────────────────────────────────────────────
@@ -327,13 +393,16 @@ function FitBounds({ featureCollection }) {
 }
 
 /** Canvas KDE heatmap layer via leaflet.heat */
-function KdeHeatLayer({ points, layerType, mapMode }) {
+function KdeHeatLayer({ points, layerType, mapMode, contained }) {
   const map = useMap();
   const layerRef = useRef(null);
 
   useEffect(() => {
     if (!map || !points?.length) return undefined;
-    const cfg = HEAT_CONFIG[layerType] || HEAT_CONFIG.taluka;
+    const baseCfg = HEAT_CONFIG[layerType] || HEAT_CONFIG.taluka;
+    const cfg = contained
+      ? { radius: Math.min(14, baseCfg.radius), blur: Math.min(10, baseCfg.blur) }
+      : baseCfg;
     let cancelled = false;
 
     const teardown = () => {
@@ -352,9 +421,9 @@ function KdeHeatLayer({ points, layerType, mapMode }) {
       const layer = L.heatLayer(points, {
         radius:     cfg.radius,
         blur:       cfg.blur,
-        minOpacity: 0.1,
+        minOpacity: contained ? 0.08 : 0.1,
         max:        1.0,
-        maxZoom:    20,
+        maxZoom:    contained ? 11 : 20,
         gradient:   HEAT_GRADIENT,
       });
       layer.addTo(map);
@@ -366,7 +435,7 @@ function KdeHeatLayer({ points, layerType, mapMode }) {
       cancelled = true;
       teardown();
     };
-  }, [map, points, layerType, mapMode]);
+  }, [map, points, layerType, mapMode, contained]);
 
   return null;
 }
@@ -399,16 +468,28 @@ function GeofenceLayer({ featureCollection }) {
  *
  * @param {string} props.layerType   - 'state' | 'division' | 'taluka'
  * @param {string} props.boundaryUrl - URL to GeoJSON or TopoJSON boundary file
+ * @param {string} [props.divisionOverlayUrl] - Optional second GeoJSON (division polygons only used client-side; file on disk unchanged)
+ * @param {Array} [props.divisionMatrix] - Optional DIVISION_MATRIX-style rows for info box + matrix merge
  * @param {string} [props.title]     - Optional header title
  * @param {string} [props.subtitle]  - Optional header subtitle
  */
-const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
-  const [rawData, setRawData]     = useState(null);
-  const [loadErr, setLoadErr]     = useState(null);
-  const [mapMode, setMapMode]     = useState('penetration');
-  const [showHeat, setShowHeat]   = useState(true);
+const RegionalMap = ({
+  layerType = 'state',
+  boundaryUrl,
+  divisionOverlayUrl = null,
+  divisionMatrix = null,
+  title,
+  subtitle,
+}) => {
+  const [rawData, setRawData] = useState(null);
+  const [rawDivisionData, setRawDivisionData] = useState(null);
+  const [loadErr, setLoadErr] = useState(null);
+  const [divisionLoadErr, setDivisionLoadErr] = useState(null);
+  const [mapMode, setMapMode] = useState('penetration');
+  const [showHeat, setShowHeat] = useState(true);
+  const [selectedDivision, setSelectedDivision] = useState(null);
 
-  // ── Fetch boundary data ───────────────────────────────────────────────────
+  // ── Fetch boundary data (state outline — never modified on disk) ───────────
   useEffect(() => {
     if (!boundaryUrl) return;
     let cancelled = false;
@@ -429,8 +510,41 @@ const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
     return () => { cancelled = true; };
   }, [boundaryUrl]);
 
+  // ── Optional division overlay (separate asset; only `kind: division` features rendered) ──
+  useEffect(() => {
+    if (!divisionOverlayUrl) {
+      setRawDivisionData(null);
+      setDivisionLoadErr(null);
+      return;
+    }
+    let cancelled = false;
+    setRawDivisionData(null);
+    setDivisionLoadErr(null);
+    (async () => {
+      try {
+        const res = await fetch(divisionOverlayUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${divisionOverlayUrl}`);
+        const json = await res.json();
+        if (!cancelled) setRawDivisionData(json);
+      } catch (e) {
+        if (!cancelled) setDivisionLoadErr(e.message || 'Failed to load division overlay');
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [divisionOverlayUrl]);
+
   // ── Parse into FeatureCollection ─────────────────────────────────────────
   const featureCollection = useMemo(() => parseBoundaryData(rawData), [rawData]);
+
+  /** Division polygons only — sourced from a separate GeoJSON; state boundary asset stays untouched. */
+  const divisionCollection = useMemo(() => {
+    if (!rawDivisionData) return null;
+    const fc = parseBoundaryData(rawDivisionData);
+    if (!fc?.features?.length) return null;
+    const divs = fc.features.filter((f) => f.properties?.kind === 'division');
+    if (!divs.length) return null;
+    return { type: 'FeatureCollection', features: divs };
+  }, [rawDivisionData]);
 
   // ── Build all polygon rings (for clipping + bbox) ────────────────────────
   const allRings = useMemo(
@@ -438,43 +552,112 @@ const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
     [featureCollection],
   );
 
+  /** Leaflet [lat, lng] — required before fitBounds; must never be undefined */
+  const defaultCenter = useMemo(() => {
+    if (!allRings.length) return [19.75, 74.5];
+    const box = mergedBBox(allRings);
+    return [(box.minLat + box.maxLat) / 2, (box.minLng + box.maxLng) / 2];
+  }, [allRings]);
+
   // ── Inverted mask ─────────────────────────────────────────────────────────
   const invertedMask = useMemo(
     () => buildInvertedMask(featureCollection),
     [featureCollection],
   );
 
-  // ── Mock heatmap points (strictly clipped to boundary) ───────────────────
-  const heatPoints = useMemo(
-    () => buildMockPoints(allRings, mapMode, layerType),
-    [allRings, mapMode, layerType],
+  // ── Mock heatmap points: division-weighted inside each division when overlay present ──
+  const heatPoints = useMemo(() => {
+    if (divisionCollection?.features?.length) {
+      return buildDivisionHeatPoints(divisionCollection, mapMode, layerType, allRings);
+    }
+    return buildMockPoints(allRings, mapMode, layerType);
+  }, [allRings, divisionCollection, mapMode, layerType]);
+
+  const selectedDivisionKey = selectedDivision?.properties?.code
+    || selectedDivision?.properties?.name
+    || null;
+
+  const divisionStyleFn = useCallback(
+    (feature) => {
+      const p = feature?.properties || {};
+      const n = metricNormalizedFromProps(p, mapMode);
+      const fill = fillColorForNormalizedMetric(n);
+      const key = p.code || p.name;
+      const selected = key && key === selectedDivisionKey;
+      return {
+        fillColor: fill,
+        fillOpacity: selected ? 0.55 : 0.42,
+        color: '#0f172a',
+        weight: selected ? 3 : 1.35,
+        opacity: 1,
+      };
+    },
+    [mapMode, selectedDivisionKey],
   );
 
-  // ── Top-3 centroid pins ───────────────────────────────────────────────────
+  const bindDivisionLayer = useCallback(
+    (feature, layer) => {
+      const p = feature?.properties || {};
+      const row = matrixRowForDivision(divisionMatrix, p.name);
+      layer.on({
+        click: () => setSelectedDivision({ properties: p, matrixRow: row }),
+        mouseover: (e) => {
+          e.target.setStyle({ weight: 2.8, fillOpacity: 0.5 });
+        },
+        mouseout: (e) => {
+          e.target.setStyle(divisionStyleFn(feature));
+        },
+      });
+      const pendingHint = row?.pending != null ? ` · ${Number(row.pending).toLocaleString('en-IN')} pending` : '';
+      layer.bindTooltip(`${p.name || 'Division'}${pendingHint}`, {
+        sticky: true,
+        direction: 'auto',
+        className: 'tao-mandal-tooltip',
+      });
+    },
+    [divisionMatrix, divisionStyleFn],
+  );
+
+  // ── Top-3 centroid pins (division centroids when overlay present) ─────────
   const centroidPins = useMemo(() => {
+    if (divisionCollection?.features?.length) {
+      const pins = [];
+      for (const f of divisionCollection.features) {
+        const ring = getOuterRing(f.geometry);
+        const c = ringCentroid(ring);
+        if (!c) continue;
+        const p = f.properties || {};
+        const metric = metricNormalizedFromProps(p, mapMode);
+        pins.push({
+          id: p.code || p.name,
+          label: p.name || 'Division',
+          lat: c.lat,
+          lng: c.lng,
+          metric,
+        });
+      }
+      return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
+    }
     if (!featureCollection?.features) return [];
     const pins = [];
     for (const f of featureCollection.features) {
       const ring = getOuterRing(f.geometry);
       const c = ringCentroid(ring);
       if (c) {
-        // Assign a mock metric seeded by feature index for stable sorting
         const idx = featureCollection.features.indexOf(f);
         const rand = seededRand(idx * 100 + (mapMode === 'penetration' ? 1 : mapMode === 'ndvi' ? 2 : 3));
         pins.push({
-          id:     f.properties?.name || f.properties?.AC_NAME || `pin-${idx}`,
-          label:  f.properties?.AC_NAME || f.properties?.name || f.properties?.division || 'Region',
-          lat:    c.lat,
-          lng:    c.lng,
+          id: f.properties?.name || f.properties?.AC_NAME || `pin-${idx}`,
+          label: f.properties?.AC_NAME || f.properties?.name || f.properties?.division || 'Region',
+          lat: c.lat,
+          lng: c.lng,
           metric: rand(),
         });
       }
     }
     return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
-  }, [featureCollection, mapMode]);
+  }, [divisionCollection, featureCollection, mapMode]);
 
-  const legend    = LEGEND[mapMode] || LEGEND.penetration;
-  const defaultCenter = useMemo(() => [18.52, 73.86], []);
 
   const maskStyle = useCallback(() => ({
     stroke:      false,
@@ -483,19 +666,19 @@ const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
     interactive: false,
   }), []);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  return (
-    <div
-      style={{
-        display:       'flex',
-        flexDirection: 'column',
-        height:        '100%',
-        gap:           '12px',
-        padding:       '16px 20px 20px',
+  const overlayUiInMap =
+    layerType === 'state' && (divisionCollection?.features?.length ?? 0) > 0;
+
+  const renderMapControls = () => (
+    <>
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: overlayUiInMap ? 6 : 8,
+        width: overlayUiInMap ? '100%' : undefined,
       }}
-    >
-      {/* ── Mode toggle buttons ── */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+      >
         {MAP_MODES.map((m) => (
           <button
             key={m.id}
@@ -506,26 +689,25 @@ const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
               display:        'inline-flex',
               alignItems:     'center',
               gap:            6,
-              padding:        '6px 14px',
+              padding:        overlayUiInMap ? '5px 10px' : '6px 14px',
               borderRadius:   8,
               border:         `1px solid ${mapMode === m.id ? '#1a365d' : 'var(--outline-variant, #ccc)'}`,
               background:     mapMode === m.id ? '#1a365d' : '#fff',
               color:          mapMode === m.id ? '#fff' : 'var(--text-muted, #666)',
-              fontSize:       '12px',
+              fontSize:       overlayUiInMap ? '11px' : '12px',
               fontWeight:     600,
               cursor:         'pointer',
               transition:     'all 0.18s ease',
               whiteSpace:     'nowrap',
             }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+            <span className="material-symbols-outlined" style={{ fontSize: overlayUiInMap ? 15 : 16 }}>
               {m.icon}
             </span>
             {m.label}
           </button>
         ))}
 
-        {/* Heatmap toggle */}
         <button
           type="button"
           onClick={() => setShowHeat((v) => !v)}
@@ -534,28 +716,34 @@ const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
             display:     'inline-flex',
             alignItems:  'center',
             gap:         6,
-            padding:     '6px 14px',
+            padding:     overlayUiInMap ? '5px 10px' : '6px 14px',
             borderRadius: 8,
             border:      `1px solid ${showHeat ? '#2e7d32' : 'var(--outline-variant, #ccc)'}`,
             background:  showHeat ? '#e8f5e9' : '#fff',
             color:       showHeat ? '#2e7d32' : 'var(--text-muted, #666)',
-            fontSize:    '12px',
+            fontSize:    overlayUiInMap ? '11px' : '12px',
             fontWeight:  600,
             cursor:      'pointer',
             transition:  'all 0.18s ease',
           }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: overlayUiInMap ? 15 : 16 }}>
             {showHeat ? 'layers' : 'layers_clear'}
           </span>
           Heatmap
         </button>
       </div>
 
-      {/* ── Legend strip ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: overlayUiInMap ? 10 : 16,
+        flexWrap: 'wrap',
+        marginTop: overlayUiInMap ? 8 : 0,
+      }}
+      >
         <span style={{
-          fontSize:      '10px',
+          fontSize:      overlayUiInMap ? '9px' : '10px',
           fontWeight:    700,
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
@@ -569,14 +757,15 @@ const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
           height:      6,
           borderRadius: 99,
           background:  `linear-gradient(to right, ${HEAT_GRADIENT[0.2]}, ${HEAT_GRADIENT[0.5]}, ${HEAT_GRADIENT[0.8]}, ${HEAT_GRADIENT[1.0]})`,
-          maxWidth:    200,
+          maxWidth:    overlayUiInMap ? 160 : 200,
+          minWidth:    60,
         }} />
-        {legend.map((row) => (
+        {(LEGEND[mapMode] || LEGEND.penetration).map((row) => (
           <span key={row.t} style={{
             display:    'inline-flex',
             alignItems: 'center',
             gap:        5,
-            fontSize:   '11px',
+            fontSize:   overlayUiInMap ? '10px' : '11px',
             color:      'var(--text-muted, #666)',
           }}>
             <span style={{
@@ -591,17 +780,40 @@ const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
           </span>
         ))}
       </div>
+    </>
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────
+  return (
+    <div
+      style={{
+        display:       'flex',
+        flexDirection: 'column',
+        height:        '100%',
+        gap:           '12px',
+        padding:       '16px 20px 20px',
+      }}
+    >
+      {!overlayUiInMap && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {renderMapControls()}
+        </div>
+      )}
 
       {/* ── Map canvas ── */}
-      <div style={{
-        flex:         1,
-        borderRadius: 'var(--radius, 12px)',
-        overflow:     'hidden',
-        border:       '1px solid var(--outline-variant, #ddd)',
-        minHeight:    420,
-        position:     'relative',
-        marginTop:    4,
-      }}>
+      <div
+        className="regional-map-frame"
+        style={{
+          flex:         1,
+          borderRadius: 'var(--radius, 12px)',
+          overflow:     'hidden',
+          border:       '1px solid var(--outline-variant, #ddd)',
+          minHeight:    420,
+          position:     'relative',
+          marginTop:    overlayUiInMap ? 0 : 4,
+          isolation:    'isolate',
+        }}
+      >
         {loadErr && (
           <div style={{ padding: 24, color: 'var(--error, #c00)', fontSize: 13 }}>
             {loadErr}
@@ -625,96 +837,321 @@ const RegionalMap = ({ layerType = 'state', boundaryUrl, title, subtitle }) => {
         )}
 
         {featureCollection && (
-          <MapContainer
-            center={defaultCenter}
-            zoom={7}
-            style={{ height: '100%', width: '100%' }}
-            scrollWheelZoom
-            worldCopyJump={false}
-            maxBoundsViscosity={1.0}
-          >
-            {/* 1 ── Base tile layer */}
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              noWrap
-            />
-
-            {/* 2 ── KDE Heatmap (bringToBack — under everything) */}
-            {showHeat && heatPoints.length > 0 && (
-              <KdeHeatLayer
-                points={heatPoints}
-                layerType={layerType}
-                mapMode={mapMode}
-              />
-            )}
-
-            {/* 3 ── Inverted mask (hides exterior) */}
-            <Pane
-              name="invertedMaskPane"
-              style={{ zIndex: 350, pointerEvents: 'none' }}
+          <>
+            <MapContainer
+              center={defaultCenter}
+              zoom={7}
+              style={{ height: '100%', width: '100%' }}
+              scrollWheelZoom
+              worldCopyJump={false}
+              maxBoundsViscosity={1.0}
             >
-              {invertedMask && (
-                <GeoJSON
-                  key="inverted-mask"
-                  data={invertedMask}
-                  style={maskStyle}
+              {/* 1 ── Base tile layer */}
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                noWrap
+              />
+
+              {/* 2 ── KDE Heatmap (division-weighted or state-clipped mock) */}
+              {showHeat && heatPoints.length > 0 && (
+                <KdeHeatLayer
+                  points={heatPoints}
+                  layerType={layerType}
+                  mapMode={mapMode}
+                  contained={Boolean(divisionCollection?.features?.length && layerType === 'state')}
                 />
               )}
-            </Pane>
 
-            {/* 4 ── Dashed geofence */}
-            <Pane
-              name="geofencePane"
-              style={{ zIndex: 400, pointerEvents: 'none' }}
-            >
-              <GeofenceLayer featureCollection={featureCollection} />
-            </Pane>
+              {/* 3 ── Inverted mask (hides exterior) */}
+              <Pane
+                name="invertedMaskPane"
+                style={{ zIndex: 350, pointerEvents: 'none' }}
+              >
+                {invertedMask && (
+                  <GeoJSON
+                    key="inverted-mask"
+                    data={invertedMask}
+                    style={maskStyle}
+                  />
+                )}
+              </Pane>
 
-            {/* 5 ── Centroid pins (top 3) */}
-            <Pane name="centroidPinsPane" style={{ zIndex: 650 }}>
-              {centroidPins.map((pin) => (
-                <CircleMarker
-                  key={pin.id}
-                  center={[pin.lat, pin.lng]}
-                  radius={5}
-                  pathOptions={{
-                    color:       '#ffffff',
-                    weight:      1.5,
-                    fillColor:   '#d90429',
-                    fillOpacity: 0.95,
+              {/* 3b ── Division choropleth + borders (overlay only; does not alter state boundary GeoJSON) */}
+              {divisionCollection?.features?.length > 0 && (
+                <Pane name="divisionChoroplethPane" style={{ zIndex: 360 }}>
+                  <GeoJSON
+                    data={divisionCollection}
+                    style={divisionStyleFn}
+                    onEachFeature={bindDivisionLayer}
+                  />
+                </Pane>
+              )}
+
+              {/* 4 ── Dashed geofence (state outline from boundaryUrl) */}
+              <Pane
+                name="geofencePane"
+                style={{ zIndex: 400, pointerEvents: 'none' }}
+              >
+                <GeofenceLayer featureCollection={featureCollection} />
+              </Pane>
+
+              {/* 5 ── Centroid pins (top 3 divisions or regions) */}
+              <Pane name="centroidPinsPane" style={{ zIndex: 650 }}>
+                {centroidPins.map((pin) => (
+                  <CircleMarker
+                    key={pin.id}
+                    center={[pin.lat, pin.lng]}
+                    radius={5}
+                    pathOptions={{
+                      color:       '#ffffff',
+                      weight:      1.5,
+                      fillColor:   '#d90429',
+                      fillOpacity: 0.95,
+                    }}
+                  >
+                    <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
+                      <div style={{ fontWeight: 700, fontSize: 12 }}>{pin.label}</div>
+                      <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
+                        {divisionCollection?.features?.length
+                          ? `High metric · ${mapMode === 'penetration' ? 'Scheme signal' : mapMode === 'ndvi' ? 'NDVI stress' : 'Grievance load'}`
+                          : `Priority area · ${mapMode === 'penetration' ? 'Low uptake' : mapMode === 'ndvi' ? 'High stress' : 'High grievances'}`}
+                      </div>
+                    </Tooltip>
+                  </CircleMarker>
+                ))}
+              </Pane>
+
+              <FitBounds featureCollection={featureCollection} />
+            </MapContainer>
+
+            {overlayUiInMap && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  zIndex: 1800,
+                  pointerEvents: 'none',
+                  maxWidth: 'calc(100% - 20px)',
+                }}
+              >
+                <div
+                  style={{
+                    pointerEvents: 'auto',
+                    background: 'rgba(255, 255, 255, 0.96)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    borderRadius: 12,
+                    padding: '10px 12px',
+                    border: '1px solid rgba(226, 227, 223, 0.95)',
+                    boxShadow: '0 4px 18px rgba(0,0,0,0.08)',
+                    maxHeight: 'min(38%, 200px)',
+                    overflowY: 'auto',
                   }}
                 >
-                  <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
-                    <div style={{ fontWeight: 700, fontSize: 12 }}>{pin.label}</div>
-                    <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
-                      Priority area · {mapMode === 'penetration' ? 'Low uptake' : mapMode === 'ndvi' ? 'High stress' : 'High grievances'}
-                    </div>
-                  </Tooltip>
-                </CircleMarker>
-              ))}
-            </Pane>
+                  {renderMapControls()}
+                </div>
+              </div>
+            )}
 
-            {/* Fit + lock camera to active boundary */}
-            <FitBounds featureCollection={featureCollection} />
-          </MapContainer>
+            {divisionLoadErr && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  zIndex: 2000,
+                  maxWidth: 420,
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                  background: 'rgba(255, 237, 213, 0.97)',
+                  border: '1px solid #f59e0b',
+                  fontSize: 11,
+                  color: '#92400e',
+                }}
+              >
+                Division overlay: {divisionLoadErr}
+              </div>
+            )}
+
+            {selectedDivision?.properties && (() => {
+              const p = selectedDivision.properties;
+              const row = selectedDivision.matrixRow;
+              const dp = row?.disbursedPct ?? p.disbursedPct;
+              const disbursedText = dp == null || dp === '' ? '—' : `${String(dp).replace(/%$/, '')}%`;
+              const pen = p.schemePenetration;
+              const ndvi = p.ndviStress;
+              const griv = p.grievanceIdx;
+              return (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 10,
+                  left: 10,
+                  right: 10,
+                  maxWidth: 'min(440px, calc(100% - 20px))',
+                  marginLeft: 'auto',
+                  maxHeight: 'min(42vh, 380px)',
+                  zIndex: 2000,
+                  background: 'rgba(255, 255, 255, 0.98)',
+                  backdropFilter: 'saturate(1.1) blur(12px)',
+                  WebkitBackdropFilter: 'saturate(1.1) blur(12px)',
+                  border: '1px solid #e2e3df',
+                  borderLeft: '4px solid #1a365d',
+                  borderRadius: 12,
+                  boxShadow: '0 8px 28px rgba(0,0,0,0.14)',
+                  padding: '14px 16px 16px',
+                  fontSize: 12,
+                  color: '#1a1c1a',
+                  overflowY: 'auto',
+                  WebkitOverflowScrolling: 'touch',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#717972', textTransform: 'uppercase' }}>
+                      Division overview
+                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.25, marginTop: 4, color: '#0f172a' }}>
+                      {p.name}
+                    </div>
+                    {p.tag && (
+                      <div style={{ fontSize: 11, color: '#414943', marginTop: 8, lineHeight: 1.5 }}>
+                        {p.tag}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDivision(null)}
+                    aria-label="Close division info"
+                    style={{
+                      border: 'none',
+                      background: '#eef1ee',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      padding: '6px 8px',
+                      lineHeight: 1,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#414943' }}>close</span>
+                  </button>
+                </div>
+
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: '#033621', textTransform: 'uppercase', marginBottom: 8 }}>
+                  Spatial analytics (all modes)
+                </div>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: 8,
+                  marginBottom: 14,
+                }}
+                >
+                  <div style={{ background: '#f0f6ff', borderRadius: 10, padding: '10px 8px', textAlign: 'center', border: '1px solid #cfe0fc' }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Scheme penetration</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: '#1e3a8a', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{pen ?? '—'}{pen != null ? '%' : ''}</div>
+                    <div style={{ fontSize: 9, color: '#64748b', marginTop: 4, lineHeight: 1.3 }}>MahaDBT uptake signal</div>
+                  </div>
+                  <div style={{ background: '#fff8e6', borderRadius: 10, padding: '10px 8px', textAlign: 'center', border: '1px solid #fde68a' }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: '#a16207', textTransform: 'uppercase', letterSpacing: '0.06em' }}>NDVI analysis</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: '#854d0e', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{ndvi ?? '—'}{ndvi != null ? '%' : ''}</div>
+                    <div style={{ fontSize: 9, color: '#78716c', marginTop: 4, lineHeight: 1.3 }}>Crop stress (demo)</div>
+                  </div>
+                  <div style={{ background: '#fef2f2', borderRadius: 10, padding: '10px 8px', textAlign: 'center', border: '1px solid #fecaca' }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Grievance heat</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: '#991b1b', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{griv ?? '—'}</div>
+                    <div style={{ fontSize: 9, color: '#78716c', marginTop: 4, lineHeight: 1.3 }}>Aaple Sarkar load idx</div>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: '#033621', textTransform: 'uppercase', marginBottom: 8 }}>
+                  Command desk
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px' }}>
+                  <div>
+                    <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>JDA / lead</span>
+                    <strong style={{ fontSize: 13, color: '#1a1c1a' }}>{row?.officer || p.officer || '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Districts</span>
+                    <strong style={{ fontSize: 13 }}>{row?.districts ?? p.districts ?? '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Funds (Cr)</span>
+                    <strong style={{ fontSize: 13 }}>{row?.fundsCr ?? p.fundsCr ?? '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Disbursed</span>
+                    <strong style={{ fontSize: 13 }}>{disbursedText}</strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Pending files</span>
+                    <strong style={{ fontSize: 13 }}>{row?.pending != null ? Number(row.pending).toLocaleString('en-IN') : '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Fraud alerts</span>
+                    <strong style={{ fontSize: 13, color: '#ba1a1a' }}>{row?.fraudAlerts ?? p.fraudAlerts ?? '—'}</strong>
+                  </div>
+                </div>
+
+                <div style={{
+                  marginTop: 12,
+                  paddingTop: 10,
+                  borderTop: '1px solid #eef1ee',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: 11,
+                  color: '#414943',
+                }}
+                >
+                  <span style={{ fontWeight: 700, color: '#1a365d' }}>Active map layer:</span>
+                  <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? 'Scheme penetration' : mapMode === 'ndvi' ? 'NDVI / crop health' : 'Grievance heat'}</span>
+                  {row?.status && (
+                    <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f3f4f0', color: '#1a1c1a' }}>
+                      Status · {row.status}
+                    </span>
+                  )}
+                </div>
+              </div>
+              );
+            })()}
+          </>
         )}
       </div>
 
-      {/* ── Footer note ── */}
+      {overlayUiInMap ? (
+        <p style={{
+          fontSize:   '10px',
+          color:      'var(--text-muted, #888)',
+          margin:     0,
+          lineHeight: 1.5,
+        }}>
+          Division choropleth + KDE heat use <strong>tighter blur</strong>, <strong>state-polygon–clipped</strong> samples, and a capped heat <strong>max zoom</strong> so glow stays inside the Maharashtra frame. State boundary file is unchanged.
+        </p>
+      ) : (
       <p style={{
         fontSize:   '10px',
         color:      'var(--text-muted, #888)',
         margin:     0,
         lineHeight: 1.5,
       }}>
-        Canvas KDE heatmap (leaflet.heat) with boundary-clipped samples.{' '}
+        {divisionCollection?.features?.length
+          ? 'Division choropleth + KDE samples use metrics shipped inside the division overlay GeoJSON; the state outline asset is unchanged. Click a division for the info panel.'
+          : 'Canvas KDE heatmap (leaflet.heat) with boundary-clipped samples.'}{' '}
         Showing <strong>top 3 priority locations</strong> for current mode.{' '}
         {layerType === 'division' && 'TopoJSON boundary decoded via topojson-client.'}
         {layerType === 'state' && 'State-level aggregation (Maharashtra).'}
         {layerType === 'district' && 'District-level taluka boundary view (Pune).'}
         {layerType === 'taluka' && 'Assembly constituency / Taluka command view (Baramati).'}
       </p>
+      )}
     </div>
   );
 };
