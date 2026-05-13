@@ -5,6 +5,7 @@ import {
   PFMS_BATCHES,
   FRICTION_MONTH,
 } from '../../utils/districtMockData';
+import { mockFraudSummaryMetrics, mockTalukaData } from '../../mock/dao-analytics';
 import { useToast } from '../../hooks/useToast.jsx';
 import { useAuth } from '../../context/AuthContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
@@ -366,6 +367,87 @@ const DistrictDashboard = () => {
                   </td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* ── Fraud Intelligence Summary (DAO) ── */}
+      <div>
+        <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: '0 0 12px', lineHeight: 1.3 }}>Fraud Intelligence Summary</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}>
+          {mockFraudSummaryMetrics.map((m) => {
+            let trendColor = '#717972';
+            if (m.trendNeutral) {
+              trendColor = '#717972';
+            } else {
+              const up = m.trendLabel.includes('↑');
+              const down = m.trendLabel.includes('↓');
+              if (m.trendUpIsBad) {
+                trendColor = up ? '#ba1a1a' : down ? '#396940' : '#717972';
+              } else {
+                trendColor = down ? '#396940' : up ? '#ba1a1a' : '#717972';
+              }
+            }
+            return (
+              <div
+                key={m.key}
+                style={{
+                  background: '#fff',
+                  border: '1px solid #e2e3df',
+                  borderRadius: 16,
+                  padding: '16px 18px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+                  minHeight: 120,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#717972', lineHeight: 1.3, whiteSpace: 'pre-line' }}>{m.title}</span>
+                <span style={{ fontSize: 28, fontWeight: 700, color: '#1a1c1a', marginTop: 10, lineHeight: 1 }}>{m.value}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: trendColor, marginTop: 'auto', paddingTop: 10 }}>{m.trendLabel}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── District Fraud Heatmap (table) ── */}
+      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
+        <div style={{ padding: '18px 22px', borderBottom: '1px solid #f3f4f0' }}>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>Taluka Fraud Intelligence</h3>
+          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: '6px 0 0', lineHeight: 1.3 }}>Applications · flagged · fraud rate · intensity</p>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Taluka</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Applications</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Flagged</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'right' }}>Fraud rate</th>
+                <th style={{ padding: '8px 12px', fontSize: 10, fontWeight: 700, color: '#717972', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Intensity</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mockTalukaData.map((row, idx) => {
+                const cellBg =
+                  row.intensity === 'high'
+                    ? 'rgba(186,26,26,0.10)'
+                    : row.intensity === 'medium'
+                      ? 'rgba(180,83,9,0.10)'
+                      : 'rgba(57,105,64,0.10)';
+                const emoji = row.intensity === 'high' ? '🔴 HIGH' : row.intensity === 'medium' ? '🟡 MEDIUM' : '🟢 LOW';
+                return (
+                  <tr key={row.taluka} style={{ borderBottom: idx === mockTalukaData.length - 1 ? 'none' : '1px solid #f3f4f0' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 700, color: '#1a1c1a' }}>{row.taluka}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.total}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.flagged}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.fraud_rate}%</td>
+                    <td style={{ padding: '8px 12px', fontSize: 12, fontWeight: 700, background: cellBg, color: '#1a1c1a' }}>{emoji}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
