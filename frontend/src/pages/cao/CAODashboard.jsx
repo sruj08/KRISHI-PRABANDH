@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useHierarchy } from '../../context/HierarchyContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
 import ActionMap from './components/ActionMap';
 import ShopTracker from './components/ShopTracker';
 import SahayakMatrix from './components/SahayakMatrix';
 import PMFBYPanel from './components/PMFBYPanel';
-import {
-  CAO_PROFILE, DASHBOARD_KPIS, SAHAYAKS, PMFBY_EVENTS
-} from '../../utils/caoMockData';
+const DASHBOARD_KPIS = {};
+const PMFBY_EVENTS = [];
 import {
   fetchMandalSummary,
   fetchVistarAnalytics,
@@ -640,20 +640,66 @@ const CAODashboard = () => {
 
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-  const { mandals } = useHierarchy();
+  const { mandals, currentMandal } = useHierarchy();
+  const { buildSahayakMatrixForMandal, stats } = useKrishiData();
 
-  // Use M002 as default mandal for CAO (matches CAO_PROFILE.mandal)
-  const mandal = mandals?.find(m => m.mandal_id === 'M002') || { mandal_id: 'M002' };
-  const mid = mandal.mandal_id;
+  const mandal = useMemo(() => {
+    if (currentMandal) return currentMandal;
+    if (user?.district_id) {
+      const m = mandals.find(
+        (x) => Number(x.district_id) === Number(user.district_id),
+      );
+      if (m) return m;
+    }
+    return (
+      mandals[0] || {
+        mandal_id: 'C001',
+        name: 'Agriculture circle',
+        circle_id: 1,
+        district_name: '',
+        taluka_name: '',
+      }
+    );
+  }, [currentMandal, mandals, user?.district_id]);
 
-  // Synthesize fallback data from SAHAYAKS mock so the panel always shows content
-  // when the backend API is unreachable (demo / standalone mode).
-  const buildFallbackData = () => {
+  const mid = mandal?.mandal_id || 'C001';
+
+  const sahayakMatrixRows = useMemo(
+    () => buildSahayakMatrixForMandal(mandal),
+    [mandal, buildSahayakMatrixForMandal],
+  );
+
+  const buildFallbackData = useCallback(() => {
+    const rows =
+      sahayakMatrixRows.length > 0
+        ? sahayakMatrixRows
+        : [
+            {
+              id: 'KS0',
+              name: 'Demo Sahayak',
+              status: 'good',
+              verifications_week: 12,
+              avg_days: 3,
+              overdue_15d: 1,
+              circle: mandal?.name || '—',
+              villages: ['Demo village'],
+              trend: [3, 4, 5, 4, 3, 5, 4],
+              total_pending: 8,
+              last_field_visit: '—',
+              whatsapp: '919999999999',
+            },
+          ];
+    const totalSurveys = stats?.totalSurveys ?? 4046;
     const fallbackSummary = {
-      total_applications: 142,
-      by_status: { Applied: 18, 'Under Scrutiny': 12, Approved: 95, Rejected: 17 },
-      fraud_alerts: SAHAYAKS.reduce((sum, s) => sum + s.overdue_15d, 0),
-      sahayak_breakdown: SAHAYAKS.map(s => ({
+      total_applications: Math.min(900, Math.round(totalSurveys / 5)),
+      by_status: {
+        Applied: 18,
+        'Under Scrutiny': 12,
+        Approved: 95,
+        Rejected: 17,
+      },
+      fraud_alerts: rows.reduce((sum, s) => sum + s.overdue_15d, 0),
+      sahayak_breakdown: rows.map((s) => ({
         sahayak_id: s.id,
         name: s.name,
         total: s.verifications_week + s.total_pending,
@@ -667,22 +713,32 @@ const CAODashboard = () => {
       avg_digital_attendance: 31,
       fraud_flagged_count: 5,
       overall_gap_pct: 26,
-      sahayak_performance: SAHAYAKS.map(s => ({
+      sahayak_performance: rows.map((s) => ({
         sahayak_id: s.id,
         sahayak_name: s.name,
         total_sessions: Math.round(s.verifications_week * 1.3),
-        overall_compliance_ratio: s.status === 'excellent' ? 0.92 : s.status === 'good' ? 0.78 : 0.55,
+        overall_compliance_ratio:
+          s.status === 'excellent'
+            ? 0.92
+            : s.status === 'good'
+              ? 0.78
+              : 0.55,
         fraud_flags: s.overdue_15d,
-        overall_risk: s.status === 'excellent' ? 'CLEAN' : s.status === 'good' ? 'MODERATE' : 'HIGH',
+        overall_risk:
+          s.status === 'excellent'
+            ? 'CLEAN'
+            : s.status === 'good'
+              ? 'MODERATE'
+              : 'HIGH',
       })),
       insights: [
-        'Suresh Mane has 2 overdue verifications older than 15 days — recommend on-site review.',
-        'Wagholi mandal attendance gap is 26 % — exceeds the 20 % policy threshold.',
-        'Priya Desai is the strongest performer this week (35 verifications, avg 1.8 days).',
+        `${mandal?.district_name || 'District'} — ${mandal?.name || 'circle'} linked to CSV hierarchy (${rows.length} Krushi Sahayak profile${rows.length === 1 ? '' : 's'}).`,
+        'Attendance and verification metrics below are synthesized for demo when the API is offline.',
+        `Statewide survey records in dataset: ${totalSurveys.toLocaleString('en-IN')}.`,
       ],
     };
     const fallbackAppIntel = {
-      total_applications: 142,
+      total_applications: fallbackSummary.total_applications,
       by_status: fallbackSummary.by_status,
       by_scheme_category: {
         'Drip Irrigation': 38,
@@ -690,11 +746,11 @@ const CAODashboard = () => {
         'Seed Subsidy': 31,
         'PMFBY Insurance': 27,
         'Fertilizer DBT': 16,
-        'Other': 8,
+        Other: 8,
       },
     };
     return { fallbackSummary, fallbackVistar, fallbackAppIntel };
-  };
+  }, [sahayakMatrixRows, mandal, stats]);
 
   useEffect(() => {
     setLoading(true);
@@ -704,13 +760,14 @@ const CAODashboard = () => {
       fetchVistarFraudAlerts(mid),
       fetchMKAApplicationIntelligence(mid),
     ]).then(([s, v, f, a]) => {
-      const { fallbackSummary, fallbackVistar, fallbackAppIntel } = buildFallbackData();
+      const { fallbackSummary, fallbackVistar, fallbackAppIntel } =
+        buildFallbackData();
       setSummary(s.status === 'fulfilled' && s.value ? s.value : fallbackSummary);
       setVistar(v.status === 'fulfilled' && v.value ? v.value : fallbackVistar);
       setFraudSes(f.status === 'fulfilled' ? (f.value?.alerts || []) : []);
       setAppIntel(a.status === 'fulfilled' && a.value ? a.value : fallbackAppIntel);
     }).finally(() => setLoading(false));
-  }, [mid]);
+  }, [mid, buildFallbackData]);
 
   const SUPERVISION_TABS = [
     { id: 'sahayak', icon: 'group',      label: 'Sahayaks' },
@@ -848,7 +905,7 @@ const CAODashboard = () => {
                 </span>
               </div>
               <div className="p-0 overflow-x-auto w-full">
-                <SahayakMatrix sahayaks={SAHAYAKS} />
+                <SahayakMatrix sahayaks={sahayakMatrixRows} />
               </div>
             </div>
           </div>

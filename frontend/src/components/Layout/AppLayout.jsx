@@ -50,17 +50,19 @@ const AppLayout = () => {
             <span>Maharashtra State Command</span>
           ) : user?.role === 'division' ? (
             <>
-              <span>Pune Division</span>
+              <span>{user?.division_name || 'Division'}</span>
               <span style={{ color: '#c0c9c1' }}>•</span>
               <span>Maharashtra State</span>
             </>
           ) : (
             <>
-              <span>Pune District</span>
+              <span>{user?.district_name || 'District'}</span>
+              <span style={{ color: '#c0c9c1' }}>•</span>
+              <span>{user?.division_name || 'Division'}</span>
               <span style={{ color: '#c0c9c1' }}>•</span>
               <span>Maharashtra State</span>
               <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>{user?.role === 'district' ? 'District Superintending Agriculture Officer' : 'Agriculture Officer'}</span>
+              <span>{user?.role === 'district' ? 'District Superintending Agriculture Officer' : user?.role === 'tao' ? (user?.taluka_name || 'Taluka Agriculture Officer') : user?.role === 'cao' ? (user?.taluka_name ? `${user.taluka_name} (CAO scope)` : 'Circle / Mandal Supervisor') : 'Agriculture Officer'}</span>
             </>
           )}
         </div>
