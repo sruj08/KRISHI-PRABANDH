@@ -1,9 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../context/LanguageContext';
-import { MOCK_TAO_STATS, MOCK_APPLICATIONS, MOCK_GRIEVANCES } from '../../utils/taoMockData';
+import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useKrishiData } from '../../context/KrishiDataContext';
+import { MOCK_APPLICATIONS, MOCK_GRIEVANCES } from '../../utils/taoMockData';
 import TAOMap from './components/TAOMap';
-import CAOMatrix from './components/CAOMatrix';
 import TAOAnomalyModal from './components/TAOAnomalyModal';
 import '../district/district.css';
 import './tao.css';
