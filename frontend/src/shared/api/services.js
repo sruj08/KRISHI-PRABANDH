@@ -65,49 +65,48 @@ export async function fetchPayments() {
   return data;
 }
 
-export async function createSurvey(payload) {
-  const { data } = await api.post('/api/surveys', payload);
-  return data;
+/** Base for browser calls (empty = same origin → Vite dev proxy `/api` → backend). */
+export function getApiOrigin() {
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_ORIGIN) {
+    return String(import.meta.env.VITE_API_ORIGIN).replace(/\/$/, '');
+  }
+  return '';
 }
 
-export async function fetchSurveys() {
-  const { data } = await api.get('/api/surveys');
-  return data;
-}
-
-export async function fetchSurveyQueue() {
-  const { data } = await api.get('/api/surveys/queue');
-  return data;
-}
-
-export async function fetchSurveySummary() {
-  const { data } = await api.get('/api/surveys/summary');
-  return data;
-}
-
-export async function fetchSurveyById(id) {
-  const { data } = await api.get(`/api/surveys/${id}`);
-  return data;
-}
-
-export async function fetchSurveyReport(id) {
-  const { data } = await api.get(`/api/surveys/${id}/report`);
-  return data;
-}
-
-export async function fetchSurveyGrievances(id) {
-  const { data } = await api.get(`/api/surveys/${id}/grievances`);
-  return data;
-}
-
-export async function updateSurveyAction(id, payload) {
-  const { data } = await api.patch(`/api/surveys/${id}/action`, payload);
-  return data;
-}
-
-export async function fetchFarmerSurveys(farmerId) {
-  const { data } = await api.get(`/api/farmers/${farmerId}/surveys`);
-  return data;
+/**
+ * Farmer vault: multipart upload → main API → OCR engine + optional schema extract.
+ * @param {File} file
+ * @param {string} documentTitle - Card title (e.g. "Aadhaar") for schema routing
+ * @param {string | null} accessToken - Optional Bearer
+ * @returns {Promise<Record<string, unknown>>} `data` payload from API
+ */
+export async function postDocumentOcr(file, documentTitle, accessToken) {
+  const form = new FormData();
+  form.append('file', file);
+  form.append('document_title', documentTitle || '');
+  const headers = {};
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+  const url = `${getApiOrigin()}/api/documents/ocr`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: form,
+  });
+  let body = {};
+  try {
+    body = await res.json();
+  } catch {
+    body = {};
+  }
+  if (!res.ok) {
+    const msg = body.error || body.details || body.detail || `HTTP ${res.status}`;
+    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  }
+  if (body.success === false) {
+    const msg = body.error || body.details || 'Request failed';
+    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  }
+  return body.data ?? body;
 }
 
 export default api;
