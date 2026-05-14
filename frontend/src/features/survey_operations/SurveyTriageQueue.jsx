@@ -1,83 +1,128 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import DenseTable from '../../shared/components/DenseTable';
+import { fetchSurveyQueue } from '../../shared/api/services';
+import usePolling from '../../hooks/usePolling';
 
-/**
- * SurveyTriageQueue
- * Operational dashboard for handling incoming field surveys.
- */
+const SEVERITY_COLORS = {
+  CRITICAL: { bg: '#ba1a1a', text: '#fff' },
+  HIGH: { bg: '#e65100', text: '#fff' },
+  MODERATE: { bg: '#b45309', text: '#fff' },
+  LOW: { bg: '#396940', text: '#fff' },
+};
+
 const SurveyTriageQueue = ({ onSelectSurvey }) => {
   const [loading, setLoading] = useState(true);
-  const [claims, setClaims] = useState([]);
+  const [surveys, setSurveys] = useState([]);
+  const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
-    setTimeout(() => {
-      setClaims([
-        { id: 'APP-1029', farmer: 'Ramesh Patil', location: '18.52°N, 73.85°E', risk: 'CRITICAL', date: '2023-10-12', confidence: 94 },
-        { id: 'APP-1030', farmer: 'Suresh Jadhav', location: '18.53°N, 73.84°E', risk: 'ELEVATED', date: '2023-10-12', confidence: 78 },
-        { id: 'APP-1031', farmer: 'Anita Deshmukh', location: '18.51°N, 73.86°E', risk: 'LOW', date: '2023-10-11', confidence: 88 },
-      ]);
+  const loadQueue = useCallback(async () => {
+    try {
+      const data = await fetchSurveyQueue();
+      const arr = Array.isArray(data) ? data : data.queue || data.results || data.surveys || [];
+      setSurveys(arr);
+    } catch (_) {
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   }, []);
 
-  const headers = ['Claim ID', 'Farmer', 'Geo-Coord', 'Risk/Priority', 'Submission Date', 'AI Confidence'];
-  
-  const formattedData = claims.map(c => [
+  usePolling(loadQueue, 5000);
+
+  const filtered = filter === 'all' ? surveys : surveys.filter((s) => {
+    const stage = (s.workflowStage || s.status || '').toLowerCase();
+    if (filter === 'pending') return stage.includes('pending') || stage.includes('submitted');
+    if (filter === 'critical') return (s.severityLevel || s.severity || '').toLowerCase() === 'critical';
+    if (filter === 'grievance') return s.hasGrievance || s.grievanceCount > 0;
+    if (filter === 'completed') return stage.includes('completed') || stage.includes('verified');
+    return true;
+  });
+
+  const headers = [
+    'Report ID', 'Farmer', 'Village', 'Crop', 'Severity',
+    'Workflow Stage', 'Confidence', 'Submitted',
+  ];
+
+  const formattedData = filtered.map((s) => [
     <span className="font-mono text-primary font-bold flex items-center gap-2">
-      <span className="material-symbols-outlined text-[14px]">my_location</span>
-      {c.id}
+      <span className="material-symbols-outlined text-[14px]">description</span>
+      {s.reportId || s.id || s.surveyId || '—'}
     </span>,
-    <span className="text-gray-900 font-semibold">{c.farmer}</span>,
-    <span className="font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">{c.location}</span>,
-    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider border ${
-      c.risk === 'CRITICAL' ? 'bg-error text-white border-error-dark' :
-      c.risk === 'ELEVATED' ? 'bg-amber text-white border-amber-dark' : 'bg-success text-white border-success-dark'
-    }`}>
-      {c.risk}
+    <span className="text-gray-900 font-semibold">{s.farmerName || s.farmer_name || s.farmer || '—'}</span>,
+    <span className="text-gray-700">{s.village || '—'}</span>,
+    <span className="text-gray-700">{s.cropType || s.crop || '—'}</span>,
+    (() => {
+      const sev = s.severityLevel || s.severity || 'LOW';
+      const c = SEVERITY_COLORS[sev] || SEVERITY_COLORS.LOW;
+      return (
+        <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider border"
+          style={{ background: c.bg, color: c.text, borderColor: c.bg }}>
+          {sev}
+        </span>
+      );
+    })(),
+    <span className="text-gray-700 text-sm font-medium">
+      {s.workflowStage || s.status || '—'}
     </span>,
-    <span className="text-gray-600 text-sm">{c.date}</span>,
-    <span className="font-mono font-bold text-gray-900">{c.confidence}%</span>
+    <span className="font-mono font-bold text-gray-900">
+      {s.confidenceScore != null ? `${(s.confidenceScore * 100).toFixed(0)}%` : '—'}
+    </span>,
+    <span className="text-gray-500 text-sm">
+      {s.timestamp || s.submittedAt || s.date || '—'}
+    </span>,
   ]);
 
   return (
     <div className="flex flex-col h-full bg-surface font-body">
-      {/* Header Bar */}
       <div className="px-6 py-4 border-b border-gray-300 bg-white flex justify-between items-center shadow-sm z-10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center border border-gray-300">
             <span className="material-symbols-outlined text-gray-700">satellite_alt</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900 tracking-widest uppercase">Triage Queue</h1>
+            <h1 className="text-xl font-bold text-gray-900 tracking-widest uppercase">Survey Verification Queue</h1>
             <p className="text-[11px] text-gray-500 uppercase tracking-wider font-mono flex items-center gap-2 mt-0.5">
               <span className="w-1.5 h-1.5 bg-success rounded-full"></span>
-              Live Satellite Sync
+              {surveys.length} Reports · Live Sync
             </p>
           </div>
         </div>
-        <div className="flex gap-3">
-          <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-xs font-bold uppercase tracking-wider rounded hover:bg-gray-50 transition-none shadow-sm">
-            Filter Data
-          </button>
-          <button className="px-4 py-2 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded hover:bg-primary-dark border border-primary-dark transition-none shadow-sm">
-            Auto-Assign Batch
-          </button>
+        <div className="flex gap-2">
+          {['all', 'pending', 'critical', 'grievance', 'completed'].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded border transition-none ${
+                filter === f
+                  ? 'bg-primary text-white border-primary-dark'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {f === 'all' ? 'All' : f === 'pending' ? 'Pending' : f === 'critical' ? 'Critical' : f === 'grievance' ? 'Grievances' : 'Completed'}
+            </button>
+          ))}
         </div>
       </div>
-      
-      {/* Table Area */}
+
       <div className="p-6 flex-1 overflow-y-auto">
         {loading ? (
           <div className="h-64 flex flex-col items-center justify-center text-gray-500 font-mono text-sm gap-4">
             <span className="material-symbols-outlined text-4xl animate-spin text-primary">radar</span>
-            [ SYNCING LIVE SATELLITE DATA ]
+            [ LOADING SURVEY QUEUE ]
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="h-64 flex flex-col items-center justify-center text-gray-500 font-mono text-sm gap-3">
+            <span className="material-symbols-outlined text-4xl opacity-40">inbox</span>
+            <span>No surveys match the selected filter.</span>
           </div>
         ) : (
           <div className="bg-white border border-gray-300 rounded shadow-sm overflow-hidden">
-            <DenseTable 
-              headers={headers} 
-              data={formattedData} 
-              onRowClick={(row) => onSelectSurvey && onSelectSurvey(claims.find(c => c.id === row[0].props.children[1]))}
+            <DenseTable
+              headers={headers}
+              data={formattedData}
+              onRowClick={(row) => onSelectSurvey && onSelectSurvey(filtered.find((s) => {
+                const id = row[0]?.props?.children?.[1] || '';
+                return (s.reportId || s.id || s.surveyId) === id;
+              }))}
             />
           </div>
         )}

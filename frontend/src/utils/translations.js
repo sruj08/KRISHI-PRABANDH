@@ -155,6 +155,27 @@ export const translations = {
   "Align subject in frame": { mr: "चौकटीत विषय संरेखित करा", hi: "फ्रेम में विषय संरेखित करें" },
   "Retake": { mr: "पुन्हा घ्या", hi: "पुनः लें" },
   "Upload": { mr: "अपलोड करा", hi: "अपलोड करें" },
+  "Please choose a PDF or image file.": { mr: "कृपया PDF किंवा प्रतिमा (JPEG, PNG इ.) फाइल निवडा.", hi: "कृपया PDF या छवि (JPEG, PNG आदि) फ़ाइल चुनें।" },
+  "OCR": { mr: "OCR", hi: "OCR" },
+  "fields extracted": { mr: "फील्ड काढले", hi: "फ़ील्ड निकाले" },
+  "Running OCR…": { mr: "OCR सुरू आहे…", hi: "OCR चल रहा है…" },
+  "OCR could not complete.": { mr: "OCR पूर्ण होऊ शकले नाही.", hi: "OCR पूरा नहीं हो सका।" },
+  "No OCR result yet. Upload a PDF or image to read text.": {
+    mr: "अद्याप OCR निकाल नाही. मजकूर वाचण्यासाठी PDF किंवा प्रतिमा अपलोड करा.",
+    hi: "अभी तक कोई OCR परिणाम नहीं। टेक्स्ट पढ़ने के लिए PDF या छवि अपलोड करें।",
+  },
+  "OCR text preview": { mr: "OCR मजकूर पूर्वावलोकन", hi: "OCR पाठ पूर्वावलोकन" },
+  "Document preview": { mr: "दस्तऐवज पूर्वावलोकन", hi: "दस्तावेज़ पूर्वावलोकन" },
+  "No file uploaded yet. Use Upload to add a PDF or image.": {
+    mr: "अद्याप फाइल अपलोड झाली नाही. PDF किंवा प्रतिमा जोडण्यासाठी अपलोड वापरा.",
+    hi: "अभी तक कोई फ़ाइल अपलोड नहीं है। PDF या छवि जोडने के लिए अपलोड का उपयोग करें।",
+  },
+  "Extracted text": { mr: "काढलेला मजकूर", hi: "निकाला गया पाठ" },
+  "Structured fields": { mr: "संरचित फील्ड", hi: "संरचित फ़ील्ड" },
+  "Schema": { mr: "स्कीमा", hi: "स्कीमा" },
+  "Characters": { mr: "अक्षरे", hi: "अक्षर" },
+  "preview truncated": { mr: "पूर्वावलोकन छाटले", hi: "पूर्वावलोकन छोटा किया गया" },
+  "(No text returned from OCR.)": { mr: "(OCR कडून मजकूर आला नाही.)", hi: "(OCR से कोई पाठ नहीं मिला।)" },
 
   // ─── Verification ────────────────────────────────────────────
   "Confirm Details": { mr: "तपशील पुष्टी करा", hi: "विवरण पुष्टि करें" },
