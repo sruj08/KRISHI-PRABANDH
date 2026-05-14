@@ -327,3 +327,58 @@
   background: #fafbf9;
   border-color: rgba(31, 77, 54, 0.22);
 }
+
+/* ── Cross-district fraud: stable columns + horizontal table scroll that does not
+   steal vertical swipes from the page (touch / trackpad “weird” scroll chaining). */
+.dcf-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 340px);
+  gap: 16px;
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .dcf-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dcf-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (min-width: 1025px) {
+  .dcf-split > .dcf-rail {
+    position: sticky;
+    top: 8px;
+    align-self: start;
+  }
+}
+
+.dcf-table-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dcf-data-head {
+  align-items: flex-start;
+}
+
+.dcf-data-head .state-dashboard__data-meta {
+  white-space: normal;
+  line-height: 1.45;
+  max-width: 100%;
+  flex: 1 1 200px;
+}

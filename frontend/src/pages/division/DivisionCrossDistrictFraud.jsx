@@ -1,452 +1,686 @@
-import React, { useMemo, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import RegionalMap from '../../components/maps/RegionalMap';
-import { geoAsset } from '../../utils/geoAsset';
-import {
-  AI_FRAUD_SIGNALS,
-  CROSS_DISTRICT_FRAUD_ALERTS,
-  DIVISION_FRAUD_KPIS,
-  DIVISION_PROFILE,
-  DISTRICT_MATRIX,
-  FRAUD_CASE_STATUS_STAGES,
-  FRAUD_DENSITY_BY_DISTRICT,
-} from '../../utils/divisionMockData';
-import { buildFraudDistrictMapMetrics } from '../../utils/divisionMapLiveOverlay';
-import { useLanguage } from '../../context/LanguageContext';
-import { DivisionKpiCard, DivisionPanelSection } from './divisionDashboardUi';
+import React, { useCallback, useState } from 'react';
+import './DivisionCrossDistrictFraud.css';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+/** District concentration strip (Pune division cluster). Intensity 1–5 = relative load from mock alerts + claims. */
+const DISTRICT_HEAT = [
+  { name: 'Pune', intensity: 5, alerts: 42, claims: 158 },
+  { name: 'Solapur', intensity: 5, alerts: 51, claims: 176 },
+  { name: 'Satara', intensity: 4, alerts: 28, claims: 94 },
+  { name: 'Sangli', intensity: 4, alerts: 31, claims: 88 },
+  { name: 'Kolhapur', intensity: 3, alerts: 19, claims: 62 },
+];
 
-const AI_SIGNAL_I18N = {
-  dup_docs: 'aiFraudSignal_dup_docs',
-  aadhaar: 'aiFraudSignal_aadhaar',
-  gps: 'aiFraudSignal_gps',
-  invoice: 'aiFraudSignal_invoice',
-  land: 'aiFraudSignal_land',
+const KPI_CARDS = [
+  { key: 'high', label: 'High Risk Cases', value: '12', icon: 'warning' },
+  { key: 'susp', label: 'Suspicious Claims', value: '485', icon: 'receipt_long' },
+  { key: 'dist', label: 'Districts Affected', value: '5', icon: 'map' },
+  { key: 'exp', label: 'Estimated Exposure', value: '₹4.8 Cr', icon: 'account_balance' },
+];
+
+/** Rich hero payload for the dominant Hover Analytics card (demo, deterministic). */
+const heroPayload = ({
+  key,
+  titleUpper,
+  rows,
+  zone = null,
+  exposure = null,
+  period = 'Last 14 days',
+  bars,
+}) => ({
+  key,
+  titleUpper,
+  rows,
+  zone,
+  exposure,
+  period,
+  bars,
+});
+
+const districtHoverPayload = (d) => {
+  const ai = Math.min(97, 72 + d.intensity * 5);
+  const overlap = Math.min(96, 58 + d.intensity * 7);
+  return heroPayload({
+    key: `dist-${d.name}`,
+    titleUpper: `DISTRICT · ${d.name.toUpperCase()}`,
+    rows: [
+      { label: 'Linked records', value: String(28 + d.alerts) },
+      { label: 'Affected villages', value: String(5 + d.intensity * 2) },
+      { label: 'Cross-taluka matches', value: String(11 + d.intensity * 3) },
+      { label: 'Avg claimed area', value: `${(1.2 + d.intensity * 0.35).toFixed(1)} acres` },
+      { label: 'AI similarity score', value: `${ai}%` },
+    ],
+    zone: `${d.name} peri-urban · co-op belt`,
+    exposure: `₹${(0.18 + d.intensity * 0.09).toFixed(2)} Cr`,
+    period: 'Last 14 days',
+    bars: [
+      { label: 'Load intensity', pct: ai },
+      { label: 'Village overlap', pct: overlap },
+    ],
+  });
+};
+
+const severityHoverPayload = (sev) => {
+  const ai = sev === 'P1' ? 91 : sev === 'P2' ? 84 : 76;
+  const overlap = sev === 'P1' ? 88 : 71;
+  const band = sev === 'P1' ? 'P1 CRITICAL' : sev === 'P2' ? 'P2 ELEVATED' : 'P3 ROUTINE';
+  return heroPayload({
+    key: `sev-${sev}`,
+    titleUpper: `FRAUD BAND · ${band}`,
+    rows: [
+      { label: 'Open in queue', value: sev === 'P1' ? '38' : sev === 'P2' ? '52' : '19' },
+      { label: 'Cross-district links', value: sev === 'P1' ? '14' : '9' },
+      { label: 'Avg review time', value: sev === 'P1' ? '1.2 d' : '2.4 d' },
+      { label: 'DAO escalations', value: sev === 'P1' ? '6' : '3' },
+      { label: 'AI similarity score', value: `${ai}%` },
+    ],
+    zone: sev === 'P1' ? 'Pune · Solapur pressure arc' : 'Division-wide watchlist',
+    exposure: `₹${sev === 'P1' ? '1.9' : '0.8'} Cr`,
+    period: 'Last 14 days',
+    bars: [
+      { label: 'Desk pressure', pct: ai },
+      { label: 'Linkage density', pct: overlap },
+    ],
+  });
+};
+
+const schemeHoverPayload = (scheme) => {
+  const ai = 80 + (scheme.length % 15);
+  const overlap = 62 + (scheme.length % 28);
+  if (scheme === 'PMFBY') {
+    return heroPayload({
+      key: 'scheme-PMFBY',
+      titleUpper: 'PMFBY GPS REUSE',
+      rows: [
+        { label: 'Repeated GPS clusters', value: '17' },
+        { label: 'Linked villages', value: '9' },
+        { label: 'Cross-taluka matches', value: '14' },
+        { label: 'AI similarity score', value: '93%' },
+      ],
+      zone: 'Madha · Sangola belt',
+      exposure: '₹0.55 Cr',
+      period: 'Last 14 days',
+      bars: [
+        { label: 'GPS reuse intensity', pct: 93 },
+        { label: 'Village overlap', pct: 74 },
+      ],
+    });
+  }
+  return heroPayload({
+    key: `scheme-${scheme}`,
+    titleUpper: `${scheme.toUpperCase()} · SCHEME LENS`,
+    rows: [
+      { label: 'Linked records', value: String(22 + scheme.length * 2) },
+      { label: 'Affected villages', value: String(8 + (scheme.length % 7)) },
+      { label: 'Avg claimed area', value: `${(2.1 + (scheme.length % 5) * 0.2).toFixed(1)} acres` },
+      { label: 'AI similarity score', value: `${ai}%` },
+    ],
+    zone: 'Satara · Sangli corridor',
+    exposure: `₹${(0.22 + (scheme.length % 9) / 10).toFixed(2)} Cr`,
+    period: 'Last 14 days',
+    bars: [
+      { label: 'Scheme risk index', pct: ai },
+      { label: 'Document reuse', pct: overlap },
+    ],
+  });
+};
+
+const dealerHoverPayload = (dealer, schemeShort) => {
+  const ai = 88 + (schemeShort.length % 8);
+  const overlap = 70 + (dealer.length % 22);
+  return heroPayload({
+    key: `dealer-${dealer}`,
+    titleUpper: `DEALER · ${dealer.toUpperCase()}`,
+    rows: [
+      { label: 'Linked records', value: String(18 + dealer.length) },
+      { label: 'Invoice burst (7d)', value: String(4 + (dealer.length % 5)) },
+      { label: 'District overlap', value: String(2 + (dealer.length % 3)) },
+      { label: 'AI similarity score', value: `${ai}%` },
+    ],
+    zone: 'Barshi · Pune invoice ring',
+    exposure: `₹${(0.35 + (dealer.length % 6) / 10).toFixed(2)} Cr`,
+    period: 'Last 14 days',
+    bars: [
+      { label: 'Dealer concentration', pct: ai },
+      { label: 'Serial invoice risk', pct: overlap },
+    ],
+  });
+};
+
+const rowHoverPayload = (c) => {
+  const ai = c.confidence;
+  const overlap = Math.min(95, 58 + c.linked.length * 6);
+  if (c.id === 'c4') {
+    return heroPayload({
+      key: `row-${c.id}`,
+      titleUpper: 'PMFBY GPS REUSE',
+      rows: [
+        { label: 'Repeated GPS clusters', value: '17' },
+        { label: 'Linked villages', value: '9' },
+        { label: 'Cross-taluka matches', value: '14' },
+        { label: 'AI similarity score', value: `${c.confidence}%` },
+      ],
+      zone: 'Madha · Sangola belt',
+      exposure: `₹${c.exposureCr} Cr`,
+      period: 'Last 14 days',
+      bars: [
+        { label: 'GPS reuse intensity', pct: 93 },
+        { label: 'Village overlap', pct: 74 },
+      ],
+    });
+  }
+  return heroPayload({
+    key: `row-${c.id}`,
+    titleUpper: `${c.hoverTheme.toUpperCase()} · CASE`,
+    rows: [
+      { label: 'Linked records', value: String(36 + c.linked.length * 4) },
+      { label: 'Affected villages', value: String(9 + c.linked.length * 2) },
+      { label: 'Cross-taluka matches', value: String(10 + c.linked.length * 3) },
+      { label: 'Avg claimed area', value: `${(2.4 + c.exposureCr).toFixed(1)} acres` },
+      { label: 'AI similarity score', value: `${ai}%` },
+    ],
+    zone: `${c.districts[0]} · ${c.districts[1] || c.districts[0]} belt`,
+    exposure: `₹${c.exposureCr} Cr`,
+    period: 'Last 14 days',
+    bars: [
+      { label: 'Signal intensity', pct: ai },
+      { label: 'Village overlap', pct: overlap },
+    ],
+  });
+};
+
+const statusHoverPayload = (c) => {
+  const ai = c.confidence;
+  return heroPayload({
+    key: `status-${c.id}`,
+    titleUpper: `WORKFLOW · ${c.status.toUpperCase()}`,
+    rows: [
+      { label: 'Cases in stage', value: String(12 + c.linked.length) },
+      { label: 'Avg dwell', value: '1.8 d' },
+      { label: 'DAO touchpoints', value: String(2 + (c.status.length % 4)) },
+      { label: 'AI similarity score', value: `${ai}%` },
+    ],
+    zone: 'DAO cluster · Pune division',
+    exposure: `₹${c.exposureCr} Cr`,
+    period: 'Last 14 days',
+    bars: [
+      { label: 'Queue pressure', pct: Math.min(94, 62 + c.status.length) },
+      { label: 'SLA tightness', pct: 68 },
+    ],
+  });
+};
+
+/**
+ * Investigation cards — Maharashtra agri subsidy context only.
+ */
+const FRAUD_CASES = [
+  {
+    id: 'c1',
+    severity: 'P1',
+    schemeTag: 'Tractor Subsidy',
+    dealerTag: 'Mahalakshmi Agro Barshi',
+    hoverTheme: 'Invoice reuse',
+    title: 'Tractor subsidy — same invoice reused across districts',
+    districts: ['Pune', 'Satara', 'Solapur'],
+    narrative:
+      'Same chassis number and dealer tax invoice PDF attached to multiple Farm Mechanization (tractor) subsidy claims. Dealer and invoice timestamps do not align with field verification dates.',
+    whyFlagged: [
+      'Same chassis number on RC and invoice',
+      'Invoice PDF byte-identical across three DAO uploads',
+      'Dealer (Mahalakshmi Agro Barshi) named on claims in different districts',
+    ],
+    confidence: 96,
+    exposureCr: 2.4,
+    status: 'Under Verification',
+    linked: [
+      { farmer: 'Nishant Gadsing', scheme: 'Tractor Subsidy', district: 'Pune', match: 'Same chassis MH-19-TR-8841' },
+      { farmer: 'Jalinder Padule', scheme: 'Tractor Subsidy', district: 'Satara', match: 'Same invoice PDF hash' },
+      { farmer: 'Ravindra Padule', scheme: 'Tractor Subsidy', district: 'Solapur', match: 'Dealer overlap · invoice reuse' },
+      { farmer: 'Shivaji Munde', scheme: 'Farm Mechanization', district: 'Solapur', match: 'RC area vs invoice mismatch' },
+    ],
+  },
+  {
+    id: 'c2',
+    severity: 'P1',
+    schemeTag: 'PM-KISAN',
+    dealerTag: null,
+    hoverTheme: 'Aadhaar cluster',
+    title: 'PM-KISAN — shared mobile and masked Aadhaar tail cluster',
+    districts: ['Solapur', 'Sangli', 'Kolhapur'],
+    narrative:
+      'Several PM-KISAN beneficiary records show one registered mobile number across households, with repeating last-four Aadhaar pattern and inactive Aadhaar seeding failures at bank NPCI.',
+    whyFlagged: [
+      'Same mobile on multiple beneficiary IDs',
+      'Masked Aadhaar tail repeats across unrelated khata numbers',
+      'Bank mapping error spike for same IFSC branch',
+    ],
+    confidence: 91,
+    exposureCr: 1.1,
+    status: 'AI Flagged Today',
+    linked: [
+      { farmer: 'Sunita Jadhav', scheme: 'PM-KISAN', district: 'Solapur', match: 'Shared mobile · Madha taluka' },
+      { farmer: 'Popat Shinde', scheme: 'PM-KISAN', district: 'Sangli', match: 'Same Aadhaar tail · different farmer name' },
+      { farmer: 'Anil Khot', scheme: 'PM-KISAN', district: 'Kolhapur', match: 'Inactive Aadhaar · repeat NPCI reject' },
+    ],
+  },
+  {
+    id: 'c3',
+    severity: 'P2',
+    schemeTag: 'Drip Irrigation',
+    dealerTag: 'Sai Irrigation Pune',
+    hoverTheme: 'Dealer burst',
+    title: 'Drip irrigation — dealer invoice burst in one window',
+    districts: ['Solapur', 'Pune'],
+    narrative:
+      'Sai Irrigation Pune issued identical line-item invoices for drip laterals; twelve claims filed within 36 hours using the same PDF from AgroCare Solapur counter series.',
+    whyFlagged: [
+      'Invoice serial gap inconsistent with stock dispatch',
+      'Burst submissions from adjacent villages',
+      'Land area on 7/12 does not match billed lateral length',
+    ],
+    confidence: 88,
+    exposureCr: 0.62,
+    status: 'Sent to DAO',
+    linked: [
+      { farmer: 'Bhausaheb Patil', scheme: 'Drip Irrigation', district: 'Solapur', match: 'Invoice PDF reused' },
+      { farmer: 'Kisan Thorat', scheme: 'Drip Irrigation', district: 'Solapur', match: 'Same dealer · same invoice no.' },
+      { farmer: 'Dnyaneshwar Raut', scheme: 'Drip Irrigation', district: 'Pune', match: 'Land area vs billed qty' },
+    ],
+  },
+  {
+    id: 'c4',
+    severity: 'P1',
+    schemeTag: 'PMFBY',
+    dealerTag: null,
+    hoverTheme: 'Survey overlap',
+    title: 'PMFBY — same geotagged crop-loss photo across villages',
+    districts: ['Satara', 'Pune', 'Sangli'],
+    narrative:
+      'Kharif soybean loss intimation photos carry identical GPS coordinates and file hash though village names differ; survey numbers on attached 7/12 excerpts do not match village cadastre.',
+    whyFlagged: [
+      'Same GPS coordinates on loss photos',
+      'Duplicate image hash in PMFBY upload bundle',
+      'Survey number not found in village FMB',
+    ],
+    confidence: 93,
+    exposureCr: 0.55,
+    status: 'Under Verification',
+    linked: [
+      { farmer: 'Rahul Kadam', scheme: 'PMFBY', district: 'Satara', match: 'GPS reused · photo hash match' },
+      { farmer: 'Vaishali Shinde', scheme: 'PMFBY', district: 'Pune', match: 'Same image · different village code' },
+      { farmer: 'Ganesh Mane', scheme: 'PMFBY', district: 'Sangli', match: 'Survey no. not in FMB' },
+    ],
+  },
+  {
+    id: 'c5',
+    severity: 'P3',
+    schemeTag: 'Soyabean Compensation',
+    dealerTag: null,
+    hoverTheme: 'Survey overlap',
+    title: 'Soyabean compensation — overlapping survey numbers on relief list',
+    districts: ['Kolhapur', 'Sangli'],
+    narrative:
+      'Relief survey list for soyabean weather loss shows duplicate survey numbers mapped to two different farmer names; khata continuity broken in one case; amounts within single-taluka reconciliation.',
+    whyFlagged: [
+      'Duplicate survey number on compensation sheet',
+      'Khata number reused after name change window',
+      'Adjacent parcel overlap in manual survey sketch',
+    ],
+    confidence: 74,
+    exposureCr: 0.13,
+    status: 'Closed',
+    linked: [
+      { farmer: 'Subhash Patil', scheme: 'Soyabean Compensation', district: 'Kolhapur', match: 'Duplicate survey no.' },
+      { farmer: 'Laxmi Powar', scheme: 'Soyabean Compensation', district: 'Sangli', match: 'Khata overlap · same survey block' },
+    ],
+  },
+];
+
+const TREND_ROWS = [
+  { label: 'Invoice reuse', dir: 'up', strength: 0.78 },
+  { label: 'GPS reuse', dir: 'up2', strength: 0.92 },
+  { label: 'Aadhaar clusters', dir: 'flat', strength: 0.55 },
+  { label: 'Survey overlap', dir: 'up', strength: 0.68 },
+];
+
+const sevClass = (s) => (s === 'P1' ? 'fi-sev--p1' : s === 'P2' ? 'fi-sev--p2' : 'fi-sev--p3');
+
+const trendArrow = (dir) => {
+  if (dir === 'up2') return '↑↑';
+  if (dir === 'up') return '↑';
+  if (dir === 'down') return '↓';
+  return '→';
 };
 
 const DivisionCrossDistrictFraud = () => {
-  const { t } = useLanguage();
-  const [selectedCaseId, setSelectedCaseId] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
+  const [hoverPayload, setHoverPayload] = useState(null);
 
-  const fraudMapMetrics = useMemo(
-    () => buildFraudDistrictMapMetrics(FRAUD_DENSITY_BY_DISTRICT),
-    [],
-  );
+  const setHover = useCallback((payload) => {
+    setHoverPayload(payload);
+  }, []);
 
-  const selectedCase = useMemo(
-    () => CROSS_DISTRICT_FRAUD_ALERTS.find((a) => a.id === selectedCaseId) || null,
-    [selectedCaseId],
-  );
+  const clearHover = useCallback(() => {
+    setHoverPayload(null);
+  }, []);
 
-  const maxSeverityScore = useMemo(
-    () => Math.max(1, ...FRAUD_DENSITY_BY_DISTRICT.map((d) => d.fraudSeverityScore ?? 0)),
-    [],
-  );
-
-  const severityBandStyle = (score) => {
-    const n = (Number(score) || 0) / maxSeverityScore;
-    if (n >= 0.66) return { bg: 'rgba(183, 28, 28, 0.12)', border: 'rgba(183, 28, 28, 0.35)' };
-    if (n >= 0.33) return { bg: 'rgba(194, 65, 12, 0.1)', border: 'rgba(194, 65, 12, 0.3)' };
-    return { bg: 'rgba(57, 105, 64, 0.08)', border: 'rgba(57, 105, 64, 0.28)' };
-  };
-
-  const aiSignalsBar = useMemo(
-    () => ({
-      labels: AI_FRAUD_SIGNALS.map((s) => t(AI_SIGNAL_I18N[s.id])),
-      datasets: [{
-        label: t('cases'),
-        data: AI_FRAUD_SIGNALS.map((s) => s.count),
-        backgroundColor: ['#7c2d12', '#9a3412', '#c2410c', '#a16207', '#365314'],
-        borderRadius: 4,
-      }],
-    }),
-    [t],
-  );
-
-  const caseStatusBar = useMemo(
-    () => ({
-      labels: FRAUD_CASE_STATUS_STAGES.map((p) => p.stage),
-      datasets: [{
-        label: t('cases'),
-        data: FRAUD_CASE_STATUS_STAGES.map((p) => p.count),
-        backgroundColor: '#57534e',
-        borderRadius: 3,
-      }],
-    }),
-    [t],
-  );
-
-  const chartOpts = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { font: { size: 10 }, maxRotation: 35 }, grid: { display: false } },
-      y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
-    },
-  };
-
-  const caseStatusOpts = {
-    ...chartOpts,
-    scales: {
-      ...chartOpts.scales,
-      x: { ...chartOpts.scales.x, ticks: { font: { size: 9 }, maxRotation: 45 } },
-    },
-  };
-
-  const sevStyle = (s) => {
-    if (s === 'P1') return { color: '#b71c1c', bg: 'rgba(255,218,214,0.55)' };
-    return { color: '#c2410c', bg: 'rgba(255,224,178,0.45)' };
-  };
-
-  const chipStyle = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontSize: 10,
-    fontWeight: 700,
-    padding: '3px 8px',
-    borderRadius: 999,
-    background: '#eef1ee',
-    color: '#374151',
-    border: '1px solid #e2e3df',
-    marginRight: 6,
-    marginBottom: 4,
+  const toggleCase = (id) => {
+    setExpandedId((prev) => (prev === id ? null : id));
   };
 
   return (
-    <div className="state-dashboard-bleed">
-      <div className="state-dashboard">
-        <div style={{ marginBottom: 8 }}>
-          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#717972', margin: 0 }}>
-            {t('fraudDeskIntel')}
-          </p>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1a1c1a', margin: '8px 0 0', letterSpacing: '-0.02em' }}>
-            {t('crossDistrictFraudCenter')}
-          </h1>
-          <p className="state-dashboard__map-sub" style={{ marginTop: 8, maxWidth: 900 }}>
-            {DIVISION_PROFILE.division} division · {t('fraudCenterSubAgriWorkflow')}
-          </p>
-        </div>
+    <div className="fi-page">
+      <div className="fi-inner fi-inner--split">
+        <h1 className="fi-title">AI Cross-District Fraud Intelligence</h1>
+        <p className="fi-sub">
+          AI-detected linked subsidy anomalies across Maharashtra districts.
+        </p>
 
-        <div className="state-dashboard-kpi-grid" style={{ marginBottom: 16 }}>
-          <DivisionKpiCard
-            icon="priority_high"
-            label={t('fraudKpiOpenP1')}
-            value={String(DIVISION_FRAUD_KPIS.openP1)}
-            unit=""
-            noCurrency
-            sub={t('caseCountsDemo')}
-          />
-          <DivisionKpiCard
-            icon="flag"
-            label={t('fraudKpiOpenP2')}
-            value={String(DIVISION_FRAUD_KPIS.openP2)}
-            unit=""
-            noCurrency
-            sub={t('caseCountsDemo')}
-          />
-          <DivisionKpiCard
-            icon="hub"
-            label={t('fraudKpiCrossDistrictRings')}
-            value={String(DIVISION_FRAUD_KPIS.crossDistrictRings)}
-            unit=""
-            noCurrency
-            sub={t('fraudKpiRingsSub')}
-          />
-          <DivisionKpiCard
-            icon="account_balance"
-            label={t('fraudKpiExposureCr')}
-            value={String(DIVISION_FRAUD_KPIS.estimatedExposureCr)}
-            unit="Cr"
-            sub={t('exposureCr')}
-          />
-          <DivisionKpiCard
-            icon="groups"
-            label={t('fraudKpiDaoDesks')}
-            value={String(DIVISION_FRAUD_KPIS.daoVigilanceDesks)}
-            unit=""
-            noCurrency
-            sub={t('fraudKpiDaoDesksSub')}
-          />
-        </div>
-
-        <div className="state-dashboard-command-layout" style={{ marginBottom: 16 }}>
-          <div className="state-dashboard__map-panel">
-            <div className="state-dashboard__map-head">
+        <div className="fi-kpis" role="list">
+          {KPI_CARDS.map((k) => (
+            <div key={k.key} className="fi-kpi" role="listitem">
+              <div className="fi-kpi__icon" aria-hidden>
+                <span className="material-symbols-outlined">{k.icon}</span>
+              </div>
               <div>
-                <h2 className="state-dashboard__map-title">{t('districtFraudCommandMapTitle')}</h2>
-                <p className="state-dashboard__map-sub">{t('districtFraudCommandMapSub')}</p>
+                <div className="fi-kpi__value">{k.value}</div>
+                <div className="fi-kpi__label">{k.label}</div>
               </div>
             </div>
-            <div className="state-dashboard__map-body">
-              <RegionalMap
-                layerType="division"
-                boundaryUrl={geoAsset('geo/maharashtra-division.topo.json')}
-                divisionOverlayUrl={geoAsset('geo/pune-division-districts.geojson')}
-                divisionMatrix={DISTRICT_MATRIX}
-                liveDivisionMetrics={fraudMapMetrics}
-                treatPenetrationLayerAsFraudHeat
-              />
-            </div>
-          </div>
-
-          <div className="state-dashboard-insight-rail">
-            <DivisionPanelSection title={t('aiFraudSignals')} subtitle={t('aiFraudSignalsSub')}>
-              <div style={{ height: 200 }}>
-                <Bar data={aiSignalsBar} options={chartOpts} />
-              </div>
-            </DivisionPanelSection>
-            <DivisionPanelSection title={t('fraudCaseStatusBars')} subtitle={t('fraudCaseStatusBarsSub')}>
-              <div style={{ height: 120 }}>
-                <Bar data={caseStatusBar} options={caseStatusOpts} />
-              </div>
-            </DivisionPanelSection>
-          </div>
+          ))}
         </div>
 
-        <div className="state-dashboard__data-panel" style={{ marginBottom: 16 }}>
-          <div className="state-dashboard__data-head">
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#5c6560' }}>grid_on</span>
-            <h3 className="state-dashboard__data-title">{t('districtFraudAlertsTable')}</h3>
-            <span className="state-dashboard__data-meta">{t('districtFraudAlertsTableSub')}</span>
+        <section className="fi-heat" aria-labelledby="fi-heat-title">
+          <div className="fi-heat__head">
+            <h2 id="fi-heat-title" className="fi-heat__title">
+              District concentration (suspicious claims · AI alerts)
+            </h2>
+            <span className="fi-heat__hint">Pune division cluster — illustrative counts for desk review</span>
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
-              <thead>
-                <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                  {[t('district'), t('fraudRiskAlerts'), t('suspiciousSubsidyClaims'), t('fraudSeverityScore')].map((h) => (
-                    <th
-                      key={h}
-                      style={{
-                        padding: '14px 16px',
-                        fontSize: 10,
-                        letterSpacing: '0.08em',
-                        color: '#717972',
-                        textAlign: h === t('district') ? 'left' : 'right',
-                        textTransform: 'uppercase',
-                        fontWeight: 700,
-                      }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {FRAUD_DENSITY_BY_DISTRICT.map((d, i) => {
-                  const band = severityBandStyle(d.fraudSeverityScore);
-                  return (
-                    <tr
-                      key={d.code}
-                      style={{
-                        borderBottom: i !== FRAUD_DENSITY_BY_DISTRICT.length - 1 ? '1px solid #ebece8' : 'none',
-                        background: i % 2 === 1 ? '#fafafa' : '#fff',
-                        boxShadow: `inset 3px 0 0 0 ${band.border}`,
-                      }}
-                    >
-                      <td style={{ padding: '16px', fontSize: 14, fontWeight: 600, color: '#1a1c1a' }}>{d.district}</td>
-                      <td style={{ padding: '16px', fontSize: 13, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{d.fraudAlerts}</td>
-                      <td style={{ padding: '16px', fontSize: 13, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{d.suspiciousApplicationsEst?.toLocaleString('en-IN')}</td>
-                      <td style={{
-                        padding: '16px',
-                        fontSize: 13,
-                        textAlign: 'right',
-                        fontVariantNumeric: 'tabular-nums',
-                        fontWeight: 700,
-                        background: band.bg,
-                      }}
-                      >
-                        {d.fraudSeverityScore}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
-            gap: 16,
-            alignItems: 'start',
-          }}
-        >
-          <div className="state-dashboard__data-panel" style={{ marginBottom: 0 }}>
-            <div className="state-dashboard__data-head">
-              <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#5c6560' }}>crisis_alert</span>
-              <h3 className="state-dashboard__data-title">{t('crossDistrictFraudFeedTitle')}</h3>
-              <span className="state-dashboard__data-meta">{t('crossDistrictFraudFeedSub')}</span>
-            </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1020 }}>
-                <thead>
-                  <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                    {[
-                      t('severity'),
-                      t('fraudCase'),
-                      t('whyFlagged'),
-                      t('districts'),
-                      t('schemeName'),
-                      t('aiSuspicionPct'),
-                      t('exposureCr'),
-                      t('fraudCaseStatusCol'),
-                    ].map((h) => (
-                      <th
-                        key={h}
-                        style={{
-                          padding: '14px 10px',
-                          fontSize: 10,
-                          letterSpacing: '0.08em',
-                          color: '#717972',
-                          textAlign: 'left',
-                          textTransform: 'uppercase',
-                          fontWeight: 700,
-                        }}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {CROSS_DISTRICT_FRAUD_ALERTS.map((a, i) => {
-                    const sv = sevStyle(a.severity);
-                    const selected = a.id === selectedCaseId;
-                    return (
-                      <tr
-                        key={a.id}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => setSelectedCaseId(a.id)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            setSelectedCaseId(a.id);
-                          }
-                        }}
-                        style={{
-                          borderBottom: i !== CROSS_DISTRICT_FRAUD_ALERTS.length - 1 ? '1px solid #ebece8' : 'none',
-                          background: selected ? 'rgba(26, 54, 93, 0.06)' : i % 2 === 1 ? '#fafafa' : '#fff',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <td style={{ padding: '14px 10px', verticalAlign: 'top' }}>
-                          <span style={{ fontSize: 10, fontWeight: 800, padding: '4px 8px', borderRadius: 6, color: sv.color, background: sv.bg }}>{a.severity}</span>
-                        </td>
-                        <td style={{ padding: '14px 10px', fontSize: 13, fontWeight: 600, color: '#1a1c1a', maxWidth: 280, verticalAlign: 'top' }}>
-                          <div>{a.title}</div>
-                          {a.aiReasonLine && (
-                            <div style={{ marginTop: 6, fontSize: 11, fontWeight: 500, color: '#5c6560', lineHeight: 1.45 }}>
-                              {a.aiReasonLine}
-                            </div>
-                          )}
-                        </td>
-                        <td style={{ padding: '14px 10px', verticalAlign: 'top', minWidth: 160 }}>
-                          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                            {(a.whyFlagged || []).map((w) => (
-                              <span key={w} style={chipStyle}>{w}</span>
-                            ))}
-                          </div>
-                        </td>
-                        <td style={{ padding: '14px 10px', fontSize: 12, color: '#414943', verticalAlign: 'top' }}>{a.districts.join(' · ')}</td>
-                        <td style={{ padding: '14px 10px', fontSize: 12, color: '#1a1c1a', verticalAlign: 'top' }}>{a.scheme}</td>
-                        <td style={{ padding: '14px 10px', fontSize: 13, fontVariantNumeric: 'tabular-nums', verticalAlign: 'top' }}>{a.confidencePct}%</td>
-                        <td style={{ padding: '14px 10px', fontSize: 13, fontWeight: 700, fontVariantNumeric: 'tabular-nums', verticalAlign: 'top' }}>₹{a.exposureCr} Cr</td>
-                        <td style={{ padding: '14px 10px', fontSize: 12, fontWeight: 600, color: '#5c6560', verticalAlign: 'top' }}>{a.status}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div className="state-dashboard__data-panel">
-              <div className="state-dashboard__data-head">
-                <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#5c6560' }}>link</span>
-                <h3 className="state-dashboard__data-title">{t('linkedSubsidyRecords')}</h3>
+          <div className="fi-heat__row">
+            {DISTRICT_HEAT.map((d) => (
+              <div
+                key={d.name}
+                className="fi-heat__cell fi-hover-target"
+                data-intensity={d.intensity}
+                title={`${d.name}: ${d.alerts} AI alerts · ${d.claims} suspicious claims (demo)`}
+                onMouseEnter={() => setHover(districtHoverPayload(d))}
+                onMouseLeave={clearHover}
+                onFocus={() => setHover(districtHoverPayload(d))}
+                onBlur={clearHover}
+                tabIndex={0}
+                role="group"
+              >
+                <span className="fi-heat__name">{d.name}</span>
+                <span className="fi-heat__meta">{d.alerts} alerts · {d.claims} claims</span>
               </div>
-              {!selectedCase ? (
-                <p style={{ margin: '8px 16px 16px', fontSize: 13, color: '#5c6560', lineHeight: 1.5 }}>
-                  {t('selectCaseForLinkedApps')}
-                </p>
-              ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 400 }}>
-                    <thead>
-                      <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
-                        {[t('farmerNameCol'), t('applicationIdCol'), t('schemeName'), t('district'), t('talukaCol'), t('invoiceOrChassisCol'), t('dealerCol'), t('bankHintCol'), t('uploadedAtCol')].map((h) => (
-                          <th
-                            key={h}
-                            style={{
-                              padding: '10px 12px',
-                              fontSize: 9,
-                              letterSpacing: '0.08em',
-                              color: '#717972',
-                              textAlign: 'left',
-                              textTransform: 'uppercase',
-                              fontWeight: 700,
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {h}
-                          </th>
+            ))}
+          </div>
+          <div className="fi-heat__legend" aria-hidden>
+            <span>Low risk</span>
+            <span className="fi-heat__segments">
+              <span className="fi-heat__seg fi-heat__seg--1" />
+              <span className="fi-heat__seg fi-heat__seg--3" />
+              <span className="fi-heat__seg fi-heat__seg--5" />
+            </span>
+            <span>High risk</span>
+          </div>
+        </section>
+
+        <div className="fi-split">
+          <div className="fi-feed">
+            <p className="fi-feed__kicker">AI fraud feed</p>
+            <p className="fi-feed__hint">Click a card to expand. Hover districts, tags, schemes, or dealers — analytics update on the right.</p>
+            {FRAUD_CASES.map((c) => {
+              const open = expandedId === c.id;
+              return (
+                <div
+                  key={c.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={open}
+                  data-expanded={open}
+                  className={`fi-case ${open ? 'fi-case--open' : 'fi-case--collapsed'}`}
+                  onClick={() => toggleCase(c.id)}
+                  onMouseEnter={() => setHover(rowHoverPayload(c))}
+                  onMouseLeave={clearHover}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleCase(c.id);
+                    }
+                  }}
+                >
+                  <div className="fi-case__summary">
+                    <div className="fi-case__summary-main">
+                      <div className="fi-case__top">
+                        <span
+                          className={`fi-sev fi-hover-target ${sevClass(c.severity)}`}
+                          onClick={(e) => e.stopPropagation()}
+                          onMouseEnter={(e) => {
+                            e.stopPropagation();
+                            setHover(severityHoverPayload(c.severity));
+                          }}
+                          onMouseLeave={(e) => {
+                            e.stopPropagation();
+                            setHover(rowHoverPayload(c));
+                          }}
+                        >
+                          {c.severity}
+                        </span>
+                        <span
+                          className="fi-status fi-hover-target"
+                          onClick={(e) => e.stopPropagation()}
+                          onMouseEnter={(e) => {
+                            e.stopPropagation();
+                            setHover(statusHoverPayload(c));
+                          }}
+                          onMouseLeave={(e) => {
+                            e.stopPropagation();
+                            setHover(rowHoverPayload(c));
+                          }}
+                        >
+                          {c.status}
+                        </span>
+                      </div>
+                      <h3 className="fi-case__title">{c.title}</h3>
+                      <div className="fi-case__scheme-row">
+                        <span
+                          className="fi-scheme-tag fi-hover-target"
+                          onClick={(e) => e.stopPropagation()}
+                          onMouseEnter={(e) => {
+                            e.stopPropagation();
+                            setHover(schemeHoverPayload(c.schemeTag));
+                          }}
+                          onMouseLeave={(e) => {
+                            e.stopPropagation();
+                            setHover(rowHoverPayload(c));
+                          }}
+                        >
+                          {c.schemeTag}
+                        </span>
+                      </div>
+                      <div className="fi-case__districts">
+                        {c.districts.map((name, i) => (
+                          <span key={name}>
+                            {i > 0 ? ' · ' : ''}
+                            <span
+                              className="fi-district-tag fi-hover-target"
+                              onClick={(e) => e.stopPropagation()}
+                              onMouseEnter={(e) => {
+                                e.stopPropagation();
+                                const d = DISTRICT_HEAT.find((x) => x.name === name);
+                                setHover(d ? districtHoverPayload(d) : districtHoverPayload({ name, intensity: 3, alerts: 30, claims: 90 }));
+                              }}
+                              onMouseLeave={(e) => {
+                                e.stopPropagation();
+                                setHover(rowHoverPayload(c));
+                              }}
+                            >
+                              {name}
+                            </span>
+                          </span>
                         ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(selectedCase.linkedApplications || []).map((row, idx) => (
-                        <tr key={`${selectedCase.id}-${idx}`} style={{ borderBottom: '1px solid #ebece8', background: idx % 2 === 1 ? '#fafafa' : '#fff' }}>
-                          <td style={{ padding: '12px', fontSize: 12, fontWeight: 600 }}>{row.farmerName}</td>
-                          <td style={{ padding: '12px', fontSize: 11, fontFamily: 'ui-monospace, monospace' }}>{row.applicationId}</td>
-                          <td style={{ padding: '12px', fontSize: 11 }}>{row.scheme}</td>
-                          <td style={{ padding: '12px', fontSize: 12 }}>{row.district}</td>
-                          <td style={{ padding: '12px', fontSize: 12 }}>{row.taluka || '—'}</td>
-                          <td style={{ padding: '12px', fontSize: 11 }}>{row.invoiceOrChassis || '—'}</td>
-                          <td style={{ padding: '12px', fontSize: 11 }}>{row.dealer || '—'}</td>
-                          <td style={{ padding: '12px', fontSize: 11 }}>{row.bankOrAadhaarHint || '—'}</td>
-                          <td style={{ padding: '12px', fontSize: 11, fontVariantNumeric: 'tabular-nums' }}>{row.uploadedAt}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </div>
+                      {!open && (
+                        <p className="fi-case__peek">
+                          AI confidence {c.confidence}% · Exposure ₹{c.exposureCr} Cr · {c.linked.length} linked applications
+                        </p>
+                      )}
+                    </div>
+                    <span className="fi-case__chev material-symbols-outlined" aria-hidden>expand_more</span>
+                  </div>
+                  {open && (
+                    <div className="fi-case__body" onClick={(e) => e.stopPropagation()}>
+                      <p className="fi-case__narr">{c.narrative}</p>
+                      {c.dealerTag ? (
+                        <p className="fi-case__dealer-line">
+                          <span className="fi-case__dealer-k">Dealer</span>
+                          <span
+                            className="fi-dealer-tag fi-hover-target"
+                            onMouseEnter={() => setHover(dealerHoverPayload(c.dealerTag, c.schemeTag))}
+                            onMouseLeave={() => setHover(rowHoverPayload(c))}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {c.dealerTag}
+                          </span>
+                        </p>
+                      ) : null}
+                      <div className="fi-case__why-label">Why flagged</div>
+                      <ul className="fi-case__why">
+                        {c.whyFlagged.map((line) => (
+                          <li key={line}>{line}</li>
+                        ))}
+                      </ul>
+                      <div className="fi-case__foot">
+                        <span>AI confidence: <strong>{c.confidence}%</strong></span>
+                        <span>Exposure: <strong>₹{c.exposureCr} Cr</strong></span>
+                      </div>
+                      <div className="fi-case__linked-mini" aria-label="Linked applications summary">
+                        <div className="fi-case__linked-mini-head">Linked applications ({c.linked.length})</div>
+                        <ul className="fi-case__linked-mini-list">
+                          {c.linked.map((row) => (
+                            <li key={`${c.id}-${row.farmer}-${row.match}`}>
+                              <span className="fi-case__linked-name">{row.farmer}</span>
+                              <span className="fi-case__linked-meta">{row.scheme} · {row.district}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })}
+          </div>
 
-            <div className="state-dashboard__data-panel">
-              <div className="state-dashboard__data-head">
-                <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#5c6560' }}>account_tree</span>
-                <h3 className="state-dashboard__data-title">{t('caseRelationshipView')}</h3>
-              </div>
-              {!selectedCase ? (
-                <p style={{ margin: '8px 16px 16px', fontSize: 13, color: '#5c6560', lineHeight: 1.5 }}>
-                  {t('selectCaseForLinkedApps')}
+          <aside className="fi-rail fi-rail--intel" aria-label="Intelligence sidebar">
+            <div className="fi-rail__stack fi-rail__stack--float">
+              <section
+                className={`fi-intel-card fi-intel-card--hero ${hoverPayload ? 'fi-intel-card--hero-live' : 'fi-intel-card--hero-idle'}`}
+                aria-labelledby="fi-hover-title"
+              >
+                <h2 id="fi-hover-title" className="fi-intel-card__title fi-intel-card__title--hero">Hover analytics</h2>
+                <div className="fi-hero-analytics" key={hoverPayload?.key ?? 'idle'}>
+                  {!hoverPayload ? (
+                    <div className="fi-hero-analytics__idle">
+                      <p className="fi-hero-analytics__placeholder">
+                        Hover over a district, fraud tag, scheme, or dealer to view analytics.
+                      </p>
+                      <div className="fi-hero-analytics__idle-bars" aria-hidden>
+                        <div className="fi-hero-microbar fi-hero-microbar--ghost"><span /></div>
+                        <div className="fi-hero-microbar fi-hero-microbar--ghost"><span /></div>
+                        <div className="fi-hero-activity" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="fi-hero-analytics__live">
+                      <p className="fi-hero-analytics__eyebrow">Hovering</p>
+                      <p className="fi-hero-analytics__headline">{hoverPayload.titleUpper}</p>
+                      <dl className="fi-hero-analytics__dl">
+                        {hoverPayload.rows.map((r) => (
+                          <div key={r.label} className="fi-hero-analytics__row">
+                            <dt>{r.label}</dt>
+                            <dd>{r.value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                      {hoverPayload.zone ? (
+                        <div className="fi-hero-analytics__zone">
+                          <span className="fi-hero-analytics__zone-k">Highest duplication zone</span>
+                          <span className="fi-hero-analytics__zone-v">{hoverPayload.zone}</span>
+                        </div>
+                      ) : null}
+                      <div className="fi-hero-analytics__foot">
+                        <div>
+                          <span className="fi-hero-analytics__foot-k">Exposure linked</span>
+                          <span className="fi-hero-analytics__foot-v">{hoverPayload.exposure}</span>
+                        </div>
+                        <div>
+                          <span className="fi-hero-analytics__foot-k">Most active period</span>
+                          <span className="fi-hero-analytics__foot-v">{hoverPayload.period}</span>
+                        </div>
+                      </div>
+                      <div className="fi-hero-bars" aria-hidden>
+                        {hoverPayload.bars.map((b) => (
+                          <div key={b.label} className="fi-hero-bar">
+                            <div className="fi-hero-bar__top">
+                              <span className="fi-hero-bar__label">{b.label}</span>
+                              <span className="fi-hero-bar__pct">{b.pct}%</span>
+                            </div>
+                            <div className="fi-hero-bar__track">
+                              <span className="fi-hero-bar__fill" style={{ width: `${b.pct}%` }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              <section className="fi-intel-card fi-intel-card--insight" aria-labelledby="fi-insight-title">
+                <h2 id="fi-insight-title" className="fi-intel-card__title">AI insight</h2>
+                <p className="fi-intel-card__lead">
+                  <strong className="fi-intel-card__pct">84%</strong>
+                  {' '}
+                  <span className="fi-intel-card__lead-muted">of high-risk alerts are linked to:</span>
                 </p>
-              ) : (
-                <ul style={{ margin: '8px 16px 16px', paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {(selectedCase.relationshipSnippets || []).map((line, idx) => (
-                    <li key={idx} style={{ fontSize: 12, color: '#1a1c1a', lineHeight: 1.5 }}>
-                      {line}
+                <ul className="fi-intel-bullets">
+                  <li>PMFBY soyabean claims</li>
+                  <li>repeated survey clusters</li>
+                  <li>invoice reuse patterns</li>
+                </ul>
+              </section>
+
+              <section className="fi-intel-card fi-intel-card--trend" aria-labelledby="fi-trend-title">
+                <h2 id="fi-trend-title" className="fi-intel-card__title">Fraud trend</h2>
+                <ul className="fi-trend-list">
+                  {TREND_ROWS.map((row) => (
+                    <li key={row.label} className="fi-trend-row">
+                      <div className="fi-trend-row__label">
+                        <span className="fi-trend-row__name">{row.label}</span>
+                        <span className="fi-trend-row__arrow" aria-hidden>{trendArrow(row.dir)}</span>
+                      </div>
+                      <div className="fi-trend-row__bar" aria-hidden>
+                        <span className="fi-trend-row__fill" style={{ width: `${Math.round(row.strength * 100)}%` }} />
+                      </div>
                     </li>
                   ))}
                 </ul>
-              )}
+                <div className="fi-trend-spark" aria-hidden>
+                  <svg className="fi-trend-spark__svg" viewBox="0 0 120 28" preserveAspectRatio="none">
+                    <polyline
+                      className="fi-trend-spark__line"
+                      fill="none"
+                      strokeWidth="1.5"
+                      points="0,22 18,18 36,20 54,12 72,14 90,8 108,10 120,6"
+                    />
+                  </svg>
+                  <span className="fi-trend-spark__cap">7d composite trend</span>
+                </div>
+              </section>
             </div>
-          </div>
+          </aside>
         </div>
       </div>
     </div>
