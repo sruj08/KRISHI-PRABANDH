@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from api import analytics, approvals, auth, compensation, farms, farmers, health, surveys, users
+from api import analytics, approvals, auth, compensation, documents_ocr, farms, farmers, health, surveys, users
 from config.settings import get_settings
 from middleware.logging import RequestLoggingMiddleware
 
@@ -35,6 +35,7 @@ app.include_router(surveys.router)
 app.include_router(approvals.router)
 app.include_router(analytics.router)
 app.include_router(compensation.router)
+app.include_router(documents_ocr.router)
 
 
 @app.get("/", tags=["Health"])

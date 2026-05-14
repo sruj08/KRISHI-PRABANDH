@@ -438,6 +438,28 @@
 .toast.error   { background: var(--error); }
 .toast.warning { background: var(--amber); color: var(--on-amber); }
 
+.toast-container--top-right {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: 12px;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  pointer-events: none;
+  max-width: calc(100vw - 24px);
+}
+.toast-container--top-right .toast {
+  pointer-events: auto;
+  white-space: normal;
+  max-width: min(22rem, 100%);
+  text-align: left;
+}
+
 /* ---- Step Progress ---- */
 .step-indicator {
   display: flex; align-items: center; gap: var(--sp-2);
