@@ -751,6 +751,10 @@ export const translations = {
   "Disability certificate (if applicable)": { mr: "अपंगत्व प्रमाणपत्र (लागू असल्यास)", hi: "विकलांगता प्रमाणपत्र (यदि लागू हो)" },
   "Optional — same smart scan if you upload.": { mr: "वैकल्पिक — अपलोड केल्यास समान स्मार्ट स्कॅन.", hi: "वैकल्पिक — अपलोड करने पर वही स्मार्ट स्कैन।" },
   "Register application": { mr: "अर्ज नोंदणी करा", hi: "आवेदन पंजीकृत करें" },
+  "Select a category to register your application.": {
+    mr: "अर्ज नोंदणी करण्यासाठी श्रेणी निवडा.",
+    hi: "आवेदन पंजीकृत करने के लिए एक श्रेणी चुनें।",
+  },
   "Choose category and attach a verified caste certificate to register.": { mr: "नोंदणी करण्यासाठी श्रेणी निवडा आणि सत्यापित जात प्रमाणपत्र संलग्न करा.", hi: "पंजीकरण के लिए श्रेणी चुनें और सत्यापित जाति प्रमाणपत्र संलग्न करें।" },
   "What you need to do now": { mr: "तुम्हाला आता काय करण्याची आवश्यकता आहे", hi: "आपको अब क्या करने की आवश्यकता है" },
   "Scheme line": { mr: "योजना ओळ", hi: "योजना लाइन" },

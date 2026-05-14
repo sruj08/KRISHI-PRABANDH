@@ -586,7 +586,9 @@ const FarmerDashboard = () => {
   const receiptOk = slots.equipmentReceipt.attached;
   const canCompleteDossier = receiptOk && feePaid;
 
-  const profileSaveOk = category && slots.caste.attached;
+  const casteCertificateRequired = ['SC', 'ST', 'OBC'].includes(category);
+  const profileSaveOk =
+    Boolean(category) && (!casteCertificateRequired || Boolean(slots.caste.attached));
   const requirementsOk = quantity.trim().length > 0 && termsAccepted;
   const schemeOk = scheme && subComponent;
 
@@ -789,16 +791,18 @@ const FarmerDashboard = () => {
               <option value="GENERAL">{t('General')}</option>
             </select>
 
-            <SmartUploadSlot
-              title={t('Caste / category certificate')}
-              subtitle={t('Required for SC/ST/OBC. Smart scan protects your queue position.')}
-              showFcfsCallout
-              disabled={!!processingSlot}
-              isProcessing={processingSlot === 'caste'}
-              slotState={slots.caste}
-              inputId="upload-caste"
-              onFileChange={(e) => handleUpload(e, 'caste')}
-            />
+            {casteCertificateRequired && (
+              <SmartUploadSlot
+                title={t('Caste / category certificate')}
+                subtitle={t('Required for SC/ST/OBC. Smart scan protects your queue position.')}
+                showFcfsCallout
+                disabled={!!processingSlot}
+                isProcessing={processingSlot === 'caste'}
+                slotState={slots.caste}
+                inputId="upload-caste"
+                onFileChange={(e) => handleUpload(e, 'caste')}
+              />
+            )}
 
             <SmartUploadSlot
               title={t('Disability certificate (if applicable)')}
@@ -821,7 +825,11 @@ const FarmerDashboard = () => {
             </div>
             {!profileSaveOk && (
               <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10, textAlign: 'center' }}>
-                {t('Choose category and attach a verified caste certificate to register.')}
+                {!category
+                  ? t('Select a category to register your application.')
+                  : casteCertificateRequired && !slots.caste.attached
+                    ? t('Choose category and attach a verified caste certificate to register.')
+                    : null}
               </p>
             )}
           </div>
