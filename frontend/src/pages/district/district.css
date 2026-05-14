@@ -122,6 +122,60 @@
   filter: brightness(1.05);
 }
 
+/* State dashboard — KPI row: auto-fit avoids empty grid columns (no blank strip) */
+.state-dashboard-kpi-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+@media (min-width: 1400px) {
+  .state-dashboard-kpi-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1399px) {
+  .state-dashboard-kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .state-dashboard-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639px) {
+  .state-dashboard-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* State command: map + insight column */
+.state-dashboard-command-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+
+.state-dashboard-insight-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .state-dashboard-command-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* KDE heat canvas: blend softly into basemap (reference-style) */
 .leaflet-heatmap-layer {
   mix-blend-mode: multiply;

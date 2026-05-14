@@ -36,6 +36,7 @@ import TalukaComparison from './pages/district/TalukaComparison';
 import FraudTrends from './pages/district/FraudTrends';
 import DivisionDashboard from './pages/division/DivisionDashboard';
 import StateDashboard from './pages/state/StateDashboard';
+import DivisionalAnalysis from './pages/state/DivisionalAnalysis';
 import AdvancedTools from './pages/AdvancedTools';
 import VisitPlanner from './pages/VisitPlanner';
 import Placeholder from './pages/Placeholder';
@@ -140,7 +141,8 @@ const App = () => {
             <Route path="/state/approvals" element={<Placeholder title="Approvals" icon="check_circle" sections={[{ title: 'Pending Clearance', type: 'cards' }, { title: 'Approval Queue', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/fraud" element={<Placeholder title="Fraud Network" icon="shield_locked" sections={[{ title: 'AI Fraud Savings', type: 'cards' }, { title: 'Detected Rings', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/insights" element={<Placeholder title="AI Insights" icon="lightbulb" sections={[{ title: 'System Recommendations', type: 'list' }, { title: 'Anomaly Flags', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/state/disaster" element={<Placeholder title="Disaster Watch" icon="warning" sections={[{ title: 'Disaster Escalations', type: 'cards' }, { title: 'Affected Regions', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
+            <Route path="/state/divisional-analysis" element={<DivisionalAnalysis />} />
+            <Route path="/state/disaster" element={<Navigate to="/state/divisional-analysis" replace />} />
             <Route path="/state/analytics" element={<Placeholder title="Analytics" icon="bar_chart" sections={[{ title: 'Statewide Metrics', type: 'cards' }, { title: 'Division Performance', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/audit" element={<Placeholder title="Audit Logs" icon="history" sections={[{ title: 'System Logs', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/users" element={<Placeholder title="User Control" icon="manage_accounts" sections={[{ title: 'Active Staff', type: 'cards' }, { title: 'System Access', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />

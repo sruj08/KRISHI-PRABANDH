@@ -1,0 +1,1220 @@
+[
+  {
+    "id": "GRV-2026-3000",
+    "farmerId": "MH-AS-PUN-10000001",
+    "farmerName": "Sunita Pawar",
+    "mobile": "9183555426",
+    "village": "Purandar_Village_29",
+    "taluka": "Purandar",
+    "district": "Pune",
+    "circleId": 500,
+    "scheme": "PM-KISAN",
+    "grievanceType": "Payment not received",
+    "description": "Registry-linked grievance: Payment not received — Sunita Pawar (Purandar_Village_29). Cross-check with AgriStack record MH-AS-PUN-10000001.",
+    "surveyNumber": "1/1",
+    "khataNumber": "200",
+    "status": "Submitted",
+    "submittedAt": "2026-05-14T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 0,
+    "compensationPendingDays": 95,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-05-14T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-05-14T11:00:00.000Z",
+        "by": "Rules engine"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3001",
+    "farmerId": "MH-AS-PUN-10000002",
+    "farmerName": "Popat Chavan",
+    "mobile": "8964685163",
+    "village": "Maval_Village_46",
+    "taluka": "Maval",
+    "district": "Pune",
+    "circleId": 501,
+    "scheme": "Crop Insurance (PMFBY)",
+    "grievanceType": "eKYC pending",
+    "description": "Registry-linked grievance: eKYC pending — Popat Chavan (Maval_Village_46). Cross-check with AgriStack record MH-AS-PUN-10000002.",
+    "surveyNumber": "2/2",
+    "khataNumber": "201",
+    "status": "AI Verified",
+    "submittedAt": "2026-05-12T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-05-12T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-05-12T11:00:00.000Z",
+        "by": "Rules engine"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3002",
+    "farmerId": "MH-AS-PUN-10000003",
+    "farmerName": "Geeta Chavan",
+    "mobile": "8657253152",
+    "village": "Haveli_Village_54",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "circleId": 502,
+    "scheme": "Disaster Compensation (State)",
+    "grievanceType": "Aadhaar mismatch",
+    "description": "Registry-linked grievance: Aadhaar mismatch — Geeta Chavan (Haveli_Village_54). Cross-check with AgriStack record MH-AS-PUN-10000003.",
+    "surveyNumber": "3/3",
+    "khataNumber": "202",
+    "status": "Pending Documents",
+    "submittedAt": "2026-05-10T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Shirur",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-05-10T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-05-10T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Pending Documents",
+        "at": "2026-05-10T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3003",
+    "farmerId": "MH-AS-PUN-10000004",
+    "farmerName": "Baburao More",
+    "mobile": "7515091856",
+    "village": "Shirur_Village_15",
+    "taluka": "Shirur",
+    "district": "Pune",
+    "circleId": 503,
+    "scheme": "Soil Health Card",
+    "grievanceType": "Bank mapping issue",
+    "description": "Registry-linked grievance: Bank mapping issue — Baburao More (Shirur_Village_15). Cross-check with AgriStack record MH-AS-PUN-10000004.",
+    "surveyNumber": "4/4",
+    "khataNumber": "203",
+    "status": "Field Verification Required",
+    "submittedAt": "2026-05-08T10:30:00.000Z",
+    "assignedOfficer": "Field Unit Purandar",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-05-08T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-05-08T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Field Verification Required",
+        "at": "2026-05-08T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3004",
+    "farmerId": "MH-AS-PUN-10000005",
+    "farmerName": "Rekha Mane",
+    "mobile": "7389698203",
+    "village": "Mulshi_Village_60",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "circleId": 504,
+    "scheme": "Micro-irrigation subsidy",
+    "grievanceType": "Crop survey issue",
+    "description": "Registry-linked grievance: Crop survey issue — Rekha Mane (Mulshi_Village_60). Cross-check with AgriStack record MH-AS-PUN-10000005.",
+    "surveyNumber": "5/1",
+    "khataNumber": "204",
+    "status": "Under Review",
+    "submittedAt": "2026-05-06T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-05-06T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-05-06T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Under Review",
+        "at": "2026-05-06T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3005",
+    "farmerId": "MH-AS-PUN-10000006",
+    "farmerName": "Bharat Mahale",
+    "mobile": "7483421145",
+    "village": "Haveli_Village_41",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "circleId": 500,
+    "scheme": "Farm pond subsidy",
+    "grievanceType": "Insurance rejection",
+    "description": "Registry-linked grievance: Insurance rejection — Bharat Mahale (Haveli_Village_41). Cross-check with AgriStack record MH-AS-PUN-10000006.",
+    "surveyNumber": "6/2",
+    "khataNumber": "205",
+    "status": "Escalated",
+    "submittedAt": "2026-05-04T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 2,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-05-04T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-05-04T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Escalated",
+        "at": "2026-05-04T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3006",
+    "farmerId": "MH-AS-PUN-10000007",
+    "farmerName": "Sadashiv Desai",
+    "mobile": "7631936583",
+    "village": "Mulshi_Village_54",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "circleId": 501,
+    "scheme": "PM-KISAN",
+    "grievanceType": "Compensation missing",
+    "description": "Registry-linked grievance: Compensation missing — Sadashiv Desai (Mulshi_Village_54). Cross-check with AgriStack record MH-AS-PUN-10000007.",
+    "surveyNumber": "1/3",
+    "khataNumber": "206",
+    "status": "Approved",
+    "submittedAt": "2026-05-02T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Shirur",
+    "escalationLevel": 0,
+    "compensationPendingDays": 98,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-05-02T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-05-02T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Approved",
+        "at": "2026-05-02T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3007",
+    "farmerId": "MH-AS-PUN-10000008",
+    "farmerName": "Naresh Pawar",
+    "mobile": "7662297571",
+    "village": "Purandar_Village_19",
+    "taluka": "Purandar",
+    "district": "Pune",
+    "circleId": 502,
+    "scheme": "Crop Insurance (PMFBY)",
+    "grievanceType": "Duplicate beneficiary issue",
+    "description": "Registry-linked grievance: Duplicate beneficiary issue — Naresh Pawar (Purandar_Village_19). Cross-check with AgriStack record MH-AS-PUN-10000008.",
+    "surveyNumber": "2/4",
+    "khataNumber": "207",
+    "status": "Rejected",
+    "submittedAt": "2026-04-30T10:30:00.000Z",
+    "assignedOfficer": "Field Unit Purandar",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-30T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-30T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Rejected",
+        "at": "2026-04-30T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3008",
+    "farmerId": "MH-AS-PUN-10000009",
+    "farmerName": "Dnyanoba Kale",
+    "mobile": "9877658579",
+    "village": "Baramati_Village_22",
+    "taluka": "Baramati",
+    "district": "Pune",
+    "circleId": 503,
+    "scheme": "Disaster Compensation (State)",
+    "grievanceType": "Wrong crop registration",
+    "description": "Registry-linked grievance: Wrong crop registration — Dnyanoba Kale (Baramati_Village_22). Cross-check with AgriStack record MH-AS-PUN-10000009.",
+    "surveyNumber": "3/1",
+    "khataNumber": "208",
+    "status": "Resolved",
+    "submittedAt": "2026-04-28T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 0,
+    "compensationPendingDays": 95,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-28T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-28T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Resolved",
+        "at": "2026-04-28T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3009",
+    "farmerId": "MH-AS-PUN-10000010",
+    "farmerName": "Ramesh Desai",
+    "mobile": "7070595567",
+    "village": "Haveli_Village_4",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "circleId": 504,
+    "scheme": "Soil Health Card",
+    "grievanceType": "Other",
+    "description": "General administrative query from Ramesh Desai regarding land records coordination.",
+    "surveyNumber": "4/2",
+    "khataNumber": "209",
+    "status": "Submitted",
+    "submittedAt": "2026-04-26T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-26T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-26T11:00:00.000Z",
+        "by": "Rules engine"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3010",
+    "farmerId": "MH-AS-PUN-10000011",
+    "farmerName": "Savita Dhere",
+    "mobile": "9494465912",
+    "village": "Maval_Village_73",
+    "taluka": "Maval",
+    "district": "Pune",
+    "circleId": 500,
+    "scheme": "Micro-irrigation subsidy",
+    "grievanceType": "Payment not received",
+    "description": "Registry-linked grievance: Payment not received — Savita Dhere (Maval_Village_73). Cross-check with AgriStack record MH-AS-PUN-10000011.",
+    "surveyNumber": "5/3",
+    "khataNumber": "210",
+    "status": "AI Verified",
+    "submittedAt": "2026-04-24T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Shirur",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-24T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-24T11:00:00.000Z",
+        "by": "Rules engine"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3011",
+    "farmerId": "MH-AS-PUN-10000012",
+    "farmerName": "Vandana Kulkarni",
+    "mobile": "7263845756",
+    "village": "Mulshi_Village_90",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "circleId": 501,
+    "scheme": "Farm pond subsidy",
+    "grievanceType": "eKYC pending",
+    "description": "Registry-linked grievance: eKYC pending — Vandana Kulkarni (Mulshi_Village_90). Cross-check with AgriStack record MH-AS-PUN-10000012.",
+    "surveyNumber": "6/4",
+    "khataNumber": "211",
+    "status": "Pending Documents",
+    "submittedAt": "2026-04-22T10:30:00.000Z",
+    "assignedOfficer": "Field Unit Purandar",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-22T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-22T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Pending Documents",
+        "at": "2026-04-22T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3012",
+    "farmerId": "MH-AS-PUN-10000013",
+    "farmerName": "Vilas Shinde",
+    "mobile": "9323334766",
+    "village": "Shirur_Village_46",
+    "taluka": "Shirur",
+    "district": "Pune",
+    "circleId": 502,
+    "scheme": "PM-KISAN",
+    "grievanceType": "Aadhaar mismatch",
+    "description": "Registry-linked grievance: Aadhaar mismatch — Vilas Shinde (Shirur_Village_46). Cross-check with AgriStack record MH-AS-PUN-10000013.",
+    "surveyNumber": "1/1",
+    "khataNumber": "212",
+    "status": "Field Verification Required",
+    "submittedAt": "2026-04-20T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-20T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-20T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Field Verification Required",
+        "at": "2026-04-20T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3013",
+    "farmerId": "MH-AS-PUN-10000014",
+    "farmerName": "Anil Chavan",
+    "mobile": "7952671417",
+    "village": "Purandar_Village_69",
+    "taluka": "Purandar",
+    "district": "Pune",
+    "circleId": 503,
+    "scheme": "Crop Insurance (PMFBY)",
+    "grievanceType": "Bank mapping issue",
+    "description": "Registry-linked grievance: Bank mapping issue — Anil Chavan (Purandar_Village_69). Cross-check with AgriStack record MH-AS-PUN-10000014.",
+    "surveyNumber": "2/2",
+    "khataNumber": "213",
+    "status": "Under Review",
+    "submittedAt": "2026-04-18T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-18T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-18T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Under Review",
+        "at": "2026-04-18T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3014",
+    "farmerId": "MH-AS-PUN-10000015",
+    "farmerName": "Vandana Kulkarni",
+    "mobile": "8099335722",
+    "village": "Bhor_Village_87",
+    "taluka": "Bhor",
+    "district": "Pune",
+    "circleId": 504,
+    "scheme": "Disaster Compensation (State)",
+    "grievanceType": "Crop survey issue",
+    "description": "Registry-linked grievance: Crop survey issue — Vandana Kulkarni (Bhor_Village_87). Cross-check with AgriStack record MH-AS-PUN-10000015.",
+    "surveyNumber": "3/3",
+    "khataNumber": "214",
+    "status": "Escalated",
+    "submittedAt": "2026-04-16T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Shirur",
+    "escalationLevel": 2,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-16T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-16T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Escalated",
+        "at": "2026-04-16T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3015",
+    "farmerId": "MH-AS-PUN-10000016",
+    "farmerName": "Vitthal Gavit",
+    "mobile": "8447569049",
+    "village": "Maval_Village_61",
+    "taluka": "Maval",
+    "district": "Pune",
+    "circleId": 500,
+    "scheme": "Soil Health Card",
+    "grievanceType": "Insurance rejection",
+    "description": "Registry-linked grievance: Insurance rejection — Vitthal Gavit (Maval_Village_61). Cross-check with AgriStack record MH-AS-PUN-10000016.",
+    "surveyNumber": "4/4",
+    "khataNumber": "215",
+    "status": "Approved",
+    "submittedAt": "2026-04-14T10:30:00.000Z",
+    "assignedOfficer": "Field Unit Purandar",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-14T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-14T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Approved",
+        "at": "2026-04-14T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3016",
+    "farmerId": "MH-AS-PUN-10000017",
+    "farmerName": "Ramesh Bhosale",
+    "mobile": "9890929189",
+    "village": "Shirur_Village_66",
+    "taluka": "Shirur",
+    "district": "Pune",
+    "circleId": 501,
+    "scheme": "Micro-irrigation subsidy",
+    "grievanceType": "Compensation missing",
+    "description": "Registry-linked grievance: Compensation missing — Ramesh Bhosale (Shirur_Village_66). Cross-check with AgriStack record MH-AS-PUN-10000017.",
+    "surveyNumber": "5/1",
+    "khataNumber": "216",
+    "status": "Rejected",
+    "submittedAt": "2026-04-12T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 0,
+    "compensationPendingDays": 98,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-12T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-12T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Rejected",
+        "at": "2026-04-12T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3017",
+    "farmerId": "MH-AS-PUN-10000018",
+    "farmerName": "Sanjay Surve",
+    "mobile": "8174546688",
+    "village": "Bhor_Village_77",
+    "taluka": "Bhor",
+    "district": "Pune",
+    "circleId": 502,
+    "scheme": "Farm pond subsidy",
+    "grievanceType": "Duplicate beneficiary issue",
+    "description": "Registry-linked grievance: Duplicate beneficiary issue — Sanjay Surve (Bhor_Village_77). Cross-check with AgriStack record MH-AS-PUN-10000018.",
+    "surveyNumber": "6/2",
+    "khataNumber": "217",
+    "status": "Resolved",
+    "submittedAt": "2026-04-10T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-10T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-10T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Resolved",
+        "at": "2026-04-10T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3018",
+    "farmerId": "MH-AS-PUN-10000019",
+    "farmerName": "Usha Shinde",
+    "mobile": "7030585159",
+    "village": "Baramati_Village_6",
+    "taluka": "Baramati",
+    "district": "Pune",
+    "circleId": 503,
+    "scheme": "PM-KISAN",
+    "grievanceType": "Wrong crop registration",
+    "description": "Registry-linked grievance: Wrong crop registration — Usha Shinde (Baramati_Village_6). Cross-check with AgriStack record MH-AS-PUN-10000019.",
+    "surveyNumber": "1/3",
+    "khataNumber": "218",
+    "status": "Submitted",
+    "submittedAt": "2026-04-08T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Shirur",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-08T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-08T11:00:00.000Z",
+        "by": "Rules engine"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3019",
+    "farmerId": "MH-AS-PUN-10000020",
+    "farmerName": "Pushpa Pawar",
+    "mobile": "7072086333",
+    "village": "Maval_Village_54",
+    "taluka": "Maval",
+    "district": "Pune",
+    "circleId": 504,
+    "scheme": "Crop Insurance (PMFBY)",
+    "grievanceType": "Other",
+    "description": "General administrative query from Pushpa Pawar regarding land records coordination.",
+    "surveyNumber": "2/4",
+    "khataNumber": "219",
+    "status": "AI Verified",
+    "submittedAt": "2026-04-06T10:30:00.000Z",
+    "assignedOfficer": "Field Unit Purandar",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-06T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-06T11:00:00.000Z",
+        "by": "Rules engine"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3020",
+    "farmerId": "MH-AS-PUN-10000021",
+    "farmerName": "Shobha Desai",
+    "mobile": "7537966499",
+    "village": "Baramati_Village_65",
+    "taluka": "Baramati",
+    "district": "Pune",
+    "circleId": 500,
+    "scheme": "Disaster Compensation (State)",
+    "grievanceType": "Payment not received",
+    "description": "Registry-linked grievance: Payment not received — Shobha Desai (Baramati_Village_65). Cross-check with AgriStack record MH-AS-PUN-10000021.",
+    "surveyNumber": "3/1",
+    "khataNumber": "220",
+    "status": "Pending Documents",
+    "submittedAt": "2026-04-04T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-04T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-04T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Pending Documents",
+        "at": "2026-04-04T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3021",
+    "farmerId": "MH-AS-PUN-10000022",
+    "farmerName": "Dnyanoba Surve",
+    "mobile": "9288801837",
+    "village": "Mulshi_Village_27",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "circleId": 501,
+    "scheme": "Soil Health Card",
+    "grievanceType": "eKYC pending",
+    "description": "Registry-linked grievance: eKYC pending — Dnyanoba Surve (Mulshi_Village_27). Cross-check with AgriStack record MH-AS-PUN-10000022.",
+    "surveyNumber": "4/2",
+    "khataNumber": "221",
+    "status": "Field Verification Required",
+    "submittedAt": "2026-04-02T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-04-02T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-04-02T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Field Verification Required",
+        "at": "2026-04-02T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3022",
+    "farmerId": "MH-AS-PUN-10000023",
+    "farmerName": "Anil Pawar",
+    "mobile": "8184524456",
+    "village": "Mulshi_Village_84",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "circleId": 502,
+    "scheme": "Micro-irrigation subsidy",
+    "grievanceType": "Aadhaar mismatch",
+    "description": "Registry-linked grievance: Aadhaar mismatch — Anil Pawar (Mulshi_Village_84). Cross-check with AgriStack record MH-AS-PUN-10000023.",
+    "surveyNumber": "5/3",
+    "khataNumber": "222",
+    "status": "Under Review",
+    "submittedAt": "2026-03-31T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Shirur",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-31T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-31T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Under Review",
+        "at": "2026-03-31T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3023",
+    "farmerId": "MH-AS-PUN-10000024",
+    "farmerName": "Pushpa Bhosale",
+    "mobile": "7220778916",
+    "village": "Purandar_Village_90",
+    "taluka": "Purandar",
+    "district": "Pune",
+    "circleId": 503,
+    "scheme": "Farm pond subsidy",
+    "grievanceType": "Bank mapping issue",
+    "description": "Registry-linked grievance: Bank mapping issue — Pushpa Bhosale (Purandar_Village_90). Cross-check with AgriStack record MH-AS-PUN-10000024.",
+    "surveyNumber": "6/4",
+    "khataNumber": "223",
+    "status": "Escalated",
+    "submittedAt": "2026-03-29T10:30:00.000Z",
+    "assignedOfficer": "Field Unit Purandar",
+    "escalationLevel": 2,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-29T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-29T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Escalated",
+        "at": "2026-03-29T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3024",
+    "farmerId": "MH-AS-PUN-10000025",
+    "farmerName": "Lalita Wagh",
+    "mobile": "8484289265",
+    "village": "Purandar_Village_96",
+    "taluka": "Purandar",
+    "district": "Pune",
+    "circleId": 504,
+    "scheme": "PM-KISAN",
+    "grievanceType": "Crop survey issue",
+    "description": "Registry-linked grievance: Crop survey issue — Lalita Wagh (Purandar_Village_96). Cross-check with AgriStack record MH-AS-PUN-10000025.",
+    "surveyNumber": "1/1",
+    "khataNumber": "224",
+    "status": "Approved",
+    "submittedAt": "2026-03-27T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 0,
+    "compensationPendingDays": 95,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-27T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-27T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Approved",
+        "at": "2026-03-27T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3025",
+    "farmerId": "MH-AS-PUN-10000026",
+    "farmerName": "Pushpa Pawar",
+    "mobile": "8787807089",
+    "village": "Maval_Village_34",
+    "taluka": "Maval",
+    "district": "Pune",
+    "circleId": 500,
+    "scheme": "Crop Insurance (PMFBY)",
+    "grievanceType": "Insurance rejection",
+    "description": "Registry-linked grievance: Insurance rejection — Pushpa Pawar (Maval_Village_34). Cross-check with AgriStack record MH-AS-PUN-10000026.",
+    "surveyNumber": "2/2",
+    "khataNumber": "225",
+    "status": "Rejected",
+    "submittedAt": "2026-03-25T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-25T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-25T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Rejected",
+        "at": "2026-03-25T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3026",
+    "farmerId": "MH-AS-PUN-10000027",
+    "farmerName": "Saraswati Salve",
+    "mobile": "9929922917",
+    "village": "Mulshi_Village_62",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "circleId": 501,
+    "scheme": "Disaster Compensation (State)",
+    "grievanceType": "Compensation missing",
+    "description": "Registry-linked grievance: Compensation missing — Saraswati Salve (Mulshi_Village_62). Cross-check with AgriStack record MH-AS-PUN-10000027.",
+    "surveyNumber": "3/3",
+    "khataNumber": "226",
+    "status": "Resolved",
+    "submittedAt": "2026-03-23T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Shirur",
+    "escalationLevel": 0,
+    "compensationPendingDays": 98,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-23T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-23T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Resolved",
+        "at": "2026-03-23T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3027",
+    "farmerId": "MH-AS-PUN-10000028",
+    "farmerName": "Ramesh Gaikwad",
+    "mobile": "8240023268",
+    "village": "Shirur_Village_65",
+    "taluka": "Shirur",
+    "district": "Pune",
+    "circleId": 502,
+    "scheme": "Soil Health Card",
+    "grievanceType": "Duplicate beneficiary issue",
+    "description": "Registry-linked grievance: Duplicate beneficiary issue — Ramesh Gaikwad (Shirur_Village_65). Cross-check with AgriStack record MH-AS-PUN-10000028.",
+    "surveyNumber": "4/4",
+    "khataNumber": "227",
+    "status": "Submitted",
+    "submittedAt": "2026-03-21T10:30:00.000Z",
+    "assignedOfficer": "Field Unit Purandar",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-21T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-21T11:00:00.000Z",
+        "by": "Rules engine"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3028",
+    "farmerId": "MH-AS-PUN-10000029",
+    "farmerName": "Vimal More",
+    "mobile": "7718435750",
+    "village": "Baramati_Village_82",
+    "taluka": "Baramati",
+    "district": "Pune",
+    "circleId": 503,
+    "scheme": "Micro-irrigation subsidy",
+    "grievanceType": "Wrong crop registration",
+    "description": "Registry-linked grievance: Wrong crop registration — Vimal More (Baramati_Village_82). Cross-check with AgriStack record MH-AS-PUN-10000029.",
+    "surveyNumber": "5/1",
+    "khataNumber": "228",
+    "status": "AI Verified",
+    "submittedAt": "2026-03-19T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-19T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-19T11:00:00.000Z",
+        "by": "Rules engine"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3029",
+    "farmerId": "MH-AS-PUN-10000030",
+    "farmerName": "Naresh Shinde",
+    "mobile": "8712415383",
+    "village": "Bhor_Village_75",
+    "taluka": "Bhor",
+    "district": "Pune",
+    "circleId": 504,
+    "scheme": "Farm pond subsidy",
+    "grievanceType": "Other",
+    "description": "General administrative query from Naresh Shinde regarding land records coordination.",
+    "surveyNumber": "6/2",
+    "khataNumber": "229",
+    "status": "Pending Documents",
+    "submittedAt": "2026-03-17T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-17T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-17T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Pending Documents",
+        "at": "2026-03-17T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3030",
+    "farmerId": "MH-AS-PUN-10000031",
+    "farmerName": "Savita Desai",
+    "mobile": "9556029320",
+    "village": "Maval_Village_75",
+    "taluka": "Maval",
+    "district": "Pune",
+    "circleId": 500,
+    "scheme": "PM-KISAN",
+    "grievanceType": "Payment not received",
+    "description": "Registry-linked grievance: Payment not received — Savita Desai (Maval_Village_75). Cross-check with AgriStack record MH-AS-PUN-10000031.",
+    "surveyNumber": "1/3",
+    "khataNumber": "230",
+    "status": "Field Verification Required",
+    "submittedAt": "2026-03-15T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Shirur",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-15T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-15T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Field Verification Required",
+        "at": "2026-03-15T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3031",
+    "farmerId": "MH-AS-PUN-10000032",
+    "farmerName": "Sanjay Salve",
+    "mobile": "7051138366",
+    "village": "Haveli_Village_49",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "circleId": 501,
+    "scheme": "Crop Insurance (PMFBY)",
+    "grievanceType": "eKYC pending",
+    "description": "Registry-linked grievance: eKYC pending — Sanjay Salve (Haveli_Village_49). Cross-check with AgriStack record MH-AS-PUN-10000032.",
+    "surveyNumber": "2/4",
+    "khataNumber": "231",
+    "status": "Under Review",
+    "submittedAt": "2026-03-13T10:30:00.000Z",
+    "assignedOfficer": "Field Unit Purandar",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-13T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-13T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Under Review",
+        "at": "2026-03-13T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3032",
+    "farmerId": "MH-AS-PUN-10000033",
+    "farmerName": "Yamuna Nirmal",
+    "mobile": "9791844806",
+    "village": "Shirur_Village_63",
+    "taluka": "Shirur",
+    "district": "Pune",
+    "circleId": 502,
+    "scheme": "Disaster Compensation (State)",
+    "grievanceType": "Aadhaar mismatch",
+    "description": "Registry-linked grievance: Aadhaar mismatch — Yamuna Nirmal (Shirur_Village_63). Cross-check with AgriStack record MH-AS-PUN-10000033.",
+    "surveyNumber": "3/1",
+    "khataNumber": "232",
+    "status": "Escalated",
+    "submittedAt": "2026-03-11T10:30:00.000Z",
+    "assignedOfficer": "TAO Pune Desk",
+    "escalationLevel": 2,
+    "compensationPendingDays": 95,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-11T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-11T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Escalated",
+        "at": "2026-03-11T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  },
+  {
+    "id": "GRV-2026-3033",
+    "farmerId": "MH-AS-PUN-10000034",
+    "farmerName": "Naresh Pawar",
+    "mobile": "9359632000",
+    "village": "Purandar_Village_17",
+    "taluka": "Purandar",
+    "district": "Pune",
+    "circleId": 503,
+    "scheme": "Soil Health Card",
+    "grievanceType": "Bank mapping issue",
+    "description": "Registry-linked grievance: Bank mapping issue — Naresh Pawar (Purandar_Village_17). Cross-check with AgriStack record MH-AS-PUN-10000034.",
+    "surveyNumber": "4/2",
+    "khataNumber": "233",
+    "status": "Approved",
+    "submittedAt": "2026-03-09T10:30:00.000Z",
+    "assignedOfficer": "Circle Officer Haveli",
+    "escalationLevel": 0,
+    "compensationPendingDays": 0,
+    "timeline": [
+      {
+        "status": "Submitted",
+        "at": "2026-03-09T10:30:00.000Z",
+        "by": "Farmer"
+      },
+      {
+        "status": "AI Verified",
+        "at": "2026-03-09T11:00:00.000Z",
+        "by": "Rules engine"
+      },
+      {
+        "status": "Approved",
+        "at": "2026-03-09T15:00:00.000Z",
+        "by": "Officer"
+      }
+    ]
+  }
+]

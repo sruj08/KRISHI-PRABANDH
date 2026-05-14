@@ -1,4 +1,4 @@
-/** Mock intelligence for Maharashtra State Command Center (demo). */
+/** Sample data for Maharashtra state command views (replace with API when wired). */
 
 export const STATE_PROFILE = {
   state: 'Maharashtra',
@@ -29,9 +29,9 @@ export const FRICTION_MONTH = {
   ],
   counts: [12480, 9620, 8104, 6312, 4108],
   topThreeRecommendations: [
-    'Marathwada drought relief disbursement lagging at 33% (target 50%) — escalate PFMS clearance for Chh. Sambhajinagar division and divert ₹18 Cr from underutilized Konkan allocation.',
-    'AI flags suspected cross-district fraud ring across Solapur–Sangli–Latur (PMFBY duplicate claims). Trigger statewide Aadhaar–7/12 reconciliation audit.',
-    'Vidarbha NDVI stress 44% above 5-year baseline — preposition compensation for Amravati cotton belt before monsoon revision.',
+    'Drought relief in Marathwada is behind schedule against the seasonal target — prioritise PFMS clearance and align division releases with actual disbursement pace.',
+    'Cross-district PMFBY anomalies are elevated in the western cluster — schedule a coordinated Aadhaar and land-record reconciliation before the next claim window.',
+    'Cotton belt stress indicators in Vidarbha are above the usual range — keep field verification and compensation workflows on standby ahead of the monsoon review.',
   ],
 };
 

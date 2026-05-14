@@ -268,7 +268,7 @@ input, textarea, select {
   background: #ffffff !important;
   background-color: #ffffff !important;
   color: #1a1c1a;
-  white-space: normal;
+  white-space: pre-line;
   max-width: min(280px, 90vw);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -443,8 +443,16 @@ input, textarea, select {
 }
 
 /* State / RegionalMap — keep tiles + heat canvas clipped to rounded map frame */
-.regional-map-frame,
+.regional-map-frame {
+  overflow: hidden;
+  border-radius: inherit;
+  flex: 1;
+  min-height: 0;
+}
+
 .regional-map-frame .leaflet-container {
   overflow: hidden;
   border-radius: inherit;
+  height: 100%;
+  width: 100%;
 }
