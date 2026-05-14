@@ -80,13 +80,28 @@ const SahayakDashboard = () => {
     return s.includes('pending') || s.includes('submitted') || s.includes('additional info');
   }).length;
 
+  const reportApproved = reports.filter(r => {
+    const s = (r.workflowStage || '').toLowerCase();
+    return s.includes('approved');
+  }).length;
+
+  const reportVerify = reports.filter(r => {
+    const s = (r.workflowStage || '').toLowerCase();
+    return !s.includes('verified') && !s.includes('approved') && !s.includes('escalated');
+  }).length;
+
+  const reportAlerts = reports.filter(r => {
+    const sev = (r.severityLevel || '').toUpperCase();
+    return sev === 'CRITICAL' || sev === 'HIGH';
+  }).length;
+
   const summary = MOCK_SUMMARY;
   const tasks = MOCK_TASKS;
   const recentFarmers = MOCK_FARMERS.slice(0, 3);
-  const pendingCount = summary.by_status['Under Scrutiny'];
-  const alertCount = summary.fraud_alerts;
-  const approvedCount = summary.by_status.Approved;
-  const verifyCount = summary.verification_pending;
+  const pendingCount = reportPending || summary.by_status['Under Scrutiny'];
+  const alertCount = reportAlerts || summary.fraud_alerts;
+  const approvedCount = reportApproved || summary.by_status.Approved;
+  const verifyCount = reportVerify || summary.verification_pending;
   const todayGS = MOCK_GRAM_SABHA.find(g => g.date === new Date().toISOString().slice(0, 10) || g.status === 'SCHEDULED');
 
   const statusColor = (s) => s === 'Approved' ? '#396940' : s === 'Rejected' ? '#ba1a1a' : '#B45309';
