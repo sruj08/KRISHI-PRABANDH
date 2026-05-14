@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import GeoVerifiedMedia from '../../shared/components/GeoVerifiedMedia';
-import { fetchSurveyReport, fetchSurveyGrievances, updateSurveyAction } from '../../shared/api/services';
+import { fetchSurveyReport, fetchSurveyGrievances, updateSurveyAction, getApiOrigin } from '../../shared/api/services';
 import usePolling from '../../hooks/usePolling';
 
 const SURVEY_ID = 'surveyId';
@@ -159,9 +159,14 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
 
   const r = report || survey;
   const reportPhases = r.phases || r.report?.phases || [];
-  const evidenceUrl = r.mediaUrl || r.evidenceUrl || r.imageUrl || r.media?.[0]?.url || 'https://images.unsplash.com/photo-1592982537447-7440770bfc9c?q=80&w=2069&auto=format&fit=crop';
-  const evidenceType = r.mediaType || r.evidenceType || 'image';
-  const gps = r.gps || r.gpsCoordinate || r.location || (r.lat && r.lng ? { lat: r.lat, lng: r.lng } : { lat: 18.5204, lng: 73.8567 });
+  const firstVideo = (r.videos && r.videos.length > 0) ? r.videos[0] : null;
+  const firstImage = (r.images && r.images.length > 0) ? r.images[0] : null;
+  let evidenceUrl = firstVideo || firstImage || r.mediaUrl || r.evidenceUrl || r.imageUrl || r.media?.[0]?.url || 'https://images.unsplash.com/photo-1592982537447-7440770bfc9c?q=80&w=2069&auto=format&fit=crop';
+  if (evidenceUrl.startsWith('/uploads')) {
+    evidenceUrl = `${getApiOrigin()}${evidenceUrl}`;
+  }
+  const evidenceType = firstVideo ? 'video' : (firstImage ? 'image' : (r.mediaType || r.evidenceType || 'image'));
+  const gps = r.gps || r.geoCoordinates || r.gpsCoordinate || r.location || (r.lat && r.lng ? { lat: r.lat, lng: r.lng } : { lat: 18.5204, lng: 73.8567 });
   const confidence = r.confidenceScore != null ? (r.confidenceScore * 100).toFixed(0) : survey.confidenceScore != null ? (survey.confidenceScore * 100).toFixed(0) : null;
 
   if (loading) {
