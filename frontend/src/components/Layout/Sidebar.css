@@ -40,6 +40,51 @@
   }
 }
 
+/* ── Flat nav groups (e.g. state command — no accordion) ── */
+.sidebar-nav-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-flat-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0 14px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid rgba(20, 40, 30, 0.06);
+}
+
+.sidebar-flat-group:last-of-type {
+  border-bottom: none;
+  padding-bottom: 6px;
+  margin-bottom: 0;
+}
+
+.sidebar-flat-group-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9eaa9f;
+  margin: 0;
+  padding: 6px 14px 2px;
+  line-height: 1.3;
+}
+
+.sidebar-flat-group-links {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 4px;
+}
+
+.sidebar-flat-group-links .sidebar-link {
+  padding-left: 14px;
+  padding-right: 12px;
+}
+
 /* ── Section Accordion ── */
 .sidebar-section-container {
   display: flex;

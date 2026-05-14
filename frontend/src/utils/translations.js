@@ -3,9 +3,9 @@
 // =========================================================
 
 /**
- * Translation map: each key is an English string, value is
- * { mr: 'Marathi', hi: 'Hindi' }
- * When no language entry exists, the English key is used as fallback.
+ * Translation map: each key is an English string or stable id; value is
+ * { en?, mr, hi }. For English UI, `en` is preferred; otherwise a humanized
+ * fallback is derived from the key (camelCase → words).
  */
 export const translations = {
 
@@ -279,6 +279,7 @@ export const translations = {
   "INTELLIGENCE": { mr: "बुद्धिमत्ता", hi: "खुफिया" },
   "Fraud Network": { mr: "फसवणूक नेटवर्क", hi: "धोखाधड़ी नेटवर्क" },
   "AI Insights": { mr: "एआय अंतर्दृष्टी", hi: "AI अंतर्दृष्टि" },
+  "Divisional Analysis": { en: "Divisional analysis", mr: "विभागीय विश्लेषण", hi: "प्रभागीय विश्लेषण" },
   "Disaster Watch": { mr: "आपत्ती निरीक्षण", hi: "आपदा निगरानी" },
   "REPORTS": { mr: "अहवाल", hi: "रिपोर्ट" },
   "Analytics": { mr: "विश्लेषण", hi: "विश्लेषण" },
@@ -891,82 +892,78 @@ export const translations = {
   "Survey Monitoring": { mr: "सर्वेक्षण निरीक्षण", hi: "सर्वेक्षण निगरानी" },
 
   // ─── State Dashboard short keys ──────────────────────────
-  "liveCsvAggregate": { mr: "लाइव्ह CSV एकत्रित", hi: "लाइव CSV समुच्चय" },
-  "surveys": { mr: "सर्वेक्षणे", hi: "सर्वेक्षण" },
-  "auditEvents": { mr: "ऑडिट घटना", hi: "ऑडिट घटनाएँ" },
-  "dbtRows": { mr: "DBT पंक्ती", hi: "DBT पंक्तियाँ" },
-  "statewideAllocatedFunds": { mr: "राज्यव्यापी\nवाटप निधी", hi: "राज्यव्यापी\nआवंटित निधि" },
-  "disbursedYtd": { mr: "वितरण YTD", hi: "वितरित YTD" },
-  "pendingPfmsClearance": { mr: "PFMS मंजुरी\nप्रलंबित", hi: "PFMS मंज़ूरी\nलंबित" },
-  "divisionsDistricts": { mr: "{divisions} विभाग · {districts} जिल्हे", hi: "{divisions} प्रभाग · {districts} जिले" },
-  "target": { mr: "लक्ष्य: ₹{target} कोटी", hi: "लक्ष्य: ₹{target} करोड़" },
-  "fortyEightHourAlert": { mr: "४८ तास PFMS चेतावणी", hi: "४८ घंटे PFMS चेतावनी" },
-  "underUtilization": { mr: "अल्प-वापर\nअंदाज", hi: "अल्प-उपयोग\nअनुमान" },
-  "acrossAllSchemes": { mr: "सर्व योजनांमध्ये", hi: "सभी योजनाओं में" },
-  "fraudRiskAlerts": { mr: "फसवणूक जोखीम\nइशारे", hi: "धोखाधड़ी जोखिम\nचेतावनी" },
-  "divisionsAtRisk": { mr: "{count} विभाग जोखमीवर", hi: "{count} प्रभाग जोखिम पर" },
-  "satelliteStatus": { mr: "उपग्रह\nस्थिती", hi: "उपग्रह\nस्थिति" },
-  "active": { mr: "सक्रिय", hi: "सक्रिय" },
-  "statewidePass12h": { mr: "राज्यव्यापी पास: १२ तासांपूर्वी (Sentinel-2 L2A)", hi: "राज्यव्यापी पास: १२ घंटे पहले (Sentinel-2 L2A)" },
-  "statewideCommandMap": { mr: "{state} — राज्यव्यापी कमांड नकाशा", hi: "{state} — राज्यव्यापी कमांड मानचित्र" },
-  "liveSpatialAnalytics": { mr: "{officerTitle} · लाइव्ह स्थानिक विश्लेषण", hi: "{officerTitle} · लाइव स्थानिक विश्लेषण" },
-  "statewideFriction": { mr: "राज्यव्यापी अडथळे", hi: "राज्यव्यापी बाधाएँ" },
-  "systemIntegrationErrors": { mr: "प्रणाली एकत्रीकरण त्रुटी", hi: "सिस्टम एकीकरण त्रुटियाँ" },
-  "aadhaarMismatch": { mr: "आधार बेजुळणी", hi: "आधार बेमेल" },
-  "integrationFailure": { mr: "७/१२ एकत्रीकरण अपयश", hi: "७/१२ एकीकरण विफलता" },
-  "policyRecommendations": { mr: "धोरण शिफारसी", hi: "नीति सिफारिशें" },
-  "aiDrivenStatewideInsights": { mr: "AI-चालित राज्यव्यापी अंतर्दृष्टी", hi: "AI-संचालित राज्यव्यापी अंतर्दृष्टि" },
-  "marathwadaDroughtRelief": { mr: "मराठवाडा दुष्काळ मदत विलंब — प्रवेगक PFMS", hi: "मराठवाडा सूखा राहत विलंब — त्वरित PFMS" },
-  "statewideDisasterTriage": { mr: "राज्यव्यापी आपत्ती ट्रायेज", hi: "राज्यव्यापी आपदा ट्रायेज" },
-  "liveTelemetryTriggers": { mr: "लाइव्ह टेलिमेट्री ट्रिगर्स", hi: "लाइव टेलीमेट्री ट्रिगर" },
-  "high": { mr: "उच्च", hi: "उच्च" },
-  "marathwadaDroughtVidarbha": { mr: "मराठवाडा दुष्काळ + विदर्भ कापूस ताण — मे २०२६", hi: "मराठवाडा सूखा + विदर्भ कपास तनाव — मई २०२६" },
-  "heatZonesFlagged": { mr: "२७ स्वयंचलित उष्णता क्षेत्र चिन्हांकित", hi: "२७ स्वचालित ताप क्षेत्र चिह्नित" },
-  "conveneNdmaCell": { mr: "NDMA सेल बोलावा", hi: "NDMA सेल बुलाएँ" },
-  "divisionPerformanceMatrix": { mr: "विभाग कामगिरी मॅट्रिक्स", hi: "प्रभाग प्रदर्शन मैट्रिक्स" },
-  "divisionsSummary": { mr: "{count} विभाग · {pending} प्रलंबित · {alerts} इशारे", hi: "{count} प्रभाग · {pending} लंबित · {alerts} चेतावनी" },
-  "division": { mr: "विभाग", hi: "प्रभाग" },
-  "jda": { mr: "संयुक्त संचालक", hi: "संयुक्त निदेशक" },
-  "districts": { mr: "जिल्हे", hi: "जिले" },
-  "fundsCr": { mr: "निधी (कोटी)", hi: "निधि (करोड़)" },
-  "disbursed": { mr: "वितरित", hi: "वितरित" },
-  "pending": { mr: "प्रलंबित", hi: "लंबित" },
-  "status": { mr: "स्थिती", hi: "स्थिति" },
-  "statewidePfmsDisbursementQueues": { mr: "राज्यव्यापी PFMS वितरण रांगा", hi: "राज्यव्यापी PFMS वितरण कतारें" },
-  "divisionClearedBatches": { mr: "विभाग-मंजूर बॅचेस · DSC प्राधिकरण प्रलंबित", hi: "प्रभाग-स्वीकृत बैच · DSC प्राधिकरण लंबित" },
-  "authorizeRelease": { mr: "DSC प्राधिकृत करा", hi: "DSC प्राधिकृत करें" },
-  "batchId": { mr: "बॅच आयडी", hi: "बैच आईडी" },
-  "schemeName": { mr: "योजनेचे नाव", hi: "योजना का नाम" },
-  "beneficiaries": { mr: "लाभार्थी", hi: "लाभार्थी" },
-  "amountCr": { mr: "रक्कम (कोटी)", hi: "राशि (करोड़)" },
-  "aiConfidence": { mr: "AI आत्मविश्वास", hi: "AI आत्मविश्वास" },
-  "ready": { mr: "तयार", hi: "तैयार" },
-  "dscReleaseQueuedState": { mr: "{total} लाभार्थ्यांसाठी {count} बॅचेस DSC प्राधिकरण रांगेत आहेत.", hi: "{total} लाभार्थियों के लिए {count} बैच DSC प्राधिकरण कतार में हैं।" },
+  "statewideAllocatedFunds": { en: "Statewide\nallocated funds", mr: "राज्यव्यापी\nवाटप निधी", hi: "राज्यव्यापी\nआवंटित निधि" },
+  "disbursedYtd": { en: "Disbursed YTD", mr: "वितरण YTD", hi: "वितरित YTD" },
+  "pendingPfmsClearance": { en: "Pending PFMS\nclearance", mr: "PFMS मंजुरी\nप्रलंबित", hi: "PFMS मंज़ूरी\nलंबित" },
+  "divisionsDistricts": { en: "{divisions} divisions · {districts} districts", mr: "{divisions} विभाग · {districts} जिल्हे", hi: "{divisions} प्रभाग · {districts} जिले" },
+  "target": { en: "Target: ₹{target} Cr", mr: "लक्ष्य: ₹{target} कोटी", hi: "लक्ष्य: ₹{target} करोड़" },
+  "fortyEightHourAlert": { en: "48-hour PFMS alert", mr: "४८ तास PFMS चेतावणी", hi: "४८ घंटे PFMS चेतावनी" },
+  "underUtilization": { en: "Under-utilization\n(estimate)", mr: "अल्प-वापर\nअंदाज", hi: "अल्प-उपयोग\nअनुमान" },
+  "acrossAllSchemes": { en: "Across all schemes", mr: "सर्व योजनांमध्ये", hi: "सभी योजनाओं में" },
+  "fraudRiskAlerts": { en: "Fraud risk\nalerts", mr: "फसवणूक जोखीम\nइशारे", hi: "धोखाधड़ी जोखिम\nचेतावनी" },
+  "divisionsAtRisk": { en: "{count} divisions at risk", mr: "{count} विभाग जोखमीवर", hi: "{count} प्रभाग जोखिम पर" },
+  "satelliteStatus": { en: "Satellite\nstatus", mr: "उपग्रह\nस्थिती", hi: "उपग्रह\nस्थिति" },
+  "active": { en: "Active", mr: "सक्रिय", hi: "सक्रिय" },
+  "statewidePass12h": { en: "Last statewide imagery pass within 12 hours", mr: "राज्यव्यापी पास: १२ तासांपूर्वी (Sentinel-2 L2A)", hi: "राज्यव्यापी पास: १२ घंटे पहले (Sentinel-2 L2A)" },
+  "statewideCommandMap": { en: "{state} — statewide command map", mr: "{state} — राज्यव्यापी कमांड नकाशा", hi: "{state} — राज्यव्यापी कमांड मानचित्र" },
+  "liveSpatialAnalytics": { en: "{officerTitle} — division map and uptake overlay", mr: "{officerTitle} · लाइव्ह स्थानिक विश्लेषण", hi: "{officerTitle} · लाइव स्थानिक विश्लेषण" },
+  "statewideFriction": { en: "Statewide friction", mr: "राज्यव्यापी अडथळे", hi: "राज्यव्यापी बाधाएँ" },
+  "systemIntegrationErrors": { en: "System integration errors", mr: "प्रणाली एकत्रीकरण त्रुटी", hi: "सिस्टम एकीकरण त्रुटियाँ" },
+  "aadhaarMismatch": { en: "Aadhaar mismatch", mr: "आधार बेजुळणी", hi: "आधार बेमेल" },
+  "integrationFailure": { en: "7/12 integration failure", mr: "७/१२ एकत्रीकरण अपयश", hi: "७/१२ एकीकरण विफलता" },
+  "policyRecommendations": { en: "Policy recommendations", mr: "धोरण शिफारसी", hi: "नीति सिफारिशें" },
+  "aiDrivenStatewideInsights": { en: "AI-driven statewide insights", mr: "AI-चालित राज्यव्यापी अंतर्दृष्टी", hi: "AI-संचालित राज्यव्यापी अंतर्दृष्टि" },
+  "marathwadaDroughtRelief": { en: "Marathwada drought relief delay — accelerated PFMS", mr: "मराठवाडा दुष्काळ मदत विलंब — प्रवेगक PFMS", hi: "मराठवाडा सूखा राहत विलंब — त्वरित PFMS" },
+  "statewideDisasterTriage": { en: "Statewide disaster triage", mr: "राज्यव्यापी आपत्ती ट्रायेज", hi: "राज्यव्यापी आपदा ट्रायेज" },
+  "liveTelemetryTriggers": { en: "Live telemetry triggers", mr: "लाइव्ह टेलिमेट्री ट्रिगर्स", hi: "लाइव टेलीमेट्री ट्रिगर" },
+  "high": { en: "High", mr: "उच्च", hi: "उच्च" },
+  "marathwadaDroughtVidarbha": { en: "Marathwada drought + Vidarbha cotton stress — May 2026", mr: "मराठवाडा दुष्काळ + विदर्भ कापूस ताण — मे २०२६", hi: "मराठवाडा सूखा + विदर्भ कपास तनाव — मई २०२६" },
+  "heatZonesFlagged": { en: "27 automated heat zones flagged", mr: "२७ स्वयंचलित उष्णता क्षेत्र चिन्हांकित", hi: "२७ स्वचालित ताप क्षेत्र चिह्नित" },
+  "conveneNdmaCell": { en: "Convene NDMA cell", mr: "NDMA सेल बोलावा", hi: "NDMA सेल बुलाएँ" },
+  "divisionPerformanceMatrix": { en: "Division performance matrix", mr: "विभाग कामगिरी मॅट्रिक्स", hi: "प्रभाग प्रदर्शन मैट्रिक्स" },
+  "divisionsSummary": { en: "{count} divisions · {pending} pending · {alerts} alerts", mr: "{count} विभाग · {pending} प्रलंबित · {alerts} इशारे", hi: "{count} प्रभाग · {pending} लंबित · {alerts} चेतावनी" },
+  "division": { en: "Division", mr: "विभाग", hi: "प्रभाग" },
+  "jda": { en: "Joint Director (Agriculture)", mr: "संयुक्त संचालक", hi: "संयुक्त निदेशक" },
+  "districts": { en: "Districts", mr: "जिल्हे", hi: "जिले" },
+  "fundsCr": { en: "Funds (Cr)", mr: "निधी (कोटी)", hi: "निधि (करोड़)" },
+  "disbursed": { en: "Disbursed", mr: "वितरित", hi: "वितरित" },
+  "pending": { en: "Pending", mr: "प्रलंबित", hi: "लंबित" },
+  "status": { en: "Status", mr: "स्थिती", hi: "स्थिति" },
+  "statewidePfmsDisbursementQueues": { en: "Statewide PFMS disbursement queues", mr: "राज्यव्यापी PFMS वितरण रांगा", hi: "राज्यव्यापी PFMS वितरण कतारें" },
+  "divisionClearedBatches": { en: "Division-cleared batches · DSC authorization pending", mr: "विभाग-मंजूर बॅचेस · DSC प्राधिकरण प्रलंबित", hi: "प्रभाग-स्वीकृत बैच · DSC प्राधिकरण लंबित" },
+  "authorizeRelease": { en: "Authorize release (DSC)", mr: "DSC प्राधिकृत करा", hi: "DSC प्राधिकृत करें" },
+  "batchId": { en: "Batch ID", mr: "बॅच आयडी", hi: "बैच आईडी" },
+  "schemeName": { en: "Scheme name", mr: "योजनेचे नाव", hi: "योजना का नाम" },
+  "beneficiaries": { en: "Beneficiaries", mr: "लाभार्थी", hi: "लाभार्थी" },
+  "amountCr": { en: "Amount (Cr)", mr: "रक्कम (कोटी)", hi: "राशि (करोड़)" },
+  "aiConfidence": { en: "AI confidence", mr: "AI आत्मविश्वास", hi: "AI आत्मविश्वास" },
+  "ready": { en: "Ready", mr: "तयार", hi: "तैयार" },
+  "dscReleaseQueuedState": { en: "DSC authorization queued for {count} batches covering {total} beneficiaries.", mr: "{total} लाभार्थ्यांसाठी {count} बॅचेस DSC प्राधिकरण रांगेत आहेत.", hi: "{total} लाभार्थियों के लिए {count} बैच DSC प्राधिकरण कतार में हैं।" },
 
   // ─── Division Dashboard short keys ───────────────────────
-  "divisionAllocatedFunds": { mr: "विभाग वाटप\nनिधी", hi: "प्रभाग आवंटित\nनिधि" },
-  "nextPassIn2h": { mr: "पुढील पास: २ तासांत (Sentinel-2 L2A)", hi: "अगला पास: २ घंटे में (Sentinel-2 L2A)" },
-  "geoFencedCommandMap": { mr: "{division} — जिओ-फेंस केलेला कमांड नकाशा", hi: "{division} — जियो-फेंस्ड कमांड मानचित्र" },
-  "liveSpatialAnalyticsDivision": { mr: "{role} · लाइव्ह स्थानिक विश्लेषण", hi: "{role} · लाइव स्थानिक विश्लेषण" },
-  "crossDistrictFriction": { mr: "क्रॉस-जिल्हा अडथळे", hi: "अंतर-जिला बाधाएँ" },
-  "divisionalRecommendations": { mr: "विभागीय शिफारसी", hi: "प्रभागीय सिफारिशें" },
-  "aiDrivenCrossDistrictInsights": { mr: "AI-चालित क्रॉस-जिल्हा अंतर्दृष्टी", hi: "AI-संचालित अंतर-जिला अंतर्दृष्टि" },
-  "jointAuditSolapurSangli": { mr: "सोलापूर-सांगली मध्ये क्रॉस-जिल्हा फसवणूक — संयुक्त ऑडिट", hi: "सोलापुर-सांगली में अंतर-जिला धोखाधड़ी — संयुक्त ऑडिट" },
-  "disasterTriage": { mr: "आपत्ती ट्रायेज", hi: "आपदा ट्रायेज" },
-  "droughtStressSolapur": { mr: "दुष्काळ ताण — सोलापूर पट्टा (२८ एप्रिल २०२६)", hi: "सूखा तनाव — सोलापुर बेल्ट (२८ अप्रैल २०२६)" },
-  "plotsFlaggedMadhaMangalwedha": { mr: "सोलापूर मधा + मंगळवेढा मध्ये ११,८०० प्लॉट चिन्हांकित", hi: "सोलापुर मधा + मंगळवेढा में ११,८०० प्लॉट चिह्नित" },
-  "initiateDroneSurvey": { mr: "ड्रोन सर्वेक्षण सुरू करा", hi: "ड्रोन सर्वेक्षण शुरू करें" },
-  "districtPerformanceMatrix": { mr: "जिल्हा कामगिरी मॅट्रिक्स", hi: "जिला प्रदर्शन मैट्रिक्स" },
-  "csvScopeDivision": { mr: "CSV व्याप्ती — विभाग", hi: "CSV कार्यक्षेत्र — प्रभाग" },
-  "agricultureCirclesInDataset": { mr: "डेटासेट मधील कृषी मंडळे", hi: "डेटासेट में कृषि मंडल" },
-  "statewideSurveysCsv": { mr: "राज्यव्यापी सर्वेक्षणे (CSV)", hi: "राज्यव्यापी सर्वेक्षण (CSV)" },
-  "divisionalPfmsDisbursementQueues": { mr: "विभागीय PFMS वितरण रांगा", hi: "प्रभागीय PFMS वितरण कतारें" },
-  "districtClearedBatches": { mr: "जिल्हा-मंजूर बॅचेस · DSC प्राधिकरण प्रलंबित", hi: "जिला-स्वीकृत बैच · DSC प्राधिकरण लंबित" },
-  "dscReleaseQueuedDivision": { mr: "{total} लाभार्थ्यांसाठी {count} बॅचेस DSC प्राधिकरण रांगेत आहेत.", hi: "{total} लाभार्थियों के लिए {count} बैच DSC प्राधिकरण कतार में हैं।" },
-  "districtsSummary": { mr: "{pending} प्रलंबित · {alerts} इशारे", hi: "{pending} लंबित · {alerts} चेतावनी" },
-  "district": { mr: "जिल्हा", hi: "जिला" },
-  "officer": { mr: "अधिकारी", hi: "अधिकारी" },
-  "talukas": { mr: "तालुके", hi: "तालुके" },
+  "divisionAllocatedFunds": { en: "Division\nallocated funds", mr: "विभाग वाटप\nनिधी", hi: "प्रभाग आवंटित\nनिधि" },
+  "nextPassIn2h": { en: "Next pass: in 2h (Sentinel-2 L2A)", mr: "पुढील पास: २ तासांत (Sentinel-2 L2A)", hi: "अगला पास: २ घंटे में (Sentinel-2 L2A)" },
+  "geoFencedCommandMap": { en: "{division} — geo-fenced command map", mr: "{division} — जिओ-फेंस केलेला कमांड नकाशा", hi: "{division} — जियो-फेंस्ड कमांड मानचित्र" },
+  "liveSpatialAnalyticsDivision": { en: "{role} · live spatial analytics", mr: "{role} · लाइव्ह स्थानिक विश्लेषण", hi: "{role} · लाइव स्थानिक विश्लेषण" },
+  "crossDistrictFriction": { en: "Cross-district friction", mr: "क्रॉस-जिल्हा अडथळे", hi: "अंतर-जिला बाधाएँ" },
+  "divisionalRecommendations": { en: "Divisional recommendations", mr: "विभागीय शिफारसी", hi: "प्रभागीय सिफारिशें" },
+  "aiDrivenCrossDistrictInsights": { en: "AI-driven cross-district insights", mr: "AI-चालित क्रॉस-जिल्हा अंतर्दृष्टी", hi: "AI-संचालित अंतर-जिला अंतर्दृष्टि" },
+  "jointAuditSolapurSangli": { en: "Cross-district fraud — Solapur–Sangli joint audit", mr: "सोलापूर-सांगली मध्ये क्रॉस-जिल्हा फसवणूक — संयुक्त ऑडिट", hi: "सोलापुर-सांगली में अंतर-जिला धोखाधड़ी — संयुक्त ऑडिट" },
+  "disasterTriage": { en: "Disaster triage", mr: "आपत्ती ट्रायेज", hi: "आपदा ट्रायेज" },
+  "droughtStressSolapur": { en: "Drought stress — Solapur belt (28 Apr 2026)", mr: "दुष्काळ ताण — सोलापूर पट्टा (२८ एप्रिल २०२६)", hi: "सूखा तनाव — सोलापुर बेल्ट (२८ अप्रैल २०२६)" },
+  "plotsFlaggedMadhaMangalwedha": { en: "11,800 plots flagged — Madha + Mangalwedha (Solapur)", mr: "सोलापूर मधा + मंगळवेढा मध्ये ११,८०० प्लॉट चिन्हांकित", hi: "सोलापुर मधा + मंगळवेढा में ११,८०० प्लॉट चिह्नित" },
+  "initiateDroneSurvey": { en: "Initiate drone survey", mr: "ड्रोन सर्वेक्षण सुरू करा", hi: "ड्रोन सर्वेक्षण शुरू करें" },
+  "districtPerformanceMatrix": { en: "District performance matrix", mr: "जिल्हा कामगिरी मॅट्रिक्स", hi: "जिला प्रदर्शन मैट्रिक्स" },
+  "csvScopeDivision": { en: "CSV scope — division", mr: "CSV व्याप्ती — विभाग", hi: "CSV कार्यक्षेत्र — प्रभाग" },
+  "agricultureCirclesInDataset": { en: "Agriculture circles in dataset", mr: "डेटासेट मधील कृषी मंडळे", hi: "डेटासेट में कृषि मंडल" },
+  "statewideSurveysCsv": { en: "Statewide surveys (CSV)", mr: "राज्यव्यापी सर्वेक्षणे (CSV)", hi: "राज्यव्यापी सर्वेक्षण (CSV)" },
+  "divisionalPfmsDisbursementQueues": { en: "Divisional PFMS disbursement queues", mr: "विभागीय PFMS वितरण रांगा", hi: "प्रभागीय PFMS वितरण कतारें" },
+  "districtClearedBatches": { en: "District-cleared batches · DSC authorization pending", mr: "जिल्हा-मंजूर बॅचेस · DSC प्राधिकरण प्रलंबित", hi: "जिला-स्वीकृत बैच · DSC प्राधिकरण लंबित" },
+  "dscReleaseQueuedDivision": { en: "DSC authorization queued for {count} batches covering {total} beneficiaries.", mr: "{total} लाभार्थ्यांसाठी {count} बॅचेस DSC प्राधिकरण रांगेत आहेत.", hi: "{total} लाभार्थियों के लिए {count} बैच DSC प्राधिकरण कतार में हैं।" },
+  "districtsSummary": { en: "{pending} pending · {alerts} alerts", mr: "{pending} प्रलंबित · {alerts} इशारे", hi: "{pending} लंबित · {alerts} चेतावनी" },
+  "district": { en: "District", mr: "जिल्हा", hi: "जिला" },
+  "officer": { en: "Officer", mr: "अधिकारी", hi: "अधिकारी" },
+  "talukas": { en: "Talukas", mr: "तालुके", hi: "तालुके" },
 
   // ─── Fraud Trends mock data strings ─────────────────────
   "This Month": { mr: "हा महिना", hi: "यह महीना" },
@@ -1144,18 +1141,70 @@ export const translations = {
   "TAO-coordinated field visits requested from circle teams. Assignments are illustrative only.": { mr: "मंडल पथकांकडून TAO-समन्वित क्षेत्र भेटीची विनंती. कार्य केवळ उदाहरणात्मक आहेत.", hi: "मंडल टीमों से TAO-समन्वित क्षेत्र दौरे अनुरोधित। कार्य केवल उदाहरणात्मक हैं।" },
 };
 
+/** Split camelCase / snake_case keys into readable English when no `en` entry exists. */
+function humanizeEnglishFallback(key) {
+  if (key == null || typeof key !== 'string') return '';
+  const trimmed = key.trim();
+  if (!trimmed) return '';
+  if (/[\u0900-\u0fff\u0980-\u09ff]/.test(trimmed)) return trimmed;
+  if (/\s/.test(trimmed) && !/^[a-z]+[A-Z]/.test(trimmed.replace(/\s/g, ''))) return trimmed;
+
+  let s = trimmed.replace(/_/g, ' ');
+  s = s.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+  s = s.replace(/([A-Z]{2,})([A-Z][a-z])/g, '$1 $2');
+  const words = s.split(/\s+/).filter(Boolean);
+  const acronym = new Set(['csv', 'ytd', 'ndvi', 'ai', 'dbt', 'jda', 'pfms', 'ndma', 'l2a', 'gps', 'otp']);
+  let out = words
+    .map((w) => {
+      const lw = w.toLowerCase();
+      if (lw === 'csv') return 'CSV';
+      if (lw === 'ndvi') return 'NDVI';
+      if (lw === 'l2a') return 'L2A';
+      if (acronym.has(lw)) return lw.toUpperCase();
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    })
+    .join(' ');
+  out = out.replace(/\bCr\b/g, '(Cr)');
+  out = out.replace(/\bId\b/g, 'ID');
+  return out;
+}
+
+function entryHasTemplate(entry) {
+  if (!entry) return false;
+  return ['mr', 'hi', 'en'].some((k) => entry[k] && /\{/.test(entry[k]));
+}
+
 /**
- * Get translated string. Falls back to key if no translation found.
+ * Get translated string. For `en`, uses `entry.en` or a humanized key (not raw camelCase).
  * @param {string} key - English string
  * @param {'en'|'mr'|'hi'} lang - target language code
  */
 export function t(key, lang = 'en', params) {
-  if (lang === 'en' || !key) return params ? resolveTemplate(key, params) : key;
+  if (!key) return '';
   const entry = translations[key];
-  if (entry && entry[lang]) return params ? resolveTemplate(entry[lang], params) : entry[lang];
-  return params ? resolveTemplate(key, params) : key;
+  if (!entry) {
+    const fb = humanizeEnglishFallback(key);
+    return params ? resolveTemplate(fb, params) : fb;
+  }
+  let str = entry[lang];
+  if (!str) {
+    if (lang === 'en') {
+      str = entry.en;
+      if (!str) {
+        if (entryHasTemplate(entry)) {
+          str = entry.mr || entry.hi || humanizeEnglishFallback(key);
+        } else {
+          str = humanizeEnglishFallback(key);
+        }
+      }
+    } else {
+      str = entry.hi || entry.mr || entry.en || humanizeEnglishFallback(key);
+    }
+  }
+  return params ? resolveTemplate(str, params) : str;
 }
 
 function resolveTemplate(str, params) {
+  if (!params) return str;
   return str.replace(/\{(\w+)\}/g, (_, k) => (params[k] !== undefined ? params[k] : `{${k}}`));
 }

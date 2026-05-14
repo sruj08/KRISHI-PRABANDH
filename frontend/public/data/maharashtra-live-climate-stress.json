@@ -1,0 +1,14 @@
+{
+  "fetchedAt": "2026-05-14T13:57:37.723Z",
+  "source": "Open-Meteo Archive API — daily precipitation_sum (https://open-meteo.com/)",
+  "window": { "start": "2024-03-01", "end": "2024-06-30" },
+  "note": "Point samples at division representative lat/lon (not district polygons). droughtStressProxy0to100 = 100 minus min–max normalised cumulative Mar–Jun 2024 rainfall across the six samples (higher = drier relative to other divisions in this window).",
+  "divisions": {
+    "KKN": { "name": "Konkan", "lat": 19.15, "lon": 73, "precipMmMarJun2024": 415.4, "moistureRechargeIndex": 100, "droughtStressProxy0to100": 0 },
+    "PNE": { "name": "Pune", "lat": 18.2, "lon": 74.2, "precipMmMarJun2024": 312.9, "moistureRechargeIndex": 41, "droughtStressProxy0to100": 59 },
+    "NSK": { "name": "Nashik", "lat": 20, "lon": 74.3, "precipMmMarJun2024": 241.3, "moistureRechargeIndex": 0, "droughtStressProxy0to100": 100 },
+    "CSN": { "name": "Chh. Sambhajinagar", "lat": 19.85, "lon": 76.35, "precipMmMarJun2024": 384.9, "moistureRechargeIndex": 82, "droughtStressProxy0to100": 18 },
+    "AMR": { "name": "Amravati", "lat": 20.9, "lon": 77.75, "precipMmMarJun2024": 287.1, "moistureRechargeIndex": 26, "droughtStressProxy0to100": 74 },
+    "NGP": { "name": "Nagpur", "lat": 21.15, "lon": 79.1, "precipMmMarJun2024": 269.1, "moistureRechargeIndex": 16, "droughtStressProxy0to100": 84 }
+  }
+}

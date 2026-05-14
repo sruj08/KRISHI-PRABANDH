@@ -10,56 +10,46 @@ import {
 } from '../../utils/stateMockData';
 import { useToast } from '../../hooks/useToast.jsx';
 import { useLanguage } from '../../context/LanguageContext';
-import { useKrishiData } from '../../context/KrishiDataContext';
 import { fetchClaimsSummary } from '../../shared/api/services';
 import usePolling from '../../hooks/usePolling';
+import { useDivisionLiveIntel } from '../../hooks/useDivisionLiveIntel';
 import '../district/district.css';
+import './state-dashboard.css';
 
-const PANEL_BORDER = '#e2e3df';
 const TEXT_PRIMARY = '#1a1c1a';
 const TEXT_MUTED = '#717972';
 
 const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972', progress, children, onClick }) => (
   <div
     onClick={onClick}
-    style={{
-      background: '#fff',
-      border: `1px solid ${PANEL_BORDER}`,
-      borderRadius: 16,
-      padding: '20px 22px',
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: 152,
-      boxShadow: '0 1px 3px rgba(0,0,0,.04)',
-      cursor: onClick ? 'pointer' : 'default',
-    }}
+    className={`state-dashboard__kpi${onClick ? ' state-dashboard__kpi--clickable' : ''}`}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 28, marginBottom: 14 }}>
-      <div style={{ width: 26, height: 26, borderRadius: 6, background: '#f3f4f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#717972' }}>{icon}</span>
+    <div className="state-dashboard__kpi-head">
+      <div className="state-dashboard__kpi-icon-wrap">
+        <span className="material-symbols-outlined" style={{ fontSize: 17, color: '#5c6560' }}>{icon}</span>
       </div>
-      <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#717972', lineHeight: 1.3, whiteSpace: 'pre-line' }}>{label}</span>
+      <span className="state-dashboard__kpi-label">{label}</span>
     </div>
     {children ? (
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>{children}</div>
     ) : (
       <>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-          <span style={{ fontSize: 28, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1 }}>{value.startsWith('₹') ? value : `₹${value}`}</span>
-          {unit && <span style={{ fontSize: 14, fontWeight: 500, color: TEXT_MUTED }}>{unit}</span>}
+        <div className="state-dashboard__kpi-value-row">
+          <span className="state-dashboard__kpi-value">{value.startsWith('₹') ? value : `₹${value}`}</span>
+          {unit && <span className="state-dashboard__kpi-unit">{unit}</span>}
         </div>
         {progress !== undefined && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
-            <div style={{ flex: 1, height: 6, background: '#f3f4f0', borderRadius: 99, overflow: 'hidden' }}>
+            <div style={{ flex: 1, height: 6, background: '#eceee9', borderRadius: 99, overflow: 'hidden' }}>
               <div style={{ height: '100%', background: '#396940', borderRadius: 99, width: `${progress}%` }} />
             </div>
-            <span style={{ fontSize: 11, fontWeight: 500, color: TEXT_MUTED, fontVariantNumeric: 'tabular-nums' }}>{progress}%</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: TEXT_MUTED, fontVariantNumeric: 'tabular-nums' }}>{progress}%</span>
           </div>
         )}
         {sub && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, marginTop: 'auto', paddingTop: 12, color: subColor }}>
-            {subIcon && <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{subIcon}</span>}
-            {sub}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 11, fontWeight: 600, marginTop: 'auto', paddingTop: 12, color: subColor, lineHeight: 1.45 }}>
+            {subIcon && <span className="material-symbols-outlined" style={{ fontSize: 15, flexShrink: 0, marginTop: 1 }}>{subIcon}</span>}
+            <span style={{ minWidth: 0 }}>{sub}</span>
           </div>
         )}
       </>
@@ -68,16 +58,14 @@ const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972',
 );
 
 const PanelSection = ({ title, subtitle, badge, children }) => (
-  <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, padding: '22px 22px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, marginBottom: 16 }}>
+  <div className="state-dashboard__panel">
+    <div className="state-dashboard__panel-head">
       <div style={{ minWidth: 0 }}>
-        <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.3, margin: 0 }}>{title}</h3>
-        {subtitle && (
-          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#717972', margin: 0, marginTop: 6, lineHeight: 1.3 }}>{subtitle}</p>
-        )}
+        <h3 className="state-dashboard__panel-title">{title}</h3>
+        {subtitle && <p className="state-dashboard__panel-sub">{subtitle}</p>}
       </div>
       {badge && (
-        <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ba1a1a', background: 'rgba(255,218,214,0.4)', padding: '4px 9px', borderRadius: 6, flexShrink: 0, whiteSpace: 'nowrap', alignSelf: 'flex-start' }}>{badge}</span>
+        <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ba1a1a', background: 'rgba(255,218,214,0.45)', padding: '5px 10px', borderRadius: 8, flexShrink: 0, whiteSpace: 'nowrap', alignSelf: 'flex-start' }}>{badge}</span>
       )}
     </div>
     <div>{children}</div>
@@ -85,10 +73,10 @@ const PanelSection = ({ title, subtitle, badge, children }) => (
 );
 
 const FrictionRow = ({ label, pct, color }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 0', minHeight: 22 }}>
+  <div className="state-dashboard__friction-row">
     <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
-    <span style={{ fontSize: 12, fontWeight: 500, color: '#1a1c1a', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>{label}</span>
-    <span style={{ fontSize: 12, fontWeight: 700, color, flexShrink: 0, fontVariantNumeric: 'tabular-nums', marginLeft: 8 }}>{pct}%</span>
+    <span style={{ fontSize: 12, fontWeight: 500, color: TEXT_PRIMARY, flex: 1, minWidth: 0, lineHeight: 1.45 }}>{label}</span>
+    <span style={{ fontSize: 12, fontWeight: 700, color, flexShrink: 0, fontVariantNumeric: 'tabular-nums', paddingLeft: 4 }}>{pct}%</span>
   </div>
 );
 
@@ -106,8 +94,8 @@ const STATE_MAP_FIT_BOUNDS_OPTIONS = {
 
 const StateDashboard = () => {
   const { addToast } = useToast();
-  const { t } = useLanguage();
-  const { stats } = useKrishiData();
+  const { t, lang } = useLanguage();
+  const { liveByCode, error: liveIntelError } = useDivisionLiveIntel();
   const [liveSummary, setLiveSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
 
@@ -137,14 +125,15 @@ const StateDashboard = () => {
   const flaggedCount = liveSummary?.flagged ?? liveSummary?.fraud_alerts;
 
   return (
-    <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="state-dashboard-bleed">
+      <div className="state-dashboard">
 
       {!summaryLoading && liveSummary && (
-        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 12, padding: '12px 18px', fontSize: 12, color: '#1a1c1a', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>analytics</span>
-          <span style={{ fontWeight: 700 }}>{t('Live Claims Summary', lang)}</span>
-          <span style={{ color: '#717972' }}>
-            {t('Total', lang)}: <strong>{totalClaims ?? '—'}</strong>
+        <div className="state-dashboard__strip">
+          <span className="material-symbols-outlined state-dashboard__strip-icon">analytics</span>
+          <span className="state-dashboard__strip-title">{t('Live Claims Summary', lang)}</span>
+          <span style={{ color: '#5c6560' }}>
+            {t('Total', lang)}: <strong style={{ color: '#1a1c1a' }}>{totalClaims ?? '—'}</strong>
           </span>
           {approvedCount != null && (
             <span style={{ color: '#2e7d32' }}>
@@ -152,7 +141,7 @@ const StateDashboard = () => {
             </span>
           )}
           {pendingCount != null && (
-            <span style={{ color: '#e65100' }}>
+            <span style={{ color: '#c2410c' }}>
               {t('Pending', lang)}: <strong>{pendingCount}</strong>
             </span>
           )}
@@ -164,27 +153,7 @@ const StateDashboard = () => {
         </div>
       )}
 
-      {stats?.totalSurveys != null && (
-        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 12, padding: '12px 18px', fontSize: 12, color: '#1a1c1a', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>dataset</span>
-          <span style={{ fontWeight: 700 }}>{t('liveCsvAggregate')}</span>
-          <span style={{ color: '#717972' }}>
-            {t('surveys')}: <strong>{Number(stats.totalSurveys).toLocaleString('en-IN')}</strong>
-          </span>
-          {stats.totalAuditLogs != null && (
-            <span style={{ color: '#717972' }}>
-              {t('auditEvents')}: <strong>{Number(stats.totalAuditLogs).toLocaleString('en-IN')}</strong>
-            </span>
-          )}
-          {stats.totalCompensationPayments != null && (
-            <span style={{ color: '#717972' }}>
-              {t('dbtRows')}: <strong>{Number(stats.totalCompensationPayments).toLocaleString('en-IN')}</strong>
-            </span>
-          )}
-        </div>
-      )}
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
+      <div className="state-dashboard-kpi-grid">
         <KpiCard
           icon="account_balance_wallet"
           label={t('statewideAllocatedFunds')}
@@ -215,9 +184,9 @@ const StateDashboard = () => {
           value=""
           unit=""
         >
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-            <span style={{ fontSize: 28, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1 }}>{EXEC_KPIS.projectedUnutilizedPct}</span>
-            <span style={{ fontSize: 14, fontWeight: 500, color: TEXT_MUTED }}>%</span>
+          <div className="state-dashboard__kpi-value-row">
+            <span className="state-dashboard__kpi-value">{EXEC_KPIS.projectedUnutilizedPct}</span>
+            <span className="state-dashboard__kpi-unit">%</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: TEXT_MUTED, paddingTop: 12 }}>
             {t('acrossAllSchemes')}
@@ -237,35 +206,40 @@ const StateDashboard = () => {
           value=""
           unit=""
         >
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#396940', lineHeight: 1 }}>{t('active')}</div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: TEXT_MUTED, display: 'flex', alignItems: 'center', gap: 4, paddingTop: 12 }}>
-            <span style={{ color: '#396940', fontSize: 10 }}>●</span> {t('statewidePass12h')}
+          <div style={{ fontSize: 28, fontWeight: 700, color: '#2d6b48', lineHeight: 1 }}>{t('active')}</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: TEXT_MUTED, display: 'flex', alignItems: 'center', gap: 6, paddingTop: 12 }}>
+            <span style={{ color: '#396940', fontSize: 10, lineHeight: 1 }} aria-hidden>●</span>
+            <span>{t('statewidePass12h')}</span>
           </div>
         </KpiCard>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, flex: 1, minHeight: 0 }}>
-        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 480 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
+      <div className="state-dashboard-command-layout">
+        <div className="state-dashboard__map-panel">
+          <div className="state-dashboard__map-head">
             <div>
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{t('statewideCommandMap', { state: STATE_PROFILE.state })}</h2>
-              <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>{t('liveSpatialAnalytics', { officerTitle: STATE_PROFILE.officerTitle })}</p>
+              <h2 className="state-dashboard__map-title">{t('statewideCommandMap', { state: STATE_PROFILE.state })}</h2>
+              <p className="state-dashboard__map-sub">{t('liveSpatialAnalytics', { officerTitle: STATE_PROFILE.officerTitle })}</p>
+              {liveIntelError && (
+                <p className="state-dashboard__live-warn">Live division metrics could not be refreshed.</p>
+              )}
             </div>
           </div>
-          <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
+          <div className="state-dashboard__map-body">
             <RegionalMap
               layerType="state"
               boundaryUrl={geoAsset('geo/state-boundary.json')}
               divisionOverlayUrl={geoAsset('geo/maharashtra-divisions.geojson')}
               divisionMatrix={DIVISION_MATRIX}
               fitBoundsOptions={STATE_MAP_FIT_BOUNDS_OPTIONS}
+              liveDivisionMetrics={liveByCode || undefined}
             />
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="state-dashboard-insight-rail">
           <PanelSection title={t('statewideFriction')} subtitle={t('systemIntegrationErrors')}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <FrictionRow label={t('aadhaarMismatch')} pct={31} color="#ba1a1a" />
               <FrictionRow label={t('integrationFailure')} pct={24} color="#ba1a1a" />
             </div>
@@ -273,26 +247,20 @@ const StateDashboard = () => {
 
           <PanelSection title={t('policyRecommendations')} subtitle={t('aiDrivenStatewideInsights')}>
             {FRICTION_MONTH.topThreeRecommendations.slice(0, 1).map((rec, i) => (
-              <div key={i} style={{ borderLeft: '4px solid #396940', background: '#f5f8f6', borderRadius: '0 10px 10px 0', padding: '14px 16px' }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.4, margin: 0, marginBottom: 6 }}>
-                    {t('marathwadaDroughtRelief')}
-                  </p>
-                <p style={{ fontSize: 11, color: '#717972', lineHeight: 1.55, margin: 0 }}>
-                  {rec}
-                </p>
+              <div key={i} className="state-dashboard__rec-card">
+                <p className="state-dashboard__rec-title">{t('marathwadaDroughtRelief')}</p>
+                <p className="state-dashboard__rec-body">{rec}</p>
               </div>
             ))}
           </PanelSection>
 
           <PanelSection title={t('statewideDisasterTriage')} subtitle={t('liveTelemetryTriggers')} badge={t('high')}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', lineHeight: 1.4, margin: 0 }}>
-                  {t('marathwadaDroughtVidarbha')}
-                </p>
-                <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 6, lineHeight: 1.45 }}>{t('heatZonesFlagged')}</p>
+                <p className="state-dashboard__rec-title" style={{ marginBottom: 6 }}>{t('marathwadaDroughtVidarbha')}</p>
+                <p className="state-dashboard__rec-body">{t('heatZonesFlagged')}</p>
               </div>
-              <button style={{ width: '100%', padding: '11px 0', border: '1px solid #e2e3df', borderRadius: 10, fontSize: 12, fontWeight: 700, color: '#1a1c1a', background: '#fff', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
+              <button type="button" className="state-dashboard__cta">
                 {t('conveneNdmaCell')}
               </button>
             </div>
@@ -300,11 +268,11 @@ const StateDashboard = () => {
         </div>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '22px 24px', borderBottom: '1px solid #f3f4f0', flexWrap: 'wrap' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>table_chart</span>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1a', flex: 1, margin: 0, lineHeight: 1.35 }}>{t('divisionPerformanceMatrix')}</h3>
-          <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#717972', background: '#f3f4f0', padding: '5px 11px', borderRadius: 6, whiteSpace: 'nowrap' }}>
+      <div className="state-dashboard__data-panel">
+        <div className="state-dashboard__data-head">
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#5c6560' }}>table_chart</span>
+          <h3 className="state-dashboard__data-title">{t('divisionPerformanceMatrix')}</h3>
+          <span className="state-dashboard__data-meta">
             {t('divisionsSummary', { count: DIVISION_MATRIX.length, pending: totalPending.toLocaleString('en-IN'), alerts: totalAlerts })}
           </span>
         </div>
@@ -343,16 +311,16 @@ const StateDashboard = () => {
         </div>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(57,105,64,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>account_balance_wallet</span>
+      <div className="state-dashboard__data-panel">
+        <div className="state-dashboard__pfms-head">
+          <div className="state-dashboard__pfms-icon">
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#2d6b48' }}>account_balance_wallet</span>
           </div>
-          <div style={{ flex: 1 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 className="state-dashboard__data-title" style={{ fontSize: 15 }}>
               {t('statewidePfmsDisbursementQueues')}
             </h3>
-            <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>{t('divisionClearedBatches')}</p>
+            <p className="state-dashboard__map-sub" style={{ marginTop: 4 }}>{t('divisionClearedBatches')}</p>
           </div>
           <button
             type="button"
@@ -400,6 +368,7 @@ const StateDashboard = () => {
           </table>
         </div>
       </div>
+    </div>
     </div>
   );
 };

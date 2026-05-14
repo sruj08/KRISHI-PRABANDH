@@ -241,7 +241,16 @@ const DivisionDashboard = () => {
               <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>{t('liveSpatialAnalyticsDivision', { role: DIVISION_PROFILE.role })}</p>
             </div>
           </div>
-          <div style={{ flex: 1, position: 'relative', minHeight: 380 }}>
+          <div
+            style={{
+              flex: 1,
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 420,
+              height: 'clamp(420px, 52vh, 680px)',
+            }}
+          >
             <RegionalMap
               layerType="division"
               boundaryUrl="/geo/maharashtra-division.topo.json"
