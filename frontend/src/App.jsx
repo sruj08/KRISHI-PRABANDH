@@ -28,9 +28,12 @@ import SurveyOperationsDashboard from './features/survey_operations/SurveyOperat
 import SchemeAnalytics from './pages/scheme-analytics/SchemeAnalytics';
 import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
+import SahayakMatrixPage from './pages/cao/SahayakMatrixPage';
+import SupervisionPage from './pages/cao/SupervisionPage';
+import ShopsPage from './pages/cao/ShopsPage';
 import TAODashboard from './pages/tao/TAODashboard';
 import TaoAIFlaggedCases from './pages/tao/TaoAIFlaggedCases';
-import { TaoPendingApplicationsPage, TaoFieldVerificationPage } from './pages/tao/TaoWorkflowListPage';
+import { TaoFieldVerificationPage } from './pages/tao/TaoWorkflowListPage';
 import DistrictDashboard from './pages/district/DistrictDashboard';
 import DistrictAnalytics from './pages/district/DistrictAnalytics';
 import TalukaComparison from './pages/district/TalukaComparison';
@@ -106,13 +109,16 @@ const App = () => {
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/" element={<DashboardRouter />} />
             <Route path="/cao" element={<CAODashboard />} />
+            <Route path="/cao/sahayak-matrix" element={<SahayakMatrixPage />} />
+            <Route path="/cao/supervision" element={<SupervisionPage />} />
+            <Route path="/cao/shops" element={<ShopsPage />} />
             <Route path="/district" element={<Navigate to="/dao" replace />} />
             <Route path="/dao" element={<DistrictDashboard />} />
             <Route path="/dao/district-analytics" element={<DistrictAnalytics />} />
             <Route path="/dao/taluka-comparison" element={<TalukaComparison />} />
             <Route path="/dao/fraud-trends" element={<FraudTrends />} />
             <Route path="/tao" element={<TAODashboard />} />
-            <Route path="/tao/pending-applications" element={<TaoPendingApplicationsPage />} />
+            <Route path="/tao/pending-applications" element={<Applications />} />
             <Route path="/tao/ai-flagged-cases" element={<TaoAIFlaggedCases />} />
             <Route path="/tao/field-verification-requests" element={<TaoFieldVerificationPage />} />
             <Route path="/officer" element={<SahayakDashboard />} />
@@ -179,14 +185,6 @@ const App = () => {
                 icon="warning" 
                 tabs={['Drought', 'Flood', 'Pest', 'Compensation']}
                 sections={[{ title: 'Severity Reports', type: 'cards' }, { title: 'Affected Regions', type: 'table' }]} 
-              />
-            } />
-            <Route path="/applications" element={
-              <Placeholder 
-                title="Applications" 
-                icon="article" 
-                tabs={['Pending', 'Approved', 'Rejected', 'Payment Status']}
-                sections={[{ title: 'Disbursement Status', type: 'cards' }, { title: 'Recent Queries', type: 'table' }]} 
               />
             } />
             <Route path="/eligibility" element={<Placeholder title="Eligible Farmers" icon="fact_check" sections={[{ title: 'Eligibility Rules Engine', type: 'cards' }, { title: 'Pending Review', type: 'table' }]} />} />

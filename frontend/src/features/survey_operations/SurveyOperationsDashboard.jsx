@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { useLanguage } from '../../context/LanguageContext';
 import SurveyTriageQueue from './SurveyTriageQueue';
 import SurveyEvidenceReview from './SurveyEvidenceReview';
-import { fetchSurveySummary } from '../../shared/api/services';
+import { fetchReports, fetchSurveySummary } from '../../shared/api/services';
 import usePolling from '../../hooks/usePolling';
 
 const SummaryStat = ({ icon, label, value, color, bg }) => (
@@ -18,9 +17,18 @@ const SummaryStat = ({ icon, label, value, color, bg }) => (
 );
 
 const SurveyOperationsDashboard = () => {
-  const { t } = useLanguage();
   const [selectedSurvey, setSelectedSurvey] = useState(null);
+  const [reports, setReports] = useState([]);
   const [summary, setSummary] = useState(null);
+
+  const loadReports = useCallback(async () => {
+    try {
+      const data = await fetchReports();
+      const arr = Array.isArray(data) ? data : [];
+      setReports(arr);
+    } catch (_) {
+    }
+  }, []);
 
   const loadSummary = useCallback(async () => {
     try {
@@ -30,7 +38,20 @@ const SurveyOperationsDashboard = () => {
     }
   }, []);
 
+  usePolling(loadReports, 5000);
   usePolling(loadSummary, 30000);
+
+  const total = reports.length;
+  const pending = reports.filter(r => {
+    const s = (r.workflowStage || '').toLowerCase();
+    return s.includes('pending') || s.includes('submitted') || s.includes('additional info');
+  }).length;
+  const critical = reports.filter(r => (r.severityLevel || '').toUpperCase() === 'CRITICAL').length;
+  const grievance = reports.filter(r => r.hasGrievance || r.grievanceCount > 0).length;
+  const completed = reports.filter(r => {
+    const s = (r.workflowStage || '').toLowerCase();
+    return s.includes('verified') || s.includes('approved');
+  }).length;
 
   const getVal = (key) => {
     if (!summary) return null;
@@ -38,11 +59,11 @@ const SurveyOperationsDashboard = () => {
   };
 
   const stats = [
-    { icon: 'satellite_alt', label: 'Total Surveys', value: getVal('total') ?? getVal('all'), color: '#1f4d36', bg: 'rgba(31,77,54,0.08)' },
-    { icon: 'pending_actions', label: 'Pending', value: getVal('pending') ?? getVal('submitted'), color: '#B45309', bg: 'rgba(180,83,9,0.08)' },
-    { icon: 'gpp_bad', label: 'Critical', value: getVal('critical'), color: '#ba1a1a', bg: 'rgba(186,26,26,0.08)' },
-    { icon: 'feedback', label: 'Grievances', value: getVal('grievance') ?? getVal('grievances'), color: '#4d2024', bg: 'rgba(77,32,36,0.08)' },
-    { icon: 'check_circle', label: 'Completed', value: getVal('completed') ?? getVal('verified'), color: '#396940', bg: 'rgba(57,105,64,0.08)' },
+    { icon: 'satellite_alt', label: 'Total Reports', value: total || getVal('total') ?? getVal('all'), color: '#1f4d36', bg: 'rgba(31,77,54,0.08)' },
+    { icon: 'pending_actions', label: 'Pending', value: pending || getVal('pending') ?? getVal('submitted'), color: '#B45309', bg: 'rgba(180,83,9,0.08)' },
+    { icon: 'gpp_bad', label: 'Critical', value: critical || getVal('critical'), color: '#ba1a1a', bg: 'rgba(186,26,26,0.08)' },
+    { icon: 'feedback', label: 'Grievances', value: grievance || getVal('grievance') ?? getVal('grievances'), color: '#4d2024', bg: 'rgba(77,32,36,0.08)' },
+    { icon: 'check_circle', label: 'Completed', value: completed || getVal('completed') ?? getVal('verified'), color: '#396940', bg: 'rgba(57,105,64,0.08)' },
   ];
 
   return (

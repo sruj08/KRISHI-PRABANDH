@@ -109,7 +109,12 @@ const Sidebar = ({ isOpen, onClose }) => {
           { to: '/cao', icon: 'dashboard', label: 'Dashboard' },
           { to: '/map', icon: 'map', label: 'Command Map' },
         ]},
-        { id: 'dao_modules', label: 'MODULES', items: [
+        { id: 'dao_supervision', label: 'SUPERVISION', items: [
+          { to: '/cao/sahayak-matrix', icon: 'leaderboard', label: 'Sahayak Matrix' },
+          { to: '/cao/supervision', icon: 'visibility', label: 'Supervision' },
+          { to: '/cao/shops', icon: 'storefront', label: 'Krushi Seva Kendra' },
+        ]},
+        { id: 'dao_modules', label: 'ANALYTICS', items: [
           { to: '/survey', icon: 'bar_chart', label: 'Scheme Analytics' },
           { to: '/geo', icon: 'eco', label: 'Crop Health / NDVI' },
           { to: '/applications', icon: 'account_balance', label: 'PFMS Monitoring' },

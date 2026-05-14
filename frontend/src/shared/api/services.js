@@ -186,6 +186,48 @@ export async function updateSurveyAction(surveyId, { action } = {}) {
   return unwrapApiPayload(data);
 }
 
+/**
+ * Fetch all operational reports from krishi-core (GET /api/reports).
+ * Returns array of report objects with fields:
+ *   reportId, farmerId, farmerName, village, taluka, district,
+ *   cropType, damageType, workflowStage, severityLevel,
+ *   confidenceScore, geoVerified, uploadedEvidence[],
+ *   aiRemarks, officerRemarks, grievance linkage,
+ *   assignedOfficer, createdAt, updatedAt
+ */
+export async function fetchReports() {
+  const { data } = await api.get('/api/reports');
+  const payload = unwrapApiPayload(data);
+  return Array.isArray(payload) ? payload : payload?.reports ?? payload?.results ?? payload?.data ?? [];
+}
+
+/** Fetch a single report by ID (GET /api/reports/:id). */
+export async function fetchReportById(id) {
+  const { data } = await api.get(`/api/reports/${id}`);
+  const payload = unwrapApiPayload(data);
+  if (!payload || typeof payload !== 'object') throw new Error('Report not found');
+  return payload;
+}
+
+/** Workflow actions on a report (PATCH /api/reports/:id).
+ *  Actions: verify | escalate | resurvey | request_info | approve
+ */
+const REPORT_ACTION_STAGES = {
+  verify:       'Verified',
+  escalate:     'Escalated',
+  resurvey:     'Re-Survey Requested',
+  request_info: 'Additional Info Requested',
+  approve:      'Approved',
+};
+export async function updateReportAction(reportId, { action, notes } = {}) {
+  const workflowStage = REPORT_ACTION_STAGES[action] || action;
+  const { data } = await api.patch(`/api/reports/${reportId}`, {
+    workflowStage,
+    officerRemarks: notes || `Action: ${workflowStage}`,
+  });
+  return unwrapApiPayload(data);
+}
+
 /** Base for browser calls (empty = same origin → Vite dev proxy → backend). */
 export function getApiOrigin() {
   return getAxiosBaseURL();
