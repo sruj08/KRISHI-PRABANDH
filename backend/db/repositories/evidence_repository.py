@@ -1,35 +1,23 @@
 """
-Evidence Repository — Supabase `survey_evidence` operations (OCR + verification + risk).
+Evidence Repository — JSON file-backed implementation.
 """
 
 from __future__ import annotations
 
 from typing import Any, List, Optional
 
-from db.supabase import get_supabase
+import db.json_store as store
 from utils.evidence_geo import extract_geo_context
 
 
 class EvidenceRepository:
-    def __init__(self) -> None:
-        self._sb = get_supabase()
-
     def create(self, **kwargs: Any) -> dict[str, Any]:
         row = {k: v for k, v in kwargs.items() if v is not None}
-        res = self._sb.table("survey_evidence").insert(row).execute()
-        if not res.data:
-            raise RuntimeError("Evidence insert returned no data")
-        return res.data[0]
+        return store.insert("survey_evidence", row)
 
     def get_by_survey(self, survey_id: str) -> List[dict[str, Any]]:
-        res = (
-            self._sb.table("survey_evidence")
-            .select("*")
-            .eq("survey_id", survey_id)
-            .order("created_at", desc=True)
-            .execute()
-        )
-        return list(res.data or [])
+        rows = store.find_many("survey_evidence", survey_id=survey_id)
+        return sorted(rows, key=lambda r: r.get("created_at", ""), reverse=True)
 
     def get_flagged(
         self,
@@ -38,32 +26,13 @@ class EvidenceRepository:
         district_id: Optional[str] = None,
     ) -> List[dict[str, Any]]:
         """Evidence rows flagged for manual review, optionally filtered by jurisdiction."""
-        select_embed = (
-            "*, surveys(farms(villages(name, circles(talukas(id, name, districts(id, name))))))"
-        )
-        try:
-            q = (
-                self._sb.table("survey_evidence")
-                .select(select_embed)
-                .eq("requires_manual_review", True)
-                .gte("risk_score", min_risk_score)
-                .order("risk_score", desc=True)
-            )
-            res = q.execute()
-            rows: List[dict[str, Any]] = list(res.data or [])
-        except Exception:
-            try:
-                q = (
-                    self._sb.table("survey_evidence")
-                    .select("*")
-                    .eq("requires_manual_review", True)
-                    .gte("risk_score", min_risk_score)
-                    .order("risk_score", desc=True)
-                )
-                res = q.execute()
-                rows = list(res.data or [])
-            except Exception:
-                return []
+        all_rows = store.load("survey_evidence")
+        rows = [
+            r for r in all_rows
+            if r.get("requires_manual_review") is True
+            and (r.get("risk_score") or 0) >= min_risk_score
+        ]
+        rows = sorted(rows, key=lambda r: r.get("risk_score", 0), reverse=True)
 
         if not taluka_id and not district_id:
             return rows
@@ -84,23 +53,8 @@ class EvidenceRepository:
         district_id: Optional[str] = None,
     ) -> List[dict[str, Any]]:
         """All processed evidence rows (risk_score >= 1) for dashboard aggregates."""
-        select_embed = (
-            "*, surveys(farms(villages(name, circles(talukas(id, name, districts(id, name))))))"
-        )
-        try:
-            res = (
-                self._sb.table("survey_evidence")
-                .select(select_embed)
-                .gte("risk_score", 1)
-                .execute()
-            )
-            rows = list(res.data or [])
-        except Exception:
-            try:
-                res = self._sb.table("survey_evidence").select("*").gte("risk_score", 1).execute()
-                rows = list(res.data or [])
-            except Exception:
-                return []
+        all_rows = store.load("survey_evidence")
+        rows = [r for r in all_rows if (r.get("risk_score") or 0) >= 1]
 
         if not taluka_id and not district_id:
             return rows
@@ -130,4 +84,3 @@ class EvidenceRepository:
             }
             for r in records
         ]
-

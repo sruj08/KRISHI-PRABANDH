@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
+import db.json_store as store
 from db.repositories.analytics_repository import AnalyticsRepository
-from db.supabase import get_supabase
 from schemas.auth import JwtUserClaims
 
 
@@ -10,28 +10,11 @@ class AnalyticsService:
         self._repo = AnalyticsRepository()
 
     def dashboard(self, user: JwtUserClaims) -> dict[str, Any]:
-        sb = get_supabase()
         try:
-            total = (
-                sb.table("surveys").select("*", count="exact").limit(0).execute()
-            ).count or 0
-            pending = (
-                sb.table("surveys")
-                .select("*", count="exact")
-                .eq("status", "UNDER_REVIEW")
-                .limit(0)
-                .execute()
-            ).count or 0
-            comp = (
-                sb.table("surveys")
-                .select("*", count="exact")
-                .eq("status", "APPROVED")
-                .limit(0)
-                .execute()
-            ).count or 0
-            farms = (
-                sb.table("farms").select("*", count="exact").limit(0).execute()
-            ).count or 0
+            total = store.count("surveys")
+            pending = store.count("surveys", status="UNDER_REVIEW")
+            comp = store.count("surveys", status="APPROVED")
+            farms = store.count("farms")
         except Exception:
             total = pending = comp = farms = 0
         return {

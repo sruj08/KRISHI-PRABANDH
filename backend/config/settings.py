@@ -14,16 +14,6 @@ class Settings(BaseSettings):
     app_name: str = "KRISHI-PRABANDH API"
     debug: bool = False
 
-    supabase_url: str = Field(
-        validation_alias=AliasChoices("SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL"),
-    )
-    supabase_service_role_key: str = Field(
-        validation_alias=AliasChoices(
-            "SUPABASE_SERVICE_ROLE_KEY",
-            "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-        ),
-    )
-
     jwt_secret: str = Field(
         default="local-dev-only-jwt-secret-change-me-32chars-min",
         validation_alias=AliasChoices("JWT_SECRET"),
