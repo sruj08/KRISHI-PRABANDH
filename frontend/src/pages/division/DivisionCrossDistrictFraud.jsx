@@ -210,6 +210,16 @@ const statusHoverPayload = (c) => {
 };
 
 /**
+ * Tax invoice PDFs in `frontend/public/CrossDis-Sample` (basename sort order).
+ */
+const CROSS_DIS_TAX_INVOICES = [
+  '/CrossDis-Sample/tax_invoice_akola.pdf',
+  '/CrossDis-Sample/tax_invoice_kolha.pdf',
+  '/CrossDis-Sample/tax_invoice_Sangli.pdf',
+  '/CrossDis-Sample/tax_invoice_sola.pdf',
+];
+
+/**
  * Investigation cards — Maharashtra agri subsidy context only.
  */
 const FRAUD_CASES = [
@@ -232,10 +242,10 @@ const FRAUD_CASES = [
     exposureCr: 2.4,
     status: 'Under Verification',
     linked: [
-      { farmer: 'Nishant Gadsing', scheme: 'Tractor Subsidy', district: 'Pune', match: 'Same chassis MH-19-TR-8841' },
-      { farmer: 'Jalinder Padule', scheme: 'Tractor Subsidy', district: 'Satara', match: 'Same invoice PDF hash' },
-      { farmer: 'Ravindra Padule', scheme: 'Tractor Subsidy', district: 'Solapur', match: 'Dealer overlap · invoice reuse' },
-      { farmer: 'Shivaji Munde', scheme: 'Farm Mechanization', district: 'Solapur', match: 'RC area vs invoice mismatch' },
+      { farmer: 'Mr. Mahesh Ram Gaikwad', scheme: 'Tractor Subsidy', district: 'Pune', match: 'Same chassis MH-19-TR-8841', taxInvoice: CROSS_DIS_TAX_INVOICES[0] },
+      { farmer: 'Mr. Pravin Sachin Chavan', scheme: 'Tractor Subsidy', district: 'Satara', match: 'Same invoice PDF hash', taxInvoice: CROSS_DIS_TAX_INVOICES[1] },
+      { farmer: 'Mr. Ramesh Sudeep Deshpande', scheme: 'Tractor Subsidy', district: 'Solapur', match: 'Dealer overlap · invoice reuse', taxInvoice: CROSS_DIS_TAX_INVOICES[2] },
+      { farmer: 'Mr. Suresh Dnyandev Patil', scheme: 'Farm Mechanization', district: 'Solapur', match: 'RC area vs invoice mismatch', taxInvoice: CROSS_DIS_TAX_INVOICES[3] },
     ],
   },
   {
@@ -562,6 +572,18 @@ const DivisionCrossDistrictFraud = () => {
                             <li key={`${c.id}-${row.farmer}-${row.match}`}>
                               <span className="fi-case__linked-name">{row.farmer}</span>
                               <span className="fi-case__linked-meta">{row.scheme} · {row.district}</span>
+                              {row.taxInvoice ? (
+                                <a
+                                  className="fi-case__linked-pdf"
+                                  href={row.taxInvoice}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <span className="material-symbols-outlined fi-case__linked-pdf-icon" aria-hidden>description</span>
+                                  Tax invoice (PDF)
+                                </a>
+                              ) : null}
                             </li>
                           ))}
                         </ul>

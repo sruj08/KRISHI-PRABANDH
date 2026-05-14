@@ -884,6 +884,28 @@
   color: var(--fi-muted);
 }
 
+.fi-case__linked-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--fi-green);
+  text-decoration: none;
+  width: fit-content;
+}
+
+.fi-case__linked-pdf:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.fi-case__linked-pdf-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
 /* Case card — collapsed summary; expand for narrative + why flagged */
 .fi-case {
   background: var(--fi-surface);
