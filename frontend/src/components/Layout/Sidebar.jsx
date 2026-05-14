@@ -57,6 +57,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             { to: '/state/schemes', icon: 'account_tree', label: 'Schemes' },
             { to: '/state/fund-monitoring', icon: 'account_balance_wallet', label: 'Fund Monitoring' },
             { to: '/state/approvals', icon: 'check_circle', label: 'Approvals' },
+            { to: '/state/grievances', icon: 'gavel', label: 'Grievance Intelligence' },
           ],
         },
         {
@@ -98,6 +99,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           items: [
             { to: '/division/fraud', icon: 'shield_locked', label: 'Cross-District Fraud' },
             { to: '/division/escalations', icon: 'priority_high', label: 'Escalations' },
+            { to: '/state/grievances', icon: 'gavel', label: 'Grievances' },
           ],
         },
       ];
@@ -118,7 +120,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { to: '/survey', icon: 'bar_chart', label: 'Scheme Analytics' },
           { to: '/geo', icon: 'eco', label: 'Crop Health / NDVI' },
           { to: '/applications', icon: 'account_balance', label: 'PFMS Monitoring' },
-          { to: '/grievances', icon: 'priority_high', label: 'Grievance Escalation' },
+          { to: '/dao/grievances', icon: 'priority_high', label: 'Grievance Command' },
           { to: '/audit-logs', icon: 'history', label: 'Audit Logs' },
         ]},
       ];
@@ -131,6 +133,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { to: '/tao/pending-applications', icon: 'pending_actions', label: 'Pending Applications' },
           { to: '/tao/ai-flagged-cases', icon: 'flag', label: 'AI Flagged Cases' },
           { to: '/tao/field-verification-requests', icon: 'assignment_turned_in', label: 'Field Verification' },
+          { to: '/tao/grievances', icon: 'gavel', label: 'Grievance Queue' },
           { to: '/survey', icon: 'bar_chart', label: 'Scheme Analytics' },
         ]},
       ];
@@ -143,6 +146,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { to: '/dao/district-analytics', icon: 'analytics', label: 'District Analytics' },
           { to: '/dao/taluka-comparison', icon: 'compare', label: 'Taluka Comparison' },
           { to: '/dao/fraud-trends', icon: 'trending_up', label: 'Fraud Trends' },
+          { to: '/dao/grievances', icon: 'gavel', label: 'Grievance Command' },
           { to: '/survey', icon: 'bar_chart', label: 'Scheme Monitoring' },
         ]},
       ];

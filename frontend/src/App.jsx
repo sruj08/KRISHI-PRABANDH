@@ -34,10 +34,12 @@ import ShopsPage from './pages/cao/ShopsPage';
 import TAODashboard from './pages/tao/TAODashboard';
 import TaoAIFlaggedCases from './pages/tao/TaoAIFlaggedCases';
 import { TaoFieldVerificationPage } from './pages/tao/TaoWorkflowListPage';
+import TaoGrievanceQueue from './pages/tao/TaoGrievanceQueue';
 import DistrictDashboard from './pages/district/DistrictDashboard';
 import DistrictAnalytics from './pages/district/DistrictAnalytics';
 import TalukaComparison from './pages/district/TalukaComparison';
 import FraudTrends from './pages/district/FraudTrends';
+import DistrictGrievanceCommand from './pages/district/DistrictGrievanceCommand';
 import DivisionDashboard from './pages/division/DivisionDashboard';
 import DivisionDistrictPerformance from './pages/division/DivisionDistrictPerformance';
 import DivisionDynamicResources from './pages/division/DivisionDynamicResources';
@@ -45,6 +47,7 @@ import DivisionCrossDistrictFraud from './pages/division/DivisionCrossDistrictFr
 import DivisionEscalations from './pages/division/DivisionEscalations';
 import StateDashboard from './pages/state/StateDashboard';
 import DivisionalAnalysis from './pages/state/DivisionalAnalysis';
+import StateGrievanceIntelligence from './pages/state/StateGrievanceIntelligence';
 import VisitPlanner from './pages/VisitPlanner';
 import Placeholder from './pages/Placeholder';
 import NotFound from './pages/NotFound';
@@ -118,10 +121,12 @@ const App = () => {
             <Route path="/dao/district-analytics" element={<DistrictAnalytics />} />
             <Route path="/dao/taluka-comparison" element={<TalukaComparison />} />
             <Route path="/dao/fraud-trends" element={<FraudTrends />} />
+            <Route path="/dao/grievances" element={<DistrictGrievanceCommand />} />
             <Route path="/tao" element={<TAODashboard />} />
             <Route path="/tao/pending-applications" element={<Applications />} />
             <Route path="/tao/ai-flagged-cases" element={<TaoAIFlaggedCases />} />
             <Route path="/tao/field-verification-requests" element={<TaoFieldVerificationPage />} />
+            <Route path="/tao/grievances" element={<TaoGrievanceQueue />} />
             <Route path="/officer" element={<SahayakDashboard />} />
             <Route path="/officer/pending-surveys" element={<OfficerPendingSurveysPage />} />
             <Route path="/officer/farmer-registry" element={<OfficerFarmerRegistryPage />} />
@@ -158,6 +163,7 @@ const App = () => {
             <Route path="/state/fund-monitoring" element={<Placeholder title="Fund Monitoring" icon="account_balance_wallet" sections={[{ title: 'Fund Utilization', type: 'cards' }, { title: 'Distribution', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/approvals" element={<Placeholder title="Approvals" icon="check_circle" sections={[{ title: 'Pending Clearance', type: 'cards' }, { title: 'Approval Queue', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/fraud" element={<Placeholder title="Fraud Network" icon="shield_locked" sections={[{ title: 'AI Fraud Savings', type: 'cards' }, { title: 'Detected Rings', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
+            <Route path="/state/grievances" element={<StateGrievanceIntelligence />} />
             <Route path="/state/insights" element={<Placeholder title="AI Insights" icon="lightbulb" sections={[{ title: 'System Recommendations', type: 'list' }, { title: 'Anomaly Flags', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/divisional-analysis" element={<DivisionalAnalysis />} />
             <Route path="/state/disaster" element={<Navigate to="/state/divisional-analysis" replace />} />
