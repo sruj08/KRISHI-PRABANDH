@@ -1,5 +1,5 @@
 /* =========================================================
-   SahayakDashboard — Mobile-First Field Operations
+   SahayakDashboard — Full-Screen Field Operations
    Preserves all existing Stitch design tokens.
    ========================================================= */
 
@@ -10,8 +10,8 @@
   gap: 0;
   padding: 0;
   padding-bottom: 24px;
-  max-width: 680px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
   animation: fadeIn 0.35s ease;
   position: relative;
 }
@@ -27,6 +27,7 @@
 
 .gs-wrap {
   position: relative;
+  max-width: 480px;
 }
 
 .gs-box {
@@ -176,7 +177,7 @@
 /* ── Quick Actions Grid ── */
 .quick-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 10px;
 }
 
@@ -551,7 +552,7 @@
   transform: rotate(0deg);
 }
 
-/* ── Desktop: hide FAB, show sidebar normally ── */
+/* ── Desktop ── */
 @media (min-width: 1024px) {
   .sahayak-page {
     padding: 24px 32px 40px;
@@ -562,10 +563,16 @@
     padding: 0 0 16px;
   }
   .quick-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
   }
   .sd-container {
     bottom: 28px;
+  }
+  .sahayak-greeting {
+    padding: 0 0 20px;
+  }
+  .sahayak-section {
+    padding: 0 0 24px;
   }
 }

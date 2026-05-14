@@ -148,6 +148,7 @@ const SahayakDashboard = () => {
   const todayGS = MOCK_GRAM_SABHA.find(g => g.date === new Date().toISOString().slice(0,10) || g.status === 'SCHEDULED');
 
   return (
+    <div className="h-full min-h-[calc(100vh-56px)] overflow-y-auto bg-[#f3f4f0]">
     <div className="sahayak-page">
 
       {/* ── Global Search ── */}
@@ -295,6 +296,7 @@ const SahayakDashboard = () => {
 
       {/* ── Speed Dial FAB ── */}
       <SpeedDial navigate={navigate} />
+    </div>
     </div>
   );
 };

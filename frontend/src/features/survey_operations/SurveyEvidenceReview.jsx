@@ -226,16 +226,16 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
       </div>
 
       {/* Split Screen Content */}
-      <div className="flex flex-1 overflow-hidden relative">
+      <div className="flex flex-1 overflow-hidden relative bg-surface">
 
         {/* LEFT: Evidence + Report Details */}
-        <div className="w-3/5 p-6 border-r border-gray-300 overflow-y-auto relative z-10 custom-scrollbar bg-white">
+        <div className="w-3/5 p-6 border-r border-gray-300 overflow-y-auto relative z-10 custom-scrollbar">
           {/* Geo Verified Media */}
           <h2 className="text-[11px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em] flex items-center gap-2">
             <span className="material-symbols-outlined text-sm">videocam</span>
             Field Evidence
           </h2>
-          <div className="rounded-sm overflow-hidden border border-gray-300 bg-gray-100 mb-6">
+          <div className="rounded overflow-hidden border border-gray-300 bg-gray-100 mb-6 shadow-sm">
             <GeoVerifiedMedia
               url={evidenceUrl}
               type={evidenceType}
@@ -250,7 +250,7 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
             <span className="material-symbols-outlined text-sm">account_tree</span>
             Workflow Phases
           </h2>
-          <div className="bg-gray-50 p-4 border border-gray-300 rounded-sm mb-6">
+          <div className="bg-white p-4 border border-gray-300 rounded shadow-sm mb-6">
             <PhaseTimeline phases={reportPhases} />
           </div>
 
@@ -259,21 +259,23 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
             <span className="material-symbols-outlined text-sm">search_insights</span>
             Investigation Details
           </h2>
-          <div className="bg-gray-50 p-4 border border-gray-300 rounded-sm mb-6">
+          <div className="bg-white border border-gray-300 rounded shadow-sm mb-6 overflow-hidden">
             {(r.investigation || r.investigationDetails || r.damageAssessment) ? (
-              <div className="space-y-3 text-xs font-mono text-gray-800">
-                {(r.investigation?.details || r.investigationDetails?.details || [
-                  { label: 'Damage Pattern', value: r.investigation?.damagePattern || r.damagePattern || 'Waterlogging (Severe)' },
-                  { label: 'Estimated Loss', value: r.investigation?.estimatedLoss || r.estimatedLoss || '60-70%' },
-                  { label: 'Affected Area', value: r.investigation?.affectedArea || r.affectedArea || '2.5 Acres' },
-                  { label: 'Crop Stage', value: r.investigation?.cropStage || r.cropStage || 'Flowering Stage' },
-                ]).map((item, i) => (
-                  <div key={i} className="flex justify-between items-center border-b border-gray-200 pb-2 last:border-b-0 last:pb-0">
-                    <span className="text-gray-500">{item.label}</span>
-                    <span className="font-bold text-gray-900">{item.value}</span>
-                  </div>
-                ))}
-              </div>
+              <table className="w-full text-xs font-mono text-gray-800">
+                <tbody className="divide-y divide-gray-200">
+                  {[
+                    { label: 'Damage Pattern', value: r.investigation?.damagePattern || r.damagePattern || 'Waterlogging (Severe)' },
+                    { label: 'Estimated Loss', value: r.investigation?.estimatedLoss || r.estimatedLoss || '60-70%' },
+                    { label: 'Affected Area', value: r.investigation?.affectedArea || r.affectedArea || '2.5 Acres' },
+                    { label: 'Crop Stage', value: r.investigation?.cropStage || r.cropStage || 'Flowering Stage' },
+                  ].map((item, i) => (
+                    <tr key={i} className={`${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} hover:bg-primary/5 transition-none`}>
+                      <td className="py-2.5 px-4 text-gray-500 uppercase tracking-wider font-bold w-1/2">{item.label}</td>
+                      <td className="py-2.5 px-4 text-gray-900 font-bold">{item.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             ) : (
               <div className="text-gray-500 font-mono text-xs italic text-center py-4">[ NO INVESTIGATION DETAILS AVAILABLE ]</div>
             )}
@@ -284,7 +286,7 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
             <span className="material-symbols-outlined text-sm">summarize</span>
             Evaluation Summary
           </h2>
-          <div className="bg-gray-50 p-4 border border-gray-300 rounded-sm">
+          <div className="bg-white p-4 border border-gray-300 rounded shadow-sm">
             {r.evaluation || r.summary || r.reviewRemarks || survey.reviewRemarks ? (
               <div className="text-xs font-mono text-gray-800 leading-relaxed">
                 {r.evaluation?.conclusion || r.summary?.conclusion || r.reviewRemarks || survey.reviewRemarks || (r.evaluation ? JSON.stringify(r.evaluation) : r.summary ? JSON.stringify(r.summary) : 'No remarks provided.')}
@@ -296,9 +298,9 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
         </div>
 
         {/* RIGHT: Grievances + Metadata + Actions */}
-        <div className="w-2/5 p-6 bg-surface overflow-y-auto relative z-10 custom-scrollbar flex flex-col gap-6">
+        <div className="w-2/5 p-6 overflow-y-auto relative z-10 custom-scrollbar flex flex-col gap-6">
           {/* Action Buttons */}
-          <div className="bg-white p-4 border border-gray-300 rounded-sm">
+          <div className="bg-white p-4 border border-gray-300 rounded shadow-sm">
             <h3 className="text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-3">Actions</h3>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -341,7 +343,7 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
           </div>
 
           {/* Survey Metadata */}
-          <div className="bg-white p-4 border border-gray-300 rounded-sm">
+          <div className="bg-white p-4 border border-gray-300 rounded shadow-sm">
             <h3 className="text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-3">Survey Details</h3>
             <div className="divide-y divide-gray-200">
               <InfoRow label="Report ID" value={r.reportId || surveyId} />
@@ -355,7 +357,7 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
           </div>
 
           {/* Grievances Panel */}
-          <div className="bg-white p-4 border border-gray-300 rounded-sm flex-1">
+          <div className="bg-white p-4 border border-gray-300 rounded shadow-sm flex-1">
             <h3 className="text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-3 flex items-center justify-between">
               <span>Grievances</span>
               {grievances.length > 0 && (
