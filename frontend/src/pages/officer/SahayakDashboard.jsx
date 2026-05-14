@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -39,10 +39,24 @@ const SectionHeader = ({ title, count, onViewAll, viewAllLabel }) => (
   </div>
 );
 
+const WIDE_BREAKPOINT = 1024;
+
 const SahayakDashboard = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const [wideLayout, setWideLayout] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth >= WIDE_BREAKPOINT,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width: ${WIDE_BREAKPOINT}px)`);
+    const onChange = () => setWideLayout(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   const displayName = user?.name?.split(' ')[0] || 'Sahayak';
   const location = user?.taluka_name && user?.district_name ? `${user.taluka_name} · ${user.district_name}` : 'Baramati · Pune';
@@ -112,7 +126,20 @@ const SahayakDashboard = () => {
   const priorityColor = (p) => p === 'HIGH' ? '#ba1a1a' : p === 'MEDIUM' ? '#B45309' : '#717972';
 
   return (
-    <div style={{ minHeight: '100%', background: BG, padding: '24px 32px 40px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div
+      style={{
+        minHeight: '100%',
+        background: BG,
+        padding: 'clamp(16px, 2.5vw, 28px) clamp(16px, 3vw, 36px) clamp(28px, 4vw, 40px)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 20,
+        width: '100%',
+        maxWidth: 1280,
+        margin: '0 auto',
+        boxSizing: 'border-box',
+      }}
+    >
       {/* Greeting */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <div>
@@ -133,7 +160,15 @@ const SahayakDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 10 }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: wideLayout
+            ? 'repeat(5, minmax(0, 1fr))'
+            : 'repeat(auto-fill, minmax(130px, 1fr))',
+          gap: wideLayout ? 12 : 10,
+        }}
+      >
         {quickActions.map((item, i) => (
           <button key={i} onClick={() => navigate(item.path)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, background: WHITE, border: `1px solid ${PANEL}`, borderRadius: 16, padding: '20px 12px', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,.04)', transition: 'border-color 140ms, box-shadow 140ms', minHeight: 100 }}>
             <div style={{ width: 48, height: 48, borderRadius: 14, background: `${item.color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -145,9 +180,35 @@ const SahayakDashboard = () => {
       </div>
 
       {/* Status Strip */}
-      <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2 }}>
+      <div
+        style={{
+          display: wideLayout ? 'grid' : 'flex',
+          gridTemplateColumns: wideLayout ? 'repeat(5, minmax(0, 1fr))' : undefined,
+          gap: wideLayout ? 10 : 8,
+          overflowX: wideLayout ? 'visible' : 'auto',
+          paddingBottom: 2,
+        }}
+      >
         {statusItems.map((item, i) => (
-          <button key={i} onClick={() => navigate(item.path)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, background: WHITE, border: `1px solid ${PANEL}`, borderRadius: 12, padding: '10px 16px', minWidth: 76, flexShrink: 0, cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,.03)' }}>
+          <button
+            key={i}
+            onClick={() => navigate(item.path)}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 3,
+              background: WHITE,
+              border: `1px solid ${PANEL}`,
+              borderRadius: 12,
+              padding: wideLayout ? '12px 10px' : '10px 16px',
+              minWidth: wideLayout ? 0 : 76,
+              width: wideLayout ? '100%' : undefined,
+              flexShrink: wideLayout ? undefined : 0,
+              cursor: 'pointer',
+              boxShadow: '0 1px 3px rgba(0,0,0,.03)',
+            }}
+          >
             <span className="material-symbols-outlined" style={{ fontSize: 18, color: item.color }}>{item.icon}</span>
             <span style={{ fontSize: 20, fontWeight: 800, color: item.color, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{item.value}</span>
             <span style={{ fontSize: 10, fontWeight: 600, color: MUTED, letterSpacing: '0.04em' }}>{item.label}</span>
@@ -155,59 +216,96 @@ const SahayakDashboard = () => {
         ))}
       </div>
 
-      {/* Priority Tasks */}
-      <div>
-        <SectionHeader title={t("Today's Tasks", lang)} count={tasks.length} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {tasks.length === 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 16px', textAlign: 'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 40, color: '#c0c9c1', marginBottom: 8 }}>task_alt</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#414943' }}>All caught up!</span>
-              <span style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>No pending tasks for today.</span>
-            </div>
-          ) : tasks.map((task) => (
-            <button key={task.id} onClick={() => navigate(task.route)} style={{ display: 'flex', alignItems: 'center', gap: 10, background: WHITE, border: `1px solid ${PANEL}`, borderRadius: 12, padding: '12px 14px', cursor: 'pointer', textAlign: 'left', width: '100%', boxShadow: '0 1px 3px rgba(0,0,0,.03)', minHeight: 56 }}>
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: priorityColor(task.priority), flexShrink: 0 }} />
-              <div style={{ width: 34, height: 34, borderRadius: 9, background: `${priorityColor(task.priority)}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: priorityColor(task.priority) }}>{task.icon}</span>
+      {/* Tasks + Recent Farmers — two columns on wide viewports (same blocks, better use of width) */}
+      <div
+        style={{
+          display: wideLayout ? 'grid' : 'block',
+          gridTemplateColumns: wideLayout ? 'minmax(0, 1.1fr) minmax(0, 0.9fr)' : undefined,
+          gap: wideLayout ? 24 : 0,
+          alignItems: 'start',
+        }}
+      >
+        <div style={{ marginBottom: wideLayout ? 0 : undefined }}>
+          <SectionHeader title={t("Today's Tasks", lang)} count={tasks.length} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {tasks.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 16px', textAlign: 'center' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 40, color: '#c0c9c1', marginBottom: 8 }}>task_alt</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#414943' }}>All caught up!</span>
+                <span style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>No pending tasks for today.</span>
               </div>
-              <div style={{ flex: 1, overflow: 'hidden' }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{task.title}</div>
-                {task.time && <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>{task.time}</div>}
-              </div>
-              <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#c0c9c1', flexShrink: 0 }}>chevron_right</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent Farmers */}
-      <div>
-        <SectionHeader title={t('Recent Farmers', lang)} onViewAll={() => navigate('/officer/eligibility')} viewAllLabel={t('View All', lang)} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {recentFarmers.length === 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 16px', textAlign: 'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 40, color: '#c0c9c1', marginBottom: 8 }}>group</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#414943' }}>No farmers yet</span>
-              <span style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>Add farmers from the registry.</span>
-            </div>
-          ) : recentFarmers.map((f) => (
-            <div key={f.farmer_id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: WHITE, border: `1px solid ${PANEL}`, borderRadius: 12, padding: '11px 12px', minHeight: 56, boxShadow: '0 1px 3px rgba(0,0,0,.03)' }}>
-              <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(31,77,54,0.1)', color: '#1f4d36', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                {f.name[0]}
-              </div>
-              <div style={{ flex: 1, overflow: 'hidden' }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: TEXT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.name}</div>
-                <div style={{ fontSize: 11, color: MUTED, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2 }}>{f.village} · {f.crop}</div>
-              </div>
-              <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 999, whiteSpace: 'nowrap', color: statusColor(f.app_status), background: statusBg(f.app_status) }}>
-                {f.app_status === 'Under Scrutiny' ? 'Pending' : f.app_status}
-              </span>
-              <button onClick={() => navigate('/officer/field-verification')} style={{ background: 'none', border: 'none', color: '#c0c9c1', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', borderRadius: 8 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+            ) : tasks.map((task) => (
+              <button
+                key={task.id}
+                onClick={() => navigate(task.route)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  background: WHITE,
+                  border: `1px solid ${PANEL}`,
+                  borderRadius: 12,
+                  padding: '12px 14px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  width: '100%',
+                  boxShadow: '0 1px 3px rgba(0,0,0,.03)',
+                  minHeight: 56,
+                }}
+              >
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: priorityColor(task.priority), flexShrink: 0 }} />
+                <div style={{ width: 34, height: 34, borderRadius: 9, background: `${priorityColor(task.priority)}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18, color: priorityColor(task.priority) }}>{task.icon}</span>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: TEXT,
+                      whiteSpace: wideLayout ? 'normal' : 'nowrap',
+                      overflow: wideLayout ? 'visible' : 'hidden',
+                      textOverflow: wideLayout ? undefined : 'ellipsis',
+                      lineHeight: 1.35,
+                    }}
+                  >
+                    {task.title}
+                  </div>
+                  {task.time && <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>{task.time}</div>}
+                </div>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#c0c9c1', flexShrink: 0 }}>chevron_right</span>
               </button>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: wideLayout ? 0 : 20 }}>
+          <SectionHeader title={t('Recent Farmers', lang)} onViewAll={() => navigate('/officer/eligibility')} viewAllLabel={t('View All', lang)} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {recentFarmers.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 16px', textAlign: 'center' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 40, color: '#c0c9c1', marginBottom: 8 }}>group</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#414943' }}>No farmers yet</span>
+                <span style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>Add farmers from the registry.</span>
+              </div>
+            ) : recentFarmers.map((f) => (
+              <div key={f.farmer_id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: WHITE, border: `1px solid ${PANEL}`, borderRadius: 12, padding: '11px 12px', minHeight: 56, boxShadow: '0 1px 3px rgba(0,0,0,.03)' }}>
+                <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(31,77,54,0.1)', color: '#1f4d36', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {f.name[0]}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: TEXT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.name}</div>
+                  <div style={{ fontSize: 11, color: MUTED, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2 }}>{f.village} · {f.crop}</div>
+                </div>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 999, whiteSpace: 'nowrap', color: statusColor(f.app_status), background: statusBg(f.app_status) }}>
+                  {f.app_status === 'Under Scrutiny' ? 'Pending' : f.app_status}
+                </span>
+                <button onClick={() => navigate('/officer/field-verification')} style={{ background: 'none', border: 'none', color: '#c0c9c1', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', borderRadius: 8 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
