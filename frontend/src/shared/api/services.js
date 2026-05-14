@@ -92,75 +92,60 @@ function riskLevelToSeverity(level, score) {
   return 'LOW';
 }
 
-/** Officer triage queue — flagged survey evidence (`GET /surveys/evidence/flagged`). */
+/** Officer triage queue — flagged survey evidence (`GET /api/surveys/queue`). */
 export async function fetchSurveyQueue() {
-  const { data } = await api.get('/surveys/evidence/flagged');
+  const { data } = await api.get('/api/surveys/queue');
   const payload = unwrapApiPayload(data) || {};
-  const items = Array.isArray(payload.items) ? payload.items : [];
+  // krishi-core returns { success: true, count: X, data: [ ... ] }
+  const items = Array.isArray(payload) ? payload : (payload.data || []);
   return items.map((row) => ({
     ...row,
-    reportId: row.survey_id,
-    surveyId: row.survey_id,
-    farmerName: row.farmer_name,
-    cropType: row.scheme,
-    severityLevel: riskLevelToSeverity(row.risk_level, row.risk_score),
-    workflowStage:
-      row.risk_score != null && Number(row.risk_score) >= 20
-        ? 'Review Required'
-        : 'Pending Sahayak Verification',
-    confidenceScore:
-      row.risk_score != null
-        ? Math.max(0, Math.min(1, 1 - Number(row.risk_score) / 100))
-        : null,
-    timestamp: '—',
+    reportId: row.id,
+    surveyId: row.id,
+    farmerName: row.farmerName,
+    cropType: row.cropType,
+    severityLevel: riskLevelToSeverity(row.severity, row.confidenceScore),
+    workflowStage: row.workflowStage,
+    confidenceScore: row.confidenceScore != null ? row.confidenceScore / 100 : null,
+    timestamp: row.createdAt || '—',
   }));
 }
 
 /** Dashboard counts for survey operations header stats. */
 export async function fetchSurveySummary() {
-  const { data } = await api.get('/analytics/dashboard');
+  const { data } = await api.get('/api/surveys/summary');
   const d = unwrapApiPayload(data) || {};
-  let critical = null;
-  try {
-    const { data: riskRaw } = await api.get('/analytics/risk-summary');
-    const r = unwrapApiPayload(riskRaw) || {};
-    critical = r.high_risk ?? null;
-  } catch {
-    /* risk-summary is role-gated; ignore */
-  }
   return {
-    total: d.surveys_total,
-    all: d.surveys_total,
-    pending: d.surveys_pending_approval,
-    submitted: d.surveys_pending_approval,
-    critical,
+    total: d.total || 0,
+    all: d.total || 0,
+    pending: d.pendingVerification || 0,
+    submitted: d.surveySubmitted || 0,
+    critical: d.severityBreakdown?.Critical || 0,
     grievance: 0,
     grievances: 0,
-    completed: d.surveys_compensated,
-    verified: d.surveys_compensated,
+    completed: d.completed || 0,
+    verified: d.completed || 0,
   };
 }
 
-/** Single survey row for evidence review (`GET /surveys/{id}`). */
+/** Single survey row for evidence review (`GET /api/surveys/{id}`). */
 export async function fetchSurveyReport(surveyId) {
-  const { data } = await api.get(`/surveys/${surveyId}`);
+  const { data } = await api.get(`/api/surveys/${surveyId}`);
   const row = unwrapApiPayload(data);
   if (!row || typeof row !== 'object') {
     throw new Error('Survey not found');
   }
-  const attrs = row.attrs && typeof row.attrs === 'object' ? row.attrs : {};
   return {
     ...row,
-    ...attrs,
     reportId: row.id,
     surveyId: row.id,
-    workflowStage: row.status || attrs.workflowStage,
-    farmerName: attrs.farmerName || attrs.farmer_name,
-    cropType: attrs.cropType || attrs.crop_type,
-    village: attrs.village,
-    severityLevel: attrs.severityLevel || attrs.severity_level,
-    confidenceScore: attrs.confidenceScore ?? attrs.confidence_score,
-    timestamp: row.created_at || row.updated_at || attrs.submittedAt,
+    workflowStage: row.workflowStage,
+    farmerName: row.farmerName,
+    cropType: row.cropType,
+    village: row.village,
+    severityLevel: row.severity,
+    confidenceScore: row.confidenceScore != null ? row.confidenceScore / 100 : null,
+    timestamp: row.createdAt,
   };
 }
 
@@ -169,20 +154,17 @@ export async function fetchSurveyGrievances(_surveyId) {
   return [];
 }
 
-/** Map UI actions to `POST /surveys/{id}/approve` decisions. */
+/** Map UI actions to `PATCH /api/surveys/{id}/action` decisions. */
 export async function updateSurveyAction(surveyId, { action } = {}) {
   const key = String(action || '').toLowerCase();
-  const body =
-    key === 'verify'
-      ? { decision: 'APPROVED', notes: 'Verified by survey operations' }
-      : key === 'resurvey'
-        ? { decision: 'REJECTED', notes: 'Re-survey requested' }
-        : key === 'request_info'
-          ? { decision: 'ESCALATED', notes: 'Additional information requested from field' }
-          : key === 'escalate'
-            ? { decision: 'ESCALATED', notes: 'Escalated for officer review' }
-            : { decision: 'ESCALATED', notes: key || 'Survey action' };
-  const { data } = await api.post(`/surveys/${surveyId}/approve`, body);
+  const validAction = 
+    key === 'verify' ? 'verify' :
+    key === 'resurvey' ? 'request_resurvey' :
+    key === 'escalate' ? 'escalate' :
+    key === 'request_info' ? 'add_remarks' : 'add_remarks';
+
+  const body = { action: validAction, remark: key };
+  const { data } = await api.patch(`/api/surveys/${surveyId}/action`, body);
   return unwrapApiPayload(data);
 }
 

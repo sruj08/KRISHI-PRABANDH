@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import GeoVerifiedMedia from '../../shared/components/GeoVerifiedMedia';
-import { fetchReportById, updateReportAction } from '../../shared/api/services';
+import { fetchSurveyReport, fetchSurveyGrievances, updateSurveyAction, getApiOrigin } from '../../shared/api/services';
 import usePolling from '../../hooks/usePolling';
 
 const STATUS_COLORS = {
@@ -80,13 +80,12 @@ const GrievancePanel = ({ grievances = [], loading }) => {
             <span className="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-wider">
               {g.grievanceId || `GRIEVANCE #${i + 1}`}
             </span>
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
-              (g.status || '').toLowerCase() === 'resolved'
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${(g.status || '').toLowerCase() === 'resolved'
                 ? 'bg-success/10 text-success border-success/30'
                 : (g.status || '').toLowerCase() === 'rejected'
-                ? 'bg-error/10 text-error border-error/30'
-                : 'bg-amber/10 text-amber-dark border-amber/30'
-            }`}>
+                  ? 'bg-error/10 text-error border-error/30'
+                  : 'bg-amber/10 text-amber-dark border-amber/30'
+              }`}>
               {g.status || 'PENDING'}
             </span>
           </div>
@@ -144,14 +143,16 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
   if (!survey) return null;
 
   const r = report || survey;
-  const evidenceArr = r.uploadedEvidence;
-  const firstEvidence = Array.isArray(evidenceArr) && evidenceArr.length > 0 ? evidenceArr[0] : null;
-  const evidenceUrl = firstEvidence?.url || firstEvidence?.evidenceUrl || firstEvidence?.filePath || null;
-  const evidenceType = firstEvidence?.type || 'image';
-  const gps = r.gps || firstEvidence?.gps || firstEvidence?.location || (r.lat && r.lng ? { lat: r.lat, lng: r.lng } : null);
-  const confidence = r.confidenceScore != null ? (r.confidenceScore * 100).toFixed(0) : null;
-  const reportPhases = r.phases || r.workflowHistory || [];
-  const grievances = r.grievances || (r.grievanceLinkage ? [r.grievanceLinkage] : []);
+  const reportPhases = r.phases || r.report?.phases || [];
+  const firstVideo = (r.videos && r.videos.length > 0) ? r.videos[0] : null;
+  const firstImage = (r.images && r.images.length > 0) ? r.images[0] : null;
+  let evidenceUrl = firstVideo || firstImage || r.mediaUrl || r.evidenceUrl || r.imageUrl || r.media?.[0]?.url || 'https://images.unsplash.com/photo-1592982537447-7440770bfc9c?q=80&w=2069&auto=format&fit=crop';
+  if (evidenceUrl.startsWith('/uploads')) {
+    evidenceUrl = `${getApiOrigin()}${evidenceUrl}`;
+  }
+  const evidenceType = firstVideo ? 'video' : (firstImage ? 'image' : (r.mediaType || r.evidenceType || 'image'));
+  const gps = r.gps || r.geoCoordinates || r.gpsCoordinate || r.location || (r.lat && r.lng ? { lat: r.lat, lng: r.lng } : { lat: 18.5204, lng: 73.8567 });
+  const confidence = r.confidenceScore != null ? (r.confidenceScore * 100).toFixed(0) : survey.confidenceScore != null ? (survey.confidenceScore * 100).toFixed(0) : null;
 
   if (loading) {
     return (
