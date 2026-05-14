@@ -11,131 +11,133 @@ const AppLayout = () => {
   const { user } = useAuth();
   const { t, cycleLanguage, currentLabel } = useLanguage();
 
+  const isSahayak = !user?.role || user.role === 'officer' || user.role === 'mandal_officer';
+  const showBottomNav = !['farmer', 'state', 'division'].includes(user?.role);
+
+  const roleLabel =
+    user?.role === 'state' ? 'STATE COMMAND'
+    : user?.role === 'division' ? 'DIVISION'
+    : user?.role === 'district' ? 'DAO'
+    : user?.role === 'tao' ? 'TAO'
+    : user?.role === 'cao' ? 'CAO'
+    : user?.role === 'farmer' ? 'FARMER'
+    : 'OFFICER';
+
   return (
     <div className="flex flex-col min-h-screen bg-[#f3f4f0]">
 
       {/* ── Global Top Header ── */}
       <header
-        className="h-16 flex items-center px-6 gap-4 sticky top-0 shrink-0 bg-white border-b border-[#e2e9e6]"
+        className="flex items-center px-4 gap-3 sticky top-0 shrink-0 bg-white border-b border-[#e2e9e6]"
         style={{
-          boxShadow: '0 1px 2px rgba(20, 40, 30, 0.025)',
+          height: '60px',
+          boxShadow: '0 1px 2px rgba(20,40,30,0.025)',
           zIndex: 1100,
+          paddingTop: 'env(safe-area-inset-top)',
         }}
       >
-        {/* Mobile hamburger */}
+        {/* Hamburger — always visible */}
         <button
-          className="icon-btn-soft md:hidden"
+          className="icon-btn-soft"
           onClick={toggleSidebar}
           aria-label="Toggle menu"
+          id="sidebar-toggle-btn"
         >
           <span className="material-symbols-outlined text-[22px]">menu</span>
         </button>
 
         {/* Logo */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="material-symbols-outlined text-[22px]" style={{ color: '#1f4d36' }}>public</span>
-          <span className="font-bold text-[15px] tracking-tight text-[#1a1c1a]">
-            {t('Krishi Prabandh -')}{' '}
-            {t(
-              user?.role === 'state'
-                ? 'STATE COMMAND'
-                : user?.role === 'division'
-                  ? 'DIVISION'
-                  : user?.role === 'district'
-                    ? 'DAO'
-                    : user?.role === 'tao'
-                      ? 'TAO'
-                      : user?.role === 'cao'
-                        ? 'CAO'
-                        : user?.role === 'farmer'
-                          ? 'FARMER'
-                          : 'OFFICER',
-            )}
+          <span className="material-symbols-outlined text-[20px]" style={{ color: '#1f4d36' }}>public</span>
+          <span className="font-bold text-[14px] tracking-tight text-[#1a1c1a]">
+            {t('Krishi Prabandh')}{' '}
+            <span className="hidden sm:inline" style={{ color: '#717972', fontWeight: 500 }}>·</span>{' '}
+            <span className="hidden sm:inline" style={{ color: '#1f4d36' }}>{t(roleLabel)}</span>
           </span>
         </div>
 
         <div className="flex-1" />
 
-        {/* Breadcrumb */}
-        <div className="hidden md:flex items-center gap-2 text-[13px] font-medium" style={{ color: '#717972' }}>
+        {/* Desktop breadcrumb */}
+        <div className="hidden lg:flex items-center gap-1.5 text-[12px] font-medium" style={{ color: '#9aa19c' }}>
           {user?.role === 'farmer' ? (
             <span>{t('MahaDBT · Farmer services')}</span>
           ) : user?.role === 'state' ? (
             <span>{t('Maharashtra State Command')}</span>
           ) : user?.role === 'division' ? (
-            <>
-              <span>{user?.division_name || t('Division')}</span>
-              <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>{t('Maharashtra State')}</span>
-            </>
+            <span>{user?.division_name || t('Division')} · {t('Maharashtra State')}</span>
           ) : (
-            <>
-              <span>{user?.district_name || t('District')}</span>
-              <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>{user?.division_name || t('Division')}</span>
-              <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>{t('Maharashtra State')}</span>
-              <span style={{ color: '#c0c9c1' }}>•</span>
-              <span>{user?.role === 'district' ? t('District Superintending Agriculture Officer') : user?.role === 'tao' ? (user?.taluka_name || t('Taluka Agriculture Officer')) : user?.role === 'cao' ? (user?.taluka_name ? `${user.taluka_name} (${t('CAO scope')})` : t('Circle / Mandal Supervisor')) : t('Agriculture Officer')}</span>
-            </>
+            <span>
+              {user?.district_name || t('District')}
+              {user?.taluka_name ? ` · ${user.taluka_name}` : ''}
+            </span>
           )}
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1.5 ml-4">
-          <button
-            className={`icon-btn-soft text-[11px] font-bold px-2 ${user?.role === 'state' ? 'text-gray-300' : ''}`}
-            onClick={cycleLanguage}
-            aria-label="Switch language"
-            title={t('Language')}
-          >
-            <span className="material-symbols-outlined text-[18px]">translate</span>
-            <span className="hidden sm:inline ml-0.5">{currentLabel}</span>
-          </button>
-          <button className="icon-btn-soft" aria-label={t('Notifications')}>
+        {/* Actions — simplified for Sahayak */}
+        <div className="flex items-center gap-1 ml-2">
+          {/* Language toggle — desktop only for Sahayak, always for others */}
+          {!isSahayak && (
+            <button
+              className="icon-btn-soft text-[11px] font-bold px-2"
+              onClick={cycleLanguage}
+              aria-label="Switch language"
+            >
+              <span className="material-symbols-outlined text-[18px]">translate</span>
+              <span className="hidden sm:inline ml-0.5">{currentLabel}</span>
+            </button>
+          )}
+
+          {/* Notifications */}
+          <button className="icon-btn-soft relative" aria-label={t('Notifications')} id="notif-btn">
             <span className="material-symbols-outlined text-[20px]">notifications</span>
+            {/* notification dot */}
+            <span style={{
+              position: 'absolute', top: 6, right: 6,
+              width: 7, height: 7, borderRadius: '50%',
+              background: '#ba1a1a', border: '1.5px solid white',
+            }} />
           </button>
-          <button className="icon-btn-soft" aria-label={t('Settings')}>
-            <span className="material-symbols-outlined text-[20px]">settings</span>
-          </button>
+
+          {/* Avatar */}
           <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[12px] font-bold select-none"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold select-none ml-1"
             style={{
               background: 'linear-gradient(135deg, #2d6b48 0%, #1f4d36 100%)',
-              boxShadow: '0 1px 2px rgba(20, 40, 30, 0.18), inset 0 1px 0 rgba(255,255,255,0.08)',
-              marginLeft: '6px',
+              boxShadow: '0 1px 2px rgba(20,40,30,0.18)',
             }}
           >
-            {user?.username?.[0]?.toUpperCase() || 'D'}
+            {user?.username?.[0]?.toUpperCase() || 'K'}
           </div>
         </div>
       </header>
 
-      {/* ── Body row: Sidebar + main ── */}
+      {/* ── Body row ── */}
       <div className="flex flex-1 min-h-0">
 
-        {/* Mobile backdrop */}
+        {/* Mobile/Tablet backdrop */}
         {isOpen && (
           <div
-            className="fixed inset-0 bg-black/30 md:hidden"
-            style={{ zIndex: 1040 }}
+            className="fixed inset-0 bg-black/30"
+            style={{ zIndex: 1150 }}
             onClick={closeSidebar}
           />
         )}
 
-        {/* Sidebar — uses the existing Sidebar.jsx component */}
-        <Sidebar isOpen={isOpen} />
+        {/* Sidebar */}
+        <Sidebar isOpen={isOpen} onClose={closeSidebar} />
 
-        {/* Main content scrolls independently */}
+        {/* Main content */}
         <main
-          className={`flex-1 min-w-0 overflow-y-auto ${['farmer', 'state', 'division'].includes(user?.role) ? 'pb-0' : 'md:pb-0 pb-16'}`}
+          className="flex-1 min-w-0 overflow-y-auto"
+          style={{ paddingBottom: showBottomNav ? 'calc(56px + env(safe-area-inset-bottom))' : 0 }}
         >
           <Outlet />
         </main>
       </div>
 
-      {/* Mobile bottom nav — officer / Sahayak flows only */}
-      {!['farmer', 'state', 'division'].includes(user?.role) && <BottomNav />}
+      {/* Bottom nav */}
+      {showBottomNav && <BottomNav />}
     </div>
   );
 };

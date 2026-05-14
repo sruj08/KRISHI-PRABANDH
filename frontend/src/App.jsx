@@ -79,6 +79,12 @@ const App = () => {
             <Route path="/officer/gr-assistant" element={<GRAssistantPage />} />
             <Route path="/officer/scan-document" element={<ScanDocumentPage />} />
             <Route path="/officer/ai-verification" element={<AIVerificationPage />} />
+            <Route path="/officer/eligibility" element={<Placeholder title="Eligible Farmers" icon="fact_check" tabs={['All','Pending','Approved','Rejected','KYC']} sections={[{ title: 'Eligibility Rules Engine', type: 'cards' }, { title: 'Pending Review', type: 'table' }]} />} />
+            <Route path="/officer/field-verification" element={<Placeholder title="Field Verification" icon="verified_user" tabs={['Visits','Geo-tagged Photos','Pending Checks']} sections={[{ title: 'Scheduled Visits', type: 'table' }, { title: 'Coverage Metrics', type: 'cards' }]} />} />
+            {/* Legacy redirects */}
+            <Route path="/advanced-tools" element={<Navigate to="/officer/eligibility" replace />} />
+            <Route path="/eligibility" element={<Navigate to="/officer/eligibility" replace />} />
+            <Route path="/verification" element={<Navigate to="/officer/field-verification" replace />} />
             <Route path="/survey" element={<SurveyOperationsDashboard />} />
             <Route path="/mandal" element={<MandalDashboard />} />
             <Route path="/applications" element={<Applications />} />
@@ -86,7 +92,6 @@ const App = () => {
             <Route path="/confirm-verification" element={<ConfirmVerification />} />
             <Route path="/fraud-alerts" element={<FraudAlerts />} />
             <Route path="/select-task" element={<SelectTask />} />
-            <Route path="/advanced-tools" element={<AdvancedTools />} />
             <Route path="/visit-planner" element={<VisitPlanner />} />
             <Route path="/gram-sabha" element={<GramSabha />} />
 
