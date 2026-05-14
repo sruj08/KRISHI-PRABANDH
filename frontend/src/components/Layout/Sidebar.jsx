@@ -212,7 +212,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   }, [location.pathname, menuSections]);
 
   return (
-    <aside className={`sidebar flex flex-col shrink-0 z-40 ${isOpen ? 'open' : ''} bg-white`}>
+    <aside className={`sidebar flex flex-col z-40 ${isOpen ? 'open' : ''} bg-white`}>
 
       {/* Sidebar brand header (only visible on mobile/tablet overlay) */}
       <div className="flex items-center gap-2 px-4 py-4 border-b border-[#e2e9e6] lg:hidden shrink-0">
