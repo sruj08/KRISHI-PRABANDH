@@ -180,6 +180,7 @@ const SahayakDashboard = () => {
             { icon: 'post_add',       label: 'New\nApplication', path: '/applications',            color: '#B45309', bg: 'rgba(180,83,9,0.07)' },
             { icon: 'directions_car', label: 'Field\nVisit',     path: '/officer/field-verification', color: '#396940', bg: 'rgba(57,105,64,0.07)' },
             { icon: 'diversity_3',    label: 'Gram\nSabha',      path: '/gram-sabha',              color: '#4d2024', bg: 'rgba(77,32,36,0.07)', special: true },
+            { icon: 'satellite_alt', label: 'Survey\nQueue',    path: '/survey',                  color: '#1f4d36', bg: 'rgba(31,77,54,0.07)' },
           ].map((item, i) => (
             <button
               key={i}
@@ -204,6 +205,7 @@ const SahayakDashboard = () => {
             { label: 'Verify',      value: verifyCount,  icon: 'fact_check',      color: '#1f4d36', path: '/officer/field-verification' },
             { label: 'Alerts',      value: alertCount,   icon: 'gpp_bad',         color: '#ba1a1a', path: '/officer/ai-verification' },
             { label: 'Approved',    value: approvedCount,icon: 'check_circle',    color: '#396940', path: '/applications?status=approved' },
+            { label: 'Surveys',    value: pendingCount, icon: 'satellite_alt',   color: '#1f4d36', path: '/survey' },
           ].map((item, i) => (
             <button key={i} className="status-pill" onClick={() => navigate(item.path)}>
               <span className="material-symbols-outlined" style={{ fontSize: 18, color: item.color }}>{item.icon}</span>
