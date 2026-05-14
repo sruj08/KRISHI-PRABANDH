@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import RegionalMap from '../../components/maps/RegionalMap';
 import { geoAsset } from '../../utils/geoAsset';
 import {
@@ -11,9 +11,10 @@ import {
 import { useToast } from '../../hooks/useToast.jsx';
 import { useLanguage } from '../../context/LanguageContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
+import { fetchClaimsSummary } from '../../shared/api/services';
+import usePolling from '../../hooks/usePolling';
 import '../district/district.css';
 
-/* ── Shared design primitives ───────────────────────────────────────────────── */
 const PANEL_BORDER = '#e2e3df';
 const TEXT_PRIMARY = '#1a1c1a';
 const TEXT_MUTED = '#717972';
@@ -98,7 +99,6 @@ const STATUS_CHIP = {
   'Lagging':  { color: '#ba1a1a', bg: 'rgba(255,218,214,0.45)' },
 };
 
-/** Asymmetric fitBounds padding: extra top inset clears the floating map controls (modes + legend). */
 const STATE_MAP_FIT_BOUNDS_OPTIONS = {
   paddingTopLeft: [22, 118],
   paddingBottomRight: [22, 20],
@@ -108,6 +108,20 @@ const StateDashboard = () => {
   const { addToast } = useToast();
   const { t } = useLanguage();
   const { stats } = useKrishiData();
+  const [liveSummary, setLiveSummary] = useState(null);
+  const [summaryLoading, setSummaryLoading] = useState(true);
+
+  const loadSummary = useCallback(async () => {
+    try {
+      const s = await fetchClaimsSummary();
+      setLiveSummary(s);
+    } catch (_) {
+    } finally {
+      setSummaryLoading(false);
+    }
+  }, []);
+
+  usePolling(loadSummary, 5000);
 
   const onDscAuthorize = () => {
     const total = PFMS_BATCHES.reduce((a, b) => a + b.beneficiaries, 0);
@@ -117,24 +131,41 @@ const StateDashboard = () => {
   const totalAlerts = DIVISION_MATRIX.reduce((a, d) => a + d.fraudAlerts, 0);
   const totalPending = DIVISION_MATRIX.reduce((a, d) => a + d.pending, 0);
 
+  const totalClaims = liveSummary?.totalClaims ?? liveSummary?.total_applications ?? EXEC_KPIS.totalBudgetCr;
+  const approvedCount = liveSummary?.approved ?? liveSummary?.by_status?.Approved;
+  const pendingCount = liveSummary?.pending ?? liveSummary?.by_status?.['Under Scrutiny'];
+  const flaggedCount = liveSummary?.flagged ?? liveSummary?.fraud_alerts;
+
   return (
     <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
+      {!summaryLoading && liveSummary && (
+        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 12, padding: '12px 18px', fontSize: 12, color: '#1a1c1a', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>analytics</span>
+          <span style={{ fontWeight: 700 }}>{t('Live Claims Summary', lang)}</span>
+          <span style={{ color: '#717972' }}>
+            {t('Total', lang)}: <strong>{totalClaims ?? '—'}</strong>
+          </span>
+          {approvedCount != null && (
+            <span style={{ color: '#2e7d32' }}>
+              {t('Approved', lang)}: <strong>{approvedCount}</strong>
+            </span>
+          )}
+          {pendingCount != null && (
+            <span style={{ color: '#e65100' }}>
+              {t('Pending', lang)}: <strong>{pendingCount}</strong>
+            </span>
+          )}
+          {flaggedCount != null && (
+            <span style={{ color: '#c62828' }}>
+              {t('Flagged', lang)}: <strong>{flaggedCount}</strong>
+            </span>
+          )}
+        </div>
+      )}
+
       {stats?.totalSurveys != null && (
-        <div
-          style={{
-            background: '#fff',
-            border: '1px solid #e2e3df',
-            borderRadius: 12,
-            padding: '12px 18px',
-            fontSize: 12,
-            color: '#1a1c1a',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 12,
-            alignItems: 'center',
-          }}
-        >
+        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 12, padding: '12px 18px', fontSize: 12, color: '#1a1c1a', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>dataset</span>
           <span style={{ fontWeight: 700 }}>{t('liveCsvAggregate')}</span>
           <span style={{ color: '#717972' }}>
@@ -153,7 +184,6 @@ const StateDashboard = () => {
         </div>
       )}
 
-      {/* ── KPI Strip ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
         <KpiCard
           icon="account_balance_wallet"
@@ -214,9 +244,7 @@ const StateDashboard = () => {
         </KpiCard>
       </div>
 
-      {/* ── Main Grid: Map + Right Panel ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, flex: 1, minHeight: 0 }}>
-
         <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 480 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
@@ -236,7 +264,6 @@ const StateDashboard = () => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
           <PanelSection title={t('statewideFriction')} subtitle={t('systemIntegrationErrors')}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <FrictionRow label={t('aadhaarMismatch')} pct={31} color="#ba1a1a" />
@@ -273,7 +300,6 @@ const StateDashboard = () => {
         </div>
       </div>
 
-      {/* ── Division Matrix Row ── */}
       <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '22px 24px', borderBottom: '1px solid #f3f4f0', flexWrap: 'wrap' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>table_chart</span>
@@ -317,7 +343,6 @@ const StateDashboard = () => {
         </div>
       </div>
 
-      {/* ── PFMS Disbursement Table ── */}
       <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(57,105,64,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import RegionalMap from '../../components/maps/RegionalMap';
 import {
   EXEC_KPIS,
@@ -11,9 +11,10 @@ import { useToast } from '../../hooks/useToast.jsx';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
+import { fetchClaimsSummary } from '../../shared/api/services';
+import usePolling from '../../hooks/usePolling';
 import '../district/district.css';
 
-/* ── Shared design primitives ───────────────────────────────────────────────── */
 const PANEL_BORDER = '#e2e3df';
 const TEXT_PRIMARY = '#1a1c1a';
 const TEXT_MUTED = '#717972';
@@ -91,7 +92,6 @@ const FrictionRow = ({ label, pct, color }) => (
   </div>
 );
 
-/* District matrix row — extra section unique to Division dashboard */
 const STATUS_CHIP = {
   'Leading':   { color: '#1b5e20', bg: 'rgba(186,240,188,0.45)' },
   'On track':  { color: '#1b5e20', bg: 'rgba(186,240,188,0.30)' },
@@ -104,11 +104,20 @@ const DivisionDashboard = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const { stats, mandals } = useKrishiData();
+  const [liveSummary, setLiveSummary] = useState(null);
+
+  const loadSummary = useCallback(async () => {
+    try {
+      const s = await fetchClaimsSummary();
+      setLiveSummary(s);
+    } catch (_) {}
+  }, []);
+
+  usePolling(loadSummary, 5000);
+
   const circlesInDivision =
     user?.division_id != null
-      ? mandals.filter(
-          (m) => Number(m.division_id) === Number(user.division_id),
-        ).length
+      ? mandals.filter((m) => Number(m.division_id) === Number(user.division_id)).length
       : null;
 
   const onDscAuthorize = () => {
@@ -122,21 +131,28 @@ const DivisionDashboard = () => {
   return (
     <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
+      {liveSummary && (
+        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 12, padding: '12px 18px', fontSize: 12, color: '#1a1c1a', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>analytics</span>
+          <span style={{ fontWeight: 700 }}>{t('Live Claims Summary')}</span>
+          <span style={{ color: '#717972' }}>
+            {t('Total')}: <strong>{liveSummary.totalClaims ?? liveSummary.total_applications ?? '—'}</strong>
+          </span>
+          {liveSummary.approved != null && (
+            <span style={{ color: '#2e7d32' }}>
+              {t('Approved')}: <strong>{liveSummary.approved}</strong>
+            </span>
+          )}
+          {liveSummary.pending != null && (
+            <span style={{ color: '#e65100' }}>
+              {t('Pending')}: <strong>{liveSummary.pending}</strong>
+            </span>
+          )}
+        </div>
+      )}
+
       {(user?.division_name || circlesInDivision != null || stats?.totalSurveys != null) && (
-        <div
-          style={{
-            background: '#fff',
-            border: '1px solid #e2e3df',
-            borderRadius: 12,
-            padding: '12px 18px',
-            fontSize: 12,
-            color: '#1a1c1a',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 12,
-            alignItems: 'center',
-          }}
-        >
+        <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 12, padding: '12px 18px', fontSize: 12, color: '#1a1c1a', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>dataset</span>
           <span style={{ fontWeight: 700 }}>{t('csvScopeDivision')}</span>
           {user?.division_name && (
@@ -157,7 +173,6 @@ const DivisionDashboard = () => {
         </div>
       )}
 
-      {/* ── KPI Strip ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
         <KpiCard
           icon="account_balance_wallet"
@@ -218,10 +233,7 @@ const DivisionDashboard = () => {
         </KpiCard>
       </div>
 
-      {/* ── Main Grid: Map + Right Panel ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, flex: 1, minHeight: 0 }}>
-
-        {/* Map Card */}
         <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 480 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
@@ -238,9 +250,7 @@ const DivisionDashboard = () => {
           </div>
         </div>
 
-        {/* ── Right Panel ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
           <PanelSection title={t('crossDistrictFriction')} subtitle={t('systemIntegrationErrors')}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <FrictionRow label={t('aadhaarMismatch')} pct={38} color="#ba1a1a" />
@@ -277,7 +287,6 @@ const DivisionDashboard = () => {
         </div>
       </div>
 
-      {/* ── District Matrix Row ── */}
       <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '22px 24px', borderBottom: '1px solid #f3f4f0', flexWrap: 'wrap' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>table_chart</span>
@@ -321,7 +330,6 @@ const DivisionDashboard = () => {
         </div>
       </div>
 
-      {/* ── PFMS Disbursement Table ── */}
       <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px 28px', borderBottom: '1px solid #f3f4f0' }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(57,105,64,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

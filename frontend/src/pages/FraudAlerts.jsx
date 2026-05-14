@@ -6,6 +6,8 @@ import Button from '../components/ui/Button';
 import StatusBadge from '../components/ui/StatusBadge';
 import InsightModal from '../components/ui/InsightModal';
 import { fetchFraudAlerts, updateApplicationStatus } from '../utils/api';
+import { fetchClaims, updateClaim } from '../shared/api/services';
+import usePolling from '../hooks/usePolling';
 
 const FraudAlerts = () => {
   const { t, lang } = useLanguage();
@@ -18,14 +20,29 @@ const FraudAlerts = () => {
 
   const loadData = useCallback(async () => {
     try {
-      // The current backend route doesn't accept sahayak_id natively for fraud-alerts,
-      // but we can client-side filter if needed, or if the backend route is updated to support it.
-      // Since fetchApplications does support it, and fraud alerts uses the same data structure, 
-      // let's do a client side filter for now to ensure scope.
-      const result = await fetchFraudAlerts();
-      let data = result.results || [];
+      let data = [];
+      try {
+        const liveClaims = await fetchClaims();
+        const claims = Array.isArray(liveClaims) ? liveClaims : liveClaims.results || liveClaims.claims || [];
+        data = claims.filter((c) => {
+          const risk = c.confidenceScore != null ? (1 - c.confidenceScore) * 100 : 0;
+          return c.duplicateRisk > 0 || risk > 50;
+        }).map((c) => ({
+          application_id: c.farmerId || c.id || c.application_id,
+          farmer_id: c.farmerId || '—',
+          status: c.workflowStage || c.status || 'Under Scrutiny',
+          component: c.scheme || '—',
+          scheme_name: c.scheme || '—',
+          scheme_category: 'Fraud Alert',
+          rejection_reason: c.duplicateRisk > 0 ? `Duplicate risk: ${c.duplicateRisk}` : `Low confidence: ${((1 - (c.confidenceScore || 0)) * 100).toFixed(0)}% risk`,
+          explanation: `⚠️ Application flagged by AI. confidenceScore: ${c.confidenceScore != null ? (c.confidenceScore * 100).toFixed(0) + '%' : 'N/A'}, geoVerified: ${c.geoVerified != null ? (c.geoVerified ? 'Yes' : 'No') : 'N/A'}, rainfallMatched: ${c.rainfallMatched != null ? (c.rainfallMatched ? 'Yes' : 'No') : 'N/A'}. assignedOfficer: ${c.assignedOfficer || 'Unassigned'}.`,
+        }));
+      } catch (_) {
+        const result = await fetchFraudAlerts();
+        data = result.results || [];
+      }
       if (currentSahayak) {
-         data = data.filter(a => a.sahayak_id === currentSahayak.sahayak_id);
+        data = data.filter(a => a.sahayak_id === currentSahayak.sahayak_id);
       }
       setAlerts(data);
     } catch (err) {
@@ -34,20 +51,27 @@ const FraudAlerts = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentSahayak]);
+  }, [currentSahayak, addToast, t, lang]);
 
   useEffect(() => { loadData(); }, [loadData]);
+  usePolling(loadData, 5000);
 
   const handleInvestigate = async (alert) => {
     setActionLoading(alert.application_id);
     try {
-      const updated = await updateApplicationStatus(alert.application_id, 'Under Scrutiny', 'Marked for investigation');
-      // await postLog({ action: 'INVESTIGATE', application_id: alert.application_id, details: 'Fraud investigation initiated' });
+      try {
+        await updateClaim(alert.farmer_id, {
+          workflowStage: 'Under Administrative Review',
+          reviewRemarks: 'Marked for investigation',
+        });
+      } catch (_) {
+        await updateApplicationStatus(alert.application_id, 'Under Scrutiny', 'Marked for investigation');
+      }
       setAlerts(prev => prev.map(a =>
-        a.application_id === alert.application_id ? { ...a, ...updated } : a
+        a.application_id === alert.application_id ? { ...a, status: 'Under Administrative Review' } : a
       ));
       if (selectedApp?.application_id === alert.application_id) {
-        setSelectedApp(prev => ({ ...prev, ...updated }));
+        setSelectedApp(prev => ({ ...prev, status: 'Under Administrative Review' }));
       }
       addToast(t(`Investigation opened for ${alert.farmer_id}`, lang), 'success');
     } catch (err) {
@@ -85,13 +109,12 @@ const FraudAlerts = () => {
 
       {alerts.map((alert) => {
         const isBusy = actionLoading === alert.application_id;
-        const canInvestigate = ['Applied', 'Under Scrutiny'].includes(alert.status);
+        const canInvestigate = ['Applied', 'Under Administrative Review', 'Under Scrutiny', 'PMFBY Validation Pending'].includes(alert.status);
 
         return (
           <article key={alert.application_id} className="alert-article" style={{ opacity: isBusy ? 0.6 : 1 }}>
             <div className="alert-stripe" />
             <div className="alert-body">
-              {/* Title row */}
               <div className="flex justify-between items-start mb-3">
                 <h3 className="fw-bold text-md">{t('Possible duplicate application detected', lang)}</h3>
                 <span className="badge" style={{ backgroundColor: '#ffebee', color: '#c62828', fontSize: '11px' }}>
@@ -99,7 +122,6 @@ const FraudAlerts = () => {
                 </span>
               </div>
 
-              {/* Data grid — component-first */}
               <div className="alert-detail-grid">
                 <div>
                   <div className="alert-detail-label">{t('Farmer ID', lang)}</div>
@@ -123,17 +145,14 @@ const FraudAlerts = () => {
                 </div>
               </div>
 
-              {/* Rejection reason */}
               <div style={{ margin: '12px 0', backgroundColor: '#ffebee', borderRadius: 'var(--radius)', padding: '8px 12px', border: '1px solid #ffcdd2', fontSize: '12px', color: '#c62828' }}>
                 <strong>{t('Rejection Reason:', lang)}</strong> {alert.rejection_reason}
               </div>
 
-              {/* System explanation */}
               <div style={{ backgroundColor: '#fff3e0', borderRadius: 'var(--radius)', padding: '8px 12px', fontSize: '12px', color: '#e65100', marginBottom: '12px' }}>
                 {alert.explanation || t('⚠️ Possible duplicate application detected. This farmer may have submitted the same application under multiple IDs.', lang)}
               </div>
 
-              {/* Actions */}
               <div className="flex gap-2">
                 <Button
                   variant="error"

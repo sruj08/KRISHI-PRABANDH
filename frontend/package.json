@@ -13,6 +13,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
     "@turf/turf": "^7.3.5",
+    "axios": "^1.16.1",
     "chart.js": "^4.5.1",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",

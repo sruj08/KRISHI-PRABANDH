@@ -7,6 +7,8 @@ import { useKrishiData } from '../../context/KrishiDataContext';
 import CircularGauge from '../../components/ui/CircularGauge';
 import InsightModal from '../../components/ui/InsightModal';
 import { fetchSummary, fetchEligibleFarmers, fetchApplication } from '../../utils/api';
+import { fetchKyc, fetchPayments, fetchClaimsSummary } from '../../shared/api/services';
+import usePolling from '../../hooks/usePolling';
 
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 
@@ -183,15 +185,25 @@ const SahayakDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [eligibleFarmers, setEligibleFarmers] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
+  const [kycRecords, setKycRecords] = useState([]);
+  const [paymentsData, setPaymentsData] = useState(null);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
-        const [s, e] = await Promise.all([fetchSummary(), fetchEligibleFarmers(8)]);
+        const [s, e, k, p, cs] = await Promise.all([
+          fetchSummary(),
+          fetchEligibleFarmers(8),
+          fetchKyc().catch(() => []),
+          fetchPayments().catch(() => null),
+          fetchClaimsSummary().catch(() => null),
+        ]);
         const apiRows = e?.results || [];
-        setSummary(s);
+        setSummary(cs || s);
         setEligibleFarmers(apiRows);
+        setKycRecords(Array.isArray(k) ? k : k.results || k.kyc || []);
+        setPaymentsData(p);
         setApiOnline(true);
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
@@ -204,6 +216,21 @@ const SahayakDashboard = () => {
     };
     load();
   }, []);
+
+  usePolling(async () => {
+    try {
+      const [s, e, k, p] = await Promise.all([
+        fetchSummary(),
+        fetchEligibleFarmers(8),
+        fetchKyc().catch(() => []),
+        fetchPayments().catch(() => null),
+      ]);
+      setSummary(s);
+      setEligibleFarmers(e?.results || []);
+      setKycRecords(Array.isArray(k) ? k : k.results || k.kyc || []);
+      setPaymentsData(p);
+    } catch (_) {}
+  }, 5000);
 
   /** When API returns no rows, show dataset (registry + Agristack mock) */
   useEffect(() => {
@@ -466,6 +493,75 @@ const SahayakDashboard = () => {
           ))}
         </div>
       </section>
+
+      {kycRecords.length > 0 && (
+        <section style={{ marginBottom: 'var(--sp-6)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
+            <h3 className="section-title" style={{ margin: 0 }}>{t('KYC Verification', lang)}</h3>
+            <span className="badge badge-verified" style={{ fontSize: '10px' }}>{kycRecords.length} {t('Records', lang)}</span>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
+              <thead>
+                <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
+                  <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: '#717972', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Farmer ID', lang)}</th>
+                  <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: '#717972', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Status', lang)}</th>
+                  <th style={{ padding: '10px 14px', fontSize: 10, fontWeight: 700, color: '#717972', textAlign: 'right', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('Verified At', lang)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {kycRecords.slice(0, 5).map((rec, idx) => (
+                  <tr key={rec.farmerId || rec.farmer_id || idx} style={{ borderBottom: '1px solid #f3f4f0' }}>
+                    <td style={{ padding: '12px 14px', fontSize: 13, fontWeight: 600, color: '#1a1c1a' }}>{rec.farmerId || rec.farmer_id || '—'}</td>
+                    <td style={{ padding: '12px 14px' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: (rec.status === 'VERIFIED' || rec.kycStatus === 'VERIFIED') ? '#e8f5e9' : '#ffebee', color: (rec.status === 'VERIFIED' || rec.kycStatus === 'VERIFIED') ? '#2e7d32' : '#c62828' }}>
+                        {rec.status || rec.kycStatus || 'PENDING'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px 14px', fontSize: 12, color: '#717972', textAlign: 'right' }}>{rec.verifiedAt || rec.verified_at || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {paymentsData && (
+        <section style={{ marginBottom: 'var(--sp-6)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
+            <h3 className="section-title" style={{ margin: 0 }}>{t('Payment Status', lang)}</h3>
+          </div>
+          <div className="glass-panel" style={{ padding: 'var(--sp-4)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 'var(--sp-3)' }}>
+              {paymentsData.totalPayments != null && (
+                <div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', fontWeight: 600 }}>{t('Total Payments', lang)}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-dark)' }}>{paymentsData.totalPayments}</div>
+                </div>
+              )}
+              {paymentsData.totalAmount != null && (
+                <div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', fontWeight: 600 }}>{t('Total Amount', lang)}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-dark)' }}>₹{Number(paymentsData.totalAmount).toLocaleString('en-IN')}</div>
+                </div>
+              )}
+              {paymentsData.pendingCount != null && (
+                <div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', fontWeight: 600 }}>{t('Pending', lang)}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: '#e65100' }}>{paymentsData.pendingCount}</div>
+                </div>
+              )}
+              {paymentsData.completedCount != null && (
+                <div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', fontWeight: 600 }}>{t('Completed', lang)}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: '#2e7d32' }}>{paymentsData.completedCount}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section style={{ marginBottom: 'var(--sp-6)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
