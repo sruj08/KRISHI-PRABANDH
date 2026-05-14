@@ -909,7 +909,7 @@
 
 .fi-case__linked-head {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr;
+  grid-template-columns: 2fr 1.35fr 1fr minmax(72px, auto);
   gap: 8px;
   padding: 0 0 6px;
   font-size: 9px;
@@ -923,7 +923,7 @@
 
 .fi-case__linked-row {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr;
+  grid-template-columns: 2fr 1.35fr 1fr minmax(72px, auto);
   gap: 8px;
   padding: 7px 0;
   border-bottom: 1px solid #f2f2f0;
@@ -950,6 +950,40 @@
   font-size: 11px;
   font-weight: 400;
   color: #777;
+}
+
+
+.fi-case__linked-inv {
+  text-align: right;
+  min-width: 0;
+}
+
+.fi-case__linked-inv-dash {
+  color: #c8c8c4;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.fi-case__linked-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--fi-green);
+  text-decoration: none;
+  width: fit-content;
+  margin-left: auto;
+}
+
+.fi-case__linked-pdf:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.fi-case__linked-pdf-icon {
+  font-size: 14px;
+  line-height: 1;
 }
 
 /* Pointer-following tooltip (portaled; smooth transform; minimal glass) */
