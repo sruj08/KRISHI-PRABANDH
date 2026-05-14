@@ -736,8 +736,9 @@ a.fp-nav-btn {
 
 .fp-completion-ring svg {
   display: block;
-  max-width: 100%;
-  height: auto;
+  flex-shrink: 0;
+  /* Intrinsic width/height from markup; avoid flex/grid squashing the ring */
+  max-width: none;
 }
 
 .fp-chip-ic {
