@@ -76,13 +76,16 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       },
       '/surveys': {
         target: 'http://localhost:5000',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       },
       '/analytics': {
+        target: 'http://localhost:5000',
         target: 'http://localhost:5000',
         changeOrigin: true,
       },

@@ -1,0 +1,1095 @@
+/* AI Cross-District Fraud Intelligence — Maharashtra agri admin desk (minimal gov UI) */
+
+.fi-page {
+  --fi-bg: #f4f5f3;
+  --fi-surface: #fafbf9;
+  --fi-border: #e2e4df;
+  --fi-text: #1a1c1a;
+  --fi-muted: #5c6560;
+  --fi-soft: #717972;
+  --fi-p1: #9b1c1c;
+  --fi-p1-bg: rgba(155, 28, 28, 0.08);
+  --fi-p2: #a16207;
+  --fi-p2-bg: rgba(161, 98, 7, 0.1);
+  --fi-p3: #57534e;
+  --fi-p3-bg: rgba(87, 83, 78, 0.08);
+  --fi-green: #2f5f3a;
+
+  min-height: 100%;
+  background: var(--fi-bg);
+  color: var(--fi-text);
+  box-sizing: border-box;
+  padding: clamp(16px, 2vw, 24px) clamp(16px, 2.5vw, 28px) 32px;
+}
+
+.fi-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.fi-inner--split {
+  max-width: 1380px;
+}
+
+.fi-page--fraud-cloud {
+  padding: clamp(14px, 1.6vw, 20px) clamp(12px, 1.4vw, 20px) 24px;
+}
+
+.fi-inner--fraud-wide {
+  max-width: min(1680px, 100%);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.fi-title {
+  margin: 0;
+  font-size: clamp(1.15rem, 2.2vw, 1.35rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--fi-text);
+}
+
+.fi-sub {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fi-muted);
+  line-height: 1.5;
+  max-width: 52ch;
+}
+
+/* KPI row */
+.fi-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+@media (max-width: 820px) {
+  .fi-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 440px) {
+  .fi-kpis {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fi-kpi {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  min-height: 76px;
+  background: var(--fi-surface);
+  border: 1px solid var(--fi-border);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(26, 28, 26, 0.04);
+}
+
+.fi-kpi__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #eef0ec;
+  border: 1px solid var(--fi-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--fi-soft);
+  font-size: 18px;
+}
+
+.fi-kpi__value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  color: var(--fi-text);
+}
+
+.fi-kpi__label {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fi-soft);
+  margin-top: 4px;
+}
+
+/* Heat strip */
+.fi-heat {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--fi-surface);
+  border: 1px solid var(--fi-border);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(26, 28, 26, 0.04);
+}
+
+.fi-heat__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.fi-heat__title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--fi-text);
+}
+
+.fi-heat__hint {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fi-soft);
+}
+
+.fi-heat__row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .fi-heat__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.fi-heat__cell {
+  border: 1px solid var(--fi-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: default;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.fi-heat__cell[data-intensity='1'] { background: rgba(57, 105, 64, 0.06); }
+.fi-heat__cell[data-intensity='2'] { background: rgba(113, 121, 114, 0.12); }
+.fi-heat__cell[data-intensity='3'] { background: rgba(161, 98, 7, 0.12); }
+.fi-heat__cell[data-intensity='4'] { background: rgba(194, 65, 12, 0.14); }
+.fi-heat__cell[data-intensity='5'] { background: rgba(155, 28, 28, 0.14); }
+
+.fi-heat__name {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--fi-text);
+}
+
+.fi-heat__meta {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fi-muted);
+}
+
+.fi-heat__legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fi-soft);
+}
+
+.fi-heat__segments {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.fi-heat__seg {
+  width: 20px;
+  height: 6px;
+  border-radius: 1px;
+  border: 1px solid var(--fi-border);
+}
+
+.fi-heat__seg--1 { background: rgba(57, 105, 64, 0.12); }
+.fi-heat__seg--3 { background: rgba(161, 98, 7, 0.18); }
+.fi-heat__seg--5 { background: rgba(155, 28, 28, 0.22); }
+
+/* ── Investigation grid: feed + sticky intelligence (in-flow, not viewport-fixed) */
+.fi-feed-shell {
+  position: relative;
+  width: 100%;
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* Stretch to full feed column height so `position: sticky` on the aside is bounded
+   to the investigation block — panel stays beside the feed until the section ends. */
+.fi-feed-rail {
+  min-width: 0;
+  min-height: 0;
+}
+
+.fi-feed--full {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+@media (min-width: 961px) {
+  .fi-hover-cloud {
+    position: sticky;
+    /* Set on .fi-feed-shell via JS: max(6rem, district section bottom) so the rail never sits above district concentration */
+    top: var(--fi-hover-sticky-top, 6rem);
+    width: 100%;
+    max-width: 340px;
+    max-height: calc(
+      100vh - var(--fi-hover-sticky-top, 6rem) - 1rem - env(safe-area-inset-bottom, 0px)
+    );
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 2;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .fi-hover-cloud__panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(229, 231, 225, 0.72);
+    box-shadow:
+      0 20px 25px -5px rgba(15, 18, 14, 0.07),
+      0 8px 10px -6px rgba(15, 18, 14, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    padding: 14px 16px 16px 20px;
+    transition:
+      box-shadow 0.32s ease,
+      border-color 0.32s ease;
+  }
+
+  .fi-hover-cloud__panel::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 16px;
+    bottom: 16px;
+    width: 3px;
+    border-radius: 99px;
+    background: linear-gradient(
+      180deg,
+      rgba(47, 95, 58, 0.35) 0%,
+      rgba(47, 95, 58, 0.1) 42%,
+      rgba(47, 95, 58, 0.22) 100%
+    );
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  .fi-hover-cloud:hover .fi-hover-cloud__panel {
+    border-color: rgba(212, 216, 208, 0.95);
+    box-shadow:
+      0 22px 28px -6px rgba(15, 18, 14, 0.09),
+      0 10px 12px -8px rgba(15, 18, 14, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  }
+
+  .fi-hover-cloud .fi-rail__stack--float {
+    gap: 12px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .fi-feed-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .fi-hover-cloud {
+    position: static;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    z-index: auto;
+    width: 100%;
+  }
+
+  .fi-hover-cloud__panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    background: rgba(252, 252, 250, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(229, 231, 225, 0.72);
+    box-shadow:
+      0 16px 22px -8px rgba(15, 18, 14, 0.08),
+      0 6px 8px -6px rgba(15, 18, 14, 0.05);
+    padding: 12px 14px 14px 18px;
+  }
+
+  .fi-hover-cloud__panel::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 14px;
+    bottom: 14px;
+    width: 3px;
+    border-radius: 99px;
+    background: linear-gradient(
+      180deg,
+      rgba(47, 95, 58, 0.28) 0%,
+      rgba(47, 95, 58, 0.08) 50%,
+      rgba(47, 95, 58, 0.2) 100%
+    );
+    pointer-events: none;
+  }
+
+  .fi-hover-cloud .fi-rail__stack--float {
+    gap: 12px;
+  }
+}
+
+.fi-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fi-feed__kicker {
+  margin: 0 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--fi-soft);
+  text-transform: uppercase;
+}
+
+.fi-feed__hint {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fi-muted);
+  line-height: 1.45;
+}
+
+.fi-rail {
+  position: sticky;
+  top: 8px;
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .fi-rail {
+    position: static;
+  }
+}
+
+.fi-rail__stack--float {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fi-rail__stack--float > .fi-intel-card {
+  transform: none;
+}
+
+/* Shared floating card chrome */
+.fi-intel-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(252, 252, 250, 0.98) 0%, rgba(247, 248, 245, 0.98) 100%);
+  border: 1px solid rgba(210, 212, 206, 0.85);
+  border-radius: 22px;
+  padding: 16px 18px 18px;
+  box-shadow:
+    0 6px 20px rgba(18, 20, 16, 0.09),
+    0 1px 0 rgba(255, 255, 255, 0.85) inset;
+  isolation: isolate;
+}
+
+/* Cards inside floating cloud — glass inner surfaces */
+.fi-hover-cloud .fi-intel-card {
+  padding: 12px 14px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 4px 16px rgba(15, 18, 14, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.fi-hover-cloud .fi-intel-card__title {
+  margin-bottom: 6px;
+}
+
+.fi-intel-card__title {
+  margin: 0 0 10px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6d756d;
+}
+
+/* ── AI insight — own card, natural height */
+.fi-intel-card--insight {
+  min-height: 0;
+  max-height: none;
+  padding: 12px 14px 14px;
+  border-radius: 18px;
+}
+
+.fi-intel-card--insight .fi-intel-card__title {
+  margin-bottom: 8px;
+}
+
+.fi-intel-card--insight .fi-intel-card__lead {
+  margin: 0 0 5px;
+  font-size: 12px;
+}
+
+.fi-intel-card--insight .fi-intel-bullets li {
+  font-size: 11.5px;
+}
+
+/* ── Fraud trend */
+.fi-intel-card--trend {
+  min-height: 0;
+  border-radius: 18px;
+  padding: 12px 14px 14px;
+}
+
+.fi-intel-card__lead {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fi-muted);
+  line-height: 1.45;
+}
+
+.fi-intel-card__pct {
+  color: var(--fi-text);
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.fi-intel-card__lead-muted {
+  font-weight: 500;
+  color: var(--fi-soft);
+}
+
+.fi-intel-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fi-intel-bullets li {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fi-muted);
+  line-height: 1.4;
+  padding-left: 10px;
+  position: relative;
+}
+
+.fi-intel-bullets li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--fi-soft);
+  font-weight: 700;
+}
+
+.fi-trend-list {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fi-trend-row {
+  display: grid;
+  grid-template-columns: 1fr minmax(48px, 64px);
+  gap: 8px;
+  align-items: center;
+}
+
+.fi-trend-row__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fi-trend-row__name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--fi-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fi-trend-row__arrow {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fi-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.fi-trend-row__bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.fi-trend-row__fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(47, 95, 58, 0.35), rgba(47, 95, 58, 0.85));
+}
+
+.fi-trend-spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding-top: 2px;
+  border-top: 1px solid rgba(226, 228, 223, 0.9);
+}
+
+.fi-trend-spark__svg {
+  flex: 1;
+  height: 28px;
+  min-width: 0;
+}
+
+.fi-trend-spark__line {
+  stroke: rgba(47, 95, 58, 0.55);
+}
+
+.fi-trend-spark__cap {
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--fi-soft);
+  white-space: nowrap;
+  padding-bottom: 2px;
+}
+
+/* ── Investigation queue cards ─────────────────────────────────────────── */
+
+/* Severity colour tokens — only used for the left edge stripe */
+:root {
+  --sev-p1: #c72626;
+  --sev-p2: #b87208;
+  --sev-p3: #9e9c97;
+}
+
+.fi-case {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e8e9e6;
+  border-left: 3px solid var(--sev-p3);
+  border-radius: 10px;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(10, 12, 10, 0.05);
+  transition: box-shadow 0.14s ease, border-color 0.14s ease;
+  width: 100%;
+  color: #111;
+  overflow: hidden;
+}
+
+.fi-case.fi-case--p1 { border-left-color: var(--sev-p1); }
+.fi-case.fi-case--p2 { border-left-color: var(--sev-p2); }
+.fi-case.fi-case--p3 { border-left-color: var(--sev-p3); }
+
+.fi-case:hover {
+  box-shadow: 0 2px 8px rgba(10, 12, 10, 0.08);
+  border-color: #d8dbd6;
+  border-left-color: inherit;
+}
+
+.fi-case:focus-visible {
+  outline: 2px solid rgba(47, 95, 58, 0.4);
+  outline-offset: 2px;
+}
+
+.fi-case--open {
+  box-shadow: 0 4px 16px rgba(10, 12, 10, 0.08);
+}
+
+/* ── Header row (always visible) */
+.fi-case__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px 16px 16px;
+}
+
+.fi-case--open .fi-case__row {
+  border-bottom: 1px solid #ebebea;
+  padding-bottom: 14px;
+}
+
+.fi-case__row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* scheme · status line */
+.fi-case__topline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.fi-case__scheme-text {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #555;
+  cursor: help;
+}
+
+.fi-case__topline-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #ccc;
+  flex-shrink: 0;
+}
+
+.fi-case__status-text {
+  font-size: 10px;
+  font-weight: 500;
+  color: #7a7a7a;
+  cursor: help;
+}
+
+/* title */
+.fi-case__title {
+  margin: 0 0 7px;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: var(--fi-muted);
+}
+
+/* district list */
+.fi-case__district-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 0 0 10px;
+  font-size: 11px;
+  color: #6a6a6a;
+}
+
+.fi-case__dist-name {
+  cursor: help;
+  font-weight: 500;
+}
+
+/* Case card — collapsed summary; expand for narrative + why flagged */
+.fi-case {
+  background: var(--fi-surface);
+  border: 1px solid var(--fi-border);
+  border-radius: 10px;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(26, 28, 26, 0.03);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  width: 100%;
+  color: inherit;
+}
+
+.fi-case__dist-sep {
+  color: #bbb;
+  user-select: none;
+}
+
+/* collapsed metrics row */
+.fi-case__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 6px;
+  border-top: 1px solid #f0f0ee;
+  padding-top: 10px;
+}
+
+.fi-case__metric {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.fi-case__metric-k {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+
+.fi-case__metric-v {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #222;
+}
+
+.fi-case__metric-rule {
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  background: #ddd;
+  margin: 0 8px;
+  vertical-align: middle;
+}
+
+/* chevron */
+.fi-case__chev {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #bbb;
+  line-height: 1;
+  margin-top: 2px;
+  transition: color 0.14s ease;
+  user-select: none;
+}
+
+.fi-case:hover .fi-case__chev {
+  color: #888;
+}
+
+/* ── Expanded body */
+.fi-case__body {
+  padding: 16px 18px 18px 16px;
+  background: #fff;
+}
+
+/* narrative */
+.fi-case__narr {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #444;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+/* dealer row */
+.fi-case__dealer-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  background: #fafaf9;
+  border: 1px solid #ebebea;
+  border-radius: 7px;
+}
+
+.fi-case__dealer-k {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  white-space: nowrap;
+}
+
+.fi-case__dealer-v {
+  font-size: 12px;
+  font-weight: 600;
+  color: #222;
+  cursor: help;
+}
+
+/* observations */
+.fi-case__obs-head {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.fi-case__obs {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fi-case__obs li {
+  font-size: 12px;
+  font-weight: 400;
+  color: #333;
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.fi-case__obs li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: #bbb;
+  font-weight: 400;
+}
+
+/* stats row */
+.fi-case__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  padding: 12px 0;
+  border-top: 1px solid #ebebea;
+  border-bottom: 1px solid #ebebea;
+  margin-bottom: 16px;
+}
+
+.fi-case__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fi-case__stat-k {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+
+.fi-case__stat-v {
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #111;
+}
+
+/* linked applications — minimal table */
+.fi-case__linked {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.fi-case__linked-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.15fr) minmax(0, 0.85fr) minmax(52px, 0.75fr);
+  gap: 8px;
+  padding: 0 0 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #aaa;
+  border-bottom: 1px solid #ebebea;
+  margin-bottom: 2px;
+}
+
+.fi-case__linked-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.15fr) minmax(0, 0.85fr) minmax(52px, 0.75fr);
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid #f2f2f0;
+  align-items: center;
+}
+
+.fi-case__linked-row:last-child {
+  border-bottom: none;
+}
+
+.fi-case__linked-name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #222;
+}
+
+.fi-case__linked-scheme {
+  font-size: 11px;
+  font-weight: 400;
+  color: #555;
+}
+
+.fi-case__linked-district {
+  font-size: 11px;
+  font-weight: 400;
+  color: #777;
+}
+
+.fi-case__linked-inv {
+  text-align: right;
+  min-width: 0;
+}
+
+.fi-case__linked-inv-dash {
+  color: #c8c8c4;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.fi-case__linked-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--fi-green);
+  text-decoration: none;
+  width: fit-content;
+  margin-left: auto;
+}
+
+.fi-case__linked-pdf:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.fi-case__linked-pdf-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Pointer-following tooltip (portaled; smooth transform; minimal glass) */
+.fi-crisp-tip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10050;
+  pointer-events: none;
+  max-width: min(220px, calc(100vw - 20px));
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.32, 1);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.fi-crisp-tip__inner {
+  position: relative;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 8px 12px 9px;
+  border: 1px solid rgba(15, 18, 14, 0.06);
+  box-shadow:
+    0 12px 40px rgba(15, 18, 14, 0.1),
+    0 2px 8px rgba(15, 18, 14, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 14px;
+  row-gap: 3px;
+  align-items: baseline;
+  animation: fiCrispTipIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fiCrispTipIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.fi-crisp-tip__title {
+  grid-column: 1 / -1;
+  margin: 0 0 5px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #121512;
+  line-height: 1.25;
+}
+
+.fi-crisp-tip__k {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #6f756f;
+  line-height: 1.35;
+}
+
+.fi-crisp-tip__v {
+  font-size: 11.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #0f120f;
+  text-align: right;
+  line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fi-crisp-tip {
+    transition: none;
+  }
+
+  .fi-crisp-tip__inner {
+    animation: none;
+  }
+}
+
+.fi-heat__cell--tip {
+  cursor: help;
+}
+
+.fi-page--fraud-cloud .fi-kpi,
+.fi-page--fraud-cloud .fi-scheme-tag,
+.fi-page--fraud-cloud .fi-sev,
+.fi-page--fraud-cloud .fi-status,
+.fi-page--fraud-cloud .fi-district-tag,
+.fi-page--fraud-cloud .fi-dealer-tag {
+  cursor: help;
+}

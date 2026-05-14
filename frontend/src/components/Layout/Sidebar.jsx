@@ -12,7 +12,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const isSahayak = !user?.role || user.role === 'officer' || user.role === 'mandal_officer';
 
-  const [expandedSection, setExpandedSection] = useState('home');
+  const [expandedSection, setExpandedSection] = useState('cmd');
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -109,7 +109,12 @@ const Sidebar = ({ isOpen, onClose }) => {
           { to: '/cao', icon: 'dashboard', label: 'Dashboard' },
           { to: '/map', icon: 'map', label: 'Command Map' },
         ]},
-        { id: 'dao_modules', label: 'MODULES', items: [
+        { id: 'dao_supervision', label: 'SUPERVISION', items: [
+          { to: '/cao/sahayak-matrix', icon: 'leaderboard', label: 'Sahayak Matrix' },
+          { to: '/cao/supervision', icon: 'visibility', label: 'Supervision' },
+          { to: '/cao/shops', icon: 'storefront', label: 'Krushi Seva Kendra' },
+        ]},
+        { id: 'dao_modules', label: 'ANALYTICS', items: [
           { to: '/survey', icon: 'bar_chart', label: 'Scheme Analytics' },
           { to: '/geo', icon: 'eco', label: 'Crop Health / NDVI' },
           { to: '/applications', icon: 'account_balance', label: 'PFMS Monitoring' },
@@ -143,48 +148,60 @@ const Sidebar = ({ isOpen, onClose }) => {
       ];
     }
 
-    // ── Krishi Sahayak (Officer) — 5-section flat IA ──
+    // ── Krishi Sahayak (Officer) — command-center IA (6 groups) ──
     return [
       {
-        id: 'home',
-        label: 'HOME',
+        id: 'cmd',
+        label: 'Command center',
         items: [
           { to: '/officer', icon: 'dashboard', label: 'Dashboard', end: true },
+          { to: '/officer/alerts', icon: 'notifications_active', label: 'Alerts & risk queue' },
+          { to: '/officer/daily-tasks', icon: 'task_alt', label: 'Daily tasks' },
         ],
       },
       {
-        id: 'field_work',
-        label: 'FIELD WORK',
+        id: 'farm',
+        label: 'Farmer operations',
         items: [
-          { to: '/farmers', icon: 'groups', label: 'Farmer Registry' },
-          { to: '/officer/field-verification', icon: 'verified_user', label: 'Field Verification' },
-          { to: '/damage', icon: 'warning', label: 'Damage Reports' },
+          { to: '/officer/farmer-registry', icon: 'groups', label: 'Farmer registry' },
+          { to: '/officer/application-review', icon: 'assignment_turned_in', label: 'Application review' },
+          { to: '/officer/eligibility', icon: 'fact_check', label: 'Eligibility engine' },
+          { to: '/officer/field-verification', icon: 'map_search', label: 'Field verification' },
         ],
       },
       {
-        id: 'applications',
-        label: 'APPLICATIONS',
+        id: 'dmg',
+        label: 'Damage & relief',
         items: [
-          { to: '/applications', icon: 'article', label: 'Applications' },
-          { to: '/officer/eligibility', icon: 'fact_check', label: 'Eligible Farmers' },
+          { to: '/officer/crop-damage', icon: 'crisis_alert', label: 'Crop damage reports' },
+          { to: '/officer/compensation', icon: 'account_balance', label: 'Compensation pipeline' },
+          { to: '/officer/geo-surveys', icon: 'satellite_alt', label: 'Geo-tagged surveys' },
         ],
       },
       {
-        id: 'community',
-        label: 'COMMUNITY',
+        id: 'ai',
+        label: 'AI & fraud monitoring',
         items: [
-          { to: '/gram-sabha', icon: 'diversity_3', label: 'Gram Sabha' },
-          { to: '/grievances', icon: 'gavel', label: 'Grievances' },
+          { to: '/officer/ai-verification', icon: 'smart_toy', label: 'AI verification' },
+          { to: '/officer/scan-document', icon: 'document_scanner', label: 'OCR document scan' },
+          { to: '/officer/duplicate-detection', icon: 'content_copy', label: 'Duplicate detection' },
         ],
       },
       {
-        id: 'more',
-        label: 'MORE',
+        id: 'know',
+        label: 'Knowledge & support',
         items: [
-          { to: '/officer/gr-assistant', icon: 'smart_toy', label: 'GR Assistant' },
-          { to: '/officer/scan-document', icon: 'document_scanner', label: 'Scan Document' },
-          { to: '/officer/ai-verification', icon: 'verified_user', label: 'AI Verification' },
-          { to: '/settings', icon: 'settings', label: 'Settings' },
+          { to: '/officer/gr-assistant', icon: 'chat', label: 'GR assistant' },
+          { to: '/officer/sop', icon: 'menu_book', label: 'SOP recommendations' },
+          { to: '/officer/scheme-intelligence', icon: 'analytics', label: 'Scheme intelligence' },
+        ],
+      },
+      {
+        id: 'sys',
+        label: 'System',
+        items: [
+          { to: '/officer/settings', icon: 'settings', label: 'Settings' },
+          { to: '/officer/audit-logs', icon: 'history', label: 'Audit logs' },
         ],
       },
     ];
@@ -207,7 +224,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   }, [location.pathname, menuSections]);
 
   return (
-    <aside className={`sidebar flex flex-col shrink-0 z-40 ${isOpen ? 'open' : ''} bg-white`}>
+    <aside className={`sidebar flex flex-col z-40 ${isOpen ? 'open' : ''} bg-white${isSahayak ? ' sidebar--officer' : ''}`}>
 
       {/* Sidebar brand header (only visible on mobile/tablet overlay) */}
       <div className="flex items-center gap-2 px-4 py-4 border-b border-[#e2e9e6] lg:hidden shrink-0">

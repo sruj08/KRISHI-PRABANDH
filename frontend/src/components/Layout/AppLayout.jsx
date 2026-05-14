@@ -38,12 +38,14 @@ const AppLayout = () => {
       >
         {/* Hamburger — always visible */}
         <button
+          type="button"
           className="icon-btn-soft"
           onClick={toggleSidebar}
-          aria-label="Toggle menu"
+          aria-label={isOpen ? 'Collapse navigation' : 'Expand navigation'}
+          aria-expanded={isOpen}
           id="sidebar-toggle-btn"
         >
-          <span className="material-symbols-outlined text-[22px]">menu</span>
+          <span className="material-symbols-outlined text-[22px]">{isOpen ? 'menu_open' : 'menu'}</span>
         </button>
 
         {/* Logo */}
@@ -56,21 +58,34 @@ const AppLayout = () => {
           </span>
         </div>
 
-        <div className="flex-1" />
+        <div className="flex-1 min-w-0" />
 
-        {/* Desktop breadcrumb */}
-        <div className="hidden lg:flex items-center gap-1.5 text-[12px] font-medium" style={{ color: '#9aa19c' }}>
-          {user?.role === 'farmer' ? (
-            <span>{t('MahaDBT · Farmer services')}</span>
-          ) : user?.role === 'state' ? (
-            <span>{t('Maharashtra State Command')}</span>
-          ) : user?.role === 'division' ? (
-            <span>{user?.division_name || t('Division')} · {t('Maharashtra State')}</span>
-          ) : (
-            <span>
-              {user?.district_name || t('District')}
-              {user?.taluka_name ? ` · ${user.taluka_name}` : ''}
-            </span>
+        {/* Desktop breadcrumb + officer operational strip */}
+        <div className="hidden lg:flex flex-col items-end gap-1 text-right shrink-0" style={{ maxWidth: 'min(420px, 40vw)' }}>
+          <div className="flex items-center gap-1.5 text-[12px] font-medium" style={{ color: '#9aa19c' }}>
+            {user?.role === 'farmer' ? (
+              <span>{t('MahaDBT · Farmer services')}</span>
+            ) : user?.role === 'state' ? (
+              <span>{t('Maharashtra State Command')}</span>
+            ) : user?.role === 'division' ? (
+              <span>{user?.division_name || t('Division')} · {t('Maharashtra State')}</span>
+            ) : (
+              <span>
+                {user?.district_name || t('District')}
+                {user?.taluka_name ? ` · ${user.taluka_name}` : ''}
+              </span>
+            )}
+          </div>
+          {isSahayak && (
+            <div className="flex flex-wrap items-center justify-end gap-x-2 gap-y-0.5 text-[11px] font-medium" style={{ color: '#6f756f' }}>
+              <span>Sync ok</span>
+              <span aria-hidden style={{ color: '#c5cbc0' }}>·</span>
+              <span>AI engine online</span>
+              <span aria-hidden style={{ color: '#c5cbc0' }}>·</span>
+              <span>0 offline devices</span>
+              <span aria-hidden style={{ color: '#c5cbc0' }}>·</span>
+              <span>Last sync 09:04</span>
+            </div>
           )}
         </div>
 
@@ -103,8 +118,8 @@ const AppLayout = () => {
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold select-none ml-1"
             style={{
-              background: 'linear-gradient(135deg, #2d6b48 0%, #1f4d36 100%)',
-              boxShadow: '0 1px 2px rgba(20,40,30,0.18)',
+              background: '#1f4d36',
+              boxShadow: '0 1px 2px rgba(20,40,30,0.12)',
             }}
           >
             {user?.username?.[0]?.toUpperCase() || 'K'}
@@ -118,9 +133,10 @@ const AppLayout = () => {
         {/* Mobile/Tablet backdrop */}
         {isOpen && (
           <div
-            className="fixed inset-0 bg-black/30"
+            className="fixed inset-0 bg-black/30 lg:hidden"
             style={{ zIndex: 1150 }}
             onClick={closeSidebar}
+            aria-hidden
           />
         )}
 

@@ -414,7 +414,7 @@ const TaoWorkflowListPage = ({ title, subtitle, rows, emptyHint, bulkApprove, on
             style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.04em', whiteSpace: 'nowrap', flexShrink: 0 }}
             onClick={bulkApprove.onOpen}
           >
-            Bulk Approve Safe Applications
+            Mass Approve Safe Applications
           </button>
         ) : null}
       </div>

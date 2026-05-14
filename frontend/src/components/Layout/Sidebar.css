@@ -17,8 +17,45 @@
   display: flex;
   flex-direction: column;
   z-index: 1050;
-  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  transition:
+    transform 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    width 240ms cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 240ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 200ms ease,
+    border-color 200ms ease;
   overflow: hidden;
+}
+
+/* Desktop (≥1024px): same toggle collapses the rail (no overlay) */
+@media (min-width: 1024px) {
+  .sidebar {
+    transform: none !important;
+    box-shadow: none;
+  }
+
+  .sidebar:not(.open) {
+    width: 0;
+    min-width: 0;
+    max-width: 0;
+    flex-shrink: 1;
+    opacity: 0;
+    border-right-color: transparent;
+    border-right-width: 0;
+    pointer-events: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .sidebar.open {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    flex-shrink: 0;
+    opacity: 1;
+    pointer-events: auto;
+    border-right: 1px solid rgba(20, 40, 30, 0.07);
+  }
 }
 
 /* Mobile/Tablet (≤1023px): off-canvas drawer */
@@ -264,4 +301,23 @@
 .sidebar-logout-btn:hover {
   background: #fff0ef;
   color: #ba1a1a;
+}
+
+/* Officer command rail — calmer section headers */
+.sidebar--officer .sidebar-section-label {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 650;
+  color: #7a857a;
+}
+
+.sidebar--officer .sidebar-section-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.sidebar--officer .sidebar-link {
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
