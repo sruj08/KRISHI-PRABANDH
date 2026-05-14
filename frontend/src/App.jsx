@@ -25,6 +25,7 @@ import FarmerGrievancesPage from './pages/farmer/portal/FarmerGrievancesPage';
 import FarmerHelpPage from './pages/farmer/portal/FarmerHelpPage';
 import FarmerSettingsPage from './pages/farmer/portal/FarmerSettingsPage';
 import SurveyOperationsDashboard from './features/survey_operations/SurveyOperationsDashboard';
+import SchemeAnalytics from './pages/scheme-analytics/SchemeAnalytics';
 import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
 import TAODashboard from './pages/tao/TAODashboard';
@@ -124,7 +125,8 @@ const App = () => {
             <Route path="/advanced-tools" element={<Navigate to="/officer/eligibility" replace />} />
             <Route path="/eligibility" element={<Navigate to="/officer/eligibility" replace />} />
             <Route path="/verification" element={<Navigate to="/officer/field-verification" replace />} />
-            <Route path="/survey" element={<SurveyOperationsDashboard />} />
+            <Route path="/survey" element={<SchemeAnalytics />} />
+            <Route path="/survey-ops" element={<SurveyOperationsDashboard />} />
             <Route path="/mandal" element={<MandalDashboard />} />
             <Route path="/applications" element={<Applications />} />
             <Route path="/capture-photo" element={<CapturePhoto />} />
