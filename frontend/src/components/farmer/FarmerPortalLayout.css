@@ -1,0 +1,301 @@
+/* Krishi Prabandh — Farmer portal (MahaDBT / DigiLocker inspired) */
+
+.farmer-portal-root {
+  --fp-primary: #1f5e3b;
+  --fp-primary-soft: #eaf5ee;
+  --fp-bg: #f7f8fa;
+  --fp-surface: #ffffff;
+  --fp-border: #e4e8ec;
+  --fp-text: #1a1f1c;
+  --fp-muted: #5c6560;
+  --fp-info: #1e5a8a;
+  --fp-amber: #b45309;
+  --fp-amber-bg: #fffbeb;
+  --fp-red: #b91c1c;
+  --fp-red-bg: #fef2f2;
+  --fp-radius: 18px;
+  --fp-sidebar-w: 248px;
+  --fp-header-h: 64px;
+  font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
+  background: var(--fp-bg);
+  color: var(--fp-text);
+  min-height: 100vh;
+}
+
+.farmer-portal-root .fp-heading {
+  font-family: 'Poppins', 'Noto Sans Devanagari', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.farmer-portal-shell {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Sidebar */
+.fp-sidebar {
+  width: var(--fp-sidebar-w);
+  flex-shrink: 0;
+  background: var(--fp-surface);
+  border-right: 1px solid var(--fp-border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 40;
+}
+
+.fp-sidebar-brand {
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--fp-border);
+}
+
+.fp-nav-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--fp-muted);
+  padding: 0.75rem 1rem 0.35rem;
+  text-transform: uppercase;
+}
+
+.fp-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: calc(100% - 1rem);
+  margin: 0 0.5rem;
+  padding: 0.55rem 0.65rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--fp-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.fp-nav-btn:hover {
+  background: var(--fp-primary-soft);
+  color: var(--fp-primary);
+}
+
+.fp-nav-btn.fp-nav-active {
+  background: var(--fp-primary-soft);
+  color: var(--fp-primary);
+  font-weight: 600;
+}
+
+.fp-nav-btn .material-symbols-outlined {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+.fp-sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 0.5rem;
+}
+
+.fp-sidebar-footer {
+  margin-top: auto;
+  padding: 0.75rem;
+  border-top: 1px solid var(--fp-border);
+  background: var(--fp-bg);
+}
+
+.fp-helpline {
+  font-size: 11px;
+  color: var(--fp-muted);
+  margin-bottom: 0.5rem;
+}
+
+.fp-helpline strong {
+  display: block;
+  color: var(--fp-primary);
+  font-size: 13px;
+}
+
+/* Main column */
+.fp-main-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  .fp-main-col {
+    padding-bottom: 0;
+  }
+}
+
+.fp-main-inner {
+  flex: 1;
+  padding: 1rem 1rem 1.5rem;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .fp-main-inner {
+    padding: 1.25rem 1.5rem 2rem;
+  }
+}
+
+/* Mobile top bar (hamburger) */
+.fp-mobile-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  background: var(--fp-surface);
+  border-bottom: 1px solid var(--fp-border);
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  padding-top: calc(0.65rem + env(safe-area-inset-top));
+}
+
+@media (min-width: 768px) {
+  .fp-mobile-top {
+    display: none;
+  }
+}
+
+.fp-sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .fp-sidebar.fp-sidebar-drawer-open {
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
+  }
+
+  .fp-sidebar:not(.fp-sidebar-drawer-open) {
+    display: none;
+  }
+
+  .fp-sidebar-backdrop.fp-open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 30;
+  }
+}
+
+@media (min-width: 768px) {
+  .fp-sidebar {
+    display: flex !important;
+  }
+}
+
+/* Bottom nav */
+.fp-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(56px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--fp-surface);
+  border-top: 1px solid var(--fp-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-top: 6px;
+  z-index: 50;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+}
+
+@media (min-width: 768px) {
+  .fp-bottom-nav {
+    display: none;
+  }
+}
+
+.fp-bottom-nav button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: none;
+  color: var(--fp-muted);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.fp-bottom-nav button.fp-bnav-active {
+  color: var(--fp-primary);
+}
+
+.fp-bottom-nav .material-symbols-outlined {
+  font-size: 22px;
+}
+
+/* Cards */
+.fp-card {
+  background: var(--fp-surface);
+  border-radius: var(--fp-radius);
+  border: 1px solid var(--fp-border);
+  box-shadow: 0 2px 8px rgba(20, 40, 30, 0.04);
+}
+
+.fp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.fp-chip-ok {
+  background: var(--fp-primary-soft);
+  color: var(--fp-primary);
+}
+
+.fp-chip-warn {
+  background: var(--fp-amber-bg);
+  color: var(--fp-amber);
+}
+
+.fp-chip-err {
+  background: var(--fp-red-bg);
+  color: var(--fp-red);
+}
+
+.fp-chip-info {
+  background: #eff6ff;
+  color: var(--fp-info);
+}
+
+/* Grid desktop 2-col */
+.fp-grid-main {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .fp-grid-main {
+    grid-template-columns: 1fr 300px;
+    align-items: start;
+  }
+}
