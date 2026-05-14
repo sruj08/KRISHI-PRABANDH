@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './DivisionCrossDistrictFraud.css';
 
 /** District concentration strip (Pune division cluster). Intensity 1–5 = relative load from mock alerts + claims. */
@@ -16,198 +17,6 @@ const KPI_CARDS = [
   { key: 'dist', label: 'Districts Affected', value: '5', icon: 'map' },
   { key: 'exp', label: 'Estimated Exposure', value: '₹4.8 Cr', icon: 'account_balance' },
 ];
-
-/** Rich hero payload for the dominant Hover Analytics card (demo, deterministic). */
-const heroPayload = ({
-  key,
-  titleUpper,
-  rows,
-  zone = null,
-  exposure = null,
-  period = 'Last 14 days',
-  bars,
-}) => ({
-  key,
-  titleUpper,
-  rows,
-  zone,
-  exposure,
-  period,
-  bars,
-});
-
-const districtHoverPayload = (d) => {
-  const ai = Math.min(97, 72 + d.intensity * 5);
-  const overlap = Math.min(96, 58 + d.intensity * 7);
-  return heroPayload({
-    key: `dist-${d.name}`,
-    titleUpper: `DISTRICT · ${d.name.toUpperCase()}`,
-    rows: [
-      { label: 'Linked records', value: String(28 + d.alerts) },
-      { label: 'Affected villages', value: String(5 + d.intensity * 2) },
-      { label: 'Cross-taluka matches', value: String(11 + d.intensity * 3) },
-      { label: 'Avg claimed area', value: `${(1.2 + d.intensity * 0.35).toFixed(1)} acres` },
-      { label: 'AI similarity score', value: `${ai}%` },
-    ],
-    zone: `${d.name} peri-urban · co-op belt`,
-    exposure: `₹${(0.18 + d.intensity * 0.09).toFixed(2)} Cr`,
-    period: 'Last 14 days',
-    bars: [
-      { label: 'Load intensity', pct: ai },
-      { label: 'Village overlap', pct: overlap },
-    ],
-  });
-};
-
-const severityHoverPayload = (sev) => {
-  const ai = sev === 'P1' ? 91 : sev === 'P2' ? 84 : 76;
-  const overlap = sev === 'P1' ? 88 : 71;
-  const band = sev === 'P1' ? 'P1 CRITICAL' : sev === 'P2' ? 'P2 ELEVATED' : 'P3 ROUTINE';
-  return heroPayload({
-    key: `sev-${sev}`,
-    titleUpper: `FRAUD BAND · ${band}`,
-    rows: [
-      { label: 'Open in queue', value: sev === 'P1' ? '38' : sev === 'P2' ? '52' : '19' },
-      { label: 'Cross-district links', value: sev === 'P1' ? '14' : '9' },
-      { label: 'Avg review time', value: sev === 'P1' ? '1.2 d' : '2.4 d' },
-      { label: 'DAO escalations', value: sev === 'P1' ? '6' : '3' },
-      { label: 'AI similarity score', value: `${ai}%` },
-    ],
-    zone: sev === 'P1' ? 'Pune · Solapur pressure arc' : 'Division-wide watchlist',
-    exposure: `₹${sev === 'P1' ? '1.9' : '0.8'} Cr`,
-    period: 'Last 14 days',
-    bars: [
-      { label: 'Desk pressure', pct: ai },
-      { label: 'Linkage density', pct: overlap },
-    ],
-  });
-};
-
-const schemeHoverPayload = (scheme) => {
-  const ai = 80 + (scheme.length % 15);
-  const overlap = 62 + (scheme.length % 28);
-  if (scheme === 'PMFBY') {
-    return heroPayload({
-      key: 'scheme-PMFBY',
-      titleUpper: 'PMFBY GPS REUSE',
-      rows: [
-        { label: 'Repeated GPS clusters', value: '17' },
-        { label: 'Linked villages', value: '9' },
-        { label: 'Cross-taluka matches', value: '14' },
-        { label: 'AI similarity score', value: '93%' },
-      ],
-      zone: 'Madha · Sangola belt',
-      exposure: '₹0.55 Cr',
-      period: 'Last 14 days',
-      bars: [
-        { label: 'GPS reuse intensity', pct: 93 },
-        { label: 'Village overlap', pct: 74 },
-      ],
-    });
-  }
-  return heroPayload({
-    key: `scheme-${scheme}`,
-    titleUpper: `${scheme.toUpperCase()} · SCHEME LENS`,
-    rows: [
-      { label: 'Linked records', value: String(22 + scheme.length * 2) },
-      { label: 'Affected villages', value: String(8 + (scheme.length % 7)) },
-      { label: 'Avg claimed area', value: `${(2.1 + (scheme.length % 5) * 0.2).toFixed(1)} acres` },
-      { label: 'AI similarity score', value: `${ai}%` },
-    ],
-    zone: 'Satara · Sangli corridor',
-    exposure: `₹${(0.22 + (scheme.length % 9) / 10).toFixed(2)} Cr`,
-    period: 'Last 14 days',
-    bars: [
-      { label: 'Scheme risk index', pct: ai },
-      { label: 'Document reuse', pct: overlap },
-    ],
-  });
-};
-
-const dealerHoverPayload = (dealer, schemeShort) => {
-  const ai = 88 + (schemeShort.length % 8);
-  const overlap = 70 + (dealer.length % 22);
-  return heroPayload({
-    key: `dealer-${dealer}`,
-    titleUpper: `DEALER · ${dealer.toUpperCase()}`,
-    rows: [
-      { label: 'Linked records', value: String(18 + dealer.length) },
-      { label: 'Invoice burst (7d)', value: String(4 + (dealer.length % 5)) },
-      { label: 'District overlap', value: String(2 + (dealer.length % 3)) },
-      { label: 'AI similarity score', value: `${ai}%` },
-    ],
-    zone: 'Barshi · Pune invoice ring',
-    exposure: `₹${(0.35 + (dealer.length % 6) / 10).toFixed(2)} Cr`,
-    period: 'Last 14 days',
-    bars: [
-      { label: 'Dealer concentration', pct: ai },
-      { label: 'Serial invoice risk', pct: overlap },
-    ],
-  });
-};
-
-const rowHoverPayload = (c) => {
-  const ai = c.confidence;
-  const overlap = Math.min(95, 58 + c.linked.length * 6);
-  if (c.id === 'c4') {
-    return heroPayload({
-      key: `row-${c.id}`,
-      titleUpper: 'PMFBY GPS REUSE',
-      rows: [
-        { label: 'Repeated GPS clusters', value: '17' },
-        { label: 'Linked villages', value: '9' },
-        { label: 'Cross-taluka matches', value: '14' },
-        { label: 'AI similarity score', value: `${c.confidence}%` },
-      ],
-      zone: 'Madha · Sangola belt',
-      exposure: `₹${c.exposureCr} Cr`,
-      period: 'Last 14 days',
-      bars: [
-        { label: 'GPS reuse intensity', pct: 93 },
-        { label: 'Village overlap', pct: 74 },
-      ],
-    });
-  }
-  return heroPayload({
-    key: `row-${c.id}`,
-    titleUpper: `${c.hoverTheme.toUpperCase()} · CASE`,
-    rows: [
-      { label: 'Linked records', value: String(36 + c.linked.length * 4) },
-      { label: 'Affected villages', value: String(9 + c.linked.length * 2) },
-      { label: 'Cross-taluka matches', value: String(10 + c.linked.length * 3) },
-      { label: 'Avg claimed area', value: `${(2.4 + c.exposureCr).toFixed(1)} acres` },
-      { label: 'AI similarity score', value: `${ai}%` },
-    ],
-    zone: `${c.districts[0]} · ${c.districts[1] || c.districts[0]} belt`,
-    exposure: `₹${c.exposureCr} Cr`,
-    period: 'Last 14 days',
-    bars: [
-      { label: 'Signal intensity', pct: ai },
-      { label: 'Village overlap', pct: overlap },
-    ],
-  });
-};
-
-const statusHoverPayload = (c) => {
-  const ai = c.confidence;
-  return heroPayload({
-    key: `status-${c.id}`,
-    titleUpper: `WORKFLOW · ${c.status.toUpperCase()}`,
-    rows: [
-      { label: 'Cases in stage', value: String(12 + c.linked.length) },
-      { label: 'Avg dwell', value: '1.8 d' },
-      { label: 'DAO touchpoints', value: String(2 + (c.status.length % 4)) },
-      { label: 'AI similarity score', value: `${ai}%` },
-    ],
-    zone: 'DAO cluster · Pune division',
-    exposure: `₹${c.exposureCr} Cr`,
-    period: 'Last 14 days',
-    bars: [
-      { label: 'Queue pressure', pct: Math.min(94, 62 + c.status.length) },
-      { label: 'SLA tightness', pct: 68 },
-    ],
-  });
-};
 
 /**
  * Tax invoice PDFs in `frontend/public/CrossDis-Sample` (basename sort order).
@@ -228,7 +37,6 @@ const FRAUD_CASES = [
     severity: 'P1',
     schemeTag: 'Tractor Subsidy',
     dealerTag: 'Mahalakshmi Agro Barshi',
-    hoverTheme: 'Invoice reuse',
     title: 'Tractor subsidy — same invoice reused across districts',
     districts: ['Pune', 'Satara', 'Solapur'],
     narrative:
@@ -253,7 +61,6 @@ const FRAUD_CASES = [
     severity: 'P1',
     schemeTag: 'PM-KISAN',
     dealerTag: null,
-    hoverTheme: 'Aadhaar cluster',
     title: 'PM-KISAN — shared mobile and masked Aadhaar tail cluster',
     districts: ['Solapur', 'Sangli', 'Kolhapur'],
     narrative:
@@ -277,7 +84,6 @@ const FRAUD_CASES = [
     severity: 'P2',
     schemeTag: 'Drip Irrigation',
     dealerTag: 'Sai Irrigation Pune',
-    hoverTheme: 'Dealer burst',
     title: 'Drip irrigation — dealer invoice burst in one window',
     districts: ['Solapur', 'Pune'],
     narrative:
@@ -301,7 +107,6 @@ const FRAUD_CASES = [
     severity: 'P1',
     schemeTag: 'PMFBY',
     dealerTag: null,
-    hoverTheme: 'Survey overlap',
     title: 'PMFBY — same geotagged crop-loss photo across villages',
     districts: ['Satara', 'Pune', 'Sangli'],
     narrative:
@@ -325,7 +130,6 @@ const FRAUD_CASES = [
     severity: 'P3',
     schemeTag: 'Soyabean Compensation',
     dealerTag: null,
-    hoverTheme: 'Survey overlap',
     title: 'Soyabean compensation — overlapping survey numbers on relief list',
     districts: ['Kolhapur', 'Sangli'],
     narrative:
@@ -354,6 +158,90 @@ const TREND_ROWS = [
 
 const sevClass = (s) => (s === 'P1' ? 'fi-sev--p1' : s === 'P2' ? 'fi-sev--p2' : 'fi-sev--p3');
 
+const RISK_BAND = ['Low', 'Low–med', 'Medium', 'High', 'Critical'];
+
+const districtCrispRows = (d) => [
+  { label: 'AI alerts', value: String(d.alerts) },
+  { label: 'Suspicious claims', value: String(d.claims) },
+  { label: 'Risk band', value: RISK_BAND[d.intensity - 1] ?? '—' },
+];
+
+const schemeCrispRows = (scheme) => {
+  const uptake = 65 + (scheme.length * 3) % 28;
+  const pending = 120 + scheme.length * 7;
+  return [
+    { label: 'Scheme uptake', value: `${uptake}%` },
+    { label: 'Pending files', value: String(pending) },
+  ];
+};
+
+const severityCrispRows = (sev) => {
+  const q = sev === 'P1' ? '38' : sev === 'P2' ? '52' : '19';
+  return [
+    { label: 'Open in queue', value: q },
+    { label: 'Band', value: sev },
+  ];
+};
+
+const statusCrispRows = (c) => [
+  { label: 'Stage dwell (avg)', value: '1.8 d' },
+  { label: 'DAO touchpoints', value: String(2 + (c.status.length % 4)) },
+];
+
+const dealerCrispRows = (dealer) => [
+  { label: 'Linked cases (demo)', value: String(3 + (dealer.length % 5)) },
+  { label: 'Invoice burst (7d)', value: String(4 + (dealer.length % 3)) },
+];
+
+const caseCrispRows = (c) => [
+  { label: 'Confidence', value: `${c.confidence}%` },
+  { label: 'Exposure', value: `₹${c.exposureCr} Cr` },
+  { label: 'Linked files', value: String(c.linked.length) },
+];
+
+const kpiCrispRows = (k) => {
+  if (k.key === 'high') {
+    return [
+      { label: 'Desk queue', value: '38' },
+      { label: 'SLA risk', value: '12%' },
+    ];
+  }
+  if (k.key === 'susp') {
+    return [
+      { label: 'Verified share', value: '61%' },
+      { label: 'DAO backlog', value: '214' },
+    ];
+  }
+  if (k.key === 'dist') {
+    return [
+      { label: 'Hot districts', value: '5' },
+      { label: 'Cross-links', value: '27' },
+    ];
+  }
+  return [
+    { label: 'Recoverable (est.)', value: '₹1.1 Cr' },
+    { label: 'Under review', value: '₹2.4 Cr' },
+  ];
+};
+
+const TIP_BOX_W = 216;
+const TIP_BOX_H = 148;
+
+/** Place tooltip near pointer; flip when near viewport edges (fixed estimate size for clamp). */
+const clampTipNearPointer = (clientX, clientY) => {
+  const gap = 16;
+  const edge = 10;
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+  let x = clientX + gap;
+  let y = clientY + gap;
+  if (x + TIP_BOX_W > vw - edge) x = clientX - TIP_BOX_W - gap;
+  if (y + TIP_BOX_H > vh - edge) y = clientY - TIP_BOX_H - gap;
+  x = Math.max(edge, Math.min(x, vw - TIP_BOX_W - edge));
+  y = Math.max(edge, Math.min(y, vh - TIP_BOX_H - edge));
+  return { x, y };
+};
+
 const trendArrow = (dir) => {
   if (dir === 'up2') return '↑↑';
   if (dir === 'up') return '↑';
@@ -363,23 +251,144 @@ const trendArrow = (dir) => {
 
 const DivisionCrossDistrictFraud = () => {
   const [expandedId, setExpandedId] = useState(null);
-  const [hoverPayload, setHoverPayload] = useState(null);
+  const [tipBody, setTipBody] = useState(null);
+  const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
+  const hideTipTimerRef = useRef(null);
+  const tipMoveRafRef = useRef(null);
+  const lastPointerRef = useRef({ x: 0, y: 0 });
+  const heatSectionRef = useRef(null);
+  const feedShellRef = useRef(null);
 
-  const setHover = useCallback((payload) => {
-    setHoverPayload(payload);
+  const hideCrispTip = useCallback(() => {
+    if (hideTipTimerRef.current) {
+      window.clearTimeout(hideTipTimerRef.current);
+    }
+    hideTipTimerRef.current = window.setTimeout(() => {
+      hideTipTimerRef.current = null;
+      setTipBody(null);
+    }, 80);
   }, []);
 
-  const clearHover = useCallback(() => {
-    setHoverPayload(null);
+  const showCrispTip = useCallback((e, title, rows) => {
+    if (hideTipTimerRef.current) {
+      window.clearTimeout(hideTipTimerRef.current);
+      hideTipTimerRef.current = null;
+    }
+    const cx = e.clientX;
+    const cy = e.clientY;
+    lastPointerRef.current = { x: cx, y: cy };
+    setTipBody({
+      key: `${title}-${performance.now()}`,
+      title,
+      rows,
+    });
+    setTipPos(clampTipNearPointer(cx, cy));
+  }, []);
+
+  useEffect(() => {
+    if (!tipBody) return undefined;
+    const onMove = (ev) => {
+      lastPointerRef.current = { x: ev.clientX, y: ev.clientY };
+      if (tipMoveRafRef.current) return;
+      tipMoveRafRef.current = window.requestAnimationFrame(() => {
+        tipMoveRafRef.current = null;
+        const { x, y } = lastPointerRef.current;
+        setTipPos(clampTipNearPointer(x, y));
+      });
+    };
+    const onReclamp = () => {
+      const { x, y } = lastPointerRef.current;
+      setTipPos(clampTipNearPointer(x, y));
+    };
+    document.addEventListener('mousemove', onMove, { passive: true });
+    window.addEventListener('resize', onReclamp, { passive: true });
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+      window.removeEventListener('resize', onReclamp);
+      if (tipMoveRafRef.current) {
+        window.cancelAnimationFrame(tipMoveRafRef.current);
+        tipMoveRafRef.current = null;
+      }
+    };
+  }, [tipBody]);
+
+  useEffect(() => {
+    if (!tipBody) return undefined;
+    const onScroll = () => setTipBody(null);
+    window.addEventListener('scroll', onScroll, true);
+    return () => window.removeEventListener('scroll', onScroll, true);
+  }, [tipBody]);
+
+  /** Sticky intel rail: `top` = max(header band, bottom of district strip). */
+  useEffect(() => {
+    const heat = heatSectionRef.current;
+    const shell = feedShellRef.current;
+    if (!heat || !shell) return;
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const minTopPx = 6 * remPx;
+      const heatBottom = heat.getBoundingClientRect().bottom;
+      const topPx = Math.max(minTopPx, Math.ceil(heatBottom + 8));
+      shell.style.setProperty('--fi-hover-sticky-top', `${topPx}px`);
+    };
+
+    const schedule = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    const ro = new ResizeObserver(schedule);
+    ro.observe(heat);
+
+    return () => {
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      ro.disconnect();
+      shell.style.removeProperty('--fi-hover-sticky-top');
+    };
   }, []);
 
   const toggleCase = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
 
+  useEffect(
+    () => () => {
+      if (hideTipTimerRef.current) window.clearTimeout(hideTipTimerRef.current);
+    },
+    [],
+  );
+
   return (
-    <div className="fi-page">
-      <div className="fi-inner fi-inner--split">
+    <div className="fi-page fi-page--fraud-cloud">
+      {tipBody
+        ? createPortal(
+            <div
+              key={tipBody.key}
+              className="fi-crisp-tip"
+              style={{ transform: `translate3d(${tipPos.x}px, ${tipPos.y}px, 0)` }}
+              role="tooltip"
+            >
+              <div className="fi-crisp-tip__inner">
+                <div className="fi-crisp-tip__title">{tipBody.title}</div>
+                {tipBody.rows.map((row) => (
+                  <React.Fragment key={row.label}>
+                    <span className="fi-crisp-tip__k">{row.label}</span>
+                    <span className="fi-crisp-tip__v">{row.value}</span>
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+      <div className="fi-inner fi-inner--split fi-inner--fraud-wide">
         <h1 className="fi-title">AI Cross-District Fraud Intelligence</h1>
         <p className="fi-sub">
           AI-detected linked subsidy anomalies across Maharashtra districts.
@@ -387,7 +396,13 @@ const DivisionCrossDistrictFraud = () => {
 
         <div className="fi-kpis" role="list">
           {KPI_CARDS.map((k) => (
-            <div key={k.key} className="fi-kpi" role="listitem">
+            <div
+              key={k.key}
+              className="fi-kpi"
+              role="listitem"
+              onMouseEnter={(e) => showCrispTip(e, k.label, kpiCrispRows(k))}
+              onMouseLeave={hideCrispTip}
+            >
               <div className="fi-kpi__icon" aria-hidden>
                 <span className="material-symbols-outlined">{k.icon}</span>
               </div>
@@ -399,7 +414,7 @@ const DivisionCrossDistrictFraud = () => {
           ))}
         </div>
 
-        <section className="fi-heat" aria-labelledby="fi-heat-title">
+        <section ref={heatSectionRef} className="fi-heat" aria-labelledby="fi-heat-title">
           <div className="fi-heat__head">
             <h2 id="fi-heat-title" className="fi-heat__title">
               District concentration (suspicious claims · AI alerts)
@@ -410,15 +425,10 @@ const DivisionCrossDistrictFraud = () => {
             {DISTRICT_HEAT.map((d) => (
               <div
                 key={d.name}
-                className="fi-heat__cell fi-hover-target"
+                className="fi-heat__cell fi-heat__cell--tip"
                 data-intensity={d.intensity}
-                title={`${d.name}: ${d.alerts} AI alerts · ${d.claims} suspicious claims (demo)`}
-                onMouseEnter={() => setHover(districtHoverPayload(d))}
-                onMouseLeave={clearHover}
-                onFocus={() => setHover(districtHoverPayload(d))}
-                onBlur={clearHover}
-                tabIndex={0}
-                role="group"
+                onMouseEnter={(e) => showCrispTip(e, d.name, districtCrispRows(d))}
+                onMouseLeave={hideCrispTip}
               >
                 <span className="fi-heat__name">{d.name}</span>
                 <span className="fi-heat__meta">{d.alerts} alerts · {d.claims} claims</span>
@@ -436,10 +446,10 @@ const DivisionCrossDistrictFraud = () => {
           </div>
         </section>
 
-        <div className="fi-split">
-          <div className="fi-feed">
-            <p className="fi-feed__kicker">AI fraud feed</p>
-            <p className="fi-feed__hint">Click a card to expand. Hover districts, tags, schemes, or dealers — analytics update on the right.</p>
+        <div ref={feedShellRef} className="fi-feed-shell">
+          <div className="fi-feed fi-feed--full">
+            <p className="fi-feed__kicker">Investigation queue</p>
+            <p className="fi-feed__hint">Click a row to expand. Hover KPIs, districts, tags, or the summary for desk metrics (follows pointer).</p>
             {FRAUD_CASES.map((c) => {
               const open = expandedId === c.id;
               return (
@@ -449,10 +459,8 @@ const DivisionCrossDistrictFraud = () => {
                   tabIndex={0}
                   aria-expanded={open}
                   data-expanded={open}
-                  className={`fi-case ${open ? 'fi-case--open' : 'fi-case--collapsed'}`}
+                  className={`fi-case fi-case--${c.severity.toLowerCase()} ${open ? 'fi-case--open' : ''}`}
                   onClick={() => toggleCase(c.id)}
-                  onMouseEnter={() => setHover(rowHoverPayload(c))}
-                  onMouseLeave={clearHover}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
@@ -460,133 +468,153 @@ const DivisionCrossDistrictFraud = () => {
                     }
                   }}
                 >
-                  <div className="fi-case__summary">
-                    <div className="fi-case__summary-main">
-                      <div className="fi-case__top">
+                  {/* ── collapsed + open header row ── */}
+                  <div
+                    className="fi-case__row"
+                    onMouseEnter={(e) => showCrispTip(e, 'File summary', caseCrispRows(c))}
+                    onMouseLeave={hideCrispTip}
+                  >
+                    <div className="fi-case__row-main">
+                      {/* top meta line */}
+                      <div className="fi-case__topline">
                         <span
-                          className={`fi-sev fi-hover-target ${sevClass(c.severity)}`}
-                          onClick={(e) => e.stopPropagation()}
-                          onMouseEnter={(e) => {
-                            e.stopPropagation();
-                            setHover(severityHoverPayload(c.severity));
-                          }}
-                          onMouseLeave={(e) => {
-                            e.stopPropagation();
-                            setHover(rowHoverPayload(c));
-                          }}
+                          className="fi-case__scheme-text"
+                          onMouseEnter={(e) => { e.stopPropagation(); showCrispTip(e, c.schemeTag, schemeCrispRows(c.schemeTag)); }}
+                          onMouseLeave={(e) => { e.stopPropagation(); hideCrispTip(); }}
                         >
-                          {c.severity}
+                          {c.schemeTag}
                         </span>
+                        <span className="fi-case__topline-dot" aria-hidden />
                         <span
-                          className="fi-status fi-hover-target"
-                          onClick={(e) => e.stopPropagation()}
-                          onMouseEnter={(e) => {
-                            e.stopPropagation();
-                            setHover(statusHoverPayload(c));
-                          }}
-                          onMouseLeave={(e) => {
-                            e.stopPropagation();
-                            setHover(rowHoverPayload(c));
-                          }}
+                          className="fi-case__status-text"
+                          onMouseEnter={(e) => { e.stopPropagation(); showCrispTip(e, c.status, statusCrispRows(c)); }}
+                          onMouseLeave={(e) => { e.stopPropagation(); hideCrispTip(); }}
                         >
                           {c.status}
                         </span>
                       </div>
+
+                      {/* title */}
                       <h3 className="fi-case__title">{c.title}</h3>
-                      <div className="fi-case__scheme-row">
-                        <span
-                          className="fi-scheme-tag fi-hover-target"
-                          onClick={(e) => e.stopPropagation()}
-                          onMouseEnter={(e) => {
-                            e.stopPropagation();
-                            setHover(schemeHoverPayload(c.schemeTag));
-                          }}
-                          onMouseLeave={(e) => {
-                            e.stopPropagation();
-                            setHover(rowHoverPayload(c));
-                          }}
-                        >
-                          {c.schemeTag}
-                        </span>
-                      </div>
-                      <div className="fi-case__districts">
+
+                      {/* districts */}
+                      <p className="fi-case__district-line">
                         {c.districts.map((name, i) => (
-                          <span key={name}>
-                            {i > 0 ? ' · ' : ''}
+                          <React.Fragment key={name}>
+                            {i > 0 && <span className="fi-case__dist-sep" aria-hidden>·</span>}
                             <span
-                              className="fi-district-tag fi-hover-target"
-                              onClick={(e) => e.stopPropagation()}
+                              className="fi-case__dist-name"
                               onMouseEnter={(e) => {
                                 e.stopPropagation();
                                 const d = DISTRICT_HEAT.find((x) => x.name === name);
-                                setHover(d ? districtHoverPayload(d) : districtHoverPayload({ name, intensity: 3, alerts: 30, claims: 90 }));
+                                showCrispTip(e, name, d ? districtCrispRows(d) : [{ label: 'Claims', value: '90' }]);
                               }}
-                              onMouseLeave={(e) => {
-                                e.stopPropagation();
-                                setHover(rowHoverPayload(c));
-                              }}
+                              onMouseLeave={(e) => { e.stopPropagation(); hideCrispTip(); }}
                             >
                               {name}
                             </span>
-                          </span>
+                          </React.Fragment>
                         ))}
-                      </div>
+                      </p>
+
+                      {/* collapsed metrics strip */}
                       {!open && (
-                        <p className="fi-case__peek">
-                          AI confidence {c.confidence}% · Exposure ₹{c.exposureCr} Cr · {c.linked.length} linked applications
-                        </p>
+                        <div className="fi-case__metrics">
+                          <span className="fi-case__metric">
+                            <span className="fi-case__metric-k">Confidence</span>
+                            <span className="fi-case__metric-v">{c.confidence}%</span>
+                          </span>
+                          <span className="fi-case__metric-rule" aria-hidden />
+                          <span className="fi-case__metric">
+                            <span className="fi-case__metric-k">Exposure</span>
+                            <span className="fi-case__metric-v">₹{c.exposureCr} Cr</span>
+                          </span>
+                          <span className="fi-case__metric-rule" aria-hidden />
+                          <span className="fi-case__metric">
+                            <span className="fi-case__metric-k">Linked</span>
+                            <span className="fi-case__metric-v">{c.linked.length}</span>
+                          </span>
+                        </div>
                       )}
                     </div>
-                    <span className="fi-case__chev material-symbols-outlined" aria-hidden>expand_more</span>
+
+                    <span className="fi-case__chev material-symbols-outlined" aria-hidden>
+                      {open ? 'expand_less' : 'expand_more'}
+                    </span>
                   </div>
+
+                  {/* ── expanded body ── */}
                   {open && (
                     <div className="fi-case__body" onClick={(e) => e.stopPropagation()}>
                       <p className="fi-case__narr">{c.narrative}</p>
-                      {c.dealerTag ? (
-                        <p className="fi-case__dealer-line">
-                          <span className="fi-case__dealer-k">Dealer</span>
+
+                      {c.dealerTag && (
+                        <p className="fi-case__dealer-row">
+                          <span className="fi-case__dealer-k">Dealer on record</span>
                           <span
-                            className="fi-dealer-tag fi-hover-target"
-                            onMouseEnter={() => setHover(dealerHoverPayload(c.dealerTag, c.schemeTag))}
-                            onMouseLeave={() => setHover(rowHoverPayload(c))}
-                            onClick={(e) => e.stopPropagation()}
+                            className="fi-case__dealer-v"
+                            onMouseEnter={(e) => { e.stopPropagation(); showCrispTip(e, c.dealerTag, dealerCrispRows(c.dealerTag)); }}
+                            onMouseLeave={(e) => { e.stopPropagation(); hideCrispTip(); }}
                           >
                             {c.dealerTag}
                           </span>
                         </p>
-                      ) : null}
-                      <div className="fi-case__why-label">Why flagged</div>
-                      <ul className="fi-case__why">
+                      )}
+
+                      {/* flagged observations */}
+                      <div className="fi-case__obs-head">Observations</div>
+                      <ul className="fi-case__obs">
                         {c.whyFlagged.map((line) => (
                           <li key={line}>{line}</li>
                         ))}
                       </ul>
-                      <div className="fi-case__foot">
-                        <span>AI confidence: <strong>{c.confidence}%</strong></span>
-                        <span>Exposure: <strong>₹{c.exposureCr} Cr</strong></span>
+
+                      {/* metrics */}
+                      <div className="fi-case__stats">
+                        <div className="fi-case__stat">
+                          <span className="fi-case__stat-k">Confidence</span>
+                          <strong className="fi-case__stat-v">{c.confidence}%</strong>
+                        </div>
+                        <div className="fi-case__stat">
+                          <span className="fi-case__stat-k">Estimated exposure</span>
+                          <strong className="fi-case__stat-v">₹{c.exposureCr} Cr</strong>
+                        </div>
+                        <div className="fi-case__stat">
+                          <span className="fi-case__stat-k">Linked applications</span>
+                          <strong className="fi-case__stat-v">{c.linked.length}</strong>
+                        </div>
                       </div>
-                      <div className="fi-case__linked-mini" aria-label="Linked applications summary">
-                        <div className="fi-case__linked-mini-head">Linked applications ({c.linked.length})</div>
-                        <ul className="fi-case__linked-mini-list">
-                          {c.linked.map((row) => (
-                            <li key={`${c.id}-${row.farmer}-${row.match}`}>
-                              <span className="fi-case__linked-name">{row.farmer}</span>
-                              <span className="fi-case__linked-meta">{row.scheme} · {row.district}</span>
+                      {/* linked applications */}
+                      <div className="fi-case__linked" aria-label="Linked applications">
+                        <div className="fi-case__linked-head">
+                          <span>Applicant</span>
+                          <span>Scheme</span>
+                          <span>District</span>
+                          <span>Invoice</span>
+                        </div>
+                        {c.linked.map((row) => (
+                          <div key={`${c.id}-${row.farmer}-${row.match ?? row.district}`} className="fi-case__linked-row">
+                            <span className="fi-case__linked-name">{row.farmer}</span>
+                            <span className="fi-case__linked-scheme">{row.scheme}</span>
+                            <span className="fi-case__linked-district">{row.district}</span>
+                            <span className="fi-case__linked-inv">
                               {row.taxInvoice ? (
                                 <a
                                   className="fi-case__linked-pdf"
                                   href={row.taxInvoice}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={(ev) => ev.stopPropagation()}
                                 >
                                   <span className="material-symbols-outlined fi-case__linked-pdf-icon" aria-hidden>description</span>
-                                  Tax invoice (PDF)
+                                  PDF
                                 </a>
-                              ) : null}
-                            </li>
-                          ))}
-                        </ul>
+                              ) : (
+                                <span className="fi-case__linked-inv-dash" aria-hidden>—</span>
+                              )}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -595,71 +623,10 @@ const DivisionCrossDistrictFraud = () => {
             })}
           </div>
 
-          <aside className="fi-rail fi-rail--intel" aria-label="Intelligence sidebar">
-            <div className="fi-rail__stack fi-rail__stack--float">
-              <section
-                className={`fi-intel-card fi-intel-card--hero ${hoverPayload ? 'fi-intel-card--hero-live' : 'fi-intel-card--hero-idle'}`}
-                aria-labelledby="fi-hover-title"
-              >
-                <h2 id="fi-hover-title" className="fi-intel-card__title fi-intel-card__title--hero">Hover analytics</h2>
-                <div className="fi-hero-analytics" key={hoverPayload?.key ?? 'idle'}>
-                  {!hoverPayload ? (
-                    <div className="fi-hero-analytics__idle">
-                      <p className="fi-hero-analytics__placeholder">
-                        Hover over a district, fraud tag, scheme, or dealer to view analytics.
-                      </p>
-                      <div className="fi-hero-analytics__idle-bars" aria-hidden>
-                        <div className="fi-hero-microbar fi-hero-microbar--ghost"><span /></div>
-                        <div className="fi-hero-microbar fi-hero-microbar--ghost"><span /></div>
-                        <div className="fi-hero-activity" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="fi-hero-analytics__live">
-                      <p className="fi-hero-analytics__eyebrow">Hovering</p>
-                      <p className="fi-hero-analytics__headline">{hoverPayload.titleUpper}</p>
-                      <dl className="fi-hero-analytics__dl">
-                        {hoverPayload.rows.map((r) => (
-                          <div key={r.label} className="fi-hero-analytics__row">
-                            <dt>{r.label}</dt>
-                            <dd>{r.value}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                      {hoverPayload.zone ? (
-                        <div className="fi-hero-analytics__zone">
-                          <span className="fi-hero-analytics__zone-k">Highest duplication zone</span>
-                          <span className="fi-hero-analytics__zone-v">{hoverPayload.zone}</span>
-                        </div>
-                      ) : null}
-                      <div className="fi-hero-analytics__foot">
-                        <div>
-                          <span className="fi-hero-analytics__foot-k">Exposure linked</span>
-                          <span className="fi-hero-analytics__foot-v">{hoverPayload.exposure}</span>
-                        </div>
-                        <div>
-                          <span className="fi-hero-analytics__foot-k">Most active period</span>
-                          <span className="fi-hero-analytics__foot-v">{hoverPayload.period}</span>
-                        </div>
-                      </div>
-                      <div className="fi-hero-bars" aria-hidden>
-                        {hoverPayload.bars.map((b) => (
-                          <div key={b.label} className="fi-hero-bar">
-                            <div className="fi-hero-bar__top">
-                              <span className="fi-hero-bar__label">{b.label}</span>
-                              <span className="fi-hero-bar__pct">{b.pct}%</span>
-                            </div>
-                            <div className="fi-hero-bar__track">
-                              <span className="fi-hero-bar__fill" style={{ width: `${b.pct}%` }} />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </section>
-
+          <div className="fi-feed-rail">
+          <aside className="fi-hover-cloud" aria-label="Division intelligence">
+            <div className="fi-hover-cloud__panel">
+              <div className="fi-rail__stack fi-rail__stack--float">
               <section className="fi-intel-card fi-intel-card--insight" aria-labelledby="fi-insight-title">
                 <h2 id="fi-insight-title" className="fi-intel-card__title">AI insight</h2>
                 <p className="fi-intel-card__lead">
@@ -702,7 +669,9 @@ const DivisionCrossDistrictFraud = () => {
                 </div>
               </section>
             </div>
+          </div>
           </aside>
+          </div>
         </div>
       </div>
     </div>
