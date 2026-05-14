@@ -38,12 +38,14 @@ const AppLayout = () => {
       >
         {/* Hamburger — always visible */}
         <button
+          type="button"
           className="icon-btn-soft"
           onClick={toggleSidebar}
-          aria-label="Toggle menu"
+          aria-label={isOpen ? 'Collapse navigation' : 'Expand navigation'}
+          aria-expanded={isOpen}
           id="sidebar-toggle-btn"
         >
-          <span className="material-symbols-outlined text-[22px]">menu</span>
+          <span className="material-symbols-outlined text-[22px]">{isOpen ? 'menu_open' : 'menu'}</span>
         </button>
 
         {/* Logo */}
@@ -118,9 +120,10 @@ const AppLayout = () => {
         {/* Mobile/Tablet backdrop */}
         {isOpen && (
           <div
-            className="fixed inset-0 bg-black/30"
+            className="fixed inset-0 bg-black/30 lg:hidden"
             style={{ zIndex: 1150 }}
             onClick={closeSidebar}
+            aria-hidden
           />
         )}
 
