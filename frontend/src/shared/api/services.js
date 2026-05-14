@@ -65,4 +65,49 @@ export async function fetchPayments() {
   return data;
 }
 
+export async function createSurvey(payload) {
+  const { data } = await api.post('/api/surveys', payload);
+  return data;
+}
+
+export async function fetchSurveys() {
+  const { data } = await api.get('/api/surveys');
+  return data;
+}
+
+export async function fetchSurveyQueue() {
+  const { data } = await api.get('/api/surveys/queue');
+  return data;
+}
+
+export async function fetchSurveySummary() {
+  const { data } = await api.get('/api/surveys/summary');
+  return data;
+}
+
+export async function fetchSurveyById(id) {
+  const { data } = await api.get(`/api/surveys/${id}`);
+  return data;
+}
+
+export async function fetchSurveyReport(id) {
+  const { data } = await api.get(`/api/surveys/${id}/report`);
+  return data;
+}
+
+export async function fetchSurveyGrievances(id) {
+  const { data } = await api.get(`/api/surveys/${id}/grievances`);
+  return data;
+}
+
+export async function updateSurveyAction(id, payload) {
+  const { data } = await api.patch(`/api/surveys/${id}/action`, payload);
+  return data;
+}
+
+export async function fetchFarmerSurveys(farmerId) {
+  const { data } = await api.get(`/api/farmers/${farmerId}/surveys`);
+  return data;
+}
+
 export default api;
