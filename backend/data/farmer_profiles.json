@@ -1,0 +1,362 @@
+[
+  {
+    "id": "80000000-0000-4000-a000-000000000000001",
+    "farmer_id_external": "MH-1001",
+    "agristack_id": "MH-1001",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Ramesh Gaikwad",
+    "category": "Open",
+    "email": "farmer1001@krishi.gov.in",
+    "phone": "981000000"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000002",
+    "farmer_id_external": "MH-1002",
+    "agristack_id": "MH-1002",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Suresh Jadhav",
+    "category": "OBC",
+    "email": "farmer1002@krishi.gov.in",
+    "phone": "981000001"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000003",
+    "farmer_id_external": "MH-1003",
+    "agristack_id": "MH-1003",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Dilip Pawar",
+    "category": "SC",
+    "email": "farmer1003@krishi.gov.in",
+    "phone": "981000002"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000004",
+    "farmer_id_external": "MH-1004",
+    "agristack_id": "MH-1004",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Mangesh Shinde",
+    "category": "ST",
+    "email": "farmer1004@krishi.gov.in",
+    "phone": "981000003"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000005",
+    "farmer_id_external": "MH-1005",
+    "agristack_id": "MH-1005",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Nilesh Aher",
+    "category": "Open",
+    "email": "farmer1005@krishi.gov.in",
+    "phone": "981000004"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000006",
+    "farmer_id_external": "MH-1006",
+    "agristack_id": "MH-1006",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Vijay Gurav",
+    "category": "OBC",
+    "email": "farmer1006@krishi.gov.in",
+    "phone": "981000005"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000007",
+    "farmer_id_external": "MH-1007",
+    "agristack_id": "MH-1007",
+    "village_id": "60000000-0000-4000-a000-000000000008",
+    "name": "Rajendra More",
+    "category": "SC",
+    "email": "farmer1007@krishi.gov.in",
+    "phone": "981000006"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000008",
+    "farmer_id_external": "MH-1008",
+    "agristack_id": "MH-1008",
+    "village_id": "60000000-0000-4000-a000-000000000006",
+    "name": "Sandip Kshirsagar",
+    "category": "ST",
+    "email": "farmer1008@krishi.gov.in",
+    "phone": "981000007"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000009",
+    "farmer_id_external": "MH-1009",
+    "agristack_id": "MH-1009",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Ganesh Sathe",
+    "category": "Open",
+    "email": "farmer1009@krishi.gov.in",
+    "phone": "981000008"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000010",
+    "farmer_id_external": "MH-1010",
+    "agristack_id": "MH-1010",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Prakash Kharat",
+    "category": "OBC",
+    "email": "farmer1010@krishi.gov.in",
+    "phone": "981000009"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000011",
+    "farmer_id_external": "MH-1011",
+    "agristack_id": "MH-1011",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Sunil Dhumal",
+    "category": "SC",
+    "email": "farmer1011@krishi.gov.in",
+    "phone": "981000010"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000012",
+    "farmer_id_external": "MH-1012",
+    "agristack_id": "MH-1012",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Deepak Tandale",
+    "category": "ST",
+    "email": "farmer1012@krishi.gov.in",
+    "phone": "981000011"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000013",
+    "farmer_id_external": "MH-1013",
+    "agristack_id": "MH-1013",
+    "village_id": "60000000-0000-4000-a000-000000000008",
+    "name": "Baban Suryavanshi",
+    "category": "Open",
+    "email": "farmer1013@krishi.gov.in",
+    "phone": "981000012"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000014",
+    "farmer_id_external": "MH-1014",
+    "agristack_id": "MH-1014",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Kailas Wagh",
+    "category": "OBC",
+    "email": "farmer1014@krishi.gov.in",
+    "phone": "981000013"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000015",
+    "farmer_id_external": "MH-1015",
+    "agristack_id": "MH-1015",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Hanumant Bhoite",
+    "category": "SC",
+    "email": "farmer1015@krishi.gov.in",
+    "phone": "981000014"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000016",
+    "farmer_id_external": "MH-1016",
+    "agristack_id": "MH-1016",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Shivaji Dike",
+    "category": "ST",
+    "email": "farmer1016@krishi.gov.in",
+    "phone": "981000015"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000017",
+    "farmer_id_external": "MH-1017",
+    "agristack_id": "MH-1017",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Ankush Khillare",
+    "category": "Open",
+    "email": "farmer1017@krishi.gov.in",
+    "phone": "981000016"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000018",
+    "farmer_id_external": "MH-1018",
+    "agristack_id": "MH-1018",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Tukaram Vairal",
+    "category": "OBC",
+    "email": "farmer1018@krishi.gov.in",
+    "phone": "981000017"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000019",
+    "farmer_id_external": "MH-1019",
+    "agristack_id": "MH-1019",
+    "village_id": "60000000-0000-4000-a000-000000000008",
+    "name": "Yogesh Bhosale",
+    "category": "SC",
+    "email": "farmer1019@krishi.gov.in",
+    "phone": "981000018"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000020",
+    "farmer_id_external": "MH-1020",
+    "agristack_id": "MH-1020",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Sachin Zende",
+    "category": "ST",
+    "email": "farmer1020@krishi.gov.in",
+    "phone": "981000019"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000021",
+    "farmer_id_external": "MH-1021",
+    "agristack_id": "MH-1021",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Mahesh Kakade",
+    "category": "Open",
+    "email": "farmer1021@krishi.gov.in",
+    "phone": "981000020"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000022",
+    "farmer_id_external": "MH-1022",
+    "agristack_id": "MH-1022",
+    "village_id": "60000000-0000-4000-a000-000000000006",
+    "name": "Arun Shitole",
+    "category": "OBC",
+    "email": "farmer1022@krishi.gov.in",
+    "phone": "981000021"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000023",
+    "farmer_id_external": "MH-1023",
+    "agristack_id": "MH-1023",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Sandip Shelar",
+    "category": "SC",
+    "email": "farmer1023@krishi.gov.in",
+    "phone": "981000022"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000024",
+    "farmer_id_external": "MH-1024",
+    "agristack_id": "MH-1024",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Amol Kate",
+    "category": "ST",
+    "email": "farmer1024@krishi.gov.in",
+    "phone": "981000023"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000025",
+    "farmer_id_external": "MH-1025",
+    "agristack_id": "MH-1025",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Dattatray Kulkarni",
+    "category": "Open",
+    "email": "farmer1025@krishi.gov.in",
+    "phone": "981000024"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000026",
+    "farmer_id_external": "MH-1026",
+    "agristack_id": "MH-1026",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Abhijit Joshi",
+    "category": "OBC",
+    "email": "farmer1026@krishi.gov.in",
+    "phone": "981000025"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000027",
+    "farmer_id_external": "MH-1027",
+    "agristack_id": "MH-1027",
+    "village_id": "60000000-0000-4000-a000-000000000003",
+    "name": "Shrikant Deshmukh",
+    "category": "SC",
+    "email": "farmer1027@krishi.gov.in",
+    "phone": "981000026"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000028",
+    "farmer_id_external": "MH-1028",
+    "agristack_id": "MH-1028",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Vishal Patil",
+    "category": "ST",
+    "email": "farmer1028@krishi.gov.in",
+    "phone": "981000027"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000029",
+    "farmer_id_external": "MH-1029",
+    "agristack_id": "MH-1029",
+    "village_id": "60000000-0000-4000-a000-000000000002",
+    "name": "Rohan Kadam",
+    "category": "Open",
+    "email": "farmer1029@krishi.gov.in",
+    "phone": "981000028"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000030",
+    "farmer_id_external": "MH-1030",
+    "agristack_id": "MH-1030",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Siddharth Kamble",
+    "category": "OBC",
+    "email": "farmer1030@krishi.gov.in",
+    "phone": "981000029"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000031",
+    "farmer_id_external": "MH-1031",
+    "agristack_id": "MH-1031",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Akshay Wagh",
+    "category": "SC",
+    "email": "farmer1031@krishi.gov.in",
+    "phone": "981000030"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000032",
+    "farmer_id_external": "MH-1032",
+    "agristack_id": "MH-1032",
+    "village_id": "60000000-0000-4000-a000-000000000007",
+    "name": "Pravin Bansode",
+    "category": "ST",
+    "email": "farmer1032@krishi.gov.in",
+    "phone": "981000031"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000033",
+    "farmer_id_external": "MH-1033",
+    "agristack_id": "MH-1033",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Hrishikesh Bhosale",
+    "category": "Open",
+    "email": "farmer1033@krishi.gov.in",
+    "phone": "981000032"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000034",
+    "farmer_id_external": "MH-1034",
+    "agristack_id": "MH-1034",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Sagar Shinde",
+    "category": "OBC",
+    "email": "farmer1034@krishi.gov.in",
+    "phone": "981000033"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000035",
+    "farmer_id_external": "MH-1035",
+    "agristack_id": "MH-1035",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Prasad Takale",
+    "category": "SC",
+    "email": "farmer1035@krishi.gov.in",
+    "phone": "981000034"
+  },
+  {
+    "id": "80000000-0000-4000-a000-000000000000036",
+    "farmer_id_external": "MH-1036",
+    "agristack_id": "MH-1036",
+    "village_id": "60000000-0000-4000-a000-000000000001",
+    "name": "Kiran Ugale",
+    "category": "ST",
+    "email": "farmer1036@krishi.gov.in",
+    "phone": "981000035"
+  }
+]

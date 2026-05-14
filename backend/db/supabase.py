@@ -1,24 +1,18 @@
 """
-Single Supabase client for the API process.
+db/supabase.py  (stub — Supabase removed, kept for import safety)
 
-Uses the **service role** key — bypasses RLS. All authorization MUST be enforced
-in FastAPI (middleware + services). Mirror critical rules in Supabase RLS for defense in depth.
+All production code now uses db.json_store. This file is kept so that
+any legacy import of `from db.supabase import get_supabase` fails loudly
+rather than silently pulling in the removed dependency.
 """
 
-from functools import lru_cache
-from typing import Optional
 
-from supabase import Client, create_client
-
-from config.settings import get_settings
-
-
-@lru_cache
-def get_supabase() -> Client:
-    s = get_settings()
-    return create_client(s.supabase_url, s.supabase_service_role_key)
+def get_supabase():  # type: ignore[return]
+    raise RuntimeError(
+        "Supabase has been removed from this project. "
+        "Use db.json_store instead."
+    )
 
 
 def clear_supabase_cache() -> None:
-    """Test hook."""
-    get_supabase.cache_clear()
+    pass  # no-op

@@ -1,0 +1,112 @@
+[
+  {
+    "id": "70000000-0000-4000-a000-000000000001",
+    "email": "state@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "STATE_AUTHORITY",
+    "name": "Dr. Suhas Diwase",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001"
+  },
+  {
+    "id": "70000000-0000-4000-a000-000000000002",
+    "email": "div@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "DIVISIONAL_AUTHORITY",
+    "name": "Vikram Kumar",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001",
+    "division_id": "20000000-0000-4000-a000-000000000001"
+  },
+  {
+    "id": "70000000-0000-4000-a000-000000000003",
+    "email": "district@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "DISTRICT_AUTHORITY",
+    "name": "Dr. Meera Kulkarni",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001",
+    "division_id": "20000000-0000-4000-a000-000000000001",
+    "district_id": "30000000-0000-4000-a000-000000000001"
+  },
+  {
+    "id": "70000000-0000-4000-a000-000000000004",
+    "email": "tao@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "TALUKA_AUTHORITY",
+    "name": "Suresh Deshmukh",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001",
+    "division_id": "20000000-0000-4000-a000-000000000001",
+    "district_id": "30000000-0000-4000-a000-000000000001",
+    "taluka_id": "41000000-0000-4000-a000-000000000001"
+  },
+  {
+    "id": "70000000-0000-4000-a000-000000000005",
+    "email": "cao@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "CIRCLE_AUTHORITY",
+    "name": "Rajendra Kulkarni",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001",
+    "division_id": "20000000-0000-4000-a000-000000000001",
+    "district_id": "30000000-0000-4000-a000-000000000001",
+    "taluka_id": "41000000-0000-4000-a000-000000000001",
+    "circle_id": "50000000-0000-4000-a000-000000000001"
+  },
+  {
+    "id": "70000000-0000-4000-a000-000000000006",
+    "email": "cao2@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "CIRCLE_AUTHORITY",
+    "name": "Prakash Shinde",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001",
+    "division_id": "20000000-0000-4000-a000-000000000001",
+    "district_id": "30000000-0000-4000-a000-000000000001",
+    "taluka_id": "41000000-0000-4000-a000-000000000002",
+    "circle_id": "50000000-0000-4000-a000-000000000002"
+  },
+  {
+    "id": "70000000-0000-4000-a000-000000000007",
+    "email": "sahayak1@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "KRUSHI_SAHAYAK",
+    "name": "Suresh Mane",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001",
+    "division_id": "20000000-0000-4000-a000-000000000001",
+    "district_id": "30000000-0000-4000-a000-000000000001",
+    "taluka_id": "41000000-0000-4000-a000-000000000001",
+    "circle_id": "50000000-0000-4000-a000-000000000001",
+    "village_id": "60000000-0000-4000-a000-000000000001"
+  },
+  {
+    "id": "70000000-0000-4000-a000-000000000008",
+    "email": "sahayak2@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "KRUSHI_SAHAYAK",
+    "name": "Anil Shinde",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001",
+    "division_id": "20000000-0000-4000-a000-000000000001",
+    "district_id": "30000000-0000-4000-a000-000000000001",
+    "taluka_id": "41000000-0000-4000-a000-000000000001",
+    "circle_id": "50000000-0000-4000-a000-000000000001",
+    "village_id": "60000000-0000-4000-a000-000000000003"
+  },
+  {
+    "id": "70000000-0000-4000-a000-000000000009",
+    "email": "sahayak3@krishi.gov.in",
+    "password_hash": "$2b$12$v1drIjrMMTGxUZi3IFMuRuBA7gkhOIGyyy.MPITRLev6rmoaVCif.",
+    "role": "KRUSHI_SAHAYAK",
+    "name": "Priya Desai",
+    "is_active": true,
+    "state_id": "10000000-0000-4000-a000-000000000001",
+    "division_id": "20000000-0000-4000-a000-000000000001",
+    "district_id": "30000000-0000-4000-a000-000000000001",
+    "taluka_id": "41000000-0000-4000-a000-000000000002",
+    "circle_id": "50000000-0000-4000-a000-000000000002",
+    "village_id": "60000000-0000-4000-a000-000000000007"
+  }
+]

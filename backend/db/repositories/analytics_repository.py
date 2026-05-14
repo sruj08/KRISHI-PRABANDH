@@ -1,22 +1,21 @@
 from typing import Any, Optional
 
-from db.supabase import get_supabase
+import db.json_store as store
 
 
 class AnalyticsRepository:
-    def __init__(self) -> None:
-        self._sb = get_supabase()
-
     def weather(self, district_id: Optional[str] = None, limit: int = 100) -> list[dict[str, Any]]:
-        q = self._sb.table("weather_analytics").select("*")
         if district_id:
-            q = q.eq("district_id", district_id)
-        res = q.order("recorded_at", desc=True).limit(limit).execute()
-        return list(res.data or [])
+            rows = store.find_many("weather_analytics", district_id=district_id)
+        else:
+            rows = store.load("weather_analytics")
+        rows = sorted(rows, key=lambda r: r.get("recorded_at", ""), reverse=True)
+        return rows[:limit]
 
     def satellite(self, district_id: Optional[str] = None, limit: int = 100) -> list[dict[str, Any]]:
-        q = self._sb.table("satellite_analytics").select("*")
         if district_id:
-            q = q.eq("district_id", district_id)
-        res = q.order("recorded_at", desc=True).limit(limit).execute()
-        return list(res.data or [])
+            rows = store.find_many("satellite_analytics", district_id=district_id)
+        else:
+            rows = store.load("satellite_analytics")
+        rows = sorted(rows, key=lambda r: r.get("recorded_at", ""), reverse=True)
+        return rows[:limit]
