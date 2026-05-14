@@ -302,3 +302,22 @@
   background: #fff0ef;
   color: #ba1a1a;
 }
+
+/* Officer command rail — calmer section headers */
+.sidebar--officer .sidebar-section-label {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 650;
+  color: #7a857a;
+}
+
+.sidebar--officer .sidebar-section-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.sidebar--officer .sidebar-link {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}

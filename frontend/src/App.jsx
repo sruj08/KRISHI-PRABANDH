@@ -45,7 +45,6 @@ import DivisionCrossDistrictFraud from './pages/division/DivisionCrossDistrictFr
 import DivisionEscalations from './pages/division/DivisionEscalations';
 import StateDashboard from './pages/state/StateDashboard';
 import DivisionalAnalysis from './pages/state/DivisionalAnalysis';
-import AdvancedTools from './pages/AdvancedTools';
 import VisitPlanner from './pages/VisitPlanner';
 import Placeholder from './pages/Placeholder';
 import NotFound from './pages/NotFound';
@@ -53,6 +52,21 @@ import SahayakDashboard from './pages/officer/SahayakDashboard';
 import GRAssistantPage from './pages/officer/GRAssistantPage';
 import ScanDocumentPage from './pages/officer/ScanDocumentPage';
 import AIVerificationPage from './pages/officer/AIVerificationPage';
+import OfficerAlertsPage from './pages/officer/OfficerAlertsPage';
+import OfficerDailyTasksPage from './pages/officer/OfficerDailyTasksPage';
+import OfficerFarmerRegistryPage from './pages/officer/OfficerFarmerRegistryPage';
+import OfficerApplicationReviewPage from './pages/officer/OfficerApplicationReviewPage';
+import OfficerEligibilityEnginePage from './pages/officer/OfficerEligibilityEnginePage';
+import OfficerFieldVerificationPage from './pages/officer/OfficerFieldVerificationPage';
+import OfficerCropDamagePage from './pages/officer/OfficerCropDamagePage';
+import OfficerCompensationPage from './pages/officer/OfficerCompensationPage';
+import OfficerGeoSurveysPage from './pages/officer/OfficerGeoSurveysPage';
+import OfficerDuplicateDetectionPage from './pages/officer/OfficerDuplicateDetectionPage';
+import OfficerCrossDistrictWrapper from './pages/officer/OfficerCrossDistrictWrapper';
+import OfficerSopPage from './pages/officer/OfficerSopPage';
+import OfficerSchemeIntelligencePage from './pages/officer/OfficerSchemeIntelligencePage';
+import OfficerSettingsTabsPage from './pages/officer/OfficerSettingsTabsPage';
+import OfficerAuditPage from './pages/officer/OfficerAuditPage';
 import GramSabha from './pages/GramSabha';
 
 // Protected Route Wrapper
@@ -122,11 +136,24 @@ const App = () => {
             <Route path="/tao/ai-flagged-cases" element={<TaoAIFlaggedCases />} />
             <Route path="/tao/field-verification-requests" element={<TaoFieldVerificationPage />} />
             <Route path="/officer" element={<SahayakDashboard />} />
+            <Route path="/officer/alerts" element={<OfficerAlertsPage />} />
+            <Route path="/officer/daily-tasks" element={<OfficerDailyTasksPage />} />
+            <Route path="/officer/farmer-registry" element={<OfficerFarmerRegistryPage />} />
+            <Route path="/officer/application-review" element={<OfficerApplicationReviewPage />} />
+            <Route path="/officer/eligibility" element={<OfficerEligibilityEnginePage />} />
+            <Route path="/officer/field-verification" element={<OfficerFieldVerificationPage />} />
+            <Route path="/officer/crop-damage" element={<OfficerCropDamagePage />} />
+            <Route path="/officer/compensation" element={<OfficerCompensationPage />} />
+            <Route path="/officer/geo-surveys" element={<OfficerGeoSurveysPage />} />
+            <Route path="/officer/duplicate-detection" element={<OfficerDuplicateDetectionPage />} />
+            <Route path="/officer/cross-district-fraud" element={<OfficerCrossDistrictWrapper />} />
+            <Route path="/officer/sop" element={<OfficerSopPage />} />
+            <Route path="/officer/scheme-intelligence" element={<OfficerSchemeIntelligencePage />} />
+            <Route path="/officer/settings" element={<OfficerSettingsTabsPage />} />
+            <Route path="/officer/audit-logs" element={<OfficerAuditPage />} />
             <Route path="/officer/gr-assistant" element={<GRAssistantPage />} />
             <Route path="/officer/scan-document" element={<ScanDocumentPage />} />
             <Route path="/officer/ai-verification" element={<AIVerificationPage />} />
-            <Route path="/officer/eligibility" element={<Placeholder title="Eligible Farmers" icon="fact_check" tabs={['All','Pending','Approved','Rejected','KYC']} sections={[{ title: 'Eligibility Rules Engine', type: 'cards' }, { title: 'Pending Review', type: 'table' }]} />} />
-            <Route path="/officer/field-verification" element={<Placeholder title="Field Verification" icon="verified_user" tabs={['Visits','Geo-tagged Photos','Pending Checks']} sections={[{ title: 'Scheduled Visits', type: 'table' }, { title: 'Coverage Metrics', type: 'cards' }]} />} />
             {/* Legacy redirects */}
             <Route path="/advanced-tools" element={<Navigate to="/officer/eligibility" replace />} />
             <Route path="/eligibility" element={<Navigate to="/officer/eligibility" replace />} />
@@ -169,25 +196,9 @@ const App = () => {
 
             {/* State Official Sidebar Routes */}
             <Route path="/map" element={<Placeholder title="Village Map" icon="map" sections={[{ title: 'Live Field Operations', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} />} />
-            <Route path="/farmers" element={<Placeholder title="Farmer Registry" icon="groups" sections={[{ title: 'Registered Farmers', type: 'table' }, { title: 'Registration Analytics', type: 'cards' }]} />} />
-            
-            <Route path="/verification" element={
-              <Placeholder 
-                title="Field Verification" 
-                icon="verified_user" 
-                tabs={['Visits', 'Geo-tagged Photos', 'AI Verification', 'Pending Checks']}
-                sections={[{ title: 'Scheduled Visits', type: 'table' }, { title: 'Coverage Metrics', type: 'cards' }]} 
-              />
-            } />
-            <Route path="/damage" element={
-              <Placeholder 
-                title="Damage Reports" 
-                icon="warning" 
-                tabs={['Drought', 'Flood', 'Pest', 'Compensation']}
-                sections={[{ title: 'Severity Reports', type: 'cards' }, { title: 'Affected Regions', type: 'table' }]} 
-              />
-            } />
-            <Route path="/eligibility" element={<Placeholder title="Eligible Farmers" icon="fact_check" sections={[{ title: 'Eligibility Rules Engine', type: 'cards' }, { title: 'Pending Review', type: 'table' }]} />} />
+            <Route path="/farmers" element={<Navigate to="/officer/farmer-registry" replace />} />
+
+            <Route path="/damage" element={<Navigate to="/officer/crop-damage" replace />} />
             <Route path="/health" element={<Placeholder title="Crop Health" icon="eco" sections={[{ title: 'NDVI Indices', type: 'cards' }, { title: 'High Stress Zones', type: 'table' }]} />} />
             <Route path="/alerts" element={
               <Placeholder 
