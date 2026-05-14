@@ -293,9 +293,12 @@ function formatMetricIdx(v) {
 }
 
 /** Map hover: name, then a two-word label + value for the active mode; pending is separate in scheme mode. */
-function divisionChoroplethTooltipForMode(p, mapMode) {
+function divisionChoroplethTooltipForMode(p, mapMode, treatPenetrationAsFraud = false) {
   const name = (p.name || p.division || 'Division').trim();
-  if (mapMode === 'penetration') return `${name}\nScheme uptake ${formatMetricPct(p.schemePenetration)}`;
+  if (mapMode === 'penetration') {
+    if (treatPenetrationAsFraud) return `${name}\nDistrict fraud alerts ${formatMetricPct(p.schemePenetration)}`;
+    return `${name}\nScheme uptake ${formatMetricPct(p.schemePenetration)}`;
+  }
   if (mapMode === 'ndvi') return `${name}\nMoisture stress ${formatMetricPct(p.ndviStress)}`;
   return `${name}\nGrievance index ${formatMetricIdx(p.grievanceIdx)}`;
 }
@@ -674,6 +677,7 @@ function DivisionVoronoiHeatLayer({
  * @param {string} [props.title]     - Optional header title
  * @param {string} [props.subtitle]  - Optional header subtitle
  * @param {Record<string, { schemePenetration?: number, ndviStress?: number, grievanceIdx?: number }>} [props.liveDivisionMetrics] - Bare division codes (KKN, PNE, …) merged into overlay GeoJSON for heatmap + tooltips
+ * @param {boolean} [props.treatPenetrationLayerAsFraudHeat] - When true, first map mode labels tooltips/legend as district fraud intensity (values still use `schemePenetration` slot)
  */
 const RegionalMap = ({
   layerType = 'state',
@@ -684,6 +688,7 @@ const RegionalMap = ({
   title,
   subtitle,
   liveDivisionMetrics = null,
+  treatPenetrationLayerAsFraudHeat = false,
 }) => {
   const [rawData, setRawData] = useState(null);
   const [rawDivisionData, setRawDivisionData] = useState(null);
@@ -693,6 +698,34 @@ const RegionalMap = ({
   const [showHeat, setShowHeat] = useState(true);
   const [selectedDivision, setSelectedDivision] = useState(null);
   const navigate = useNavigate();
+
+  const displayMapModes = useMemo(() => {
+    if (!treatPenetrationLayerAsFraudHeat) return MAP_MODES;
+    return MAP_MODES.map((m) =>
+      m.id === 'penetration'
+        ? { ...m, label: 'District fraud alerts', sub: 'Relative AI fraud intensity by district (demo).' }
+        : m,
+    );
+  }, [treatPenetrationLayerAsFraudHeat]);
+
+  const activeIntensityStripLabel = useMemo(() => {
+    if (treatPenetrationLayerAsFraudHeat && mapMode === 'penetration') return 'Fraud intensity';
+    return MAP_INTENSITY_STRIP_LABEL[mapMode] || MAP_INTENSITY_STRIP_LABEL.penetration;
+  }, [treatPenetrationLayerAsFraudHeat, mapMode]);
+
+  const activeLegendRows = useMemo(() => {
+    if (treatPenetrationLayerAsFraudHeat && mapMode === 'penetration') {
+      return [
+        { c: '#d90429', t: 'Higher alert load' },
+        { c: '#ffd670', t: 'Moderate' },
+        { c: '#a0c4ff', t: 'Lower' },
+      ];
+    }
+    return LEGEND[mapMode] || LEGEND.penetration;
+  }, [treatPenetrationLayerAsFraudHeat, mapMode]);
+
+  const penetrationMetricTitle = treatPenetrationLayerAsFraudHeat ? 'District fraud alerts' : 'Scheme uptake';
+  const penetrationMetricTitleLong = treatPenetrationLayerAsFraudHeat ? 'District fraud alerts' : 'Scheme penetration';
 
   // ── Fetch boundary data (state outline — never modified on disk) ───────────
   useEffect(() => {
@@ -871,17 +904,20 @@ const RegionalMap = ({
           e.target.setStyle(divisionStyleFn(feature));
         },
       });
-      const baseTip = divisionChoroplethTooltipForMode(p, mapMode);
+      const baseTip = divisionChoroplethTooltipForMode(p, mapMode, treatPenetrationLayerAsFraudHeat);
+      const fraudLine = (treatPenetrationLayerAsFraudHeat && mapMode === 'penetration' && row?.fraudAlerts != null)
+        ? `\nFraud alerts ${Number(row.fraudAlerts).toLocaleString('en-IN')}`
+        : '';
       const pendingLine = (mapMode === 'penetration' && row?.pending != null)
         ? `\nPending files ${Number(row.pending).toLocaleString('en-IN')}`
         : '';
-      layer.bindTooltip(`${baseTip}${pendingLine}`, {
+      layer.bindTooltip(`${baseTip}${fraudLine}${pendingLine}`, {
         sticky: true,
         direction: 'auto',
         className: 'tao-mandal-tooltip',
       });
     },
-    [divisionMatrix, divisionStyleFn, divisionCollection, mapMode, selectedDivisionKey, showDivisionVoronoi],
+    [divisionMatrix, divisionStyleFn, divisionCollection, mapMode, selectedDivisionKey, showDivisionVoronoi, treatPenetrationLayerAsFraudHeat],
   );
 
   // ── Top-3 centroid pins (division centroids when overlay present) ─────────
@@ -964,7 +1000,7 @@ const RegionalMap = ({
         width: overlayUiInMap ? '100%' : undefined,
       }}
       >
-        {MAP_MODES.map((m) => (
+        {displayMapModes.map((m) => (
           <button
             key={m.id}
             type="button"
@@ -1035,7 +1071,7 @@ const RegionalMap = ({
           color:         'var(--text-muted, #888)',
           flexShrink:    0,
         }}>
-          {(MAP_INTENSITY_STRIP_LABEL[mapMode] || MAP_INTENSITY_STRIP_LABEL.penetration)}
+          {activeIntensityStripLabel}
         </span>
         <div style={{
           flex:        1,
@@ -1045,7 +1081,7 @@ const RegionalMap = ({
           maxWidth:    overlayUiInMap ? 160 : 200,
           minWidth:    60,
         }} />
-        {(LEGEND[mapMode] || LEGEND.penetration).map((row) => (
+        {activeLegendRows.map((row) => (
           <span key={row.t} style={{
             display:    'inline-flex',
             alignItems: 'center',
@@ -1237,15 +1273,15 @@ const RegionalMap = ({
                     <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
                       {pin.props ? (
                         <div style={{ whiteSpace: 'pre-line', fontSize: 11, lineHeight: 1.45, color: '#1a1c1a' }}>
-                          {divisionChoroplethTooltipForMode(pin.props, mapMode)}
+                          {divisionChoroplethTooltipForMode(pin.props, mapMode, treatPenetrationLayerAsFraudHeat)}
                         </div>
                       ) : (
                         <>
                           <div style={{ fontWeight: 700, fontSize: 12 }}>{pin.label}</div>
                           <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
                             {(divisionCollection?.features?.length || showDivisionVoronoi)
-                              ? `Top divisions by ${mapMode === 'penetration' ? 'scheme uptake' : mapMode === 'ndvi' ? 'moisture stress' : 'grievance load'}`
-                              : `Sample point · ${mapMode === 'penetration' ? 'uptake' : mapMode === 'ndvi' ? 'stress' : 'grievance'}`}
+                              ? `Top divisions by ${mapMode === 'penetration' ? (treatPenetrationLayerAsFraudHeat ? 'fraud alert intensity' : 'scheme uptake') : mapMode === 'ndvi' ? 'moisture stress' : 'grievance load'}`
+                              : `Sample point · ${mapMode === 'penetration' ? (treatPenetrationLayerAsFraudHeat ? 'fraud' : 'uptake') : mapMode === 'ndvi' ? 'stress' : 'grievance'}`}
                           </div>
                         </>
                       )}
@@ -1356,7 +1392,7 @@ const RegionalMap = ({
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#717972', textTransform: 'uppercase' }}>
-                          Map preview · {mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Crop stress' : 'Grievance load'}
+                          Map preview · {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Crop stress' : 'Grievance load'}
                         </div>
                         <div style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.25, marginTop: 4, color: '#0f172a' }}>
                           {p.name}
@@ -1379,7 +1415,7 @@ const RegionalMap = ({
                             marginBottom: 6,
                           }}
                           >
-                            {mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index'}
+                            {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index'}
                           </div>
                           <div style={{
                             fontSize: 26,
@@ -1480,7 +1516,7 @@ const RegionalMap = ({
                     }}
                     >
                       <span style={{ fontWeight: 700, color: '#1a365d' }}>Map lens:</span>
-                      <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? 'Scheme penetration' : mapMode === 'ndvi' ? 'Moisture stress (NDVI lens)' : 'Grievance heat'}</span>
+                      <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? penetrationMetricTitleLong : mapMode === 'ndvi' ? 'Moisture stress (NDVI lens)' : 'Grievance heat'}</span>
                       {row?.status && (
                         <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 999, background: '#f3f4f0', color: '#1a1c1a' }}>
                           {row.status}
@@ -1576,7 +1612,7 @@ const RegionalMap = ({
                     marginBottom: 8,
                   }}
                   >
-                    {mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index'}
+                    {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index'}
                   </div>
                   <div style={{ fontSize: 28, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#0f172a' }}>
                     {mapMode === 'penetration' && (pen != null ? `${pen}%` : '—')}
@@ -1628,7 +1664,7 @@ const RegionalMap = ({
                 }}
                 >
                   <span style={{ fontWeight: 700, color: '#1a365d' }}>Active map layer:</span>
-                  <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? 'Scheme penetration' : mapMode === 'ndvi' ? 'Moisture stress (NDVI lens)' : 'Grievance heat'}</span>
+                  <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? penetrationMetricTitleLong : mapMode === 'ndvi' ? 'Moisture stress (NDVI lens)' : 'Grievance heat'}</span>
                   {row?.status && (
                     <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f3f4f0', color: '#1a1c1a' }}>
                       Status · {row.status}
@@ -1650,7 +1686,9 @@ const RegionalMap = ({
         lineHeight: 1.5,
       }}>
         {divisionCollection?.features?.length
-          ? 'Click a division for the desk panel. Pins mark top 3 by the selected map mode.'
+          ? (treatPenetrationLayerAsFraudHeat
+            ? 'Click a district for desk context. Pins mark the three highest-intensity districts for the selected map mode.'
+            : 'Click a division for the desk panel. Pins mark top 3 by the selected map mode.')
           : 'Boundary-clipped heat samples. Pins mark top 3 by the selected map mode.'}
       </p>
       )}

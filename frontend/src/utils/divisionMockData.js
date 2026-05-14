@@ -111,22 +111,17 @@ export const RESOURCE_EVENT_SCENARIOS = [
   { id: 'ev4', title: 'PMFBY early claim window', impact: 'Satara + Sangli claim prep spike; maintain PFMS pre-audit staffing.', demandShift: '+12 PFMS reviewers' },
 ];
 
-/** Cross-district fraud intelligence (demo). */
-export const CROSS_DISTRICT_FRAUD_ALERTS = [
-  { id: 'F-9081', severity: 'P1', title: 'Duplicate tractor invoice — same chassis ID lodged in Pune (Haveli) and Satara (Phaltan).', districts: ['Pune', 'Satara'], scheme: 'Mechanization — Tractor', exposureCr: 2.4, confidencePct: 94, status: 'Under Verification' },
-  { id: 'F-9084', severity: 'P1', title: 'Beneficiary overlap cluster — shared mobile + Aadhaar last-four across three districts.', districts: ['Solapur', 'Sangli', 'Kolhapur'], scheme: 'PM-KISAN', exposureCr: 0.86, confidencePct: 88, status: 'Newly Flagged' },
-  { id: 'F-9087', severity: 'P2', title: 'Dealer-linked subsidy spike — coordinated invoice batch from two authorized dealers.', districts: ['Pune', 'Solapur'], scheme: 'Micro irrigation', exposureCr: 1.1, confidencePct: 81, status: 'Escalated' },
-  { id: 'F-9090', severity: 'P2', title: 'Repeated survey GPS capture — identical coordinates filed for non-contiguous parcels.', districts: ['Solapur', 'Satara'], scheme: 'PMFBY — Kharif', exposureCr: 0.42, confidencePct: 76, status: 'Under Verification' },
+/** AI-detectable signal mix (division desk — demo counts). */
+export const AI_FRAUD_SIGNALS = [
+  { id: 'dup_docs', label: 'Duplicate documents', count: 38 },
+  { id: 'aadhaar', label: 'Aadhaar clusters', count: 24 },
+  { id: 'gps', label: 'GPS fraud', count: 17 },
+  { id: 'invoice', label: 'Invoice reuse', count: 31 },
+  { id: 'land', label: 'Land / survey overlap', count: 12 },
 ];
 
-export const FRAUD_NETWORK_LINKS = [
-  { from: 'Dealer MH-14-TR-221', to: 'Invoice TR-MDL-4421', type: 'issued' },
-  { from: 'Invoice TR-MDL-4421', to: 'Pune application PNE-118204', type: 'claimed' },
-  { from: 'Invoice TR-MDL-4421', to: 'Satara application STR-88291', type: 'claimed' },
-  { from: 'Aadhaar cluster X7', to: 'PM-KISAN batch 12-Mar', type: 'linked' },
-];
-
-export const FRAUD_INVESTIGATION_PIPELINE = [
+/** Fraud case lifecycle (DAO + vigilance) — compact status counts. */
+export const FRAUD_CASE_STATUS_STAGES = [
   { stage: 'Newly Flagged', count: 14 },
   { stage: 'Under Verification', count: 22 },
   { stage: 'Escalated', count: 7 },
@@ -134,14 +129,145 @@ export const FRAUD_INVESTIGATION_PIPELINE = [
   { stage: 'Closed', count: 41 },
 ];
 
-/** Desk index for fraud density table (replaces map-only view). */
-export const FRAUD_DENSITY_BY_DISTRICT = DISTRICT_MATRIX.map((d) => ({
-  code: d.code,
-  district: d.district,
-  fraudAlerts: d.fraudAlerts,
-  suspiciousApplicationsEst: Math.round(d.pending * 0.07 + d.fraudAlerts * 38),
-  exposureDeskIndex: Math.round(d.fraudAlerts * 11 + d.pending / 42),
-}));
+/**
+ * Cross-district fraud alerts — hyper-local, agriculture-admin narrative.
+ * Each row: chips + linked subsidy records for investigation drill-down.
+ */
+export const CROSS_DISTRICT_FRAUD_ALERTS = [
+  {
+    id: 'F-9081',
+    severity: 'P1',
+    title: 'Same tractor subsidy invoice — chassis MH-19-TR-8841 — lodged in Pune Haveli and Satara Phaltan.',
+    districts: ['Pune', 'Satara', 'Solapur'],
+    scheme: 'Farm mechanization — Tractor subsidy',
+    exposureCr: 2.4,
+    confidencePct: 96,
+    status: 'Under verification',
+    whyFlagged: ['Same chassis', 'Invoice reuse', 'Cross-district'],
+    aiReasonLine: 'Dealer Mahalakshmi Agro, Barshi — same invoice PDF hash; 94% match on chassis string and GST line items.',
+    relationshipSnippets: [
+      'Tractor invoice uploaded in Satara (Phaltan) and Pune (Haveli) — same chassis number detected.',
+      'Dealer: Mahalakshmi Agro, Barshi (Solapur) — authorised for PM mechanization.',
+      'Sequential invoice TR-BSH-2026-4418 / 4419 within 18 minutes from same IP range.',
+    ],
+    linkedApplications: [
+      { farmerName: 'राजेंद्र पाटील', applicationId: 'PNE-MCH-118204', scheme: 'Farm mechanization — Tractor subsidy', district: 'Pune', taluka: 'Haveli', invoiceOrChassis: 'MH-19-TR-8841', dealer: 'Mahalakshmi Agro, Barshi', bankOrAadhaarHint: 'Aadhaar …8071', uploadedAt: '2026-05-02' },
+      { farmerName: 'सुनील जाधव', applicationId: 'STR-MCH-88291', scheme: 'Farm mechanization — Tractor subsidy', district: 'Satara', taluka: 'Phaltan', invoiceOrChassis: 'MH-19-TR-8841', dealer: 'Mahalakshmi Agro, Barshi', bankOrAadhaarHint: 'Mobile 98******21', uploadedAt: '2026-05-03' },
+      { farmerName: 'अनिल कुंभार', applicationId: 'SLR-MCH-77012', scheme: 'Farm mechanization — Tractor subsidy', district: 'Solapur', taluka: 'Barshi', invoiceOrChassis: 'TR-BSH-2026-4418', dealer: 'Mahalakshmi Agro, Barshi', bankOrAadhaarHint: 'Shared IFSC branch', uploadedAt: '2026-05-03' },
+    ],
+  },
+  {
+    id: 'F-9084',
+    severity: 'P1',
+    title: 'PM-KISAN beneficiary cluster — one mobile + masked Aadhaar tail reused across Solapur, Sangli, Kolhapur.',
+    districts: ['Solapur', 'Sangli', 'Kolhapur'],
+    scheme: 'PM-KISAN',
+    exposureCr: 0.86,
+    confidencePct: 91,
+    status: 'Newly flagged',
+    whyFlagged: ['Shared mobile', 'Aadhaar cluster', 'Cross-district'],
+    aiReasonLine: 'Same handset IMEI registered on three DAO portals within 48h; PM-KISAN e-KYC batch overlap.',
+    relationshipSnippets: [
+      'Mobile 98******21 linked to 4 PM-KISAN registrations in three districts.',
+      'Aadhaar last-four …4412 appears on dormant land record in Sangli and active khata in Solapur.',
+    ],
+    linkedApplications: [
+      { farmerName: 'निशांत महारुद्र गडसिंग', applicationId: 'SLR-PMK-90211', scheme: 'PM-KISAN', district: 'Solapur', taluka: 'Madha', invoiceOrChassis: '—', dealer: '—', bankOrAadhaarHint: 'Mobile 98******21 / Aadhaar …4412', uploadedAt: '2026-04-28' },
+      { farmerName: 'वंदना गडसिंग', applicationId: 'SGL-PMK-44108', scheme: 'PM-KISAN', district: 'Sangli', taluka: 'Tasgaon', invoiceOrChassis: '—', dealer: '—', bankOrAadhaarHint: 'Same mobile', uploadedAt: '2026-04-29' },
+      { farmerName: 'प्रशांत माने', applicationId: 'KLP-PMK-22017', scheme: 'PM-KISAN', district: 'Kolhapur', taluka: 'Hatkanangale', invoiceOrChassis: '—', dealer: '—', bankOrAadhaarHint: 'Aadhaar …4412', uploadedAt: '2026-04-30' },
+    ],
+  },
+  {
+    id: 'F-9087',
+    severity: 'P2',
+    title: 'Drip irrigation subsidy — dealer uploaded 84 invoices in 4 hours; sequential numbers; Pune + Solapur.',
+    districts: ['Pune', 'Solapur'],
+    scheme: 'Micro irrigation (drip)',
+    exposureCr: 1.1,
+    confidencePct: 73,
+    status: 'Escalated',
+    whyFlagged: ['Invoice burst', 'Dealer network', 'Sequential IDs'],
+    aiReasonLine: 'AgroCare Jalna portal session — burst upload window 02:10–06:40; same PDF template metadata.',
+    relationshipSnippets: [
+      'Single dealer GST 27AABCU9603R1ZX filed 84 drip claims in one night.',
+      'Invoice series DRIP-MH-2026-88901 … 88984 — all same crop season block.',
+    ],
+    linkedApplications: [
+      { farmerName: 'सविता शिंदे', applicationId: 'PNE-DP-55102', scheme: 'Micro irrigation (drip)', district: 'Pune', taluka: 'Indapur', invoiceOrChassis: 'DRIP-MH-2026-88912', dealer: 'AgroCare Jalna', bankOrAadhaarHint: '—', uploadedAt: '2026-05-06' },
+      { farmerName: 'भगवान कदम', applicationId: 'SLR-DP-33091', scheme: 'Micro irrigation (drip)', district: 'Solapur', taluka: 'Mangalwedha', invoiceOrChassis: 'DRIP-MH-2026-88913', dealer: 'AgroCare Jalna', bankOrAadhaarHint: '—', uploadedAt: '2026-05-06' },
+    ],
+  },
+  {
+    id: 'F-9090',
+    severity: 'P2',
+    title: 'PMFBY crop-loss panchanama — identical GPS corner reused for different farmers and villages.',
+    districts: ['Solapur', 'Satara'],
+    scheme: 'PMFBY — Soyabean crop loss',
+    exposureCr: 0.42,
+    confidencePct: 84,
+    status: 'Under verification',
+    whyFlagged: ['GPS reused', 'Photo match', 'Cross-taluka'],
+    aiReasonLine: 'Same EXIF GPS (17.8921, 75.0234) on three damage photos; villages Madha / Khatav / Phaltan.',
+    relationshipSnippets: [
+      'Field photo GPS matches within 4 m for three non-adjacent survey circles.',
+      'DAO Madha and DAO Phaltan both cleared first notice on same handset.',
+    ],
+    linkedApplications: [
+      { farmerName: 'कैलास मोरे', applicationId: 'SLR-PMFBY-66102', scheme: 'PMFBY — Soyabean crop loss', district: 'Solapur', taluka: 'Madha', invoiceOrChassis: 'GPS 17.8921, 75.0234', dealer: '—', bankOrAadhaarHint: '—', uploadedAt: '2026-05-08' },
+      { farmerName: 'दत्तात्रय सूर्यवंशी', applicationId: 'STR-PMFBY-55891', scheme: 'PMFBY — Soyabean crop loss', district: 'Satara', taluka: 'Phaltan', invoiceOrChassis: 'GPS 17.8921, 75.0234', dealer: '—', bankOrAadhaarHint: '—', uploadedAt: '2026-05-08' },
+    ],
+  },
+  {
+    id: 'F-9093',
+    severity: 'P2',
+    title: 'Soyabean compensation — survey 448/2 / 448/3 / 448/4 pattern (Malegaon-style overlap) matched in Solapur desk import.',
+    districts: ['Solapur'],
+    scheme: 'Crop loss relief — Unseasonal rain',
+    exposureCr: 0.31,
+    confidencePct: 79,
+    status: 'Under verification',
+    whyFlagged: ['Survey overlap', 'Area mismatch', 'Pattern match'],
+    aiReasonLine: 'Cultivable area claimed exceeds 7/12 extract for same khata reference; repeated survey block from payment-failure import.',
+    relationshipSnippets: [
+      'Survey numbers 448/2, 448/3, 448/4 appear on three relief applications with overlapping khata.',
+      'Inactive Aadhaar seeding flag on two beneficiaries — same bank branch queue.',
+    ],
+    linkedApplications: [
+      { farmerName: 'निशांत महारुद्र गडसिंग', applicationId: 'SLR-CLR-77120', scheme: 'Crop loss relief — Unseasonal rain', district: 'Solapur', taluka: 'Barshi', invoiceOrChassis: 'Survey 448/2', dealer: '—', bankOrAadhaarHint: 'Khata 112/1', uploadedAt: '2026-05-09' },
+      { farmerName: 'राहुल गडसिंग', applicationId: 'SLR-CLR-77121', scheme: 'Crop loss relief — Unseasonal rain', district: 'Solapur', taluka: 'Barshi', invoiceOrChassis: 'Survey 448/3', dealer: '—', bankOrAadhaarHint: 'Same household', uploadedAt: '2026-05-09' },
+    ],
+  },
+];
+
+/** Top strip for cross-district fraud command (demo) — derived from alert list. */
+export const DIVISION_FRAUD_KPIS = {
+  openP1: CROSS_DISTRICT_FRAUD_ALERTS.filter((a) => a.severity === 'P1').length,
+  openP2: CROSS_DISTRICT_FRAUD_ALERTS.filter((a) => a.severity === 'P2').length,
+  crossDistrictRings: CROSS_DISTRICT_FRAUD_ALERTS.length,
+  estimatedExposureCr: Math.round(
+    CROSS_DISTRICT_FRAUD_ALERTS.reduce((s, a) => s + (a.exposureCr || 0), 0) * 100
+  ) / 100,
+  daoVigilanceDesks: 6,
+};
+
+/** @deprecated Use CROSS_DISTRICT_FRAUD_ALERTS[].relationshipSnippets — kept for any stray imports */
+export const FRAUD_NETWORK_LINKS = [];
+
+/** @deprecated Use FRAUD_CASE_STATUS_STAGES */
+export const FRAUD_INVESTIGATION_PIPELINE = FRAUD_CASE_STATUS_STAGES;
+
+/** Per-district fraud desk metrics + severity score for map + table. */
+export const FRAUD_DENSITY_BY_DISTRICT = DISTRICT_MATRIX.map((d) => {
+  const suspiciousApplicationsEst = Math.round(d.pending * 0.07 + d.fraudAlerts * 38);
+  const fraudSeverityScore = Math.round(d.fraudAlerts * 11 + d.pending / 42);
+  return {
+    code: d.code,
+    district: d.district,
+    fraudAlerts: d.fraudAlerts,
+    suspiciousApplicationsEst,
+    fraudSeverityScore,
+  };
+});
 
 export const DIVISION_ESCALATIONS = [
   { id: 'ESC-2401', raised: '2026-05-02', district: 'Solapur', topic: 'PFMS settlement delay — drought relief', owner: 'DAO Solapur', sla: 'Overdue 3d', status: 'Open' },
