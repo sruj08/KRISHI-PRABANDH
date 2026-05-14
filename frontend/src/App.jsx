@@ -50,23 +50,10 @@ import Placeholder from './pages/Placeholder';
 import NotFound from './pages/NotFound';
 import SahayakDashboard from './pages/officer/SahayakDashboard';
 import GRAssistantPage from './pages/officer/GRAssistantPage';
-import ScanDocumentPage from './pages/officer/ScanDocumentPage';
 import AIVerificationPage from './pages/officer/AIVerificationPage';
-import OfficerAlertsPage from './pages/officer/OfficerAlertsPage';
-import OfficerDailyTasksPage from './pages/officer/OfficerDailyTasksPage';
 import OfficerFarmerRegistryPage from './pages/officer/OfficerFarmerRegistryPage';
-import OfficerApplicationReviewPage from './pages/officer/OfficerApplicationReviewPage';
-import OfficerEligibilityEnginePage from './pages/officer/OfficerEligibilityEnginePage';
-import OfficerFieldVerificationPage from './pages/officer/OfficerFieldVerificationPage';
-import OfficerCropDamagePage from './pages/officer/OfficerCropDamagePage';
-import OfficerCompensationPage from './pages/officer/OfficerCompensationPage';
-import OfficerGeoSurveysPage from './pages/officer/OfficerGeoSurveysPage';
-import OfficerDuplicateDetectionPage from './pages/officer/OfficerDuplicateDetectionPage';
-import OfficerCrossDistrictWrapper from './pages/officer/OfficerCrossDistrictWrapper';
-import OfficerSopPage from './pages/officer/OfficerSopPage';
-import OfficerSchemeIntelligencePage from './pages/officer/OfficerSchemeIntelligencePage';
+import OfficerPendingSurveysPage from './pages/officer/OfficerPendingSurveysPage';
 import OfficerSettingsTabsPage from './pages/officer/OfficerSettingsTabsPage';
-import OfficerAuditPage from './pages/officer/OfficerAuditPage';
 import GramSabha from './pages/GramSabha';
 
 // Protected Route Wrapper
@@ -136,28 +123,13 @@ const App = () => {
             <Route path="/tao/ai-flagged-cases" element={<TaoAIFlaggedCases />} />
             <Route path="/tao/field-verification-requests" element={<TaoFieldVerificationPage />} />
             <Route path="/officer" element={<SahayakDashboard />} />
-            <Route path="/officer/alerts" element={<OfficerAlertsPage />} />
-            <Route path="/officer/daily-tasks" element={<OfficerDailyTasksPage />} />
+            <Route path="/officer/pending-surveys" element={<OfficerPendingSurveysPage />} />
             <Route path="/officer/farmer-registry" element={<OfficerFarmerRegistryPage />} />
-            <Route path="/officer/application-review" element={<OfficerApplicationReviewPage />} />
-            <Route path="/officer/eligibility" element={<OfficerEligibilityEnginePage />} />
-            <Route path="/officer/field-verification" element={<OfficerFieldVerificationPage />} />
-            <Route path="/officer/crop-damage" element={<OfficerCropDamagePage />} />
-            <Route path="/officer/compensation" element={<OfficerCompensationPage />} />
-            <Route path="/officer/geo-surveys" element={<OfficerGeoSurveysPage />} />
-            <Route path="/officer/duplicate-detection" element={<OfficerDuplicateDetectionPage />} />
-            <Route path="/officer/cross-district-fraud" element={<OfficerCrossDistrictWrapper />} />
-            <Route path="/officer/sop" element={<OfficerSopPage />} />
-            <Route path="/officer/scheme-intelligence" element={<OfficerSchemeIntelligencePage />} />
             <Route path="/officer/settings" element={<OfficerSettingsTabsPage />} />
-            <Route path="/officer/audit-logs" element={<OfficerAuditPage />} />
             <Route path="/officer/gr-assistant" element={<GRAssistantPage />} />
-            <Route path="/officer/scan-document" element={<ScanDocumentPage />} />
             <Route path="/officer/ai-verification" element={<AIVerificationPage />} />
             {/* Legacy redirects */}
-            <Route path="/advanced-tools" element={<Navigate to="/officer/eligibility" replace />} />
-            <Route path="/eligibility" element={<Navigate to="/officer/eligibility" replace />} />
-            <Route path="/verification" element={<Navigate to="/officer/field-verification" replace />} />
+            <Route path="/verification" element={<Navigate to="/officer/ai-verification" replace />} />
             <Route path="/survey" element={<SchemeAnalytics />} />
             <Route path="/survey-ops" element={<SurveyOperationsDashboard />} />
             <Route path="/mandal" element={<MandalDashboard />} />

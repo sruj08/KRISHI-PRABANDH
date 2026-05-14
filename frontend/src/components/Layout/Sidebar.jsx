@@ -151,59 +151,18 @@ const Sidebar = ({ isOpen, onClose }) => {
     // ── Krishi Sahayak (Officer) — command-center IA (6 groups) ──
     return [
       {
-        id: 'cmd',
-        label: 'Command center',
+        id: 'officer_workflow',
+        flat: true,
+        label: 'WORKFLOW',
         items: [
           { to: '/officer', icon: 'dashboard', label: 'Dashboard', end: true },
-          { to: '/officer/alerts', icon: 'notifications_active', label: 'Alerts & risk queue' },
-          { to: '/officer/daily-tasks', icon: 'task_alt', label: 'Daily tasks' },
-        ],
-      },
-      {
-        id: 'farm',
-        label: 'Farmer operations',
-        items: [
-          { to: '/officer/farmer-registry', icon: 'groups', label: 'Farmer registry' },
-          { to: '/officer/application-review', icon: 'assignment_turned_in', label: 'Application review' },
-          { to: '/officer/eligibility', icon: 'fact_check', label: 'Eligibility engine' },
-          { to: '/officer/field-verification', icon: 'map_search', label: 'Field verification' },
-        ],
-      },
-      {
-        id: 'dmg',
-        label: 'Damage & relief',
-        items: [
-          { to: '/officer/crop-damage', icon: 'crisis_alert', label: 'Crop damage reports' },
-          { to: '/officer/compensation', icon: 'account_balance', label: 'Compensation pipeline' },
-          { to: '/officer/geo-surveys', icon: 'satellite_alt', label: 'Geo-tagged surveys' },
-        ],
-      },
-      {
-        id: 'ai',
-        label: 'AI & fraud monitoring',
-        items: [
-          { to: '/officer/ai-verification', icon: 'smart_toy', label: 'AI verification' },
-          { to: '/officer/scan-document', icon: 'document_scanner', label: 'OCR document scan' },
-          { to: '/officer/duplicate-detection', icon: 'content_copy', label: 'Duplicate detection' },
-        ],
-      },
-      {
-        id: 'know',
-        label: 'Knowledge & support',
-        items: [
-          { to: '/officer/gr-assistant', icon: 'chat', label: 'GR assistant' },
-          { to: '/officer/sop', icon: 'menu_book', label: 'SOP recommendations' },
-          { to: '/officer/scheme-intelligence', icon: 'analytics', label: 'Scheme intelligence' },
-        ],
-      },
-      {
-        id: 'sys',
-        label: 'System',
-        items: [
+          { to: '/officer/pending-surveys', icon: 'pending_actions', label: 'Pending Surveys' },
+          { to: '/officer/farmer-registry', icon: 'groups', label: 'Farmer Registry' },
+          { to: '/officer/ai-verification', icon: 'smart_toy', label: 'AI Verification' },
+          { to: '/officer/gr-assistant', icon: 'chat', label: 'GR Assistant' },
           { to: '/officer/settings', icon: 'settings', label: 'Settings' },
-          { to: '/officer/audit-logs', icon: 'history', label: 'Audit logs' },
         ],
-      },
+      }
     ];
   };
 

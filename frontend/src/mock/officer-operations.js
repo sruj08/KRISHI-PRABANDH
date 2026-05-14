@@ -28,7 +28,7 @@ export const PRIORITY_QUEUE = [
     title: '12 applications awaiting verification',
     detail: 'PM-KISAN and tractor subsidy uploads concentrated in Madha cluster.',
     actionLabel: 'Open queue',
-    path: '/officer/application-review',
+    path: '/officer/pending-surveys',
     timeLabel: 'Updated 08:42',
   },
   {
@@ -37,7 +37,7 @@ export const PRIORITY_QUEUE = [
     title: '3 duplicate Aadhaar alerts detected',
     detail: 'Same masked UID tail across unrelated khata numbers — NPCI rejects elevated.',
     actionLabel: 'Review duplicates',
-    path: '/officer/duplicate-detection',
+    path: '/officer/ai-verification',
     timeLabel: 'Updated 07:15',
   },
   {
@@ -46,7 +46,7 @@ export const PRIORITY_QUEUE = [
     title: '5 geo-tagged surveys pending review',
     detail: 'GPS spread inconsistent with declared village boundaries.',
     actionLabel: 'Open surveys',
-    path: '/officer/geo-surveys',
+    path: '/officer/pending-surveys',
     timeLabel: 'Updated yesterday',
   },
   {
@@ -55,7 +55,7 @@ export const PRIORITY_QUEUE = [
     title: '2 compensation cases exceed taluka threshold',
     detail: 'Outlier loss % vs adjacent parcels on soybean PMFBY intimation.',
     actionLabel: 'View pipeline',
-    path: '/officer/compensation',
+    path: '/officer/pending-surveys',
     timeLabel: 'Updated 06:50',
   },
 ];

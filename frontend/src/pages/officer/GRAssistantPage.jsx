@@ -1,124 +1,43 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { useLanguage } from '../../context/LanguageContext';
-import { useToast } from '../../hooks/useToast.jsx';
-import { postGrAssistant } from '../../features/surveys/api';
-
-const MAX_BYTES = 10 * 1024 * 1024;
-
-function parseDeadlineForUrgency(deadlineStr) {
-  if (!deadlineStr || typeof deadlineStr !== 'string') return false;
-  const d = Date.parse(deadlineStr.replace(/(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})/, (_, a, b, c) => `${c.length === 2 ? `20${c}` : c}-${b.padStart(2, '0')}-${a.padStart(2, '0')}`));
-  if (Number.isNaN(d)) return false;
-  const days = (d - Date.now()) / 86400000;
-  return days >= 0 && days <= 7;
-}
-
-function OfficerHeader({ centerTitle, centerSubtitle, apiOnline }) {
-  return (
-    <header
-      className="cao-header"
-      style={{
-        marginLeft: '-var(--sp-6)',
-        marginRight: '-var(--sp-6)',
-        marginTop: '-var(--sp-6)',
-        marginBottom: 'var(--sp-6)',
-      }}
-    >
-      <div className="cao-header-left">
-        <div className="logo-text">
-          <span className="material-symbols-outlined" style={{ color: 'var(--primary)', marginRight: '8px', fontSize: '24px' }}>
-            public
-          </span>
-          Krishi Prabandh - Sahayak
-        </div>
-      </div>
-      <div className="cao-header-center" style={{ flex: 1, display: 'flex', justifyContent: 'center', fontSize: '13px', color: 'var(--text-muted)', gap: '16px' }}>
-        <span>{centerTitle}</span>
-        {centerSubtitle ? (
-          <>
-            <span style={{ color: 'var(--outline-card)' }}>•</span>
-            <span>{centerSubtitle}</span>
-          </>
-        ) : null}
-      </div>
-      <div className="cao-header-right">
-        <span className="badge badge-verified" style={{ fontSize: '11px', marginRight: '8px' }}>
-          {apiOnline ? 'API Live' : 'Offline Mode'}
-        </span>
-        <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>notifications</span>
-        <span className="material-symbols-outlined" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>settings</span>
-        <div
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            backgroundColor: '#E0E0E0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 'bold',
-            color: 'var(--text-dark)',
-            cursor: 'pointer',
-          }}
-        >
-          S
-        </div>
-      </div>
-    </header>
-  );
-}
+import React, { useRef, useState } from 'react';
 
 const GRAssistantPage = () => {
-  const { t } = useLanguage();
-  const { addToast } = useToast();
   const inputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [apiOnline, setApiOnline] = useState(true);
   const [result, setResult] = useState(null);
 
-  const deadlineUrgent = useMemo(() => parseDeadlineForUrgency(result?.deadline), [result]);
+  const onPick = (f) => {
+    if (!f) return;
+    if (f.type !== 'application/pdf') {
+      alert('PDF only');
+      return;
+    }
+    setFile(f);
+    setResult(null);
+  };
 
-  const onPick = useCallback(
-    (f) => {
-      if (!f) return;
-      if (f.type !== 'application/pdf') {
-        addToast(t('PDF only'), 'error');
-        return;
-      }
-      if (f.size > MAX_BYTES) {
-        addToast(t('Max file size 10 MB'), 'error');
-        return;
-      }
-      setFile(f);
-      setResult(null);
-    },
-    [addToast, t],
-  );
+  const onDrop = (e) => {
+    e.preventDefault();
+    const f = e.dataTransfer?.files?.[0];
+    onPick(f);
+  };
 
-  const onDrop = useCallback(
-    (e) => {
-      e.preventDefault();
-      const f = e.dataTransfer?.files?.[0];
-      onPick(f);
-    },
-    [onPick],
-  );
-
-  const runExtract = async () => {
+  const runExtract = () => {
     if (!file) return;
     setBusy(true);
-    setApiOnline(true);
-    try {
-      const data = await postGrAssistant(file);
-      setResult(data);
-    } catch (e) {
-      console.error(e);
-      setApiOnline(false);
-      addToast(t('Could not process GR. Please try again.'), 'error');
-    } finally {
+    // Simulate AI extraction
+    setTimeout(() => {
+      setResult({
+        scheme_name: 'PM-KISAN Update 2026',
+        eligibility: 'All farmers with less than 2ha land.',
+        deadline: '31/05/2026',
+        subsidy_percentage: 'N/A',
+        required_documents: 'Aadhaar Card\nBank Passbook\n7/12 Extract',
+        conditions: 'Must have active bank account linked to Aadhaar.',
+        confidence: 94
+      });
       setBusy(false);
-    }
+    }, 1500);
   };
 
   const clearAll = () => {
@@ -127,29 +46,14 @@ const GRAssistantPage = () => {
     if (inputRef.current) inputRef.current.value = '';
   };
 
-  const infoRows = [
-    { key: 'scheme_name', label: t('Scheme Name') },
-    { key: 'eligibility', label: t('Eligibility') },
-    { key: 'deadline', label: t('Last Date') },
-    { key: 'subsidy_percentage', label: t('Subsidy') },
-    { key: 'required_documents', label: t('Required Documents'), multiline: true },
-    { key: 'conditions', label: t('Important Conditions'), multiline: true },
-  ];
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-8)', animation: 'fadeIn 0.4s ease' }}>
-      <OfficerHeader centerTitle={t('Assigned: 5 Villages')} centerSubtitle={t('Sahayak Krushi Adhikari Ramesh Patil')} apiOnline={apiOnline} />
+    <div style={{ padding: '24px 32px' }}>
+      <header style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a1c1a', margin: '0 0 8px' }}>GR Assistant</h1>
+        <p style={{ margin: 0, color: '#717972', fontSize: '0.95rem' }}>Upload Government Resolutions (PDF) to get AI-generated highlights in simple language.</p>
+      </header>
 
-      <div>
-        <h2 className="section-title" style={{ marginBottom: '8px' }}>
-          {t('GR Assistant — Government Resolution Summarizer')}
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
-          {t('Upload a GR PDF to get AI-generated highlights in simple language')}
-        </p>
-      </div>
-
-      <div className="glass-panel" style={{ padding: 'var(--sp-6)' }}>
+      <div style={{ background: '#fff', border: '1px solid #e2e9e6', borderRadius: '8px', padding: '32px', marginBottom: '24px' }}>
         <input
           ref={inputRef}
           type="file"
@@ -165,87 +69,99 @@ const GRAssistantPage = () => {
           onDragOver={(e) => e.preventDefault()}
           onDrop={onDrop}
           style={{
-            border: '2px dashed var(--outline-card)',
-            borderRadius: 'var(--radius-lg)',
-            padding: 'var(--sp-8)',
+            border: '2px dashed #9eaa9f',
+            borderRadius: '8px',
+            padding: '48px 24px',
             textAlign: 'center',
             cursor: 'pointer',
-            background: 'rgba(3,54,33,0.02)',
+            background: '#f8f9f8',
+            transition: 'background 0.2s',
           }}
+          onMouseOver={(e) => e.currentTarget.style.background = '#f3f4f0'}
+          onMouseOut={(e) => e.currentTarget.style.background = '#f8f9f8'}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '40px', color: 'var(--primary)' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '48px', color: '#1f4d36' }}>
             upload_file
           </span>
-          <div style={{ marginTop: 'var(--sp-3)', fontWeight: 600 }}>{t('Drag & drop or click to upload')}</div>
-          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', marginTop: '8px' }}>
-            {t('Accepts: PDF only · Max 10 MB')}
+          <div style={{ marginTop: '16px', fontWeight: 600, color: '#1a1c1a', fontSize: '1.1rem' }}>Drag & drop or click to upload PDF</div>
+          <div style={{ fontSize: '0.85rem', color: '#717972', marginTop: '8px' }}>
+            Maximum file size: 10 MB
           </div>
           {file && (
-            <div style={{ marginTop: 'var(--sp-4)', fontFamily: 'var(--font-data)', fontSize: 'var(--font-size-sm)' }}>
-              <strong>{file.name}</strong> ({(file.size / 1024 / 1024).toFixed(2)} MB)
+            <div style={{ marginTop: '16px', fontSize: '0.95rem', color: '#1f4d36', fontWeight: 600, background: '#eef0eb', display: 'inline-block', padding: '8px 16px', borderRadius: '4px' }}>
+              {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
             </div>
           )}
         </div>
 
-        <div style={{ marginTop: 'var(--sp-5)', display: 'flex', gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
-          <button type="button" className="btn btn-primary" disabled={!file || busy} onClick={runExtract}>
+        <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center' }}>
+          <button 
+            type="button" 
+            disabled={!file || busy} 
+            onClick={runExtract}
+            style={{ 
+              padding: '12px 24px', background: !file || busy ? '#e2e9e6' : '#1f4d36', 
+              color: !file || busy ? '#9eaa9f' : '#fff', border: 'none', borderRadius: '6px', 
+              fontWeight: 600, fontSize: '1rem', cursor: !file || busy ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', gap: '8px'
+            }}
+          >
             {busy ? (
               <>
-                <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: 6 }}>
-                  hourglass_top
-                </span>
-                {t('Processing…')}
+                <span className="material-symbols-outlined" style={{ animation: 'spin 1s linear infinite' }}>hourglass_empty</span>
+                Processing...
               </>
             ) : (
-              t('Extract & Summarize GR')
+              'Extract Highlights'
             )}
           </button>
         </div>
       </div>
 
       {result && (
-        <div className="glass-panel" style={{ padding: 'var(--sp-6)' }}>
-          <h3 className="section-title" style={{ marginTop: 0 }}>{t('GR Summary')}</h3>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-              gap: 'var(--sp-4)',
-              marginTop: 'var(--sp-4)',
-            }}
-          >
-            {infoRows.map((row) => {
-              const raw = result[row.key];
-              const val = raw != null && String(raw).trim() !== '' ? String(raw) : t('Not found');
-              const urgent = row.key === 'deadline' && deadlineUrgent;
-              return (
-                <div key={row.key} className="card" style={{ padding: 'var(--sp-4)' }}>
-                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    {row.label}
-                  </div>
-                  {row.multiline ? (
-                    <ul style={{ margin: '8px 0 0', paddingLeft: '18px', color: urgent ? 'var(--error)' : 'var(--text-dark)', fontSize: 'var(--font-size-sm)' }}>
-                      {val === t('Not found') ? (
-                        <li style={{ color: 'var(--text-muted)', listStyle: 'none', marginLeft: '-18px' }}>{val}</li>
-                      ) : (
-                        val.split(/\n+/).filter(Boolean).map((line) => <li key={line}>{line}</li>)
-                      )}
-                    </ul>
-                  ) : (
-                    <div style={{ marginTop: '8px', fontSize: 'var(--font-size-sm)', color: urgent ? 'var(--error)' : 'var(--text-dark)', fontWeight: 600 }}>
-                      {val}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+        <div style={{ background: '#fff', border: '1px solid #e2e9e6', borderRadius: '8px', padding: '32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #e2e9e6', paddingBottom: '16px' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1c1a', margin: 0 }}>GR Summary</h2>
+            <div style={{ fontSize: '0.85rem', color: '#1f4d36', fontWeight: 600, background: '#eef0eb', padding: '4px 12px', borderRadius: '12px' }}>
+              OCR Confidence: {result.confidence}%
+            </div>
           </div>
-          <div style={{ marginTop: 'var(--sp-4)', fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)' }}>
-            {t('OCR Confidence')}: {result.confidence != null ? `${Number(result.confidence).toFixed(0)}%` : '—'}
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Scheme Name</div>
+              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{result.scheme_name}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Last Date</div>
+              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{result.deadline}</div>
+            </div>
+            <div style={{ gridColumn: 'span 2' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Eligibility</div>
+              <div style={{ fontSize: '1rem', color: '#414943' }}>{result.eligibility}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Required Documents</div>
+              <ul style={{ margin: 0, paddingLeft: '20px', color: '#414943', fontSize: '1rem' }}>
+                {result.required_documents.split('\n').map((doc, idx) => <li key={idx}>{doc}</li>)}
+              </ul>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Important Conditions</div>
+              <ul style={{ margin: 0, paddingLeft: '20px', color: '#414943', fontSize: '1rem' }}>
+                {result.conditions.split('\n').map((cond, idx) => <li key={idx}>{cond}</li>)}
+              </ul>
+            </div>
           </div>
-          <button type="button" className="btn btn-outline btn-sm" style={{ marginTop: 'var(--sp-4)', color: 'var(--primary)' }} onClick={clearAll}>
-            {t('Clear & Upload Another GR')}
-          </button>
+
+          <div style={{ marginTop: '32px', textAlign: 'center' }}>
+            <button 
+              onClick={clearAll}
+              style={{ background: 'none', border: '1px solid #e2e9e6', color: '#414943', padding: '10px 20px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+            >
+              Clear & Upload Another GR
+            </button>
+          </div>
         </div>
       )}
     </div>

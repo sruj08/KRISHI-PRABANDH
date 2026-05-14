@@ -1,45 +1,114 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import OfficerShell from '../../components/officer/OfficerShell';
-
-const TABS = [
-  { id: 'prefs', label: 'User preferences' },
-  { id: 'notif', label: 'Notification rules' },
-  { id: 'ai', label: 'AI thresholds' },
-  { id: 'verify', label: 'Verification rules' },
-  { id: 'lang', label: 'Language' },
-  { id: 'sync', label: 'Device sync' },
-];
 
 const OfficerSettingsTabsPage = () => {
-  const [tab, setTab] = useState('prefs');
+  const [language, setLanguage] = useState('en');
+  const [notifications, setNotifications] = useState({
+    sms: true,
+    email: false,
+    push: true
+  });
 
   return (
-    <OfficerShell
-      title="Settings"
-      purpose="Configure how you work in Krishi Prabandh: alerts, AI sensitivity, verification defaults, and device behaviour."
-      attention="AI thresholds affect auto-routing — changes apply after nightly model refresh (demo)."
-      nextAction="Confirm notification rules so DAO escalations reach you on SMS during field hours."
-    >
-      <div className="op-hero__chips" style={{ marginBottom: 18 }}>
-        {TABS.map((t) => (
-          <button key={t.id} type="button" className={`op-chip ${tab === t.id ? 'op-chip--on' : ''}`} onClick={() => setTab(t.id)}>
-            {t.label}
+    <div style={{ padding: '24px 32px', maxWidth: '800px' }}>
+      <header style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a1c1a', margin: '0 0 8px' }}>Settings</h1>
+        <p style={{ margin: 0, color: '#717972', fontSize: '0.95rem' }}>Manage your account preferences and notification settings.</p>
+      </header>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+        
+        {/* Profile Section */}
+        <section>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1a1c1a', marginBottom: 16, borderBottom: '1px solid #e2e9e6', paddingBottom: 8 }}>Profile Information</h2>
+          <div style={{ background: '#fff', border: '1px solid #e2e9e6', borderRadius: 8, padding: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#717972', marginBottom: 8 }}>Full Name</label>
+              <input type="text" disabled value="Ramesh Patil" style={{ width: '100%', padding: '10px 12px', border: '1px solid #e2e9e6', borderRadius: 6, background: '#f8f9f8', color: '#414943' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#717972', marginBottom: 8 }}>Role</label>
+              <input type="text" disabled value="Taluka Agriculture Officer (TAO)" style={{ width: '100%', padding: '10px 12px', border: '1px solid #e2e9e6', borderRadius: 6, background: '#f8f9f8', color: '#414943' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#717972', marginBottom: 8 }}>Jurisdiction</label>
+              <input type="text" disabled value="Baramati Taluka, Pune" style={{ width: '100%', padding: '10px 12px', border: '1px solid #e2e9e6', borderRadius: 6, background: '#f8f9f8', color: '#414943' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#717972', marginBottom: 8 }}>Contact Number</label>
+              <input type="text" disabled value="+91 98765 43210" style={{ width: '100%', padding: '10px 12px', border: '1px solid #e2e9e6', borderRadius: 6, background: '#f8f9f8', color: '#414943' }} />
+            </div>
+          </div>
+        </section>
+
+        {/* Preferences Section */}
+        <section>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1a1c1a', marginBottom: 16, borderBottom: '1px solid #e2e9e6', paddingBottom: 8 }}>Application Preferences</h2>
+          <div style={{ background: '#fff', border: '1px solid #e2e9e6', borderRadius: 8, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#717972', marginBottom: 8 }}>System Language</label>
+              <select 
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                style={{ width: '100%', maxWidth: '300px', padding: '10px 12px', border: '1px solid #e2e9e6', borderRadius: 6, background: '#fff', color: '#1a1c1a' }}
+              >
+                <option value="en">English</option>
+                <option value="mr">Marathi (मराठी)</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        {/* Notifications Section */}
+        <section>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1a1c1a', marginBottom: 16, borderBottom: '1px solid #e2e9e6', paddingBottom: 8 }}>Notification Settings</h2>
+          <div style={{ background: '#fff', border: '1px solid #e2e9e6', borderRadius: 8, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
+              <input 
+                type="checkbox" 
+                checked={notifications.push} 
+                onChange={(e) => setNotifications(prev => ({ ...prev, push: e.target.checked }))}
+                style={{ width: 18, height: 18, accentColor: '#1f4d36' }}
+              />
+              <div>
+                <div style={{ fontWeight: 600, color: '#1a1c1a', fontSize: '0.95rem' }}>In-App Alerts</div>
+                <div style={{ fontSize: '0.85rem', color: '#717972' }}>Receive real-time alerts for high-risk flags and pending approvals within the portal.</div>
+              </div>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
+              <input 
+                type="checkbox" 
+                checked={notifications.sms} 
+                onChange={(e) => setNotifications(prev => ({ ...prev, sms: e.target.checked }))}
+                style={{ width: 18, height: 18, accentColor: '#1f4d36' }}
+              />
+              <div>
+                <div style={{ fontWeight: 600, color: '#1a1c1a', fontSize: '0.95rem' }}>SMS Notifications</div>
+                <div style={{ fontSize: '0.85rem', color: '#717972' }}>Receive urgent escalations from DAO directly to your registered mobile number.</div>
+              </div>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
+              <input 
+                type="checkbox" 
+                checked={notifications.email} 
+                onChange={(e) => setNotifications(prev => ({ ...prev, email: e.target.checked }))}
+                style={{ width: 18, height: 18, accentColor: '#1f4d36' }}
+              />
+              <div>
+                <div style={{ fontWeight: 600, color: '#1a1c1a', fontSize: '0.95rem' }}>Email Reports</div>
+                <div style={{ fontSize: '0.85rem', color: '#717972' }}>Receive weekly digests of your taluka's operational metrics.</div>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+          <button style={{ padding: '12px 24px', background: '#1f4d36', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer' }}>
+            Save Changes
           </button>
-        ))}
+        </div>
+
       </div>
-      <div className="op-card">
-        {tab === 'prefs' && <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--op-muted)' }}>Default landing: Command center · compact tables · show risk colours.</p>}
-        {tab === 'notif' && <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--op-muted)' }}>SMS for DAO escalation · in-app for AI flags · quiet hours 22:00–06:00.</p>}
-        {tab === 'ai' && <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--op-muted)' }}>Duplicate similarity cut-off 88% · OCR low-confidence routed to manual.</p>}
-        {tab === 'verify' && <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--op-muted)' }}>Require GPS snapshot for PMFBY · allow officer override with remark.</p>}
-        {tab === 'lang' && <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--op-muted)' }}>Marathi (default) · English for GR assistant replies.</p>}
-        {tab === 'sync' && <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--op-muted)' }}>Last sync 09:04 · 2 devices pending photo upload.</p>}
-      </div>
-      <p style={{ marginTop: 14, fontSize: '0.8125rem' }}>
-        <Link className="op-link" to="/officer/audit-logs">View audit logs</Link>
-      </p>
-    </OfficerShell>
+    </div>
   );
 };
 

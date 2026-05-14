@@ -1,13 +1,13 @@
 /* =========================================================
    Sidebar — Stitch Agricultural Intelligence Interface
-   Width: 220px (desktop) | Mobile/Tablet: overlay drawer
+   Width: 200px (desktop) | Mobile/Tablet: overlay drawer
    Breakpoint: 1023px
    ========================================================= */
 
 /* ── Shell ── */
 .sidebar {
-  width: 220px;
-  min-width: 220px;
+  width: 200px;
+  min-width: 200px;
   position: sticky;
   top: 60px;
   left: 0;
@@ -48,9 +48,9 @@
   }
 
   .sidebar.open {
-    width: 220px;
-    min-width: 220px;
-    max-width: 220px;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
     flex-shrink: 0;
     opacity: 1;
     pointer-events: auto;

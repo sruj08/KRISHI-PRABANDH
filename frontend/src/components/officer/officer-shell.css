@@ -25,8 +25,8 @@
 }
 
 .op-page__inner {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 
 .op-hero {
