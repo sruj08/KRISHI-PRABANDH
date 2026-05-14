@@ -59,11 +59,11 @@ const SurveyOperationsDashboard = () => {
   };
 
   const stats = [
-    { icon: 'satellite_alt', label: 'Total Reports', value: total || getVal('total') ?? getVal('all'), color: '#1f4d36', bg: 'rgba(31,77,54,0.08)' },
-    { icon: 'pending_actions', label: 'Pending', value: pending || getVal('pending') ?? getVal('submitted'), color: '#B45309', bg: 'rgba(180,83,9,0.08)' },
+    { icon: 'satellite_alt', label: 'Total Reports', value: (total || getVal('total')) ?? getVal('all'), color: '#1f4d36', bg: 'rgba(31,77,54,0.08)' },
+    { icon: 'pending_actions', label: 'Pending', value: (pending || getVal('pending')) ?? getVal('submitted'), color: '#B45309', bg: 'rgba(180,83,9,0.08)' },
     { icon: 'gpp_bad', label: 'Critical', value: critical || getVal('critical'), color: '#ba1a1a', bg: 'rgba(186,26,26,0.08)' },
-    { icon: 'feedback', label: 'Grievances', value: grievance || getVal('grievance') ?? getVal('grievances'), color: '#4d2024', bg: 'rgba(77,32,36,0.08)' },
-    { icon: 'check_circle', label: 'Completed', value: completed || getVal('completed') ?? getVal('verified'), color: '#396940', bg: 'rgba(57,105,64,0.08)' },
+    { icon: 'feedback', label: 'Grievances', value: (grievance || getVal('grievance')) ?? getVal('grievances'), color: '#4d2024', bg: 'rgba(77,32,36,0.08)' },
+    { icon: 'check_circle', label: 'Completed', value: (completed || getVal('completed')) ?? getVal('verified'), color: '#396940', bg: 'rgba(57,105,64,0.08)' },
   ];
 
   return (
