@@ -456,3 +456,33 @@ input, textarea, select {
   height: 100%;
   width: 100%;
 }
+
+/* RegionalMap — pane stacking under the dashboard-wide rule
+   `.leaflet-pane { z-index: 500 !important; }` (lines ~217–222).
+   Without this, overlayPane (leaflet.heat canvas) and the inverted mask both
+   sit at 500; DOM order can paint the heat *above* the mask so KDE blur leaks
+   outside the GeoJSON hole. Match state command map: heat < choropleth <
+   optional Voronoi / rims < inverted mask < dashed geofence < pins.
+   Class names follow Leaflet `createPane`: e.g. `divisionChoroplethPane` →
+   `.leaflet-divisionChoropleth-pane`. */
+.regional-map-frame .leaflet-pane.leaflet-overlay-pane {
+  z-index: 400 !important;
+}
+.regional-map-frame .leaflet-pane.leaflet-divisionChoropleth-pane {
+  z-index: 405 !important;
+}
+.regional-map-frame .leaflet-pane.leaflet-divisionVoronoiHeat-pane {
+  z-index: 415 !important;
+}
+.regional-map-frame .leaflet-pane.leaflet-puneDistrictRim-pane {
+  z-index: 422 !important;
+}
+.regional-map-frame .leaflet-pane.leaflet-invertedMask-pane {
+  z-index: 510 !important;
+}
+.regional-map-frame .leaflet-pane.leaflet-geofence-pane {
+  z-index: 530 !important;
+}
+.regional-map-frame .leaflet-pane.leaflet-centroidPins-pane {
+  z-index: 640 !important;
+}

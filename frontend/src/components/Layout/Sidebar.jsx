@@ -74,22 +74,32 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     if (role === 'division') {
       return [
-        { id: 'div_overview', label: 'DIVISION OVERVIEW', items: [
-          { to: '/division/dashboard', icon: 'dashboard', label: 'Overview' },
-          { to: '/division/map', icon: 'map', label: 'Geo Command Map' },
-        ]},
-        { id: 'dist_ops', label: 'DISTRICT OPERATIONS', items: [
-          { to: '/division/district-perf', icon: 'leaderboard', label: 'District Performance' },
-          { to: '/division/resources', icon: 'engineering', label: 'Resource Allocation' },
-        ]},
-        { id: 'alerts_fraud', label: 'ALERTS & FRAUD', items: [
-          { to: '/division/fraud', icon: 'share_location', label: 'Cross-District Fraud' },
-          { to: '/division/escalations', icon: 'priority_high', label: 'Escalations' },
-        ]},
-        { id: 'field_intel', label: 'FIELD INTELLIGENCE', items: [
-          { to: '/division/crop-stress', icon: 'eco', label: 'Crop Stress' },
-          { to: '/division/survey-monitoring', icon: 'verified', label: 'Survey Monitoring' },
-        ]},
+        {
+          id: 'div_overview',
+          flat: true,
+          label: 'DIVISIONAL OVERVIEW',
+          items: [
+            { to: '/division/dashboard', icon: 'dashboard', label: 'Overview', end: true },
+          ],
+        },
+        {
+          id: 'dist_ops',
+          flat: true,
+          label: 'DISTRICT OPERATIONS',
+          items: [
+            { to: '/division/district-perf', icon: 'leaderboard', label: 'District Performance' },
+            { to: '/division/resources', icon: 'swap_horiz', label: 'Dynamic Resource Reallocation' },
+          ],
+        },
+        {
+          id: 'alerts_fraud',
+          flat: true,
+          label: 'ALERTS & FRAUD',
+          items: [
+            { to: '/division/fraud', icon: 'shield_locked', label: 'Cross-District Fraud' },
+            { to: '/division/escalations', icon: 'priority_high', label: 'Escalations' },
+          ],
+        },
       ];
     }
 

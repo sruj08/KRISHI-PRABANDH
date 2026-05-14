@@ -35,6 +35,10 @@ import DistrictAnalytics from './pages/district/DistrictAnalytics';
 import TalukaComparison from './pages/district/TalukaComparison';
 import FraudTrends from './pages/district/FraudTrends';
 import DivisionDashboard from './pages/division/DivisionDashboard';
+import DivisionDistrictPerformance from './pages/division/DivisionDistrictPerformance';
+import DivisionDynamicResources from './pages/division/DivisionDynamicResources';
+import DivisionCrossDistrictFraud from './pages/division/DivisionCrossDistrictFraud';
+import DivisionEscalations from './pages/division/DivisionEscalations';
 import StateDashboard from './pages/state/StateDashboard';
 import DivisionalAnalysis from './pages/state/DivisionalAnalysis';
 import AdvancedTools from './pages/AdvancedTools';
@@ -132,9 +136,16 @@ const App = () => {
 
             {/* State & Division Executive Command Centers — same UX as DAO/TAO */}
             <Route path="/state/dashboard" element={<StateDashboard />} />
+            {/* Divisional Officer — flat IA aligned with state command shell */}
             <Route path="/division/dashboard" element={<DivisionDashboard />} />
-
-            {/* State Official Sidebar Routes */}
+            <Route path="/division/district-perf" element={<DivisionDistrictPerformance />} />
+            <Route path="/division/resources" element={<DivisionDynamicResources />} />
+            <Route path="/division/fraud" element={<DivisionCrossDistrictFraud />} />
+            <Route path="/division/escalations" element={<DivisionEscalations />} />
+            <Route path="/division/map" element={<Navigate to="/division/district-perf" replace />} />
+            <Route path="/division/crop-stress" element={<Navigate to="/division/dashboard" replace />} />
+            <Route path="/division/survey-monitoring" element={<Navigate to="/division/dashboard" replace />} />
+            <Route path="/division/analytics" element={<Navigate to="/division/dashboard" replace />} />
             <Route path="/state/map" element={<Placeholder title="Maharashtra Live Map" icon="map" sections={[{ title: 'Live Operations', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/schemes" element={<Placeholder title="Schemes" icon="account_tree" sections={[{ title: 'Scheme Performance', type: 'cards' }, { title: 'Scheme Registry', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/fund-monitoring" element={<Placeholder title="Fund Monitoring" icon="account_balance_wallet" sections={[{ title: 'Fund Utilization', type: 'cards' }, { title: 'Distribution', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
@@ -148,17 +159,7 @@ const App = () => {
             <Route path="/state/users" element={<Placeholder title="User Control" icon="manage_accounts" sections={[{ title: 'Active Staff', type: 'cards' }, { title: 'System Access', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
             <Route path="/state/settings" element={<Placeholder title="Settings" icon="settings" sections={[{ title: 'Global Configuration', type: 'cards' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
 
-            {/* Divisional Officer Sidebar Routes */}
-            <Route path="/division/map" element={<Placeholder title="Geo Command Map" icon="map" sections={[{ title: 'Division Overview', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} rightPanels={['Cross-District Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/division/district-perf" element={<Placeholder title="District Performance" icon="leaderboard" sections={[{ title: 'District Comparisons', type: 'cards' }, { title: 'Matrix View', type: 'table' }]} rightPanels={['Cross-District Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/division/resources" element={<Placeholder title="Resource Allocation" icon="engineering" sections={[{ title: 'Workload Balance', type: 'cards' }, { title: 'Staff Allocations', type: 'table' }]} rightPanels={['Cross-District Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/division/fraud" element={<Placeholder title="Cross-District Fraud" icon="share_location" sections={[{ title: 'Fraud Rings Detected', type: 'cards' }, { title: 'Cross-Border Alerts', type: 'table' }]} rightPanels={['Cross-District Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/division/escalations" element={<Placeholder title="Escalations" icon="priority_high" sections={[{ title: 'Escalated Issues', type: 'cards' }, { title: 'Action Required', type: 'table' }]} rightPanels={['Cross-District Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/division/crop-stress" element={<Placeholder title="Crop Stress" icon="eco" sections={[{ title: 'Distress Signals', type: 'cards' }, { title: 'Affected Areas', type: 'table' }]} rightPanels={['Cross-District Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/division/survey-monitoring" element={<Placeholder title="Survey Monitoring" icon="verified" sections={[{ title: 'Verification Speed', type: 'cards' }, { title: 'Weekly Trends', type: 'table' }]} rightPanels={['Cross-District Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/division/analytics" element={<Placeholder title="Division Analytics" icon="summarize" sections={[{ title: 'Coverage Stats', type: 'cards' }, { title: 'Generated Reports', type: 'list' }]} rightPanels={['Cross-District Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-
-            {/* Officer (Sahayak) Routes for Sidebar Items */}
+            {/* State Official Sidebar Routes */}
             <Route path="/map" element={<Placeholder title="Village Map" icon="map" sections={[{ title: 'Live Field Operations', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} />} />
             <Route path="/farmers" element={<Placeholder title="Farmer Registry" icon="groups" sections={[{ title: 'Registered Farmers', type: 'table' }, { title: 'Registration Analytics', type: 'cards' }]} />} />
             

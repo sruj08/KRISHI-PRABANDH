@@ -9,7 +9,8 @@
  *   • TopoJSON input (division level) — parsed via topojson-client
  *   • GeoJSON input (state / taluka) — used directly
  *   • Inverted polygon mask to isolate the active region
- *   • Division choropleth from overlay GeoJSON + canvas KDE heat (default)
+ *   • Division / district choropleth from overlay GeoJSON (`kind: division` or
+ *     `kind: district`) + canvas KDE heat (default)
  *   • Optional Voronoi micro-mesh per division (disabled — use choropleth + KDE)
  *   • Three interactive metric modes: Scheme penetration / Crop health / Grievance heat
  *   • Zoom/pan locked to active boundary
@@ -667,7 +668,7 @@ function DivisionVoronoiHeatLayer({
  *
  * @param {string} props.layerType   - 'state' | 'division' | 'taluka'
  * @param {string} props.boundaryUrl - URL to GeoJSON or TopoJSON boundary file
- * @param {string} [props.divisionOverlayUrl] - Optional second GeoJSON (division polygons only used client-side; file on disk unchanged)
+ * @param {string} [props.divisionOverlayUrl] - Optional GeoJSON overlay: `kind: division` features (state-style) or `kind: district` for per-district choropleth inside a division
  * @param {Array} [props.divisionMatrix] - Optional matrix rows (`division` or `district` key) for desk merge + tooltips
  * @param {object} [props.fitBoundsOptions] - Optional Leaflet `fitBounds` options (e.g. asymmetric padding to bias framing)
  * @param {string} [props.title]     - Optional header title
@@ -714,7 +715,7 @@ const RegionalMap = ({
     return () => { cancelled = true; };
   }, [boundaryUrl]);
 
-  // ── Optional division overlay (separate asset; only `kind: division` features rendered) ──
+  // ── Optional division overlay (GeoJSON: `kind: district` and/or `kind: division`) ──
   useEffect(() => {
     if (!divisionOverlayUrl) {
       setRawDivisionData(null);
@@ -740,14 +741,17 @@ const RegionalMap = ({
   // ── Parse into FeatureCollection ─────────────────────────────────────────
   const featureCollection = useMemo(() => parseBoundaryData(rawData), [rawData]);
 
-  /** Division polygons only — sourced from a separate GeoJSON; state boundary asset stays untouched. */
+  /**
+   * Choropleth source from overlay GeoJSON:
+   * - `kind: district` — per-district polygons (division command map)
+   * - else `kind: division` — revenue-division rings (state command map)
+   */
   const divisionCollection = useMemo(() => {
     if (!rawDivisionData) return null;
     const fc = parseBoundaryData(rawDivisionData);
     if (!fc?.features?.length) return null;
-    const divs = fc.features.filter((f) => f.properties?.kind === 'division');
-    if (!divs.length) return null;
-    const merged = divs.map((f) => {
+
+    const mergeLive = (f) => {
       if (!liveDivisionMetrics) return f;
       const code = bareDivisionCode(f.properties?.code);
       const L = liveDivisionMetrics[code];
@@ -761,8 +765,16 @@ const RegionalMap = ({
           ...(L.grievanceIdx != null ? { grievanceIdx: L.grievanceIdx } : {}),
         },
       };
-    });
-    return { type: 'FeatureCollection', features: merged };
+    };
+
+    const districts = fc.features.filter((f) => f.properties?.kind === 'district');
+    if (districts.length) {
+      return { type: 'FeatureCollection', features: districts.map(mergeLive) };
+    }
+
+    const divs = fc.features.filter((f) => f.properties?.kind === 'division');
+    if (!divs.length) return null;
+    return { type: 'FeatureCollection', features: divs.map(mergeLive) };
   }, [rawDivisionData, liveDivisionMetrics]);
 
   // ── Build all polygon rings (for clipping + bbox) ────────────────────────
@@ -1136,7 +1148,10 @@ const RegionalMap = ({
                   points={heatPoints}
                   layerType={layerType}
                   mapMode={mapMode}
-                  contained={Boolean(divisionCollection?.features?.length && layerType === 'state')}
+                  contained={Boolean(
+                    divisionCollection?.features?.length
+                    && (layerType === 'state' || layerType === 'division'),
+                  )}
                 />
               )}
 

@@ -1,0 +1,179 @@
+/* District performance page — KPI grid, insight rail, health table */
+
+/* Seven KPI tiles: avoid 6+1; use 4 + 3 on wide screens */
+.ddp-kpi-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+@media (min-width: 1080px) {
+  .ddp-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Optional: single row on very wide displays */
+@media (min-width: 1600px) {
+  .ddp-kpi-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+
+/* Equal-height insight cards + calmer text rhythm */
+.ddp-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: stretch;
+}
+
+.ddp-insight-grid .state-dashboard__panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  height: 100%;
+}
+
+.ddp-insight-grid .state-dashboard__panel-head {
+  margin-bottom: 12px;
+}
+
+.ddp-insight-grid .state-dashboard__panel-title {
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+
+.ddp-insight-grid .state-dashboard__panel-sub {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.ddp-panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ddp-insight-list {
+  list-style: disc;
+  margin: 0;
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ddp-insight-list li {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #3d4540;
+}
+
+/* Friction: label + value without huge stretch gap */
+.ddp-insight-grid .state-dashboard__friction-row {
+  display: grid;
+  grid-template-columns: 8px 1fr max-content;
+  column-gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  min-height: unset;
+}
+
+.ddp-insight-grid .state-dashboard__friction-row span:nth-child(2) {
+  min-width: 0;
+}
+
+.ddp-insight-grid .state-dashboard__friction-row span:nth-child(3) {
+  padding-left: 8px;
+}
+
+.ddp-bottleneck-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.ddp-bottleneck-stack .state-dashboard__rec-card {
+  padding: 12px 14px;
+}
+
+.ddp-bottleneck-stack .state-dashboard__rec-body {
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* Operational health table */
+.ddp-health-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 960px;
+}
+
+.ddp-health-table thead th {
+  padding: 10px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #5c6560;
+  background: #fafafa;
+  border-bottom: 1px solid #e2e3df;
+  vertical-align: bottom;
+  line-height: 1.35;
+}
+
+.ddp-health-table tbody td {
+  padding: 9px 10px;
+  font-size: 13px;
+  border-bottom: 1px solid #ebece8;
+  vertical-align: middle;
+}
+
+.ddp-health-table tbody tr:nth-child(even) td {
+  background: #fafafa;
+}
+
+.ddp-health-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ddp-th-left,
+.ddp-td-left {
+  text-align: left;
+}
+
+.ddp-th-num,
+.ddp-td-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ddp-td-num {
+  color: #1a1c1a;
+}
+
+.ddp-col-district {
+  width: 11%;
+  min-width: 100px;
+}
+
+.ddp-col-num {
+  width: 8.2%;
+}
+
+.ddp-status-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  line-height: 1.2;
+}
