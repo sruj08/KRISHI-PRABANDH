@@ -1,9 +1,779 @@
 /**
  * Mock flagged applications for TAO "Application Verification Layer".
- * Invisible pipeline only — no user-facing labels for capture or parsing tech.
+ * Sample files live in `public/tao-flagged-samples/` (served as `/tao-flagged-samples/...`).
+ * Pending queue thumbnails: `public/tao-pendingapps-samples/` → `/tao-pendingapps-samples/...`.
  */
 
+export function sampleAsset(filename) {
+  return `/tao-flagged-samples/${encodeURIComponent(filename)}`;
+}
+
+/**
+ * Sample scans in `public/tao-pendingapps-samples/`.
+ * Order matches the first four pending queue rows (P-104 … P-107): geo field, invoice, stamp, insurance receipt.
+ */
+export const PENDING_APP_SAMPLE_FILES = [
+  'geotagged.jpeg',
+  'invoice.jpeg',
+  'stamp_paper.jpeg',
+  'Insurance_reciept.jpeg',
+];
+
+export function samplePendingAppsAsset(filename) {
+  return `/tao-pendingapps-samples/${encodeURIComponent(filename)}`;
+}
+
+/** Display name for the document column — from renamed file (no extension, underscores → spaces, title case). */
+export function pendingSampleDisplayName(filename) {
+  const base = filename.replace(/\.(jpe?g|png|webp)$/i, '').replace(/_/g, ' ');
+  return base.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/**
+ * Adds `ocrLine` / `verifyLine` on every document.
+ * For the **first four** queue rows only: the **first** document uses exactly one sample image each
+ * (row 0 → file 0, … row 3 → file 3) and `name` is set to match that image filename.
+ * Remaining documents keep their original names and have no demo thumbnail.
+ */
+export function enrichPendingDocumentsWithSampleThumbs(detail, rowIndex = -1) {
+  if (!detail?.documents?.length) return detail;
+  const isTopFour = rowIndex >= 0 && rowIndex < PENDING_APP_SAMPLE_FILES.length;
+
+  return {
+    ...detail,
+    documents: detail.documents.map((doc, idx) => {
+      const verifyWarn = doc.status === 'Manual check';
+      let verifyLine = '✓ Cleared for Taluka review';
+      if (doc.status === 'Manual check') verifyLine = '⚠ Manual verification suggested';
+      else if (doc.status !== 'Verified') verifyLine = `Status: ${doc.status}`;
+      const ocrLine = doc.aiPct != null ? `✓ OCR / AI match — ${doc.aiPct}%` : '—';
+
+      if (isTopFour && idx === 0) {
+        const file = PENDING_APP_SAMPLE_FILES[rowIndex];
+        return {
+          ...doc,
+          name: pendingSampleDisplayName(file),
+          thumb: samplePendingAppsAsset(file),
+          ocrLine,
+          verifyLine,
+          verifyWarn,
+        };
+      }
+
+      return {
+        ...doc,
+        ocrLine,
+        verifyLine,
+        verifyWarn,
+      };
+    }),
+  };
+}
+
+/** Low-risk queue for bulk approve demo (not mixed into flagged list). */
+export const BULK_SAFE_APPROVE_TOTAL = 214;
+
+export const mockBulkSafeApplications = [
+  { id: 'SAFE-001', farmer_name: 'Ashok Shinde', scheme: 'Drip Irrigation Subsidy', confidence: 96, statusLines: ['OCR Verified', 'Aadhaar Verified', 'Geo Verified'] },
+  { id: 'SAFE-002', farmer_name: 'Lata Kulkarni', scheme: 'Soybean Seed Subsidy', confidence: 94, statusLines: ['OCR Verified', 'Aadhaar Verified', 'Geo Verified'] },
+  { id: 'SAFE-003', farmer_name: 'Deepak More', scheme: 'PM Kisan Equipment Grant', confidence: 95, statusLines: ['OCR Verified', 'Aadhaar Verified', 'Geo Verified'] },
+  { id: 'SAFE-004', farmer_name: 'Smita Jadhav', scheme: 'Solar Pump Subsidy', confidence: 93, statusLines: ['OCR Verified', 'Aadhaar Verified', 'Geo Verified'] },
+  { id: 'SAFE-005', farmer_name: 'Ganesh Raut', scheme: 'Custom Hiring Centre', confidence: 97, statusLines: ['OCR Verified', 'Aadhaar Verified', 'Geo Verified'] },
+];
+
+/** TAO Pending Applications queue (demo) — includes AI confidence and full `detail` for officer view. */
+const mockPendingApplicationsRaw = [
+  {
+    id: 'P-104',
+    label: 'APL-2204 — Drip kit verification',
+    meta: 'Submitted 11 May 2026 · Mohol · Taluka clearance pending',
+    aiConfidence: 94,
+    detail: {
+      applicationId: 'APL-2204',
+      farmerName: 'Ramesh Vitthal Patil',
+      fatherName: 'Vitthal Patil',
+      gender: 'Male',
+      dob: '12-03-1978',
+      mobile: '9823XXXX12',
+      email: '—',
+      village: 'Mohol',
+      taluka: 'Mohol',
+      district: 'Solapur',
+      pincode: '413213',
+      scheme: 'Drip Irrigation Subsidy',
+      component: 'Drip kit — 0.4 ha',
+      financialYear: '2025-26',
+      surveyNo: '112/1',
+      landAreaHa: '1.42',
+      cropDeclared: 'Sugarcane (ratoon)',
+      bankName: 'State Bank of India',
+      branch: 'Mohol',
+      accountMasked: 'XXXXXX3012',
+      ifsc: 'SBIN0001234',
+      submittedAt: '11 May 2026, 10:22',
+      lastUpdated: '12 May 2026, 09:05',
+      queueStatus: 'Taluka clearance pending',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 97 },
+        { name: '7/12 extract', status: 'Verified', aiPct: 95 },
+        { name: 'Bank passbook', status: 'Verified', aiPct: 92 },
+        { name: 'Quotation / invoice', status: 'Verified', aiPct: 91 },
+        { name: 'Field geo-tag', status: 'Verified', aiPct: 93 },
+      ],
+      aiSummary: 'Core identity, land parcel, and bank linkage match registry. No duplicate invoice pattern in taluka batch.',
+      sahayakRemarks: 'All mandatory uploads complete. Recommend taluka sign-off.',
+    },
+  },
+  {
+    id: 'P-105',
+    label: 'APL-2205 — Seed subsidy bundle',
+    meta: 'Submitted 11 May 2026 · Barshi · Documents complete',
+    aiConfidence: 91,
+    detail: {
+      applicationId: 'APL-2205',
+      farmerName: 'Suresh Kolekar',
+      fatherName: 'Kashinath Kolekar',
+      gender: 'Male',
+      dob: '22-07-1985',
+      mobile: '9011XXXX44',
+      email: '—',
+      village: 'Koregaon',
+      taluka: 'Barshi',
+      district: 'Solapur',
+      pincode: '413411',
+      scheme: 'Soybean Seed Subsidy',
+      component: 'Certified seed — 2 q',
+      financialYear: '2025-26',
+      surveyNo: '88/B',
+      landAreaHa: '0.85',
+      cropDeclared: 'Soybean (kharif)',
+      bankName: 'HDFC Bank',
+      branch: 'Barshi',
+      accountMasked: 'XXXXXX7788',
+      ifsc: 'HDFC0002144',
+      submittedAt: '11 May 2026, 14:18',
+      lastUpdated: '12 May 2026, 08:40',
+      queueStatus: 'Documents complete — awaiting TAO',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 96 },
+        { name: 'Seed dealer invoice', status: 'Verified', aiPct: 89 },
+        { name: 'Bank passbook', status: 'Verified', aiPct: 90 },
+        { name: 'Crop declaration', status: 'Verified', aiPct: 88 },
+      ],
+      aiSummary: 'Invoice and beneficiary consistent; GST format valid. No cross-claim match in last 90 days.',
+      sahayakRemarks: 'Dealer bill within district norm.',
+    },
+  },
+  {
+    id: 'P-106',
+    label: 'APL-2206 — Equipment grant',
+    meta: 'Submitted 10 May 2026 · Pandharpur · Bank verified',
+    aiConfidence: 89,
+    detail: {
+      applicationId: 'APL-2206',
+      farmerName: 'Anita Deshmukh',
+      fatherName: 'Shivaji Deshmukh',
+      gender: 'Female',
+      dob: '05-11-1990',
+      mobile: '9156XXXX77',
+      email: '—',
+      village: 'Pandharpur',
+      taluka: 'Pandharpur',
+      district: 'Solapur',
+      pincode: '413304',
+      scheme: 'PM Kisan Equipment Grant',
+      component: 'Power weeder',
+      financialYear: '2025-26',
+      surveyNo: '12/3',
+      landAreaHa: '0.60',
+      cropDeclared: 'Vegetables',
+      bankName: 'Bank of Baroda',
+      branch: 'Pandharpur',
+      accountMasked: 'XXXXXX4455',
+      ifsc: 'BARB0PANDHR',
+      submittedAt: '10 May 2026, 16:02',
+      lastUpdated: '11 May 2026, 11:30',
+      queueStatus: 'Bank verified — taluka queue',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 95 },
+        { name: 'Equipment quotation', status: 'Verified', aiPct: 87 },
+        { name: 'Bank passbook', status: 'Verified', aiPct: 91 },
+        { name: 'Land record', status: 'Verified', aiPct: 84 },
+      ],
+      aiSummary: 'Bank account active with recent credits. Equipment value within scheme cap.',
+      sahayakRemarks: 'Technical checklist OK.',
+    },
+  },
+  {
+    id: 'P-107',
+    label: 'APL-2207 — CHC rental support',
+    meta: 'Submitted 10 May 2026 · Solapur · Awaiting officer sign-off',
+    aiConfidence: 93,
+    detail: {
+      applicationId: 'APL-2207',
+      farmerName: 'Ganesh Mane',
+      fatherName: 'Babanrao Mane',
+      gender: 'Male',
+      dob: '18-01-1982',
+      mobile: '9373XXXX09',
+      email: '—',
+      village: 'Solapur (Rural)',
+      taluka: 'Solapur North',
+      district: 'Solapur',
+      pincode: '413006',
+      scheme: 'Custom Hiring Centre (CHC) Subsidy',
+      component: 'CHC service charges — rabi',
+      financialYear: '2025-26',
+      surveyNo: '201/A',
+      landAreaHa: '2.10',
+      cropDeclared: 'Wheat',
+      bankName: 'Maharashtra Gramin Bank',
+      branch: 'Solapur',
+      accountMasked: 'XXXXXX1122',
+      ifsc: 'MAHB0000987',
+      submittedAt: '10 May 2026, 09:45',
+      lastUpdated: '11 May 2026, 15:10',
+      queueStatus: 'Awaiting officer sign-off',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 98 },
+        { name: 'CHC receipt', status: 'Verified', aiPct: 90 },
+        { name: 'Bank passbook', status: 'Verified', aiPct: 92 },
+      ],
+      aiSummary: 'CHC receipt fields legible; machine ID format matches district register.',
+      sahayakRemarks: 'Officer sign pending.',
+    },
+  },
+  {
+    id: 'P-108',
+    label: 'APL-2208 — Soybean area subsidy',
+    meta: 'Submitted 9 May 2026 · Madha · 7/12 matched',
+    aiConfidence: 90,
+    detail: {
+      applicationId: 'APL-2208',
+      farmerName: 'Kiran Bhosale',
+      fatherName: 'Pandurang Bhosale',
+      gender: 'Male',
+      dob: '30-04-1988',
+      mobile: '9422XXXX33',
+      email: '—',
+      village: 'Madha',
+      taluka: 'Madha',
+      district: 'Solapur',
+      pincode: '413209',
+      scheme: 'Soybean Area Subsidy',
+      component: 'Area-based — 1.2 ha',
+      financialYear: '2025-26',
+      surveyNo: '448/2',
+      landAreaHa: '1.20',
+      cropDeclared: 'Soybean',
+      bankName: 'SBI',
+      branch: 'Madha',
+      accountMasked: 'XXXXXX6677',
+      ifsc: 'SBIN0004455',
+      submittedAt: '9 May 2026, 11:20',
+      lastUpdated: '10 May 2026, 10:00',
+      queueStatus: '7/12 matched — taluka pending',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 94 },
+        { name: '7/12 extract', status: 'Verified', aiPct: 92 },
+        { name: 'Crop declaration', status: 'Verified', aiPct: 86 },
+      ],
+      aiSummary: 'Survey number aligns with digitised land records for Madha taluka.',
+      sahayakRemarks: '—',
+    },
+  },
+  {
+    id: 'P-109',
+    label: 'APL-2209 — Solar pump (small)',
+    meta: 'Submitted 9 May 2026 · Sangola · Geo-tag attached',
+    aiConfidence: 92,
+    detail: {
+      applicationId: 'APL-2209',
+      farmerName: 'Subhash Raut',
+      fatherName: 'Namdeo Raut',
+      gender: 'Male',
+      dob: '14-09-1975',
+      mobile: '9960XXXX55',
+      email: '—',
+      village: 'Sangola',
+      taluka: 'Sangola',
+      district: 'Solapur',
+      pincode: '413307',
+      scheme: 'Solar Pump Subsidy',
+      component: '3 HP DC surface',
+      financialYear: '2025-26',
+      surveyNo: '44/D',
+      landAreaHa: '1.05',
+      cropDeclared: 'Grapes',
+      bankName: 'Union Bank',
+      branch: 'Sangola',
+      accountMasked: 'XXXXXX8899',
+      ifsc: 'UBIN0532120',
+      submittedAt: '9 May 2026, 08:10',
+      lastUpdated: '10 May 2026, 09:15',
+      queueStatus: 'Geo-tag attached — review',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 96 },
+        { name: 'Field photo + GPS', status: 'Verified', aiPct: 91 },
+        { name: 'Technical feasibility', status: 'Verified', aiPct: 88 },
+      ],
+      aiSummary: 'GPS within declared village boundary; shadow map not required for this plot class.',
+      sahayakRemarks: 'Geo inside village polygon.',
+    },
+  },
+  {
+    id: 'P-110',
+    label: 'APL-2210 — Drip lateral extension',
+    meta: 'Submitted 8 May 2026 · Mohol · Technical OK',
+    aiConfidence: 88,
+    detail: {
+      applicationId: 'APL-2210',
+      farmerName: 'Laxman Shinde',
+      fatherName: 'Tukaram Shinde',
+      gender: 'Male',
+      dob: '02-06-1980',
+      mobile: '9881XXXX21',
+      email: '—',
+      village: 'Mohol',
+      taluka: 'Mohol',
+      district: 'Solapur',
+      pincode: '413213',
+      scheme: 'Drip Irrigation Subsidy',
+      component: 'Lateral extension kit',
+      financialYear: '2025-26',
+      surveyNo: '115/2',
+      landAreaHa: '0.95',
+      cropDeclared: 'Sugarcane',
+      bankName: 'SBI',
+      branch: 'Mohol',
+      accountMasked: 'XXXXXX2233',
+      ifsc: 'SBIN0001234',
+      submittedAt: '8 May 2026, 13:40',
+      lastUpdated: '9 May 2026, 16:20',
+      queueStatus: 'Technical OK — taluka pending',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 95 },
+        { name: 'Layout sketch', status: 'Verified', aiPct: 82 },
+        { name: 'Dealer estimate', status: 'Verified', aiPct: 87 },
+      ],
+      aiSummary: 'Extension consistent with existing drip mainline on same survey.',
+      sahayakRemarks: 'Linked to prior approved mainline APL-2098.',
+    },
+  },
+  {
+    id: 'P-111',
+    label: 'APL-2211 — Organic input kit',
+    meta: 'Submitted 8 May 2026 · Loni Kalbhor · Invoice checked',
+    aiConfidence: 86,
+    detail: {
+      applicationId: 'APL-2211',
+      farmerName: 'Sunita Mane',
+      fatherName: '—',
+      gender: 'Female',
+      dob: '19-12-1987',
+      mobile: '9028XXXX66',
+      email: '—',
+      village: 'Loni Kalbhor',
+      taluka: 'Haveli',
+      district: 'Pune',
+      pincode: '412201',
+      scheme: 'Organic Farming Input',
+      component: 'Bio-fertilizer kit',
+      financialYear: '2025-26',
+      surveyNo: '456/B',
+      landAreaHa: '0.40',
+      cropDeclared: 'Vegetables',
+      bankName: 'HDFC Bank',
+      branch: 'Hadapsar',
+      accountMasked: 'XXXXXX5544',
+      ifsc: 'HDFC0001234',
+      submittedAt: '8 May 2026, 10:05',
+      lastUpdated: '9 May 2026, 12:00',
+      queueStatus: 'Invoice checked — taluka pending',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 94 },
+        { name: 'Supplier bill', status: 'Verified', aiPct: 80 },
+        { name: 'Bank passbook', status: 'Verified', aiPct: 88 },
+      ],
+      aiSummary: 'Supplier GST active; amount within district kit ceiling.',
+      sahayakRemarks: '—',
+    },
+  },
+  {
+    id: 'P-112',
+    label: 'APL-2212 — Farm pond lining',
+    meta: 'Submitted 7 May 2026 · Barshi · Field visit done',
+    aiConfidence: 87,
+    detail: {
+      applicationId: 'APL-2212',
+      farmerName: 'Vijay Jadhav',
+      fatherName: 'Prakash Jadhav',
+      gender: 'Male',
+      dob: '25-03-1972',
+      mobile: '9425XXXX88',
+      email: '—',
+      village: 'Barshi',
+      taluka: 'Barshi',
+      district: 'Solapur',
+      pincode: '413411',
+      scheme: 'Farm Pond (Jal Sinchan)',
+      component: 'HDPE lining — 30m × 20m',
+      financialYear: '2025-26',
+      surveyNo: '501/E',
+      landAreaHa: '1.80',
+      cropDeclared: 'Mixed orchard',
+      bankName: 'ICICI Bank',
+      branch: 'Barshi',
+      accountMasked: 'XXXXXX9900',
+      ifsc: 'ICIC0002211',
+      submittedAt: '7 May 2026, 15:30',
+      lastUpdated: '8 May 2026, 09:45',
+      queueStatus: 'Field visit done — taluka pending',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 93 },
+        { name: 'Site photos', status: 'Verified', aiPct: 85 },
+        { name: 'Estimate', status: 'Verified', aiPct: 83 },
+      ],
+      aiSummary: 'Visit report uploaded; pond dimensions within scheme norms.',
+      sahayakRemarks: 'CAO visit logged 8 May.',
+    },
+  },
+  {
+    id: 'P-113',
+    label: 'APL-2213 — Tractor-driven sprayer',
+    meta: 'Submitted 7 May 2026 · Pandharpur · Awaiting TAO',
+    aiConfidence: 85,
+    detail: {
+      applicationId: 'APL-2213',
+      farmerName: 'Meena Shinde',
+      fatherName: 'Raghunath Shinde',
+      gender: 'Female',
+      dob: '08-02-1992',
+      mobile: '9015XXXX41',
+      email: '—',
+      village: 'Pandharpur',
+      taluka: 'Pandharpur',
+      district: 'Solapur',
+      pincode: '413304',
+      scheme: 'PM Kisan Equipment Grant',
+      component: 'Tractor-mounted sprayer',
+      financialYear: '2025-26',
+      surveyNo: '33/C',
+      landAreaHa: '1.50',
+      cropDeclared: 'Cotton',
+      bankName: 'SBI',
+      branch: 'Pandharpur',
+      accountMasked: 'XXXXXX3344',
+      ifsc: 'SBIN0005566',
+      submittedAt: '7 May 2026, 12:12',
+      lastUpdated: '8 May 2026, 14:00',
+      queueStatus: 'Awaiting TAO',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 92 },
+        { name: 'Quotation', status: 'Verified', aiPct: 79 },
+        { name: 'RC / tractor proof', status: 'Manual check', aiPct: 72 },
+      ],
+      aiSummary: 'Tractor ownership document needs one manual cross-check; other fields strong.',
+      sahayakRemarks: 'RC copy slightly blurred — officer to confirm.',
+    },
+  },
+  {
+    id: 'P-114',
+    label: 'APL-2214 — Mulching material',
+    meta: 'Submitted 6 May 2026 · Mangalwedha · Low value — fast track',
+    aiConfidence: 95,
+    detail: {
+      applicationId: 'APL-2214',
+      farmerName: 'Anil Raut',
+      fatherName: 'Shankar Raut',
+      gender: 'Male',
+      dob: '11-11-1984',
+      mobile: '9371XXXX19',
+      email: '—',
+      village: 'Mangalwedha',
+      taluka: 'Mangalwedha',
+      district: 'Solapur',
+      pincode: '413305',
+      scheme: 'Mulching Support',
+      component: 'Plastic mulch — 0.4 ha',
+      financialYear: '2025-26',
+      surveyNo: '78/1',
+      landAreaHa: '0.40',
+      cropDeclared: 'Onion',
+      bankName: 'SBI',
+      branch: 'Mangalwedha',
+      accountMasked: 'XXXXXX4456',
+      ifsc: 'SBIN0006677',
+      submittedAt: '6 May 2026, 09:00',
+      lastUpdated: '7 May 2026, 10:10',
+      queueStatus: 'Low value — fast track',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 97 },
+        { name: 'Bill', status: 'Verified', aiPct: 94 },
+      ],
+      aiSummary: 'Low ticket amount; automated rules cleared all duplicate checks.',
+      sahayakRemarks: 'Eligible for bulk path after TAO review.',
+    },
+  },
+  {
+    id: 'P-115',
+    label: 'APL-2215 — Community nursery bed',
+    meta: 'Submitted 6 May 2026 · Solapur · Gram sabha note attached',
+    aiConfidence: 83,
+    detail: {
+      applicationId: 'APL-2215',
+      farmerName: 'Pandurang Wagh',
+      fatherName: 'Shivaji Wagh',
+      gender: 'Male',
+      dob: '03-05-1970',
+      mobile: '9420XXXX27',
+      email: '—',
+      village: 'Solapur (Rural)',
+      taluka: 'Solapur North',
+      district: 'Solapur',
+      pincode: '413006',
+      scheme: 'Community Nursery',
+      component: 'Raised bed materials',
+      financialYear: '2025-26',
+      surveyNo: '90/F',
+      landAreaHa: '0.25',
+      cropDeclared: 'Nursery (vegetable)',
+      bankName: 'Central Bank',
+      branch: 'Solapur',
+      accountMasked: 'XXXXXX5567',
+      ifsc: 'CBIN0284444',
+      submittedAt: '6 May 2026, 11:45',
+      lastUpdated: '7 May 2026, 08:30',
+      queueStatus: 'Gram sabha note attached',
+      documents: [
+        { name: 'Aadhaar', status: 'Verified', aiPct: 90 },
+        { name: 'Gram sabha resolution', status: 'Verified', aiPct: 78 },
+        { name: 'Estimate', status: 'Verified', aiPct: 81 },
+      ],
+      aiSummary: 'Resolution date and signatories match GP master list for Solapur North.',
+      sahayakRemarks: 'Community scheme — verify GP seal once.',
+    },
+  },
+];
+
+export const mockPendingApplications = mockPendingApplicationsRaw.map((row, rowIndex) => ({
+  ...row,
+  detail: row.detail ? enrichPendingDocumentsWithSampleThumbs(row.detail, rowIndex) : row.detail,
+}));
+
 export const mockFlaggedCases = [
+  {
+    id: 'APL-2026-CHC-1',
+    farmer_name: 'Sham Patil',
+    scheme: 'Custom Hiring Centre (CHC) Subsidy',
+    village: 'Solapur',
+    survey_number: '112/1',
+    submitted: '14 May 2026',
+    risk_score: 98,
+    risk_level: 'high_risk',
+    fraud_type: 'chc_receipt_duplicate',
+    verification_chips: [
+      { label: 'Duplicate Receipt', status: 'failed', critical: true },
+      { label: 'OCR Match Found', status: 'failed', critical: true },
+      { label: 'Manual Review', status: 'failed', critical: false },
+    ],
+    extracted_fields: {
+      farmer_name: 'Sham Patil',
+      survey_number: '112/1',
+      village: 'Solapur',
+      bank_account: '—',
+      ifsc: '—',
+      invoice_amount: '—',
+      gst_number: '—',
+    },
+    risk_factors: ['Same receipt number, machine ID, UPI and time as another application; only beneficiary name differs'],
+    documents: ['CHC Rental Receipt', 'Aadhaar', 'Land record'],
+    duplicate_reference: 'APL-2026-CHC-0',
+    review: {
+      tags: ['DUPLICATE RECEIPT', 'HIGH RISK', 'OCR MATCH FOUND'],
+      documentCards: [
+        {
+          title: 'CHC Rental Receipt',
+          thumb: sampleAsset('Screenshot 2026-05-14 195138.png'),
+          ocrLine: '✓ OCR Extracted — 98% confidence',
+          verifyLine: '⚠ Duplicate receipt detected',
+          verifyWarn: true,
+          wordUrl: sampleAsset('CHC_Receipt_ROT_11872.docx'),
+        },
+        {
+          title: 'MH Lease (reference)',
+          thumb: null,
+          ocrLine: '—',
+          verifyLine: 'Supporting document',
+          verifyWarn: false,
+          wordUrl: sampleAsset('MH_Lease_Agreement_Official.docx'),
+        },
+        { title: 'Aadhaar.pdf', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '✓ Verified', verifyWarn: false },
+        { title: 'Land Record.pdf', thumb: null, ocrLine: '—', verifyLine: 'Manual check', verifyWarn: false },
+      ],
+      aiFindings: {
+        headline: 'This receipt appears reused in another application.',
+        matchedRows: [
+          ['Receipt No', 'CHC-2024-ROT-11872'],
+          ['Machine ID', 'MH-SOL-RTV-2045'],
+          ['UPI Ref', '421889334781'],
+          ['Timestamp', '14-09-2024 01:04 PM'],
+        ],
+        differenceLabel: 'Farmer name changed from',
+        differenceFrom: 'Ravindra Pandurang Wagh',
+        differenceTo: 'Sham Patil',
+        riskLabel: 'HIGH RISK',
+        confidencePct: 98,
+      },
+      sideBySide: {
+        leftCaption: 'Earlier application — Ravindra Pandurang Wagh',
+        rightCaption: 'This application — Sham Patil',
+        leftSrc: sampleAsset('Screenshot 2026-05-14 194953.png'),
+        rightSrc: sampleAsset('Screenshot 2026-05-14 195138.png'),
+        legend: 'Yellow highlights: same on both receipts. Red: changed beneficiary name.',
+      },
+    },
+  },
+  {
+    id: 'APL-2026-SEED-1',
+    farmer_name: 'Prakash Ingle',
+    scheme: 'Soybean Seed Subsidy',
+    village: 'Barshi',
+    survey_number: '203/5',
+    submitted: '13 May 2026',
+    risk_score: 96,
+    risk_level: 'high_risk',
+    fraud_type: 'seed_credit_reuse',
+    verification_chips: [
+      { label: 'Duplicate Receipt', status: 'failed', critical: true },
+      { label: 'OCR Match Found', status: 'failed', critical: true },
+    ],
+    extracted_fields: {
+      farmer_name: 'Prakash Ingle',
+      survey_number: '203/5',
+      village: 'Barshi',
+      bank_account: '—',
+      ifsc: '—',
+      invoice_amount: '—',
+      gst_number: '27AAACK1234A1Z5',
+    },
+    risk_factors: ['Credit note / invoice pattern matches an earlier subsidy claim'],
+    documents: ['Seed credit note', 'Aadhaar', 'Bank passbook'],
+    duplicate_reference: 'APL-2025-KVR-88',
+    review: {
+      tags: ['DUPLICATE RECEIPT', 'HIGH RISK', 'MANUAL REVIEW'],
+      documentCards: [
+        {
+          title: 'Kaveri Seeds credit note',
+          thumb: sampleAsset('Screenshot 2026-05-14 193042.png'),
+          ocrLine: '✓ OCR Extracted — 96% confidence',
+          verifyLine: '⚠ Invoice reused in another subsidy claim',
+          verifyWarn: true,
+          wordUrl: null,
+        },
+        { title: 'Aadhaar.pdf', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '✓ Verified', verifyWarn: false },
+        { title: 'Bank passbook', thumb: null, ocrLine: '—', verifyLine: 'No issue flagged', verifyWarn: false },
+      ],
+      aiFindings: {
+        headline: 'Invoice appears reused in another subsidy claim.',
+        matchedRows: [
+          ['Invoice No', '131640020'],
+          ['GSTIN', 'Matched with previous claim'],
+          ['Lot number', 'Repeated against prior claim'],
+          ['Quantity pattern', 'Same pattern as earlier claim'],
+        ],
+        riskLabel: 'HIGH RISK',
+        confidencePct: 96,
+      },
+      singleDoc: { src: sampleAsset('Screenshot 2026-05-14 193042.png'), caption: 'Uploaded credit note (enlarged preview)' },
+    },
+  },
+  {
+    id: 'APL-2026-AAD-1',
+    farmer_name: 'Vikas Patil',
+    scheme: 'PM Kisan — State Top-up',
+    village: 'Pandharpur',
+    survey_number: '78/2',
+    submitted: '12 May 2026',
+    risk_score: 88,
+    risk_level: 'high_risk',
+    fraud_type: 'aadhaar_beneficiary',
+    verification_chips: [
+      { label: 'Aadhaar Issue', status: 'failed', critical: true },
+      { label: 'Manual Review', status: 'failed', critical: false },
+    ],
+    extracted_fields: {
+      farmer_name: 'Vikas Patil',
+      survey_number: '78/2',
+      village: 'Pandharpur',
+      bank_account: '—',
+      ifsc: '—',
+      invoice_amount: '—',
+      gst_number: '—',
+    },
+    risk_factors: ['UID status / mapping checks failed', 'Possible duplicate beneficiary linkage'],
+    documents: ['Aadhaar', '7/12 extract', 'Consent form'],
+    review: {
+      tags: ['AADHAAR ISSUE', 'MANUAL REVIEW'],
+      documentCards: [
+        { title: 'Aadhaar.pdf', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '⚠ Aadhaar inactive / mapping issue', verifyWarn: true },
+        { title: '7/12 extract', thumb: null, ocrLine: '—', verifyLine: 'Manual check', verifyWarn: false },
+        { title: 'Consent form', thumb: null, ocrLine: '—', verifyLine: '—', verifyWarn: false },
+      ],
+      verificationRemarks: [
+        '⚠ Aadhaar inactive',
+        '⚠ Aadhaar mapping missing',
+        '⚠ Duplicate beneficiary records found',
+      ],
+      duplicateBeneficiaryNames: ['नंदकुमार नरहरी पाटील', 'निशांत महारुद्र गडिसंग', 'जालिंदर निवृत्ती पाडुळे'],
+      aiFindings: {
+        headline: 'Beneficiary verification did not clear UID / de-duplication checks.',
+        riskLabel: 'HIGH RISK',
+        confidencePct: 91,
+      },
+    },
+  },
+  {
+    id: 'APL-2026-LAND-1',
+    farmer_name: 'Sunil Kadam',
+    scheme: 'Soybean Area Subsidy',
+    village: 'Madha',
+    survey_number: '448/4',
+    submitted: '11 May 2026',
+    risk_score: 90,
+    risk_level: 'high_risk',
+    fraud_type: 'survey_pattern_duplicate',
+    verification_chips: [
+      { label: 'Survey Duplicate', status: 'failed', critical: true },
+      { label: 'Manual Review', status: 'failed', critical: false },
+    ],
+    extracted_fields: {
+      farmer_name: 'Sunil Kadam',
+      survey_number: '448/4',
+      village: 'Madha',
+      bank_account: '—',
+      ifsc: '—',
+      invoice_amount: '—',
+      gst_number: '—',
+    },
+    risk_factors: ['Same ownership / survey pattern repeated across multiple subsidy claims'],
+    documents: ['7/12 extract', 'Crop declaration', 'Aadhaar'],
+    review: {
+      tags: ['SURVEY DUPLICATE', 'HIGH RISK', 'MANUAL REVIEW'],
+      documentCards: [
+        { title: '7/12 extract', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '⚠ Same survey pattern as other claims', verifyWarn: true },
+        { title: 'Crop declaration', thumb: null, ocrLine: '—', verifyLine: 'Cross-check advised', verifyWarn: false },
+        { title: 'Aadhaar.pdf', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '✓ Format OK', verifyWarn: false },
+      ],
+      aiFindings: {
+        headline: 'Same survey pattern detected across multiple claims.',
+        matchedRows: [['Detected surveys', '448/2, 448/3, 448/4']],
+        note: 'Possible issue: same ownership pattern reused repeatedly for subsidy claims.',
+        riskLabel: 'HIGH RISK',
+        confidencePct: 89,
+      },
+    },
+  },
   {
     id: 'APL-0101',
     farmer_name: 'Ram Patil',
@@ -286,11 +1056,21 @@ export function countCasesByFilter(cases, filterId) {
     return cases.filter((c) => c.risk_score >= 51 || c.risk_level === 'high_risk').length;
   }
   if (filterId === 'invoice_fraud') {
-    return cases.filter((c) => c.fraud_type === 'duplicate_invoice' || c.fraud_type === 'suspicious_pricing').length;
+    return cases.filter(
+      (c) =>
+        c.fraud_type === 'duplicate_invoice' ||
+        c.fraud_type === 'suspicious_pricing' ||
+        c.fraud_type === 'chc_receipt_duplicate' ||
+        c.fraud_type === 'seed_credit_reuse',
+    ).length;
   }
   if (filterId === 'bhade_khat') return cases.filter((c) => c.fraud_type === 'bhade_khat').length;
-  if (filterId === 'geo_tag') return cases.filter((c) => c.fraud_type === 'geo_duplicate').length;
-  if (filterId === 'bank_issues') return cases.filter((c) => c.fraud_type === 'bank_inactive').length;
+  if (filterId === 'geo_tag') {
+    return cases.filter((c) => c.fraud_type === 'geo_duplicate' || c.fraud_type === 'survey_pattern_duplicate').length;
+  }
+  if (filterId === 'bank_issues') {
+    return cases.filter((c) => c.fraud_type === 'bank_inactive' || c.fraud_type === 'aadhaar_beneficiary').length;
+  }
   return cases.length;
 }
 
@@ -300,10 +1080,20 @@ export function filterCases(cases, filterId) {
     return cases.filter((c) => c.risk_score >= 51 || c.risk_level === 'high_risk');
   }
   if (filterId === 'invoice_fraud') {
-    return cases.filter((c) => c.fraud_type === 'duplicate_invoice' || c.fraud_type === 'suspicious_pricing');
+    return cases.filter(
+      (c) =>
+        c.fraud_type === 'duplicate_invoice' ||
+        c.fraud_type === 'suspicious_pricing' ||
+        c.fraud_type === 'chc_receipt_duplicate' ||
+        c.fraud_type === 'seed_credit_reuse',
+    );
   }
   if (filterId === 'bhade_khat') return cases.filter((c) => c.fraud_type === 'bhade_khat');
-  if (filterId === 'geo_tag') return cases.filter((c) => c.fraud_type === 'geo_duplicate');
-  if (filterId === 'bank_issues') return cases.filter((c) => c.fraud_type === 'bank_inactive');
+  if (filterId === 'geo_tag') {
+    return cases.filter((c) => c.fraud_type === 'geo_duplicate' || c.fraud_type === 'survey_pattern_duplicate');
+  }
+  if (filterId === 'bank_issues') {
+    return cases.filter((c) => c.fraud_type === 'bank_inactive' || c.fraud_type === 'aadhaar_beneficiary');
+  }
   return cases;
 }
