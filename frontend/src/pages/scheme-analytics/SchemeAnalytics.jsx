@@ -230,7 +230,8 @@ export default function SchemeAnalytics() {
   const [selectedCircle, setSelectedCircle] = useState(null);
   const [sortKey, setSortKey]   = useState('applications');
   const [sortDir, setSortDir]   = useState('desc');
-  const [filterCircle, setFilterCircle] = useState('');
+  const urlCircle = new URLSearchParams(window.location.search).get('circle') || '';
+  const [filterCircle, setFilterCircle] = useState(urlCircle);
   const [filterScheme, setFilterScheme] = useState('All Schemes');
   const [filterCrop,   setFilterCrop]   = useState('All Crops');
 

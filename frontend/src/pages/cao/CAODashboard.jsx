@@ -1,25 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { useHierarchy } from '../../context/HierarchyContext';
-import { useKrishiData } from '../../context/KrishiDataContext';
+import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import ActionMap from './components/ActionMap';
-import ShopTracker from './components/ShopTracker';
-import SahayakMatrix from './components/SahayakMatrix';
 import PMFBYPanel from './components/PMFBYPanel';
-import {
-  fetchMandalSummary,
-  fetchVistarAnalytics,
-  fetchVistarFraudAlerts,
-  fetchMKAApplicationIntelligence,
-} from '../../utils/api';
 import './cao.css';
 
-const DASHBOARD_KPIS = {
-  shops_overdue: 2,
-  sahayaks_critical: 3,
-};
 const PMFBY_EVENTS = [];
 
 /* ── Shared design primitives ───────────────────────────────────────────────── */
@@ -687,150 +671,8 @@ const MandalOverviewPanel = ({ summary, appIntel, vistar }) => {
 
 const CAODashboard = () => {
   const [pmfbyOpen, setPmfbyOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('sahayak');
-  const [summary, setSummary] = useState(null);
-  const [vistar, setVistar] = useState(null);
-  const [fraudSes, setFraudSes] = useState([]);
-  const [appIntel, setAppIntel] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
-  const { logout, user } = useAuth();
   const { t } = useLanguage();
-  const { mandals, currentMandal } = useHierarchy();
-  const { buildSahayakMatrixForMandal, stats } = useKrishiData();
-
-  const mandal = useMemo(() => {
-    if (currentMandal) return currentMandal;
-    if (user?.district_id) {
-      const m = mandals.find(
-        (x) => Number(x.district_id) === Number(user.district_id),
-      );
-      if (m) return m;
-    }
-    return (
-      mandals[0] || {
-        mandal_id: 'C001',
-        name: 'Agriculture circle',
-        circle_id: 1,
-        district_name: '',
-        taluka_name: '',
-      }
-    );
-  }, [currentMandal, mandals, user?.district_id]);
-
-  const mid = mandal?.mandal_id || 'C001';
-
-  const sahayakMatrixRows = useMemo(
-    () => buildSahayakMatrixForMandal(mandal),
-    [mandal, buildSahayakMatrixForMandal],
-  );
-
-  const buildFallbackData = useCallback(() => {
-    const rows =
-      sahayakMatrixRows.length > 0
-        ? sahayakMatrixRows
-        : [
-          {
-            id: 'KS0',
-            name: 'Demo Sahayak',
-            status: 'good',
-            verifications_week: 12,
-            avg_days: 3,
-            overdue_15d: 1,
-            circle: mandal?.name || '—',
-            villages: ['Demo village'],
-            trend: [3, 4, 5, 4, 3, 5, 4],
-            total_pending: 8,
-            last_field_visit: '—',
-            whatsapp: '919999999999',
-          },
-        ];
-    const totalSurveys = stats?.totalSurveys ?? 4046;
-    const fallbackSummary = {
-      total_applications: Math.min(900, Math.round(totalSurveys / 5)),
-      by_status: {
-        Applied: 18,
-        'Under Scrutiny': 12,
-        Approved: 95,
-        Rejected: 17,
-      },
-      fraud_alerts: rows.reduce((sum, s) => sum + s.overdue_15d, 0),
-      sahayak_breakdown: rows.map((s) => ({
-        sahayak_id: s.id,
-        name: s.name,
-        total: s.verifications_week + s.total_pending,
-        pending: s.total_pending,
-        approved: s.verifications_week,
-      })),
-    };
-    const fallbackVistar = {
-      total_sessions: 48,
-      avg_reported_attendance: 42,
-      avg_digital_attendance: 31,
-      fraud_flagged_count: 5,
-      overall_gap_pct: 26,
-      sahayak_performance: rows.map((s) => ({
-        sahayak_id: s.id,
-        sahayak_name: s.name,
-        total_sessions: Math.round(s.verifications_week * 1.3),
-        overall_compliance_ratio:
-          s.status === 'excellent'
-            ? 0.92
-            : s.status === 'good'
-              ? 0.78
-              : 0.55,
-        fraud_flags: s.overdue_15d,
-        overall_risk:
-          s.status === 'excellent'
-            ? 'CLEAN'
-            : s.status === 'good'
-              ? 'MODERATE'
-              : 'HIGH',
-      })),
-      insights: [
-        `${mandal?.district_name || 'District'} — ${mandal?.name || 'circle'} linked to CSV hierarchy (${rows.length} Krushi Sahayak profile${rows.length === 1 ? '' : 's'}).`,
-        'Attendance and verification metrics below are synthesized for demo when the API is offline.',
-        `Statewide survey records in dataset: ${totalSurveys.toLocaleString('en-IN')}.`,
-      ],
-    };
-    const fallbackAppIntel = {
-      total_applications: fallbackSummary.total_applications,
-      by_status: fallbackSummary.by_status,
-      by_scheme_category: {
-        'Drip Irrigation': 38,
-        'PM-KUSUM Solar': 22,
-        'Seed Subsidy': 31,
-        'PMFBY Insurance': 27,
-        'Fertilizer DBT': 16,
-        Other: 8,
-      },
-    };
-    return { fallbackSummary, fallbackVistar, fallbackAppIntel };
-  }, [sahayakMatrixRows, mandal, stats]);
-
-  useEffect(() => {
-    setLoading(true);
-    Promise.allSettled([
-      fetchMandalSummary(mid),
-      fetchVistarAnalytics(mid),
-      fetchVistarFraudAlerts(mid),
-      fetchMKAApplicationIntelligence(mid),
-    ]).then(([s, v, f, a]) => {
-      const { fallbackSummary, fallbackVistar, fallbackAppIntel } =
-        buildFallbackData();
-      setSummary(s.status === 'fulfilled' && s.value ? s.value : fallbackSummary);
-      setVistar(v.status === 'fulfilled' && v.value ? v.value : fallbackVistar);
-      setFraudSes(f.status === 'fulfilled' ? (f.value?.alerts || []) : []);
-      setAppIntel(a.status === 'fulfilled' && a.value ? a.value : fallbackAppIntel);
-    }).finally(() => setLoading(false));
-  }, [mid, buildFallbackData]);
-
-  const SUPERVISION_TABS = [
-    { id: 'sahayak', icon: 'group', label: t('Sahayaks') },
-    { id: 'vistar', icon: 'school', label: t('Krishi Vistar') },
-    { id: 'mandal', icon: 'dashboard', label: t('Mandal Info') },
-  ];
 
   return (
     <div
@@ -847,9 +689,8 @@ const CAODashboard = () => {
         <KpiCard icon="schedule" label={t('Avg Approval')} value="4.2" unit="d" sub={t('Target: 3d')} />
       </div>
 
-      {/* ── Map + right rail (matrix, supervision, shops) ── */}
+      {/* ── Map (full width, no right rail) ── */}
       <div className="cao-command-row">
-        {/* Map Card */}
         <div className="cao-map-column" style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
@@ -859,83 +700,6 @@ const CAODashboard = () => {
           </div>
           <div className="cao-map-slot">
             <ActionMap />
-          </div>
-        </div>
-
-        <div className="cao-command-rail">
-          {/* Sahayak Matrix */}
-          <div className="surface-card surface-card-static overflow-hidden flex flex-col min-w-0" style={{ flex: '0 1 auto' }}>
-            <div className="flex justify-between items-center hairline" style={{ padding: '22px 24px', gap: '16px', minHeight: '64px', borderBottomWidth: '1px', borderBottomStyle: 'solid' }}>
-              <div className="flex items-center min-w-0" style={{ gap: '12px' }}>
-                <span className="material-symbols-outlined text-on-surface-variant flex-shrink-0" style={{ fontSize: '22px' }}>leaderboard</span>
-                <h3 className="font-section-header font-bold text-base text-on-background tracking-tight truncate" style={{ lineHeight: 1.3 }}>{t('Sahayak Accountability Matrix')}</h3>
-              </div>
-              <span className="inline-flex items-center font-bold flex-shrink-0 whitespace-nowrap" style={{ background: '#fff4e6', color: '#b45309', border: '1px solid rgba(180, 83, 9, 0.18)', padding: '4px 10px', borderRadius: '8px', fontSize: '10.5px', letterSpacing: '0.04em' }}>
-                {DASHBOARD_KPIS.sahayaks_critical} {t('Critical')}
-              </span>
-            </div>
-            <div className="p-0 overflow-x-auto w-full cao-matrix-scroll">
-              <SahayakMatrix sahayaks={sahayakMatrixRows} />
-            </div>
-          </div>
-
-          {/* Supervision Tabs Widget */}
-          <div className="surface-card surface-card-static flex flex-col min-w-0" style={{ minHeight: 300, maxHeight: 460, flex: '1 1 auto' }}>
-            <div className="flex hairline rounded-t-[16px] shrink-0" style={{ gap: '8px', padding: '14px 14px', background: '#f7f8f4', borderBottomWidth: '1px', borderBottomStyle: 'solid' }}>
-              {SUPERVISION_TABS.map(tab => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    className="flex-1 flex flex-col items-center justify-center rounded-lg transition-all duration-200"
-                    style={{
-                      gap: '6px',
-                      padding: '10px 6px',
-                      minHeight: '52px',
-                      background: isActive ? '#033621' : 'transparent',
-                      color: isActive ? '#ffffff' : '#717972',
-                      boxShadow: isActive ? '0 2px 8px rgba(3, 54, 33, 0.18)' : 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
-                    onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#eef2ee'; }}
-                    onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'inherit' }}>{tab.icon}</span>
-                    <span style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.04em', color: 'inherit' }}>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {loading ? (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 32, color: '#717972' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 32, opacity: 0.4 }}>hourglass_top</span>
-                <span style={{ fontSize: 13, fontWeight: 500 }}>{t('Loading...')}</span>
-              </div>
-            ) : (
-              <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
-                {activeTab === 'sahayak' && <SahayakSupervisionPanel summary={summary} vistar={vistar} />}
-                {activeTab === 'vistar' && <VistarSupervisionPanel vistar={vistar} fraudSes={fraudSes} />}
-                {activeTab === 'mandal' && <MandalOverviewPanel summary={summary} appIntel={appIntel} vistar={vistar} />}
-              </div>
-            )}
-          </div>
-
-          {/* Shop Tracker Widget - Condensed */}
-          <div style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden', flexShrink: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid #f3f4f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#717972' }}>storefront</span>
-                <h3 style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1a', margin: 0 }}>{t('Krushi Seva Kendra')}</h3>
-              </div>
-              <span style={{ fontSize: 9, fontWeight: 700, color: '#b45309', background: 'rgba(255,244,230,0.6)', padding: '3px 8px', borderRadius: 6 }}>{DASHBOARD_KPIS.shops_overdue} {t('Overdue')}</span>
-            </div>
-            <div style={{ padding: '0px' }}>
-              <ShopTracker condensed />
-            </div>
           </div>
         </div>
       </div>
