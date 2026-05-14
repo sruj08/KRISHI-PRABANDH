@@ -146,9 +146,9 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
   const r = report || survey;
   const evidenceArr = r.uploadedEvidence;
   const firstEvidence = Array.isArray(evidenceArr) && evidenceArr.length > 0 ? evidenceArr[0] : null;
-  const evidenceUrl = firstEvidence?.url || firstEvidence?.evidenceUrl || firstEvidence?.filePath || 'https://images.unsplash.com/photo-1592982537447-7440770bfc9c?q=80&w=2069&auto=format&fit=crop';
+  const evidenceUrl = firstEvidence?.url || firstEvidence?.evidenceUrl || firstEvidence?.filePath || null;
   const evidenceType = firstEvidence?.type || 'image';
-  const gps = r.gps || firstEvidence?.gps || firstEvidence?.location || (r.lat && r.lng ? { lat: r.lat, lng: r.lng } : { lat: 18.5204, lng: 73.8567 });
+  const gps = r.gps || firstEvidence?.gps || firstEvidence?.location || (r.lat && r.lng ? { lat: r.lat, lng: r.lng } : null);
   const confidence = r.confidenceScore != null ? (r.confidenceScore * 100).toFixed(0) : null;
   const reportPhases = r.phases || r.workflowHistory || [];
   const grievances = r.grievances || (r.grievanceLinkage ? [r.grievanceLinkage] : []);
@@ -225,15 +225,22 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
             <span className="material-symbols-outlined text-sm">videocam</span>
             Field Evidence
           </h2>
-          <div className="rounded overflow-hidden border border-gray-300 bg-gray-100 mb-6 shadow-sm">
-            <GeoVerifiedMedia
-              url={evidenceUrl}
-              type={evidenceType}
-              gps={gps}
-              timestamp={r.createdAt || r.updatedAt}
-              aiConfidence={confidence}
-            />
-          </div>
+          {evidenceUrl ? (
+            <div className="rounded overflow-hidden border border-gray-300 bg-gray-100 mb-6 shadow-sm">
+              <GeoVerifiedMedia
+                url={evidenceUrl}
+                type={evidenceType}
+                gps={gps}
+                timestamp={r.createdAt || r.updatedAt}
+                aiConfidence={confidence}
+              />
+            </div>
+          ) : (
+            <div className="rounded overflow-hidden border border-gray-300 bg-gray-100 mb-6 shadow-sm flex items-center justify-center p-8 text-gray-500 font-mono text-xs gap-3">
+              <span className="material-symbols-outlined text-3xl opacity-30">image_not_supported</span>
+              <span>No evidence uploaded</span>
+            </div>
+          )}
 
           {/* Phase / Workflow History */}
           <h2 className="text-[11px] font-bold text-gray-500 uppercase mb-3 tracking-[0.2em] flex items-center gap-2">
