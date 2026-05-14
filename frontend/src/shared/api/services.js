@@ -1,17 +1,32 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000';
+/** Same-origin in dev (Vite proxy → backend); override with VITE_API_ORIGIN in prod. */
+function getAxiosBaseURL() {
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_ORIGIN) {
+    return String(import.meta.env.VITE_API_ORIGIN).replace(/\/$/, '');
+  }
+  return '';
+}
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: getAxiosBaseURL(),
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
+
+/** FastAPI `success()` envelope: `{ success, message, data }`. */
+function unwrapApiPayload(body) {
+  if (body && typeof body === 'object' && body.success === true && 'data' in body) {
+    return body.data;
+  }
+  return body;
+}
 
 api.interceptors.response.use(
   (res) => res,
   (err) => {
     const msg =
+      err.response?.data?.error ||
       err.response?.data?.message ||
       err.response?.data?.detail ||
       err.message ||
@@ -65,12 +80,115 @@ export async function fetchPayments() {
   return data;
 }
 
-/** Base for browser calls (empty = same origin → Vite dev proxy `/api` → backend). */
-export function getApiOrigin() {
-  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_ORIGIN) {
-    return String(import.meta.env.VITE_API_ORIGIN).replace(/\/$/, '');
+function riskLevelToSeverity(level, score) {
+  const n = typeof score === 'number' ? score : Number(score);
+  const scoreNum = Number.isFinite(n) ? n : NaN;
+  const s = String(level || '').toLowerCase();
+  if (s.includes('critical') || (Number.isFinite(scoreNum) && scoreNum >= 80)) return 'CRITICAL';
+  if (s.includes('high') || (Number.isFinite(scoreNum) && scoreNum >= 50)) return 'HIGH';
+  if (s.includes('moderate') || s.includes('medium') || (Number.isFinite(scoreNum) && scoreNum >= 30)) {
+    return 'MODERATE';
   }
-  return '';
+  return 'LOW';
+}
+
+/** Officer triage queue — flagged survey evidence (`GET /surveys/evidence/flagged`). */
+export async function fetchSurveyQueue() {
+  const { data } = await api.get('/surveys/evidence/flagged');
+  const payload = unwrapApiPayload(data) || {};
+  const items = Array.isArray(payload.items) ? payload.items : [];
+  return items.map((row) => ({
+    ...row,
+    reportId: row.survey_id,
+    surveyId: row.survey_id,
+    farmerName: row.farmer_name,
+    cropType: row.scheme,
+    severityLevel: riskLevelToSeverity(row.risk_level, row.risk_score),
+    workflowStage:
+      row.risk_score != null && Number(row.risk_score) >= 20
+        ? 'Review Required'
+        : 'Pending Sahayak Verification',
+    confidenceScore:
+      row.risk_score != null
+        ? Math.max(0, Math.min(1, 1 - Number(row.risk_score) / 100))
+        : null,
+    timestamp: '—',
+  }));
+}
+
+/** Dashboard counts for survey operations header stats. */
+export async function fetchSurveySummary() {
+  const { data } = await api.get('/analytics/dashboard');
+  const d = unwrapApiPayload(data) || {};
+  let critical = null;
+  try {
+    const { data: riskRaw } = await api.get('/analytics/risk-summary');
+    const r = unwrapApiPayload(riskRaw) || {};
+    critical = r.high_risk ?? null;
+  } catch {
+    /* risk-summary is role-gated; ignore */
+  }
+  return {
+    total: d.surveys_total,
+    all: d.surveys_total,
+    pending: d.surveys_pending_approval,
+    submitted: d.surveys_pending_approval,
+    critical,
+    grievance: 0,
+    grievances: 0,
+    completed: d.surveys_compensated,
+    verified: d.surveys_compensated,
+  };
+}
+
+/** Single survey row for evidence review (`GET /surveys/{id}`). */
+export async function fetchSurveyReport(surveyId) {
+  const { data } = await api.get(`/surveys/${surveyId}`);
+  const row = unwrapApiPayload(data);
+  if (!row || typeof row !== 'object') {
+    throw new Error('Survey not found');
+  }
+  const attrs = row.attrs && typeof row.attrs === 'object' ? row.attrs : {};
+  return {
+    ...row,
+    ...attrs,
+    reportId: row.id,
+    surveyId: row.id,
+    workflowStage: row.status || attrs.workflowStage,
+    farmerName: attrs.farmerName || attrs.farmer_name,
+    cropType: attrs.cropType || attrs.crop_type,
+    village: attrs.village,
+    severityLevel: attrs.severityLevel || attrs.severity_level,
+    confidenceScore: attrs.confidenceScore ?? attrs.confidence_score,
+    timestamp: row.created_at || row.updated_at || attrs.submittedAt,
+  };
+}
+
+/** Grievances API not wired yet — return empty list so the panel still renders. */
+export async function fetchSurveyGrievances(_surveyId) {
+  return [];
+}
+
+/** Map UI actions to `POST /surveys/{id}/approve` decisions. */
+export async function updateSurveyAction(surveyId, { action } = {}) {
+  const key = String(action || '').toLowerCase();
+  const body =
+    key === 'verify'
+      ? { decision: 'APPROVED', notes: 'Verified by survey operations' }
+      : key === 'resurvey'
+        ? { decision: 'REJECTED', notes: 'Re-survey requested' }
+        : key === 'request_info'
+          ? { decision: 'ESCALATED', notes: 'Additional information requested from field' }
+          : key === 'escalate'
+            ? { decision: 'ESCALATED', notes: 'Escalated for officer review' }
+            : { decision: 'ESCALATED', notes: key || 'Survey action' };
+  const { data } = await api.post(`/surveys/${surveyId}/approve`, body);
+  return unwrapApiPayload(data);
+}
+
+/** Base for browser calls (empty = same origin → Vite dev proxy → backend). */
+export function getApiOrigin() {
+  return getAxiosBaseURL();
 }
 
 /**
