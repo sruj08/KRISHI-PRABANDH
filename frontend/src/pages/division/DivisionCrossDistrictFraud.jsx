@@ -28,6 +28,13 @@ const CROSS_DIS_TAX_INVOICES = [
   '/CrossDis-Sample/tax_invoice_sola.pdf',
 ];
 
+/** Farm registration sample JPEGs in `frontend/public/CrossDis-Sample` (surname in filename; order matches c2 linked rows). */
+const CROSS_DIS_FARM_REG_JPEGS = [
+  '/CrossDis-Sample/FarmReg_Jadhav.jpeg',
+  '/CrossDis-Sample/FarmReg_Shinde.jpeg',
+  '/CrossDis-Sample/FarmReg_KHOT.jpeg',
+];
+
 /**
  * Investigation cards — Maharashtra agri subsidy context only.
  */
@@ -74,9 +81,27 @@ const FRAUD_CASES = [
     exposureCr: 1.1,
     status: 'AI Flagged Today',
     linked: [
-      { farmer: 'Sunita Jadhav', scheme: 'PM-KISAN', district: 'Solapur', match: 'Shared mobile · Madha taluka' },
-      { farmer: 'Popat Shinde', scheme: 'PM-KISAN', district: 'Sangli', match: 'Same Aadhaar tail · different farmer name' },
-      { farmer: 'Anil Khot', scheme: 'PM-KISAN', district: 'Kolhapur', match: 'Inactive Aadhaar · repeat NPCI reject' },
+      {
+        farmer: 'Sunita Jadhav',
+        scheme: 'PM-KISAN',
+        district: 'Solapur',
+        match: 'Shared mobile · Madha taluka',
+        farmRegJpeg: CROSS_DIS_FARM_REG_JPEGS[0],
+      },
+      {
+        farmer: 'Popat Shinde',
+        scheme: 'PM-KISAN',
+        district: 'Sangli',
+        match: 'Same Aadhaar tail · different farmer name',
+        farmRegJpeg: CROSS_DIS_FARM_REG_JPEGS[1],
+      },
+      {
+        farmer: 'Anil Khot',
+        scheme: 'PM-KISAN',
+        district: 'Kolhapur',
+        match: 'Inactive Aadhaar · repeat NPCI reject',
+        farmRegJpeg: CROSS_DIS_FARM_REG_JPEGS[2],
+      },
     ],
   },
   {
@@ -598,16 +623,18 @@ const DivisionCrossDistrictFraud = () => {
                             <span className="fi-case__linked-scheme">{row.scheme}</span>
                             <span className="fi-case__linked-district">{row.district}</span>
                             <span className="fi-case__linked-inv">
-                              {row.taxInvoice ? (
+                              {row.taxInvoice || row.farmRegJpeg ? (
                                 <a
                                   className="fi-case__linked-pdf"
-                                  href={row.taxInvoice}
+                                  href={row.taxInvoice || row.farmRegJpeg}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(ev) => ev.stopPropagation()}
                                 >
-                                  <span className="material-symbols-outlined fi-case__linked-pdf-icon" aria-hidden>description</span>
-                                  PDF
+                                  <span className="material-symbols-outlined fi-case__linked-pdf-icon" aria-hidden>
+                                    {row.farmRegJpeg ? 'image' : 'description'}
+                                  </span>
+                                  {row.farmRegJpeg ? 'JPEG' : 'PDF'}
                                 </a>
                               ) : (
                                 <span className="fi-case__linked-inv-dash" aria-hidden>—</span>

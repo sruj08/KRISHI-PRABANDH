@@ -710,7 +710,7 @@
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: -0.015em;
-  color: #111;
+  color: var(--fi-muted);
 }
 
 /* district list */
@@ -727,6 +727,20 @@
 .fi-case__dist-name {
   cursor: help;
   font-weight: 500;
+}
+
+/* Case card — collapsed summary; expand for narrative + why flagged */
+.fi-case {
+  background: var(--fi-surface);
+  border: 1px solid var(--fi-border);
+  border-radius: 10px;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(26, 28, 26, 0.03);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  width: 100%;
+  color: inherit;
 }
 
 .fi-case__dist-sep {
@@ -909,7 +923,7 @@
 
 .fi-case__linked-head {
   display: grid;
-  grid-template-columns: 2fr 1.35fr 1fr minmax(72px, auto);
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.15fr) minmax(0, 0.85fr) minmax(52px, 0.75fr);
   gap: 8px;
   padding: 0 0 6px;
   font-size: 9px;
@@ -923,7 +937,7 @@
 
 .fi-case__linked-row {
   display: grid;
-  grid-template-columns: 2fr 1.35fr 1fr minmax(72px, auto);
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.15fr) minmax(0, 0.85fr) minmax(52px, 0.75fr);
   gap: 8px;
   padding: 7px 0;
   border-bottom: 1px solid #f2f2f0;
@@ -951,7 +965,6 @@
   font-weight: 400;
   color: #777;
 }
-
 
 .fi-case__linked-inv {
   text-align: right;
