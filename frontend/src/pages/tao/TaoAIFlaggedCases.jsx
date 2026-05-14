@@ -1,7 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { useToast } from '../../hooks/useToast.jsx';
 import { useLanguage } from '../../context/LanguageContext';
-import { mockFlaggedCases, countCasesByFilter, filterCases } from '../../mock/tao-flagged-cases';
+import {
+  mockFlaggedCases,
+  countCasesByFilter,
+  filterCases,
+} from '../../mock/tao-flagged-cases';
 import './tao.css';
 
 const PANEL = '#e2e3df';
@@ -341,8 +345,11 @@ function RightPanel({ c }) {
   return null;
 }
 
-function DocumentPreviewModal({ title, onClose }) {
+function DocumentPreviewModal({ preview, onClose }) {
   const { t } = useLanguage();
+  const title = typeof preview === 'string' ? preview : preview?.title || 'Document';
+  const src = typeof preview === 'object' && preview?.src ? preview.src : null;
+  const downloadUrl = typeof preview === 'object' && preview?.downloadUrl ? preview.downloadUrl : null;
   return (
     <div
       role="dialog"
@@ -363,7 +370,9 @@ function DocumentPreviewModal({ title, onClose }) {
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: 720,
+          maxWidth: 900,
+          maxHeight: '90vh',
+          overflow: 'auto',
           background: '#fff',
           borderRadius: 16,
           border: `1px solid ${PANEL}`,
@@ -377,25 +386,197 @@ function DocumentPreviewModal({ title, onClose }) {
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
-        <div
-          style={{
-            minHeight: 280,
-            background: '#eceeeb',
-            borderRadius: 12,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: MUTED,
-            fontSize: 13,
-            fontWeight: 600,
-            textAlign: 'center',
-            padding: 24,
-            border: `1px dashed ${PANEL}`,
-          }}
-        >
-          {t('Preview unavailable in demo')}
+        {src ? (
+          <img src={src} alt="" style={{ width: '100%', height: 'auto', borderRadius: 12, border: `1px solid ${PANEL}` }} />
+        ) : downloadUrl ? (
+          <div style={{ padding: 16, background: '#fafbf9', borderRadius: 12, border: `1px solid ${PANEL}` }}>
+            <p style={{ margin: '0 0 12px', fontSize: 13, color: TEXT }}>Word document — download to open.</p>
+            <a className="btn btn-primary" href={downloadUrl} download style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>download</span>
+              Download
+            </a>
+          </div>
+        ) : (
+          <div
+            style={{
+              minHeight: 200,
+              background: '#eceeeb',
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: MUTED,
+              fontSize: 13,
+              fontWeight: 600,
+              padding: 24,
+              border: `1px dashed ${PANEL}`,
+            }}
+          >
+            {t('Preview unavailable in demo')}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TagPill({ children, tone }) {
+  const bg = tone === 'bad' ? 'rgba(186,26,26,0.1)' : tone === 'ok' ? 'rgba(57,105,64,0.1)' : 'rgba(113,121,114,0.12)';
+  const color = tone === 'bad' ? RED : tone === 'ok' ? GREEN : MUTED;
+  return (
+    <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.06em', padding: '4px 8px', borderRadius: 6, background: bg, color, border: `1px solid ${PANEL}` }}>
+      {children}
+    </span>
+  );
+}
+
+function ReviewDocumentCard({ doc, onOpen }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(doc)}
+      style={{
+        textAlign: 'left',
+        border: `1px solid ${PANEL}`,
+        borderRadius: 10,
+        padding: 10,
+        background: '#fff',
+        cursor: 'pointer',
+        display: 'grid',
+        gridTemplateColumns: doc.thumb ? '72px 1fr' : '40px 1fr',
+        gap: 10,
+        alignItems: 'start',
+      }}
+    >
+      {doc.thumb ? (
+        <img src={doc.thumb} alt="" style={{ width: 72, height: 52, objectFit: 'cover', borderRadius: 6, border: `1px solid ${PANEL}` }} />
+      ) : (
+        <span className="material-symbols-outlined" style={{ fontSize: 28, color: MUTED, marginTop: 4 }}>description</span>
+      )}
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{doc.title}</div>
+        <div style={{ fontSize: 10, color: GREEN, fontWeight: 600, lineHeight: 1.35 }}>{doc.ocrLine}</div>
+        <div style={{ fontSize: 10, color: doc.verifyWarn ? AMBER : MUTED, fontWeight: 700, marginTop: 4 }}>{doc.verifyLine}</div>
+        {doc.wordUrl ? (
+          <span style={{ fontSize: 9, color: MUTED, marginTop: 4, display: 'block' }}>.docx on file — click card to open</span>
+        ) : null}
+      </div>
+    </button>
+  );
+}
+
+function MatchedFieldRow({ label, value }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 8, fontSize: 11, padding: '6px 8px', background: 'rgba(255, 235, 59, 0.12)', borderRadius: 6, border: '1px solid rgba(180,83,9,0.2)' }}>
+      <span style={{ color: MUTED, fontWeight: 700 }}>{label}</span>
+      <span style={{ color: TEXT, fontWeight: 600 }}>{value}</span>
+    </div>
+  );
+}
+
+function ReviewExpand({ c, onPreview }) {
+  const r = c.review;
+  if (!r) return null;
+  const f = r.aiFindings;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {(r.tags || []).map((tag) => (
+          <TagPill key={tag} tone={tag.includes('HIGH') || tag.includes('DUPLICATE') || tag.includes('ISSUE') ? 'bad' : 'neutral'}>
+            {tag}
+          </TagPill>
+        ))}
+      </div>
+
+      <div>
+        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 8 }}>UPLOADED DOCUMENTS</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
+          {(r.documentCards || []).map((doc) => (
+            <ReviewDocumentCard key={doc.title} doc={doc} onOpen={onPreview} />
+          ))}
         </div>
+      </div>
+
+      {f && (
+        <div style={{ border: `1px solid ${PANEL}`, borderRadius: 12, padding: 14, background: '#fafbf9' }}>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 8 }}>AI FINDINGS</div>
+          <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: AMBER }}>⚠ {f.headline}</p>
+          {f.matchedRows?.length ? (
+            <>
+              <div style={{ fontSize: 10, fontWeight: 800, color: MUTED, marginBottom: 6 }}>Matched fields</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {f.matchedRows.map(([label, value]) => (
+                  <MatchedFieldRow key={label} label={label} value={value} />
+                ))}
+              </div>
+            </>
+          ) : null}
+          {f.differenceFrom && f.differenceTo ? (
+            <div style={{ marginTop: 12, padding: 10, background: '#fff', borderRadius: 8, border: `1px solid ${PANEL}` }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: MUTED, marginBottom: 6 }}>{f.differenceLabel}</div>
+              <div style={{ fontSize: 12, color: TEXT, textDecoration: 'line-through', opacity: 0.85 }}>{f.differenceFrom}</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: RED, marginTop: 6, padding: '4px 6px', background: 'rgba(186,26,26,0.08)', borderRadius: 4 }}>{f.differenceTo}</div>
+            </div>
+          ) : null}
+          {f.note ? <p style={{ margin: '12px 0 0', fontSize: 12, color: TEXT, lineHeight: 1.5 }}>{f.note}</p> : null}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 12, fontSize: 11, fontWeight: 700 }}>
+            <span style={{ color: RED }}>Risk: {f.riskLabel}</span>
+            {f.confidencePct != null ? <span style={{ color: MUTED }}>Confidence: {f.confidencePct}%</span> : null}
+          </div>
+        </div>
+      )}
+
+      {r.verificationRemarks?.length ? (
+        <div style={{ border: `1px solid ${PANEL}`, borderRadius: 12, padding: 12, background: '#fff' }}>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 8 }}>VERIFICATION REMARKS</div>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: TEXT, lineHeight: 1.65 }}>
+            {r.verificationRemarks.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          {r.duplicateBeneficiaryNames?.length ? (
+            <div style={{ marginTop: 10, fontSize: 11, color: MUTED, fontWeight: 600 }}>Linked records (sample):</div>
+          ) : null}
+          {r.duplicateBeneficiaryNames?.length ? (
+            <ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 12, color: TEXT }}>
+              {r.duplicateBeneficiaryNames.map((n) => (
+                <li key={n}>{n}</li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+
+      {r.sideBySide ? (
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 8 }}>DOCUMENT COMPARISON</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, marginBottom: 6 }}>{r.sideBySide.leftCaption}</div>
+              <img src={r.sideBySide.leftSrc} alt="" style={{ width: '100%', maxHeight: 360, objectFit: 'contain', background: '#f3f4f0', borderRadius: 8, border: `1px solid ${PANEL}` }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, marginBottom: 6 }}>{r.sideBySide.rightCaption}</div>
+              <img src={r.sideBySide.rightSrc} alt="" style={{ width: '100%', maxHeight: 360, objectFit: 'contain', background: '#fff8f8', borderRadius: 8, border: `1px solid rgba(186,26,26,0.25)` }} />
+            </div>
+          </div>
+          <p style={{ margin: '10px 0 0', fontSize: 10, color: MUTED, lineHeight: 1.45 }}>{r.sideBySide.legend}</p>
+        </div>
+      ) : null}
+
+      {r.singleDoc?.src ? (
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 8 }}>DOCUMENT PREVIEW</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, marginBottom: 6 }}>{r.singleDoc.caption}</div>
+          <img src={r.singleDoc.src} alt="" style={{ maxWidth: '100%', maxHeight: 420, objectFit: 'contain', borderRadius: 8, border: `1px solid ${PANEL}` }} />
+        </div>
+      ) : null}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10, fontSize: 11, color: MUTED, borderTop: `1px solid ${PANEL}`, paddingTop: 12 }}>
+        <div><strong style={{ color: TEXT }}>Farmer:</strong> {c.farmer_name}</div>
+        <div><strong style={{ color: TEXT }}>Scheme:</strong> {c.scheme}</div>
+        <div><strong style={{ color: TEXT }}>Village:</strong> {c.village}</div>
+        <div><strong style={{ color: TEXT }}>Survey:</strong> {c.survey_number}</div>
       </div>
     </div>
   );
@@ -407,6 +588,16 @@ const TaoAIFlaggedCases = () => {
   const [tab, setTab] = useState('all');
   const [expandedId, setExpandedId] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
+
+  const openDocPreview = (doc) => {
+    if (doc?.thumb) {
+      setPreviewDoc({ title: doc.title, src: doc.thumb });
+    } else if (doc?.wordUrl) {
+      setPreviewDoc({ title: doc.title, downloadUrl: doc.wordUrl });
+    } else {
+      setPreviewDoc(doc?.title || 'Document');
+    }
+  };
 
   const counts = useMemo(() => {
     const o = {};
@@ -424,14 +615,7 @@ const TaoAIFlaggedCases = () => {
 
   return (
     <div className="tao-dash-root" style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {previewDoc && <DocumentPreviewModal title={previewDoc} onClose={() => setPreviewDoc(null)} />}
-
-      <div style={{ background: '#fff', border: `1px solid ${PANEL}`, borderRadius: 16, padding: '18px 20px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-        <h1 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: TEXT }}>{t('Application Verification Layer')}</h1>
-        <p style={{ margin: '8px 0 0', fontSize: 11, color: MUTED, lineHeight: 1.45 }}>
-          {t('Flagged applications consolidated for taluka review. Use filters to focus the queue; expand a row for structured findings and recommended actions.')}
-        </p>
-      </div>
+      {previewDoc && <DocumentPreviewModal preview={previewDoc} onClose={() => setPreviewDoc(null)} />}
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
         {TABS.map((tabItem) => {
@@ -439,7 +623,7 @@ const TaoAIFlaggedCases = () => {
           const count = counts[tabItem.id];
           return (
             <button
-              key={t.id}
+              key={tabItem.id}
               type="button"
               onClick={() => {
                 setTab(tabItem.id);
@@ -544,7 +728,7 @@ const TaoAIFlaggedCases = () => {
 
               <div
                 style={{
-                  maxHeight: open ? 2000 : 0,
+                  maxHeight: open ? 12000 : 0,
                   opacity: open ? 1 : 0,
                   transition: 'max-height 0.22s ease, opacity 0.18s ease',
                   overflow: 'hidden',
@@ -558,27 +742,31 @@ const TaoAIFlaggedCases = () => {
                       {t('HIGH RISK')} {c.risk_score}
                     </div>
                   </div>
-                  <div className="tao-flagged-expand-grid" style={{ display: 'grid', gap: 14 }}>
-                    <div style={{ border: `1px solid ${PANEL}`, borderRadius: 12, padding: 14, background: '#fafbf9', minHeight: 200 }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 10 }}>{t('DOCUMENT PREVIEW')}</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {(c.documents || ['Aadhaar', 'Satbara', 'Invoice']).map((d) => (
-                          <DocThumb key={d} label={d} onClick={() => setPreviewDoc(d)} />
-                        ))}
+                  {c.review ? (
+                    <ReviewExpand c={c} onPreview={openDocPreview} />
+                  ) : (
+                    <div className="tao-flagged-expand-grid" style={{ display: 'grid', gap: 14 }}>
+                      <div style={{ border: `1px solid ${PANEL}`, borderRadius: 12, padding: 14, background: '#fafbf9', minHeight: 200 }}>
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 10 }}>{t('DOCUMENT PREVIEW')}</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          {(c.documents || ['Aadhaar', 'Satbara', 'Invoice']).map((d) => (
+                            <DocThumb key={d} label={d} onClick={() => setPreviewDoc(d)} />
+                          ))}
+                        </div>
+                        <p style={{ fontSize: 10, color: MUTED, marginTop: 12, lineHeight: 1.45 }}>
+                          {t('Select a thumbnail to open a full-screen preview shell.')}
+                        </p>
                       </div>
-                      <p style={{ fontSize: 10, color: MUTED, marginTop: 12, lineHeight: 1.45 }}>
-                        {t('Select a thumbnail to open a full-screen preview shell.')}
-                      </p>
+                      <div style={{ border: `1px solid ${PANEL}`, borderRadius: 12, padding: 14, background: '#fff', minHeight: 200 }}>
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 10 }}>{t('EXTRACTED DATA')}</div>
+                        <MiddlePanel c={c} />
+                      </div>
+                      <div style={{ border: `1px solid ${PANEL}`, borderRadius: 12, padding: 14, background: '#fff', minHeight: 200 }}>
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 10 }}>{t('VERIFICATION RESULTS')}</div>
+                        <RightPanel c={c} />
+                      </div>
                     </div>
-                    <div style={{ border: `1px solid ${PANEL}`, borderRadius: 12, padding: 14, background: '#fff', minHeight: 200 }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 10 }}>{t('EXTRACTED DATA')}</div>
-                      <MiddlePanel c={c} />
-                    </div>
-                    <div style={{ border: `1px solid ${PANEL}`, borderRadius: 12, padding: 14, background: '#fff', minHeight: 200 }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 10 }}>{t('VERIFICATION RESULTS')}</div>
-                      <RightPanel c={c} />
-                    </div>
-                  </div>
+                  )}
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 18, paddingTop: 16, borderTop: `1px solid ${PANEL}` }}>
                     <button type="button" className="btn btn-success" onClick={() => recordAction('Approve')}>
