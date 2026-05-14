@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -48,28 +48,27 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     if (role === 'state') {
       return [
-        { id: 'state_command', label: 'STATE COMMAND', items: [
-          { to: '/state/dashboard', icon: 'public', label: 'State Dashboard' },
-          { to: '/state/map', icon: 'map', label: 'Maharashtra Live Map' },
-        ]},
-        { id: 'governance', label: 'GOVERNANCE', items: [
-          { to: '/state/schemes', icon: 'account_tree', label: 'Schemes' },
-          { to: '/state/fund-monitoring', icon: 'account_balance_wallet', label: 'Fund Monitoring' },
-          { to: '/state/approvals', icon: 'check_circle', label: 'Approvals' },
-        ]},
-        { id: 'intelligence', label: 'INTELLIGENCE', items: [
-          { to: '/state/fraud', icon: 'shield_locked', label: 'Fraud Network' },
-          { to: '/state/insights', icon: 'lightbulb', label: 'AI Insights' },
-          { to: '/state/disaster', icon: 'warning', label: 'Disaster Watch' },
-        ]},
-        { id: 'reports', label: 'REPORTS', items: [
-          { to: '/state/analytics', icon: 'bar_chart', label: 'Analytics' },
-          { to: '/state/audit', icon: 'history', label: 'Audit Logs' },
-        ]},
-        { id: 'system', label: 'SYSTEM', items: [
-          { to: '/state/users', icon: 'manage_accounts', label: 'User Control' },
-          { to: '/state/settings', icon: 'settings', label: 'Settings' },
-        ]},
+        {
+          id: 'state_governance',
+          flat: true,
+          label: 'GOVERNANCE',
+          items: [
+            { to: '/state/dashboard', icon: 'dashboard', label: 'Dashboard' },
+            { to: '/state/schemes', icon: 'account_tree', label: 'Schemes' },
+            { to: '/state/fund-monitoring', icon: 'account_balance_wallet', label: 'Fund Monitoring' },
+            { to: '/state/approvals', icon: 'check_circle', label: 'Approvals' },
+          ],
+        },
+        {
+          id: 'state_intelligence',
+          flat: true,
+          label: 'INTELLIGENCE',
+          items: [
+            { to: '/state/fraud', icon: 'shield_locked', label: 'Fraud Network' },
+            { to: '/state/insights', icon: 'lightbulb', label: 'AI Insights' },
+            { to: '/state/divisional-analysis', icon: 'analytics', label: 'Divisional Analysis' },
+          ],
+        },
       ];
     }
 
@@ -90,9 +89,6 @@ const Sidebar = ({ isOpen, onClose }) => {
         { id: 'field_intel', label: 'FIELD INTELLIGENCE', items: [
           { to: '/division/crop-stress', icon: 'eco', label: 'Crop Stress' },
           { to: '/division/survey-monitoring', icon: 'verified', label: 'Survey Monitoring' },
-        ]},
-        { id: 'div_reports', label: 'REPORTS', items: [
-          { to: '/division/analytics', icon: 'summarize', label: 'Division Analytics' },
         ]},
       ];
     }
@@ -175,7 +171,6 @@ const Sidebar = ({ isOpen, onClose }) => {
         id: 'more',
         label: 'MORE',
         items: [
-          { to: '/reports', icon: 'description', label: 'Reports' },
           { to: '/officer/gr-assistant', icon: 'smart_toy', label: 'GR Assistant' },
           { to: '/officer/scan-document', icon: 'document_scanner', label: 'Scan Document' },
           { to: '/officer/ai-verification', icon: 'verified_user', label: 'AI Verification' },
@@ -185,19 +180,21 @@ const Sidebar = ({ isOpen, onClose }) => {
     ];
   };
 
-  const menuSections = getMenuSections(user?.role);
+  const menuSections = useMemo(() => getMenuSections(user?.role), [user?.role]);
 
-  // Auto-expand section based on current path
+  // Auto-expand accordion section based on current path (flat groups stay fully open)
   useEffect(() => {
     const currentPath = location.pathname;
-    const activeSection = menuSections.find(sec =>
-      sec.items.some(item => {
-        if (item.end) return currentPath === item.to;
-        return currentPath.startsWith(item.to);
-      })
+    const activeSection = menuSections.find(
+      (sec) =>
+        !sec.flat
+        && sec.items.some((item) => {
+          if (item.end) return currentPath === item.to;
+          return currentPath.startsWith(item.to);
+        }),
     );
     if (activeSection) setExpandedSection(activeSection.id);
-  }, [location.pathname, user?.role]);
+  }, [location.pathname, menuSections]);
 
   return (
     <aside className={`sidebar flex flex-col shrink-0 z-40 ${isOpen ? 'open' : ''} bg-white`}>
@@ -217,12 +214,46 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* ── Nav links ── */}
       <div className="flex-1 overflow-y-auto py-4 px-2">
-        <div className="flex flex-col gap-0.5">
+        <div className="sidebar-nav-stack">
           {menuSections.map((section) => {
+            if (section.flat) {
+              return (
+                <div key={section.id} className="sidebar-flat-group">
+                  <p className="sidebar-flat-group-title">{t(section.label)}</p>
+                  <div className="sidebar-flat-group-links">
+                    {section.items.map((link) => (
+                      <NavLink
+                        key={link.to}
+                        to={link.to}
+                        end={link.end}
+                        onClick={handleNavClick}
+                        className={({ isActive }) =>
+                          `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            <span
+                              className="material-symbols-outlined"
+                              style={{ fontSize: 18, color: isActive ? '#1f4d36' : '#717972', flexShrink: 0 }}
+                            >
+                              {link.icon}
+                            </span>
+                            <span className="sidebar-link-label">{t(link.label)}</span>
+                          </>
+                        )}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+
             const isExpanded = expandedSection === section.id;
             return (
               <div key={section.id} className="sidebar-section-container">
                 <button
+                  type="button"
                   className="sidebar-section-header w-full"
                   onClick={() => toggleSection(section.id)}
                   aria-expanded={isExpanded}

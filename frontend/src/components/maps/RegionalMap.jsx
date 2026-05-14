@@ -9,16 +9,15 @@
  *   • TopoJSON input (division level) — parsed via topojson-client
  *   • GeoJSON input (state / taluka) — used directly
  *   • Inverted polygon mask to isolate the active region
- *   • Voronoi mesh per division polygon (clipped), when division overlay or
- *     division-level boundary is used — same approach as DAO district / TAO taluka
- *   • Canvas KDE heatmap (leaflet.heat) when Voronoi mesh is not active
+ *   • Division choropleth from overlay GeoJSON + canvas KDE heat (default)
+ *   • Optional Voronoi micro-mesh per division (disabled — use choropleth + KDE)
  *   • Three interactive metric modes: Scheme penetration / Crop health / Grievance heat
  *   • Zoom/pan locked to active boundary
  *   • Top-3 centroid pins (most critical locations per mode)
  *
  * Z-index overlay order (Leaflet overlayPane ≈ 400 — mask must sit above it or heat /
  *   Voronoi “leaks” past the state geofence; same pattern as TAO taluka focus mask):
- *   TileLayer → Division choropleth → Division Voronoi (+ Pune rims) → KDE (overlayPane)
+ *   TileLayer → Division choropleth → [optional Voronoi] → KDE (overlayPane)
  *   → Inverted mask (state/taluka hole punch) → Dashed geofence → Centroid pins / tooltips
  */
 
@@ -29,6 +28,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   MapContainer,
   TileLayer,
@@ -43,10 +43,14 @@ import 'leaflet/dist/leaflet.css';
 import * as topojson from 'topojson-client';
 import { buildDivisionVoronoiHeatmap, divisionHeatMetric01 } from '../../utils/divisionVoronoiHeatmap';
 import { buildPuneDivisionDistrictFeatureCollection } from '../../utils/puneDivisionDistrictMesh';
+import { bareDivisionCode } from '../../utils/divisionIntelMock';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
+
+/** Choropleth fill opacity — constant so hover/selection does not shift colour vs legend */
+const CHOROPLETH_FILL_OPACITY = 0.5;
 
 /** Heatmap colour ramp matching the requested design spec */
 const HEAT_GRADIENT = {
@@ -67,7 +71,7 @@ const MAP_MODES = [
     id: 'ndvi',
     label: 'Crop health / NDVI',
     icon: 'satellite_alt',
-    sub: 'Sentinel-2 stress index (demo)',
+    sub: 'Moisture stress (Open-Meteo rain)',
   },
   {
     id: 'grievance',
@@ -96,6 +100,13 @@ const LEGEND = {
   ],
 };
 
+/** Legend strip title — short label for the active map mode */
+const MAP_INTENSITY_STRIP_LABEL = {
+  penetration: 'Scheme',
+  ndvi: 'Stress',
+  grievance: 'Grievance',
+};
+
 // Heatmap params per layer tier
 const HEAT_CONFIG = {
   state:    { radius: 20, blur: 15, pointCount: 200 },
@@ -103,6 +114,9 @@ const HEAT_CONFIG = {
   district: { radius: 32, blur: 22, pointCount:  70 },
   taluka:   { radius: 40, blur: 28, pointCount:  30 },
 };
+
+/** Dense per-division Voronoi cells — off: command maps use choropleth + smooth KDE only. */
+const ENABLE_DIVISION_VORONOI_MESH = false;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Pure geometry utilities
@@ -265,6 +279,51 @@ function metricNormalizedFromProps(props, mapMode) {
   return Math.max(0, Math.min(1, v));
 }
 
+function formatMetricPct(v) {
+  if (v == null || v === '') return '—';
+  const n = Number(v);
+  return Number.isFinite(n) ? `${Math.round(n)}%` : '—';
+}
+
+function formatMetricIdx(v) {
+  if (v == null || v === '') return '—';
+  const n = Number(v);
+  return Number.isFinite(n) ? String(Math.round(n)) : '—';
+}
+
+/** Map hover: name, then a two-word label + value for the active mode; pending is separate in scheme mode. */
+function divisionChoroplethTooltipForMode(p, mapMode) {
+  const name = (p.name || p.division || 'Division').trim();
+  if (mapMode === 'penetration') return `${name}\nScheme uptake ${formatMetricPct(p.schemePenetration)}`;
+  if (mapMode === 'ndvi') return `${name}\nMoisture stress ${formatMetricPct(p.ndviStress)}`;
+  return `${name}\nGrievance index ${formatMetricIdx(p.grievanceIdx)}`;
+}
+
+function divisionChoroplethPathStyle(feature, mapMode, selectedDivisionKey, showDivisionVoronoi, divisionCollection) {
+  if (showDivisionVoronoi && divisionCollection?.features?.length) {
+    return {
+      fillOpacity: 0,
+      fillColor: '#000000',
+      color: '#0f172a',
+      weight: 1.35,
+      opacity: 0.72,
+      interactive: false,
+    };
+  }
+  const p = feature?.properties || {};
+  const n = metricNormalizedFromProps(p, mapMode);
+  const fill = fillColorForNormalizedMetric(n);
+  const key = p.code || p.name;
+  const selected = Boolean(key && key === selectedDivisionKey);
+  return {
+    fillColor: fill,
+    fillOpacity: CHOROPLETH_FILL_OPACITY,
+    color: '#0f172a',
+    weight: selected ? 3 : 1.35,
+    opacity: 1,
+  };
+}
+
 function fillColorForNormalizedMetric(n) {
   const x = Math.max(0, Math.min(1, n));
   if (x < 0.25) return HEAT_GRADIENT[0.2];
@@ -388,6 +447,30 @@ function buildInvertedMask(featureCollection) {
 // Sub-components
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Leaflet needs a size pass when the parent flex/grid height resolves after paint */
+function MapLayoutFix() {
+  const map = useMap();
+  useEffect(() => {
+    const fix = () => {
+      try {
+        map.invalidateSize(true);
+      } catch (_) { /* noop */ }
+    };
+    fix();
+    const raf = requestAnimationFrame(fix);
+    const t1 = setTimeout(fix, 100);
+    const t2 = setTimeout(fix, 400);
+    window.addEventListener('resize', fix);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('resize', fix);
+    };
+  }, [map]);
+  return null;
+}
+
 /** Fits + locks map to the active boundary */
 function FitBounds({ featureCollection, fitBoundsOptions }) {
   const map = useMap();
@@ -482,8 +565,7 @@ function GeofenceLayer({ featureCollection }) {
 const DIV_VORONOI_CELL_HOVER = {
   color: '#1a1c1a',
   weight: 2,
-  opacity: 0.85,
-  fillOpacity: 0.55,
+  opacity: 0.9,
 };
 
 function DivisionVoronoiHeatLayer({
@@ -492,6 +574,7 @@ function DivisionVoronoiHeatLayer({
   showHeat,
   divisionMatrix,
   onSelectDivision,
+  mapMode = 'penetration',
 }) {
   const styleFn = useCallback((feature) => {
     const t = typeof feature?.properties?.heat === 'number' ? feature.properties.heat : 0;
@@ -508,16 +591,17 @@ function DivisionVoronoiHeatLayer({
     (feature, layer) => {
       const p = feature?.properties;
       if (!p || p.kind !== 'division-heat-cell') return;
-      const t = typeof p.heat === 'number' ? p.heat : 0;
-      const pct = Math.round(t * 100);
+      const title = (p.regionName || 'Division').replace(/</g, '&lt;');
+      let val = '—';
+      if (mapMode === 'penetration') val = p.schemePenetration != null ? `${p.schemePenetration}%` : '—';
+      else if (mapMode === 'ndvi') val = p.ndviStress != null ? `${p.ndviStress}%` : '—';
+      else val = p.grievanceIdx != null ? String(p.grievanceIdx) : '—';
+      const lbl = mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index';
       const html = `
-      <div style="min-width:168px;line-height:1.45;position:relative;padding-right:12px">
-        <div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#222">${p.regionName || 'Division'}</div>
-        <div style="font-size:11px;color:#222">Scheme penetration: <b>${p.schemePenetration}%</b></div>
-        <div style="font-size:11px;color:#222">NDVI stress: <b>${p.ndviStress}%</b></div>
-        <div style="font-size:11px;color:#222">Grievance index: <b>${p.grievanceIdx}</b></div>
-        <div style="font-size:11px;color:#222;margin-top:4px">Local intensity: <b>${pct}%</b></div>
-        <span style="position:absolute;right:4px;bottom:2px;width:8px;height:8px;border-radius:50%;background:${fillColorForNormalizedMetric(t)};display:inline-block" aria-hidden="true"></span>
+      <div style="min-width:120px;line-height:1.45">
+        <div style="font-weight:700;font-size:13px;color:#222">${title}</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#64748b;margin-top:6px">${lbl}</div>
+        <div style="font-size:15px;font-weight:700;margin-top:4px;color:#111">${val}</div>
       </div>`;
       layer.bindTooltip(html, {
         sticky: true,
@@ -548,7 +632,9 @@ function DivisionVoronoiHeatLayer({
         mouseover: (e) => {
           const lyr = e.target;
           const heat = typeof lyr.feature?.properties?.heat === 'number' ? lyr.feature.properties.heat : 0;
+          const base = styleFn(lyr.feature);
           lyr.setStyle({
+            ...base,
             ...DIV_VORONOI_CELL_HOVER,
             fillColor: fillColorForNormalizedMetric(heat),
           });
@@ -560,7 +646,7 @@ function DivisionVoronoiHeatLayer({
         },
       });
     },
-    [divisionMatrix, onSelectDivision, styleFn],
+    [divisionMatrix, onSelectDivision, styleFn, mapMode],
   );
 
   if (!showHeat || !geo?.features?.length) return null;
@@ -586,6 +672,7 @@ function DivisionVoronoiHeatLayer({
  * @param {object} [props.fitBoundsOptions] - Optional Leaflet `fitBounds` options (e.g. asymmetric padding to bias framing)
  * @param {string} [props.title]     - Optional header title
  * @param {string} [props.subtitle]  - Optional header subtitle
+ * @param {Record<string, { schemePenetration?: number, ndviStress?: number, grievanceIdx?: number }>} [props.liveDivisionMetrics] - Bare division codes (KKN, PNE, …) merged into overlay GeoJSON for heatmap + tooltips
  */
 const RegionalMap = ({
   layerType = 'state',
@@ -595,6 +682,7 @@ const RegionalMap = ({
   fitBoundsOptions = null,
   title,
   subtitle,
+  liveDivisionMetrics = null,
 }) => {
   const [rawData, setRawData] = useState(null);
   const [rawDivisionData, setRawDivisionData] = useState(null);
@@ -603,6 +691,7 @@ const RegionalMap = ({
   const [mapMode, setMapMode] = useState('penetration');
   const [showHeat, setShowHeat] = useState(true);
   const [selectedDivision, setSelectedDivision] = useState(null);
+  const navigate = useNavigate();
 
   // ── Fetch boundary data (state outline — never modified on disk) ───────────
   useEffect(() => {
@@ -658,8 +747,23 @@ const RegionalMap = ({
     if (!fc?.features?.length) return null;
     const divs = fc.features.filter((f) => f.properties?.kind === 'division');
     if (!divs.length) return null;
-    return { type: 'FeatureCollection', features: divs };
-  }, [rawDivisionData]);
+    const merged = divs.map((f) => {
+      if (!liveDivisionMetrics) return f;
+      const code = bareDivisionCode(f.properties?.code);
+      const L = liveDivisionMetrics[code];
+      if (!L) return f;
+      return {
+        ...f,
+        properties: {
+          ...f.properties,
+          ...(L.schemePenetration != null ? { schemePenetration: L.schemePenetration } : {}),
+          ...(L.ndviStress != null ? { ndviStress: L.ndviStress } : {}),
+          ...(L.grievanceIdx != null ? { grievanceIdx: L.grievanceIdx } : {}),
+        },
+      };
+    });
+    return { type: 'FeatureCollection', features: merged };
+  }, [rawDivisionData, liveDivisionMetrics]);
 
   // ── Build all polygon rings (for clipping + bbox) ────────────────────────
   const allRings = useMemo(
@@ -691,11 +795,15 @@ const RegionalMap = ({
   }, [divisionCollection, layerType, featureCollection]);
 
   const divisionVoronoiGeo = useMemo(
-    () => (divisionVoronoiSourceFc ? buildDivisionVoronoiHeatmap(divisionVoronoiSourceFc, mapMode) : null),
+    () => (ENABLE_DIVISION_VORONOI_MESH && divisionVoronoiSourceFc
+      ? buildDivisionVoronoiHeatmap(divisionVoronoiSourceFc, mapMode)
+      : null),
     [divisionVoronoiSourceFc, mapMode],
   );
 
-  const showDivisionVoronoi = Boolean(showHeat && divisionVoronoiGeo?.features?.length);
+  const showDivisionVoronoi = Boolean(
+    ENABLE_DIVISION_VORONOI_MESH && showHeat && divisionVoronoiGeo?.features?.length,
+  );
 
   // ── Mock heatmap points (KDE) — skipped when Voronoi division mesh is active ──
   const heatPoints = useMemo(() => {
@@ -710,31 +818,24 @@ const RegionalMap = ({
     || selectedDivision?.properties?.name
     || null;
 
+  /** Remount division GeoJSON when metrics/mode change so tooltips and styles stay in sync */
+  const divisionOverlayKey = useMemo(() => {
+    if (!divisionCollection?.features?.length) return `div-${mapMode}-empty`;
+    const sig = divisionCollection.features.map((f) => {
+      const q = f.properties || {};
+      return `${q.code ?? q.name}:${q.schemePenetration ?? 'x'}-${q.ndviStress ?? 'x'}-${q.grievanceIdx ?? 'x'}`;
+    }).join('|');
+    return `div-${mapMode}-${sig}`;
+  }, [divisionCollection, mapMode]);
+
   const divisionStyleFn = useCallback(
-    (feature) => {
-      if (showDivisionVoronoi && divisionCollection?.features?.length) {
-        return {
-          fillOpacity: 0,
-          fillColor: '#000000',
-          color: '#0f172a',
-          weight: 1.35,
-          opacity: 0.72,
-          interactive: false,
-        };
-      }
-      const p = feature?.properties || {};
-      const n = metricNormalizedFromProps(p, mapMode);
-      const fill = fillColorForNormalizedMetric(n);
-      const key = p.code || p.name;
-      const selected = key && key === selectedDivisionKey;
-      return {
-        fillColor: fill,
-        fillOpacity: selected ? 0.55 : 0.42,
-        color: '#0f172a',
-        weight: selected ? 3 : 1.35,
-        opacity: 1,
-      };
-    },
+    (feature) => divisionChoroplethPathStyle(
+      feature,
+      mapMode,
+      selectedDivisionKey,
+      showDivisionVoronoi,
+      divisionCollection,
+    ),
     [mapMode, selectedDivisionKey, showDivisionVoronoi, divisionCollection],
   );
 
@@ -745,20 +846,30 @@ const RegionalMap = ({
       layer.on({
         click: () => setSelectedDivision({ properties: p, matrixRow: row }),
         mouseover: (e) => {
-          e.target.setStyle({ weight: 2.8, fillOpacity: 0.5 });
+          const st = divisionChoroplethPathStyle(
+            feature,
+            mapMode,
+            selectedDivisionKey,
+            showDivisionVoronoi,
+            divisionCollection,
+          );
+          e.target.setStyle({ ...st, weight: Math.max(2.85, st.weight) });
         },
         mouseout: (e) => {
           e.target.setStyle(divisionStyleFn(feature));
         },
       });
-      const pendingHint = row?.pending != null ? ` · ${Number(row.pending).toLocaleString('en-IN')} pending` : '';
-      layer.bindTooltip(`${p.name || 'Division'}${pendingHint}`, {
+      const baseTip = divisionChoroplethTooltipForMode(p, mapMode);
+      const pendingLine = (mapMode === 'penetration' && row?.pending != null)
+        ? `\nPending files ${Number(row.pending).toLocaleString('en-IN')}`
+        : '';
+      layer.bindTooltip(`${baseTip}${pendingLine}`, {
         sticky: true,
         direction: 'auto',
         className: 'tao-mandal-tooltip',
       });
     },
-    [divisionMatrix, divisionStyleFn],
+    [divisionMatrix, divisionStyleFn, divisionCollection, mapMode, selectedDivisionKey, showDivisionVoronoi],
   );
 
   // ── Top-3 centroid pins (division centroids when overlay present) ─────────
@@ -777,6 +888,7 @@ const RegionalMap = ({
           lat: c.lat,
           lng: c.lng,
           metric,
+          props: { ...p },
         });
       }
       return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
@@ -794,6 +906,7 @@ const RegionalMap = ({
           lat: c.lat,
           lng: c.lng,
           metric: divisionHeatMetric01(mapMode, p),
+          props: { ...p },
         });
       }
       return pins.sort((a, b) => b.metric - a.metric).slice(0, 3);
@@ -843,7 +956,7 @@ const RegionalMap = ({
           <button
             key={m.id}
             type="button"
-            title={m.sub}
+            title={overlayUiInMap ? undefined : m.sub}
             onClick={() => setMapMode(m.id)}
             style={{
               display:        'inline-flex',
@@ -910,7 +1023,7 @@ const RegionalMap = ({
           color:         'var(--text-muted, #888)',
           flexShrink:    0,
         }}>
-          Intensity
+          {(MAP_INTENSITY_STRIP_LABEL[mapMode] || MAP_INTENSITY_STRIP_LABEL.penetration)}
         </span>
         <div style={{
           flex:        1,
@@ -949,6 +1062,9 @@ const RegionalMap = ({
       style={{
         display:       'flex',
         flexDirection: 'column',
+        flex:          1,
+        minHeight:     0,
+        width:         '100%',
         height:        '100%',
         gap:           '12px',
         padding:       '16px 20px 20px',
@@ -1016,6 +1132,7 @@ const RegionalMap = ({
               {/* 2 ── KDE Heatmap (division-weighted or state-clipped mock) */}
               {showHeat && heatPoints.length > 0 && !showDivisionVoronoi && (
                 <KdeHeatLayer
+                  key={`kde-heat-${mapMode}`}
                   points={heatPoints}
                   layerType={layerType}
                   mapMode={mapMode}
@@ -1027,6 +1144,7 @@ const RegionalMap = ({
               {divisionCollection?.features?.length > 0 && (
                 <Pane name="divisionChoroplethPane" style={{ zIndex: 405 }}>
                   <GeoJSON
+                    key={divisionOverlayKey}
                     data={divisionCollection}
                     style={divisionStyleFn}
                     onEachFeature={bindDivisionLayer}
@@ -1041,6 +1159,7 @@ const RegionalMap = ({
                   showHeat={showHeat}
                   divisionMatrix={divisionMatrix}
                   onSelectDivision={setSelectedDivision}
+                  mapMode={mapMode}
                 />
               )}
 
@@ -1101,18 +1220,27 @@ const RegionalMap = ({
                     }}
                   >
                     <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
-                      <div style={{ fontWeight: 700, fontSize: 12 }}>{pin.label}</div>
-                      <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
-                        {(divisionCollection?.features?.length || showDivisionVoronoi)
-                          ? `High metric · ${mapMode === 'penetration' ? 'Scheme signal' : mapMode === 'ndvi' ? 'NDVI stress' : 'Grievance load'}`
-                          : `Priority area · ${mapMode === 'penetration' ? 'Low uptake' : mapMode === 'ndvi' ? 'High stress' : 'High grievances'}`}
-                      </div>
+                      {pin.props ? (
+                        <div style={{ whiteSpace: 'pre-line', fontSize: 11, lineHeight: 1.45, color: '#1a1c1a' }}>
+                          {divisionChoroplethTooltipForMode(pin.props, mapMode)}
+                        </div>
+                      ) : (
+                        <>
+                          <div style={{ fontWeight: 700, fontSize: 12 }}>{pin.label}</div>
+                          <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
+                            {(divisionCollection?.features?.length || showDivisionVoronoi)
+                              ? `Top divisions by ${mapMode === 'penetration' ? 'scheme uptake' : mapMode === 'ndvi' ? 'moisture stress' : 'grievance load'}`
+                              : `Sample point · ${mapMode === 'penetration' ? 'uptake' : mapMode === 'ndvi' ? 'stress' : 'grievance'}`}
+                          </div>
+                        </>
+                      )}
                     </Tooltip>
                   </CircleMarker>
                 ))}
               </Pane>
 
               <FitBounds featureCollection={featureCollection} fitBoundsOptions={fitBoundsOptions} />
+              <MapLayoutFix />
             </MapContainer>
 
             {overlayUiInMap && (
@@ -1177,6 +1305,177 @@ const RegionalMap = ({
               const pen = p.schemePenetration;
               const ndvi = p.ndviStress;
               const griv = p.grievanceIdx;
+
+              const panelShellStyle = {
+                position: 'absolute',
+                bottom: 10,
+                left: 10,
+                right: 10,
+                maxWidth: 'min(520px, calc(100% - 20px))',
+                marginLeft: 'auto',
+                maxHeight: overlayUiInMap ? 'min(38vh, 320px)' : 'min(42vh, 380px)',
+                zIndex: 2000,
+                pointerEvents: 'auto',
+                background: 'rgba(255, 255, 255, 0.98)',
+                backdropFilter: 'saturate(1.1) blur(12px)',
+                WebkitBackdropFilter: 'saturate(1.1) blur(12px)',
+                border: '1px solid #e2e3df',
+                borderLeft: '4px solid #1a365d',
+                borderRadius: 12,
+                boxShadow: '0 8px 28px rgba(0,0,0,0.14)',
+                padding: '14px 16px 16px',
+                fontSize: 12,
+                color: '#1a1c1a',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+              };
+
+              const goDivisionAnalysis = () => {
+                const code = row?.code || bareDivisionCode(p.code);
+                navigate(`/state/divisional-analysis?division=${encodeURIComponent(code)}&focus=${mapMode}`);
+              };
+
+              if (overlayUiInMap) {
+                return (
+                  <div style={panelShellStyle}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#717972', textTransform: 'uppercase' }}>
+                          Map preview · {mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Crop stress' : 'Grievance load'}
+                        </div>
+                        <div style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.25, marginTop: 4, color: '#0f172a' }}>
+                          {p.name}
+                        </div>
+                        <div
+                          style={{
+                            marginTop: 10,
+                            padding: '12px 14px',
+                            borderRadius: 12,
+                            background: mapMode === 'penetration' ? '#f0f6ff' : mapMode === 'ndvi' ? '#fffbeb' : '#fef2f2',
+                            border: `1px solid ${mapMode === 'penetration' ? '#bfdbfe' : mapMode === 'ndvi' ? '#fde68a' : '#fecaca'}`,
+                          }}
+                        >
+                          <div style={{
+                            fontSize: 10,
+                            fontWeight: 700,
+                            letterSpacing: '0.08em',
+                            textTransform: 'uppercase',
+                            color: '#64748b',
+                            marginBottom: 6,
+                          }}
+                          >
+                            {mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index'}
+                          </div>
+                          <div style={{
+                            fontSize: 26,
+                            fontWeight: 800,
+                            marginTop: 0,
+                            fontVariantNumeric: 'tabular-nums',
+                            color: '#0f172a',
+                          }}
+                          >
+                            {mapMode === 'penetration' && <>{pen != null ? `${pen}%` : '—'}</>}
+                            {mapMode === 'ndvi' && <>{ndvi != null ? `${ndvi}%` : '—'}</>}
+                            {mapMode === 'grievance' && <>{griv != null ? griv : '—'}</>}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDivision(null)}
+                        aria-label="Close division info"
+                        style={{
+                          border: 'none',
+                          background: '#eef1ee',
+                          borderRadius: 8,
+                          cursor: 'pointer',
+                          padding: '6px 8px',
+                          lineHeight: 1,
+                          flexShrink: 0,
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#414943' }}>close</span>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={goDivisionAnalysis}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: 10,
+                        border: '1px solid #1a365d',
+                        background: '#1a365d',
+                        color: '#fff',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        marginBottom: 12,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }}>analytics</span>
+                      Open division analysis
+                    </button>
+
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: '#033621', textTransform: 'uppercase', marginBottom: 8 }}>
+                      Command desk
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px' }}>
+                      <div>
+                        <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>JDA / lead</span>
+                        <strong style={{ fontSize: 13, color: '#1a1c1a' }}>{row?.officer || p.officer || '—'}</strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Districts</span>
+                        <strong style={{ fontSize: 13 }}>{row?.districts ?? p.districts ?? '—'}</strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Funds (Cr)</span>
+                        <strong style={{ fontSize: 13 }}>{row?.fundsCr ?? p.fundsCr ?? '—'}</strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Disbursed</span>
+                        <strong style={{ fontSize: 13 }}>{disbursedText}</strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Pending files</span>
+                        <strong style={{ fontSize: 13 }}>{row?.pending != null ? Number(row.pending).toLocaleString('en-IN') : '—'}</strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Fraud alerts</span>
+                        <strong style={{ fontSize: 13, color: '#ba1a1a' }}>{row?.fraudAlerts ?? p.fraudAlerts ?? '—'}</strong>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      marginTop: 10,
+                      paddingTop: 8,
+                      borderTop: '1px solid #eef1ee',
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      alignItems: 'center',
+                      gap: 8,
+                      fontSize: 10,
+                      color: '#414943',
+                    }}
+                    >
+                      <span style={{ fontWeight: 700, color: '#1a365d' }}>Map lens:</span>
+                      <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? 'Scheme penetration' : mapMode === 'ndvi' ? 'Moisture stress (NDVI lens)' : 'Grievance heat'}</span>
+                      {row?.status && (
+                        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 999, background: '#f3f4f0', color: '#1a1c1a' }}>
+                          {row.status}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+
               return (
               <div
                 style={{
@@ -1241,29 +1540,33 @@ const RegionalMap = ({
                 </div>
 
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: '#033621', textTransform: 'uppercase', marginBottom: 8 }}>
-                  Spatial analytics (all modes)
+                  Active lens
                 </div>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 8,
-                  marginBottom: 14,
-                }}
+                <div
+                  style={{
+                    padding: '14px 16px',
+                    borderRadius: 12,
+                    marginBottom: 14,
+                    background: mapMode === 'penetration' ? '#f0f6ff' : mapMode === 'ndvi' ? '#fffbeb' : '#fef2f2',
+                    border: `1px solid ${mapMode === 'penetration' ? '#bfdbfe' : mapMode === 'ndvi' ? '#fde68a' : '#fecaca'}`,
+                    textAlign: 'center',
+                  }}
                 >
-                  <div style={{ background: '#f0f6ff', borderRadius: 10, padding: '10px 8px', textAlign: 'center', border: '1px solid #cfe0fc' }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Scheme penetration</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: '#1e3a8a', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{pen ?? '—'}{pen != null ? '%' : ''}</div>
-                    <div style={{ fontSize: 9, color: '#64748b', marginTop: 4, lineHeight: 1.3 }}>MahaDBT uptake signal</div>
+                  <div style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: '#64748b',
+                    marginBottom: 8,
+                  }}
+                  >
+                    {mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index'}
                   </div>
-                  <div style={{ background: '#fff8e6', borderRadius: 10, padding: '10px 8px', textAlign: 'center', border: '1px solid #fde68a' }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, color: '#a16207', textTransform: 'uppercase', letterSpacing: '0.06em' }}>NDVI analysis</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: '#854d0e', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{ndvi ?? '—'}{ndvi != null ? '%' : ''}</div>
-                    <div style={{ fontSize: 9, color: '#78716c', marginTop: 4, lineHeight: 1.3 }}>Crop stress (demo)</div>
-                  </div>
-                  <div style={{ background: '#fef2f2', borderRadius: 10, padding: '10px 8px', textAlign: 'center', border: '1px solid #fecaca' }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Grievance heat</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: '#991b1b', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{griv ?? '—'}</div>
-                    <div style={{ fontSize: 9, color: '#78716c', marginTop: 4, lineHeight: 1.3 }}>Aaple Sarkar load idx</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#0f172a' }}>
+                    {mapMode === 'penetration' && (pen != null ? `${pen}%` : '—')}
+                    {mapMode === 'ndvi' && (ndvi != null ? `${ndvi}%` : '—')}
+                    {mapMode === 'grievance' && (griv != null ? griv : '—')}
                   </div>
                 </div>
 
@@ -1310,7 +1613,7 @@ const RegionalMap = ({
                 }}
                 >
                   <span style={{ fontWeight: 700, color: '#1a365d' }}>Active map layer:</span>
-                  <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? 'Scheme penetration' : mapMode === 'ndvi' ? 'NDVI / crop health' : 'Grievance heat'}</span>
+                  <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? 'Scheme penetration' : mapMode === 'ndvi' ? 'Moisture stress (NDVI lens)' : 'Grievance heat'}</span>
                   {row?.status && (
                     <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f3f4f0', color: '#1a1c1a' }}>
                       Status · {row.status}
@@ -1324,38 +1627,16 @@ const RegionalMap = ({
         )}
       </div>
 
-      {overlayUiInMap ? (
-        <p style={{
-          fontSize:   '10px',
-          color:      'var(--text-muted, #888)',
-          margin:     0,
-          lineHeight: 1.5,
-        }}>
-          {showDivisionVoronoi
-            ? 'Voronoi mesh per division: each cell is intersected with its division polygon so intensity never crosses an admin ring (same approach as the DAO district map). Division outlines stay visible; click a cell for the desk panel. State boundary file is unchanged.'
-            : (
-              <>
-                Division choropleth + KDE heat use <strong>tighter blur</strong>, <strong>state-polygon–clipped</strong> samples, and a capped heat <strong>max zoom</strong> so glow stays inside the Maharashtra frame. State boundary file is unchanged.
-              </>
-            )}
-        </p>
-      ) : (
+      {overlayUiInMap ? null : (
       <p style={{
         fontSize:   '10px',
         color:      'var(--text-muted, #888)',
         margin:     0,
         lineHeight: 1.5,
       }}>
-        {divisionVoronoiGeo?.features?.length
-          ? 'Voronoi cells per division polygon, each clipped to its ring (no cross-boundary bleed). Click a cell to open the division desk when the mesh is shown; heat toggle turns the mesh off.'
-          : divisionCollection?.features?.length
-            ? 'Division choropleth + KDE samples use metrics shipped inside the division overlay GeoJSON; the state outline asset is unchanged. Click a division for the info panel.'
-            : 'Canvas KDE heatmap (leaflet.heat) with boundary-clipped samples.'}{' '}
-        Showing <strong>top 3 priority locations</strong> for current mode.{' '}
-        {layerType === 'division' && 'TopoJSON boundary decoded via topojson-client.'}
-        {layerType === 'state' && 'State-level aggregation (Maharashtra).'}
-        {layerType === 'district' && 'District-level taluka boundary view (Pune).'}
-        {layerType === 'taluka' && 'Assembly constituency / Taluka command view (Baramati).'}
+        {divisionCollection?.features?.length
+          ? 'Click a division for the desk panel. Pins mark top 3 by the selected map mode.'
+          : 'Boundary-clipped heat samples. Pins mark top 3 by the selected map mode.'}
       </p>
       )}
     </div>

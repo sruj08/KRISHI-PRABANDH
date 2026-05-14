@@ -1,0 +1,25 @@
+{
+  "asOf": "2026-05-14",
+  "schemePenetration": {
+    "anchor": {
+      "headline": "Maharashtra reported >50 lakh farmers registering under PMFBY in a recent Kharif push (press summary).",
+      "url": "https://krishijagran.com/agriculture-world/pmfby-over-50-lakh-farmers-in-maharashtra-register-for-pm-crop-insurance-scheme/",
+      "note": "Division % values below are modelled desk indices (0–100) scaled to that statewide intensity and weighted by typical kharif exposure of each revenue division — not a direct government district dashboard extract. Replace with agristack / PMFBY MIS when integrated."
+    },
+    "byCode": {
+      "KKN": 82,
+      "PNE": 79,
+      "NSK": 74,
+      "CSN": 68,
+      "AMR": 70,
+      "NGP": 73
+    }
+  },
+  "grievanceHeat": {
+    "anchor": {
+      "headline": "Press coverage of PMFBY compliance reviews in multiple Maharashtra districts (data-quality / eligibility friction).",
+      "url": "https://www.etnownews.com/personal-finance/pmfby-1-75-lakh-farmers-in-maharashtra-to-face-disqualification-who-is-eligible-who-is-not-find-out-here-article-116215477",
+      "note": "Division grievance index (0–100) is computed in the app as: round(0.44 × moisture stress proxy + 0.36 × (100 − scheme desk %) + 14), clamped — until Aaple Sarkar / CM Helpline open APIs are integrated."
+    }
+  }
+}
