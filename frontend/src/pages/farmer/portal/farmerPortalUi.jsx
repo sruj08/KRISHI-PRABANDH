@@ -90,16 +90,24 @@ export function PaymentStatus({ status }) {
 }
 
 export function ProfileCompletionRing({ pct, compact = false }) {
-  const size = compact ? 88 : 120;
+  /* Compact ring is larger on the dashboard card so “COMPLETE” fits inside the inner hole */
+  const size = compact ? 112 : 120;
   const r = compact ? 36 : 52;
   const c = 2 * Math.PI * r;
   const offset = c - (pct / 100) * c;
   return (
     <div
-      className={`fp-completion-ring relative flex flex-col items-center justify-center shrink-0 ${compact ? 'fp-completion-ring--compact' : ''}`}
+      className={`fp-completion-ring relative shrink-0 overflow-visible ${compact ? 'fp-completion-ring--compact' : ''}`}
       style={{ width: size, height: size }}
     >
-      <svg width={size} height={size} viewBox="0 0 120 120" className="-rotate-90" aria-hidden>
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 120 120"
+        className="-rotate-90 block shrink-0"
+        style={{ width: size, height: size }}
+        aria-hidden
+      >
         <circle cx="60" cy="60" r={r} fill="none" stroke="#e4e8ec" strokeWidth="10" />
         <circle
           cx="60"
@@ -113,11 +121,23 @@ export function ProfileCompletionRing({ pct, compact = false }) {
           strokeLinecap="round"
         />
       </svg>
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="fp-heading text-[clamp(1rem,4vw,1.375rem)] font-bold" style={{ color: fp.text }}>
+      <div
+        className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center"
+        style={{
+          padding: compact ? '0 6px' : '0 6px',
+          lineHeight: 1,
+        }}
+      >
+        <span
+          className={`fp-heading font-bold tabular-nums leading-none ${compact ? 'text-[0.9375rem]' : 'text-[1.125rem]'}`}
+          style={{ color: fp.text }}
+        >
           {pct}%
         </span>
-        <span className="text-[0.625rem] font-semibold uppercase tracking-wide" style={{ color: fp.muted }}>
+        <span
+          className={`font-semibold uppercase tracking-wide leading-none ${compact ? 'mt-1 text-[0.5625rem]' : 'mt-1 text-[0.625rem]'}`}
+          style={{ color: fp.muted }}
+        >
           Complete
         </span>
       </div>

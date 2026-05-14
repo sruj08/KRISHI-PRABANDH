@@ -586,7 +586,9 @@ const FarmerRegistrationLegacy = () => {
   const receiptOk = slots.equipmentReceipt.attached;
   const canCompleteDossier = receiptOk && feePaid;
 
-  const profileSaveOk = category && slots.caste.attached;
+  const categoryNeedsCasteCertificate = ['SC', 'ST', 'OBC'].includes(category);
+  const profileSaveOk =
+    Boolean(category) && (!categoryNeedsCasteCertificate || Boolean(slots.caste.attached));
   const requirementsOk = quantity.trim().length > 0 && termsAccepted;
   const schemeOk = scheme && subComponent;
 
@@ -821,7 +823,9 @@ const FarmerRegistrationLegacy = () => {
             </div>
             {!profileSaveOk && (
               <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10, textAlign: 'center' }}>
-                {t('Choose category and attach a verified caste certificate to register.')}
+                {!category
+                  ? t('Select your category to continue.')
+                  : t('Attach a verified caste certificate to register.')}
               </p>
             )}
           </div>
