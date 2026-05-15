@@ -76,6 +76,7 @@ def extract_pdf_text(pdf_bytes: bytes) -> tuple[str, str]:
     """Return (raw_text, engine_label). Uses PyMuPDF when available."""
     try:
         import fitz  # PyMuPDF
+        import re
 
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         parts: list[str] = []
@@ -83,6 +84,11 @@ def extract_pdf_text(pdf_bytes: bytes) -> tuple[str, str]:
             parts.append(page.get_text("text") or "")
         doc.close()
         text = "\n".join(parts).strip()
+        
+        # Fix Devnagari vowels/matras getting separated from consonants by spaces
+        # e.g., 'अ ंतर्गत' -> 'अंतर्गत'
+        text = re.sub(r'([\u0900-\u097F])\s+([\u0901-\u0903\u093E-\u094D])', r'\1\2', text)
+        
         return text, "pymupdf"
     except ImportError:
         return "", "missing_pymupdf"
@@ -90,7 +96,7 @@ def extract_pdf_text(pdf_bytes: bytes) -> tuple[str, str]:
         return "", "pdf_read_error"
 
 
-def extract_keyword_snippets(text: str, max_items: int = 14) -> list[str]:
+def extract_keyword_snippets(text: str, max_items: int = 5) -> list[str]:
     """Short bullet-like snippets from lines that contain GR-related keywords."""
     if not text:
         return []
@@ -98,15 +104,16 @@ def extract_keyword_snippets(text: str, max_items: int = 14) -> list[str]:
     out: list[str] = []
     for line in text.splitlines():
         s = line.strip()
-        if len(s) < 12 or len(s) > 220:
+        if len(s) < 12:
             continue
         if not any(h.lower() in s.lower() for h in _GR_KEYWORD_HINTS):
             continue
-        key = s[:200]
+        key = s[:120]
         if key in seen:
             continue
         seen.add(key)
-        out.append(s[:200])
+        snippet = s[:120] + ("..." if len(s) > 120 else "")
+        out.append(snippet)
         if len(out) >= max_items:
             break
     return out
