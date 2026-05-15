@@ -28,6 +28,12 @@ import SurveyOperationsDashboard from './features/survey_operations/SurveyOperat
 import SchemeAnalytics from './pages/scheme-analytics/SchemeAnalytics';
 import MandalDashboard from './pages/officer/MandalDashboard';
 import CAODashboard from './pages/cao/CAODashboard';
+import TalukaPerformancePage from './pages/cao/TalukaPerformancePage';
+import FieldOperationsPage from './pages/cao/FieldOperationsPage';
+import RainCropStressDesk from './pages/cao/RainCropStressDesk';
+import PMFBYMonitoringPage from './pages/cao/PMFBYMonitoringPage';
+import GrievanceCommandPage from './pages/cao/GrievanceCommandPage';
+import AuditLogsPage from './pages/cao/AuditLogsPage';
 import SahayakMatrixPage from './pages/cao/SahayakMatrixPage';
 import SupervisionPage from './pages/cao/SupervisionPage';
 import ShopsPage from './pages/cao/ShopsPage';
@@ -115,10 +121,18 @@ const App = () => {
           </Route>
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/" element={<DashboardRouter />} />
+            {/* CAO Command Center — Barshi Circle, Solapur District */}
             <Route path="/cao" element={<CAODashboard />} />
-            <Route path="/cao/sahayak-matrix" element={<SahayakMatrixPage />} />
-            <Route path="/cao/supervision" element={<SupervisionPage />} />
-            <Route path="/cao/shops" element={<ShopsPage />} />
+            <Route path="/cao/taluka-performance" element={<TalukaPerformancePage />} />
+            <Route path="/cao/field-operations" element={<FieldOperationsPage />} />
+            <Route path="/cao/rain-crop-stress" element={<RainCropStressDesk />} />
+            <Route path="/cao/pmfby" element={<PMFBYMonitoringPage />} />
+            <Route path="/cao/grievances" element={<GrievanceCommandPage />} />
+            <Route path="/cao/audit" element={<AuditLogsPage />} />
+            {/* Legacy CAO routes — redirect to new structure */}
+            <Route path="/cao/sahayak-matrix" element={<Navigate to="/cao/taluka-performance" replace />} />
+            <Route path="/cao/supervision" element={<Navigate to="/cao/field-operations" replace />} />
+            <Route path="/cao/shops" element={<Navigate to="/cao" replace />} />
             <Route path="/district" element={<Navigate to="/dao" replace />} />
             <Route path="/dao" element={<DistrictDashboard />} />
             <Route path="/dao/district-analytics" element={<DistrictAnalytics />} />

@@ -105,18 +105,25 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     if (role === 'cao') {
       return [
-        { id: 'dao_overview', label: 'OVERVIEW', items: [
-          { to: '/cao', icon: 'dashboard', label: 'Dashboard' },
-          { to: '/map', icon: 'map', label: 'Command Map' },
+        { id: 'cao_overview', flat: true, label: 'OVERVIEW', items: [
+          { to: '/cao', icon: 'dashboard', label: 'Dashboard', end: true },
         ]},
-        { id: 'dao_supervision', label: 'SUPERVISION', items: [
+        { id: 'cao_supervision', flat: true, label: 'SUPERVISION', items: [
+          { to: '/cao/taluka-performance', icon: 'leaderboard', label: 'Taluka Performance' },
+          { to: '/cao/field-operations', icon: 'agriculture', label: 'Field Operations' },
+        ]},
+        { id: 'cao_analytics', flat: true, label: 'ANALYTICS', items: [
+          { to: '/cao/rain-crop-stress', icon: 'water_drop', label: 'Rain & Crop Stress Desk' },
+          { to: '/cao/pmfby', icon: 'verified_user', label: 'PMFBY Monitoring' },
+          { to: '/cao/grievances', icon: 'gavel', label: 'Grievance Command' },
+          { to: '/cao/audit', icon: 'history', label: 'Audit Logs' },
+        ]},
+        // ── dead entries kept only as redirects in App.jsx, hidden from nav ──
+        { id: '_cao_legacy', flat: true, label: '', items: [
           { to: '/cao/sahayak-matrix', icon: 'leaderboard', label: 'Sahayak Matrix' },
           { to: '/cao/supervision', icon: 'visibility', label: 'Supervision' },
           { to: '/cao/shops', icon: 'storefront', label: 'Krushi Seva Kendra' },
-        ]},
-        { id: 'dao_modules', label: 'ANALYTICS', items: [
           { to: '/survey', icon: 'bar_chart', label: 'Scheme Analytics' },
-          { to: '/geo', icon: 'eco', label: t('Crop stress (rain desk)') },
           { to: '/applications', icon: 'account_balance', label: 'PFMS Monitoring' },
           { to: '/dao/grievances', icon: 'priority_high', label: 'Grievance Command' },
           { to: '/audit-logs', icon: 'history', label: 'Audit Logs' },
@@ -212,10 +219,12 @@ const Sidebar = ({ isOpen, onClose }) => {
       <div className="flex-1 overflow-y-auto py-4 px-2">
         <div className="sidebar-nav-stack">
           {menuSections.map((section) => {
+            // Hidden legacy sections (id starts with _)
+            if (section.id && section.id.startsWith('_')) return null;
             if (section.flat) {
               return (
                 <div key={section.id} className="sidebar-flat-group">
-                  <p className="sidebar-flat-group-title">{t(section.label)}</p>
+                  {section.label ? <p className="sidebar-flat-group-title">{t(section.label)}</p> : null}
                   <div className="sidebar-flat-group-links">
                     {section.items.map((link) => (
                       <NavLink
