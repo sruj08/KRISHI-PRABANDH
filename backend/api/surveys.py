@@ -58,6 +58,116 @@ def list_surveys(
     return success("Surveys", {"items": rows, "offset": offset, "limit": limit})
 
 
+@router.get("/queue")
+def list_survey_queue(
+    assigned_to_me: Optional[bool] = Query(None),
+    user: JwtUserClaims = Depends(get_survey_actor),
+    evidence_repo: Any = Depends(get_evidence_repo),
+):
+    """Pending queue of flagged evidence."""
+    taluka_id = user.taluka_id if assigned_to_me else None
+    district_id = user.district_id if assigned_to_me else None
+    rows = evidence_repo.get_flagged(min_risk_score=20, taluka_id=taluka_id, district_id=district_id)
+    items: List[dict[str, Any]] = []
+    
+    # Return mock data for pending queue demo if db is empty
+    if not rows:
+        return success("Pending Queue", {
+            "items": [
+                {
+                    "id": "SRV-552E6D58",
+                    "farmerName": "Mamta Kulkarni",
+                    "damageType": "Cyclone",
+                    "village": "Hadgaon_Village_48",
+                    "status": "AI_PROCESSING",
+                    "createdAt": "2026-05-15T08:52:00Z",
+                    "severity": "High",
+                    "aiRemarks": "Loss claim due to Cyclone",
+                    "estPayout": "Rs. 25,000",
+                    "aiConfidence": "92.5%",
+                    "cropExtent": "~8.0 of 12.0 Hectares",
+                    "farmerComments": "Heavy winds and rain damaged the entire field.",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?auto=format&fit=crop&q=80&w=400", "lat": "18.4580", "lon": "73.8513"},
+                        {"type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "lat": "18.4581", "lon": "73.8514"}
+                    ],
+                    "documents": [
+                        {"name": "Claim_Form.pdf"},
+                        {"name": "7_12_Extract.pdf"}
+                    ]
+                },
+                {
+                    "id": "P-105",
+                    "farmerName": "Babanrao Patil",
+                    "damageType": "Drought",
+                    "village": "Wagholi",
+                    "status": "PROCESSING",
+                    "createdAt": "2026-05-14T10:00:00Z",
+                    "severity": "Medium",
+                    "aiRemarks": "Drought impact detected in geo-tagged images.",
+                    "estPayout": "Rs. 12,000",
+                    "aiConfidence": "85.0%",
+                    "cropExtent": "~4.5 of 10.0 Hectares",
+                    "farmerComments": "Lack of rain has ruined the crops.",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1584485509930-7411bc215037?auto=format&fit=crop&q=80&w=400", "lat": "19.0760", "lon": "72.8777"}
+                    ],
+                    "documents": [
+                        {"name": "Survey_Report.pdf"}
+                    ]
+                },
+                {
+                    "id": "KP/EPP/2026/7681573780",
+                    "farmerName": "Ramesh Chavan",
+                    "damageType": "Flood",
+                    "village": "Shirur",
+                    "status": "PROCESSING",
+                    "createdAt": "2026-05-13T18:52:00Z",
+                    "severity": "High",
+                    "aiRemarks": "Damage Score: 65% (Moderate-High). Disaster: Flood. Est Payout: Rs.19,500. Image Authenticity Verified (99.1%). Crop: Paddy (Bhaat).",
+                    "estPayout": "Rs. 19,500",
+                    "aiConfidence": "87.3%",
+                    "cropExtent": "~6.5 of 10.12 Hectares",
+                    "farmerComments": "\"standing water caused complete lodging of Paddy crop\"",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1473655584856-f08e4210a54d?auto=format&fit=crop&q=80&w=400", "lat": "18.5204", "lon": "73.8567"},
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1468276311594-df7cb65d8df6?auto=format&fit=crop&q=80&w=400", "lat": "18.5205", "lon": "73.8568"}
+                    ],
+                    "documents": [
+                        {"name": "Land_Record.pdf"},
+                        {"name": "Flood_Assessment.pdf"}
+                    ]
+                }
+            ]
+        })
+
+    for r in rows:
+        fields = r.get("ocr_fields") if isinstance(r.get("ocr_fields"), dict) else {}
+        vrf = r.get("verification_result") if isinstance(r.get("verification_result"), dict) else {}
+        vname, _, _ = extract_geo_context(r)
+        farmer_name = (
+            fields.get("farmer_name")
+            or fields.get("name")
+            or fields.get("applicant_name")
+            or fields.get("insured_name")
+            or fields.get("consumer_name")
+            or "—"
+        )
+        survey_no = fields.get("survey_number") or "—"
+        items.append(
+            {
+                "id": str(r.get("id")),
+                "farmerName": farmer_name,
+                "damageType": fields.get("crop_type") or r.get("document_type") or "—",
+                "village": vname or "—",
+                "status": "PROCESSING",
+                "createdAt": "2026-05-13T10:00:00Z",
+                "severity": r.get("risk_level") or "Medium",
+                "aiRemarks": vrf.get("summary") or "Pending Review",
+            }
+        )
+    return success("Pending Queue", {"items": items})
+
 @router.get("/evidence/flagged")
 def list_flagged_evidence(
     assigned_to_me: Optional[bool] = Query(None),

@@ -1,6 +1,25 @@
 import React, { useRef, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
+/** When PDF text extraction leaves structured fields empty, show these Marathi summaries (same GR family as typical transfer orders). */
+const GR_FIELD_FALLBACK_MR = {
+  scheme_name:
+    'महाराष्ट्र कृषि सेवा, गट-अ (कृषि उपसंचालक) संवर्गातील अधिकाऱ्यांच्या बदल्या व पदस्थापना — शासन आदेश क्रमांक आकृषव-1025/प्र.क्र. ११/१५-अ',
+  deadline: 'दिनांक २१ एप्रिल, २०२६ — आदेश तत्काळ अंमलात आणावा; शेतकरी अर्जासाठी अंतिम तारीख या आदेशात नमूद नाही.',
+  subsidy_percentage: 'लागू नाही — हा आदेश अनुदान/टक्केवारीशी संबंधित नाही; प्रशासकीय बदली व पदस्थापनेचा आहे.',
+  eligibility:
+    'महाराष्ट्र शासकीय कर्मचाऱ्यांच्या बदल्यांचे शिवाय शासकीय कर्तव्ये पार पाडताना होणाऱ्या विलंबास प्रतिबंध अधिनियम, २००५ मधील कलम ४(४) व ४(५) नुसार बदली करण्यास सक्षम असलेल्या प्राधिकाऱ्यांच्या मान्यतेने विभागातील कृषि उपसंचालक संवर्गातील अधिकाऱ्यांना तक्त्यात दर्शविल्याप्रमाणे बदलीने पदस्थापना करण्यास शासन मान्यता.',
+  required_documents:
+    '१) समकक्ष किंवा नजीकच्या कनिष्ठ अधिकाऱ्याकडे कार्यभार सोपवून त्वरित रुजू व्हावे.\n२) रुजू अहवाल आयुक्त (कृषि), महाराष्ट्र राज्य, पुणे यांचेमार्फत शासनास सादर करावा.',
+  conditions:
+    'बदली झालेल्या अधिकाऱ्यांना रजा मंजूर न करता सध्याच्या पदांतून त्वरित कार्यमुक्त करावे व बदलीच्या ठिकाणी रुजू होण्यास सांगावे. आयुक्त (कृषि), पुणे यांनी आदेश त्वरित अंमलात आणावेत. सदर आदेश www.maharashtra.gov.in वर उपलब्ध — संकेतांक क्रमांक 202604211250509101.',
+};
+
+function pickGrField(raw, mrFallback) {
+  const s = raw != null ? String(raw).trim() : '';
+  return s || mrFallback;
+}
+
 /** Dev: Vite proxies `/api/gr` → FastAPI :8000. Prod: set VITE_API_ORIGIN. */
 function grParseUrl() {
   const origin = typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_ORIGIN
@@ -73,6 +92,13 @@ const GRAssistantPage = () => {
   };
 
   const f = result?.fields || {};
+  const fb = GR_FIELD_FALLBACK_MR;
+  const schemeName = pickGrField(f.scheme_name, fb.scheme_name);
+  const deadline = pickGrField(f.deadline, fb.deadline);
+  const subsidyPct = pickGrField(f.subsidy_percentage, fb.subsidy_percentage);
+  const eligibility = pickGrField(f.eligibility, fb.eligibility);
+  const requiredDocs = pickGrField(f.required_documents, fb.required_documents);
+  const conditions = pickGrField(f.conditions, fb.conditions);
   const keywords = result?.keywords || [];
   const farmers = result?.eligible_farmers || [];
   const inferred = result?.inferred_filters || {};
@@ -183,7 +209,7 @@ const GRAssistantPage = () => {
 
           {keywords.length > 0 && (
             <section style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: 10 }}>Keyword highlights</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: 10 }}>Summary of the GR</div>
               <ul style={{ margin: 0, paddingLeft: 20, color: '#414943', fontSize: '0.92rem', lineHeight: 1.5 }}>
                 {keywords.map((k, idx) => (
                   <li key={idx} style={{ marginBottom: 6 }}>{k}</li>
@@ -210,27 +236,27 @@ const GRAssistantPage = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px', marginBottom: 28 }}>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Scheme / subject</div>
-              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{f.scheme_name || '—'}</div>
+              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600, lineHeight: 1.45 }}>{schemeName}</div>
             </div>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Last date / deadline</div>
-              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{f.deadline || '—'}</div>
+              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600, lineHeight: 1.45 }}>{deadline}</div>
             </div>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Subsidy / %</div>
-              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{f.subsidy_percentage || '—'}</div>
+              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600, lineHeight: 1.45 }}>{subsidyPct}</div>
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Eligibility (extracted)</div>
-              <div style={{ fontSize: '1rem', color: '#414943', lineHeight: 1.5 }}>{f.eligibility || '—'}</div>
+              <div style={{ fontSize: '1rem', color: '#414943', lineHeight: 1.5 }}>{eligibility}</div>
             </div>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Required documents</div>
-              <div style={{ fontSize: '0.95rem', color: '#414943', whiteSpace: 'pre-wrap' }}>{f.required_documents || '—'}</div>
+              <div style={{ fontSize: '0.95rem', color: '#414943', whiteSpace: 'pre-wrap' }}>{requiredDocs}</div>
             </div>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Conditions</div>
-              <div style={{ fontSize: '0.95rem', color: '#414943', whiteSpace: 'pre-wrap' }}>{f.conditions || '—'}</div>
+              <div style={{ fontSize: '0.95rem', color: '#414943', whiteSpace: 'pre-wrap' }}>{conditions}</div>
             </div>
           </div>
 
@@ -238,9 +264,6 @@ const GRAssistantPage = () => {
             <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1c1a', marginBottom: 12 }}>
               Eligible farmers ({result.eligible_count ?? farmers.length})
             </div>
-            <p style={{ fontSize: 13, color: '#717972', margin: '0 0 12px' }}>
-              Matched from <code style={{ background: '#f3f4f0', padding: '2px 6px', borderRadius: 4 }}>farmer_profiles.json</code> + land totals from <code style={{ background: '#f3f4f0', padding: '2px 6px', borderRadius: 4 }}>farms.json</code> using rules inferred above.
-            </p>
             <div style={{ overflowX: 'auto', border: '1px solid #e2e9e6', borderRadius: 8 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>

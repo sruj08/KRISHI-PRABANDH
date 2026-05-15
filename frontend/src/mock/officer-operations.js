@@ -23,6 +23,15 @@ export const OPERATIONAL_PULSE = [
 
 export const PRIORITY_QUEUE = [
   {
+    id: 'KP/EPP/2026/7681573780',
+    urgency: 'high',
+    title: 'Mamta Kulkarni - Flood Damage',
+    detail: 'AI Assessed Score: 65%. Estimated Payout: Rs. 19,500.',
+    actionLabel: 'Open Survey',
+    path: '/officer/pending-surveys',
+    timeLabel: 'Updated 18:52',
+  },
+  {
     id: 'pq-1',
     urgency: 'critical',
     title: '12 applications awaiting verification',
@@ -181,6 +190,16 @@ export const FARMER_REGISTRY = [
 
 export const APPLICATION_REVIEW = [
   {
+    id: 'KP/EPP/2026/7681573780',
+    farmer: 'Mamta Kulkarni',
+    scheme: 'PMFBY (Flood)',
+    village: 'Hadgaon Village 48',
+    stage: 'Damage Assessed (65%)',
+    daysOpen: 0,
+    priority: 'HIGH',
+    summary: 'AI flagged Moderate-High Damage. Est Payout Rs. 19,500.',
+  },
+  {
     id: 'APP-2026-4412',
     farmer: 'Sunita Jadhav',
     scheme: 'PM-KISAN',
@@ -188,7 +207,7 @@ export const APPLICATION_REVIEW = [
     stage: 'Document verification',
     daysOpen: 3,
     priority: 'HIGH',
-    summary: 'Bank NPCI inactive · shared mobile cluster flagged by AI.',
+    summary: 'Bank NPCI inactive — shared mobile cluster flagged by AI.',
   },
   {
     id: 'APP-2026-4390',
