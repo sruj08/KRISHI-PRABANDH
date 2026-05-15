@@ -97,8 +97,16 @@ const MandalDashboard = () => {
       {/* ── Header ── */}
       <header className="cao-header" style={{ marginLeft: '-var(--sp-6)', marginRight: '-var(--sp-6)', marginTop: '-var(--sp-6)' }}>
         <div className="cao-header-left">
-          <div className="logo-text">
-            <span className="material-symbols-outlined" style={{ color: 'var(--primary)', marginRight: '8px', fontSize: '24px' }}>public</span>
+          <div className="logo-text" style={{ display: 'flex', alignItems: 'center' }}>
+            <img
+              src="/krishi-logo-128.webp"
+              alt="Krishi Prabandh"
+              width="28"
+              height="28"
+              style={{ width: 28, height: 28, objectFit: 'contain', marginRight: '8px', display: 'block' }}
+              loading="eager"
+              decoding="async"
+            />
             {t('Krishi Prabandh - Mandal')}
           </div>
         </div>

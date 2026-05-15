@@ -50,7 +50,15 @@ const AppLayout = () => {
 
         {/* Logo */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="material-symbols-outlined text-[20px]" style={{ color: '#1f4d36' }}>public</span>
+          <img
+            src="/krishi-logo-128.webp"
+            alt="Krishi Prabandh"
+            width="28"
+            height="28"
+            style={{ width: 28, height: 28, objectFit: 'contain', display: 'block' }}
+            loading="eager"
+            decoding="async"
+          />
           <span className="font-bold text-[14px] tracking-tight text-[#1a1c1a]">
             {t('Krishi Prabandh')}{' '}
             <span className="hidden sm:inline" style={{ color: '#717972', fontWeight: 500 }}>·</span>{' '}
@@ -97,6 +105,7 @@ const AppLayout = () => {
               className="icon-btn-soft text-[11px] font-bold px-2"
               onClick={cycleLanguage}
               aria-label="Switch language"
+              data-notranslate
             >
               <span className="material-symbols-outlined text-[18px]">translate</span>
               <span className="hidden sm:inline ml-0.5">{currentLabel}</span>

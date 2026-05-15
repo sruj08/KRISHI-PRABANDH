@@ -81,8 +81,16 @@ const LandingPage = () => {
         <span aria-hidden="true" className="pin p3"></span>
 
         <div className="brand-top">
-          <div aria-hidden="true" className="seal">
-            <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>public</span>
+          <div aria-hidden="true" className="seal" style={{ overflow: 'hidden', padding: 0 }}>
+            <img
+              src="/krishi-logo-256.webp"
+              alt="Krishi Prabandh"
+              width="44"
+              height="44"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+              loading="eager"
+              decoding="async"
+            />
           </div>
           <div>
             <div className="brand-eyebrow">{t('Krishi Prabandh')}</div>

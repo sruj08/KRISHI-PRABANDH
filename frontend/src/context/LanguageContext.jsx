@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { t } from '../utils/translations';
+import {
+  startLiveTranslator,
+  stopLiveTranslator,
+} from '../utils/liveTranslator';
 
 const LANGUAGES = ['en', 'mr', 'hi'];
 const LANG_LABELS = { en: 'English', mr: 'मराठी', hi: 'हिन्दी' };
@@ -14,7 +18,23 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('appLang', lang);
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang;
+    }
   }, [lang]);
+
+  // Live DOM translator: walks the rendered DOM and translates mock data,
+  // hardcoded JSX text, third-party widget labels, and dynamic content using
+  // the same dictionary as t(). Keeps the original English in a WeakMap so
+  // toggling back is lossless. `startLiveTranslator` is idempotent and also
+  // serves as the language-switch path, so we call it whenever `lang` changes.
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    startLiveTranslator(lang);
+    return undefined;
+  }, [lang]);
+
+  useEffect(() => () => stopLiveTranslator(), []);
 
   const cycleLanguage = useCallback(() => {
     setLang(prev => {

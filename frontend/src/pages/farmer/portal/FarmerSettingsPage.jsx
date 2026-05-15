@@ -20,7 +20,7 @@ export default function FarmerSettingsPage() {
             <p className="font-bold text-[0.875rem]" style={{ color: fp.text }}>{t('Language')}</p>
             <p className="mt-0.5 text-[0.8125rem]" style={{ color: fp.muted }}>{t('Switch interface language')}</p>
           </div>
-          <span className="flex items-center gap-1 text-[0.8125rem] font-bold text-[#1F5E3B]">
+          <span className="flex items-center gap-1 text-[0.8125rem] font-bold text-[#1F5E3B]" data-notranslate>
             <span className="material-symbols-outlined text-[1.125rem]">translate</span>
             {currentLabel}
           </span>
