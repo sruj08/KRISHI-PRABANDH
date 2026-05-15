@@ -5,6 +5,7 @@ import { AlertCircle, CheckCircle, ChevronLeft, FileText, Loader2, Upload, X } f
 import { processFarmerDocument, quickSharpnessScan, validateFarmerUploadFile } from '../../../lib/farmerDocumentPipeline';
 import { useToast } from '../../../hooks/useToast.jsx';
 import { fp } from './farmerPortalUi';
+import './farmer-schemes-module.css';
 
 const STEP_DEF = [
   { id: 1, label: 'Scheme details' },
@@ -59,7 +60,7 @@ function ApprovalScoreCard({ result, blurPreCheck }) {
 
   return (
     <div
-      className="flex items-center gap-4 rounded-xl border px-4 py-3.5"
+      className="fsm-approval-card flex items-center gap-4 rounded-xl border px-4 py-3.5"
       style={{ background: band.bg, borderColor: band.ring }}
     >
       {/* Arc gauge */}
@@ -289,7 +290,7 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
   /* ─── render ─────────────────────────────────────── */
   return (
     <motion.div
-      className="fixed inset-0 z-[5000] flex flex-col bg-[#eef0ec]"
+      className="fsm-flow fixed inset-0 z-[5000] flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -299,113 +300,107 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
       aria-labelledby="fp-apply-title"
     >
       {/* ═══ HEADER ═══════════════════════════════════════════════════ */}
-      <header className="shrink-0 border-b border-[#eceee9] bg-white">
-        <div className="flex h-[60px] items-center gap-4 border-b border-[#eceee9] px-4 sm:px-6">
-          {/* Scheme name */}
-          <div className="min-w-0 flex-1">
-            <p className="m-0 text-[0.6rem] font-semibold uppercase tracking-widest text-[#9aaa9f]">MahaDBT Portal</p>
-            <h1 id="fp-apply-title" className="m-0 truncate text-[0.95rem] font-bold text-[#1a1c1a] sm:text-base">
+      <header className="fsm-flow__header shrink-0">
+        <div className="fsm-flow__header-row border-b border-[#eceee9]">
+          <div className="fsm-flow__title-block">
+            <p className="fsm-flow__kicker">MahaDBT Portal</p>
+            <h1 id="fp-apply-title" className="fsm-flow__title">
               {scheme.name}
             </h1>
           </div>
-          {/* Step indicators */}
-          <nav className="hidden shrink-0 sm:flex sm:items-center sm:gap-1">
+          <nav className="fsm-flow__steps-desktop" aria-label="Application steps">
             {STEP_DEF.map((s, i) => {
               const active = step === s.id;
               const done = step > s.id;
               return (
                 <React.Fragment key={s.id}>
-                  {i > 0 && <span className="text-[0.7rem] text-[#d0d5d2]">›</span>}
+                  {i > 0 ? <span className="fsm-flow__step-sep" aria-hidden>›</span> : null}
                   <span
-                    className="flex items-center gap-1 rounded-full px-3 py-1 text-[0.68rem] font-bold"
+                    className="fsm-flow__step-chip"
                     style={
-                    active ? { background: fp.primary, color: '#fff' }
-                    : done ? { background: fp.primarySoft, color: fp.primary }
-                    : { background: '#f3f4f0', color: '#717972' }
-                  }
-                >
-                  {done && <CheckCircle className="h-3 w-3" />}
-                  {s.label}
-                </span>
-              </React.Fragment>
-            );
-          })}
-        </nav>
-        {/* Close */}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#eceee9] bg-[#f3f4f0] text-[#5c6560] transition hover:bg-[#eceee9]"
-          >
+                      active
+                        ? { background: fp.primary, color: '#fff' }
+                        : done
+                          ? { background: fp.primarySoft, color: fp.primary }
+                          : { background: '#f3f4f0', color: '#717972' }
+                    }
+                  >
+                    {done ? <CheckCircle className="h-3 w-3 shrink-0" aria-hidden /> : null}
+                    {s.label}
+                  </span>
+                </React.Fragment>
+              );
+            })}
+          </nav>
+          <button type="button" onClick={onClose} aria-label="Close" className="fsm-flow__close">
             <X className="h-4 w-4" />
           </button>
         </div>
-        {/* Mobile step row */}
-        <div className="flex items-center gap-1 overflow-x-auto px-4 py-2 sm:hidden">
+        <div className="fsm-flow__steps-mobile" aria-label="Application steps">
           {STEP_DEF.map((s, i) => {
             const active = step === s.id;
             const done = step > s.id;
             return (
               <React.Fragment key={s.id}>
-                {i > 0 && <span className="text-[0.65rem] text-[#d0d5d2]">›</span>}
+                {i > 0 ? <span className="fsm-flow__step-sep" aria-hidden>›</span> : null}
                 <span
-                  className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.65rem] font-bold"
+                  className="fsm-flow__step-chip"
                   style={
-                    active ? { background: fp.primary, color: '#fff' }
-                    : done ? { background: fp.primarySoft, color: fp.primary }
-                    : { background: '#f3f4f0', color: '#717972' }
+                    active
+                      ? { background: fp.primary, color: '#fff' }
+                      : done
+                        ? { background: fp.primarySoft, color: fp.primary }
+                        : { background: '#f3f4f0', color: '#717972' }
                   }
                 >
-                  {done && <CheckCircle className="h-2.5 w-2.5" />}
+                  {done ? <CheckCircle className="h-2.5 w-2.5 shrink-0" aria-hidden /> : null}
                   {s.label}
                 </span>
               </React.Fragment>
             );
           })}
         </div>
-        {/* Dept name */}
-        <div className="px-4 pb-2 sm:px-6">
-          <p className="m-0 truncate text-[0.72rem] text-[#9aaa9f]">{scheme.dept}</p>
+        <div className="fsm-flow__subrow">
+          <p className="fsm-flow__dept">{scheme.dept}</p>
         </div>
       </header>
 
       {/* ═══ BODY ══════════════════════════════════════════════════════ */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-
-        {/* ── Sidebar ── */}
-        <aside className="flex w-[260px] shrink-0 flex-col overflow-y-auto border-r border-[#eceee9] bg-white xl:w-[280px]">
-          <div className="flex flex-col gap-5 p-5">
+      <div className="fsm-flow__body min-h-0 flex-1 overflow-hidden">
+        <aside className="fsm-rail shrink-0">
+          <div className="fsm-rail__inner">
 
             {/* ── Step 1 sidebar ── */}
             {step === 1 && (<>
               <div>
-                <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-widest text-[#9aaa9f]">Scheme summary</p>
-                <div className="divide-y divide-[#eceee9] overflow-hidden rounded-xl border border-[#eceee9] bg-[#f3f4f0]">
-                  <div className="px-3.5 py-3">
-                    <p className="m-0 text-[0.68rem] text-[#9aaa9f]">Subsidy</p>
-                    <p className="m-0 mt-1 text-sm font-bold text-[#1a1c1a]">{scheme.subsidy}</p>
+                <p className="fsm-rail__heading">Scheme summary</p>
+                <div className="fsm-rail-card">
+                  <div className="fsm-rail-card__row">
+                    <p className="fsm-rail-card__label">Subsidy</p>
+                    <p className="fsm-rail-card__value">{scheme.subsidy}</p>
                   </div>
-                  <div className="px-3.5 py-3">
-                    <p className="m-0 text-[0.68rem] text-[#9aaa9f]">Deadline</p>
-                    <p className="m-0 mt-1 text-sm font-bold text-[#1a1c1a]">{scheme.deadline}</p>
+                  <div className="fsm-rail-card__row">
+                    <p className="fsm-rail-card__label">Deadline</p>
+                    <p className="fsm-rail-card__value">{scheme.deadline}</p>
                   </div>
-                  <div className="px-3.5 py-3">
-                    <p className="m-0 text-[0.68rem] text-[#9aaa9f]">File limit</p>
-                    <p className="m-0 mt-1 text-[0.75rem] text-[#5c6560]">≤ 1 MB kept as-is; larger files compressed.</p>
+                  <div className="fsm-rail-card__row">
+                    <p className="fsm-rail-card__label">File limit</p>
+                    <p className="fsm-rail-card__value" style={{ fontWeight: 500, fontSize: '0.8125rem', color: '#5c6560' }}>
+                      ≤ 1 MB kept as-is; larger files compressed.
+                    </p>
                   </div>
                 </div>
               </div>
-              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-[#eceee9] bg-[#f3f4f0] p-3.5">
-                <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0" style={{ accentColor: fp.primary }}
+              <label className="fsm-rail-check">
+                <input type="checkbox" className="h-4 w-4 shrink-0" style={{ accentColor: fp.primary }}
                   checked={confirmEligible} onChange={(e) => setConfirmEligible(e.target.checked)} />
-                <span className="text-[0.8125rem] leading-relaxed text-[#1a1c1a]">
+                <span>
                   I confirm I am eligible and these scheme details are correct for my landholding.
                 </span>
               </label>
               <button
                 type="button" disabled={!confirmEligible}
-                className="flex h-11 w-full items-center justify-center rounded-xl text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-[#c5cbc7]"
+                className="fsm-rail__btn fsm-rail__btn--primary"
                 style={{ background: confirmEligible ? fp.primary : undefined }}
                 onClick={() => setStep(2)}
               >Continue to upload</button>
@@ -414,43 +409,42 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
             {/* ── Step 2–3 sidebar ── */}
             {step >= 2 && step <= 3 && (<>
               <div>
-                <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-widest text-[#9aaa9f]">Document</p>
-                <div className={`flex items-center gap-3 rounded-xl border p-3.5 ${
-                  upload?.status === 'done' ? 'border-[#86efac] bg-[#f0fdf4]'
-                  : upload?.status === 'rejected' ? 'border-amber-200 bg-amber-50'
-                  : upload?.status === 'error' ? 'border-[#fca5a5] bg-[#fef2f2]'
-                  : 'border-[#eceee9] bg-[#f3f4f0]'
+                <p className="fsm-rail__heading">Document</p>
+                <div className={`fsm-rail-doc ${
+                  upload?.status === 'done' ? 'fsm-rail-doc--ok'
+                  : upload?.status === 'rejected' ? 'fsm-rail-doc--warn'
+                  : upload?.status === 'error' ? 'fsm-rail-doc--err'
+                  : ''
                 }`}>
-                  <span className="material-symbols-outlined shrink-0 text-[1.1rem]" style={{ color: fp.primary }}>description</span>
-                  <div className="min-w-0 flex-1">
-                    <p className="m-0 text-[0.8125rem] font-bold text-[#1a1c1a]">Supporting document</p>
-                    <p className="m-0 mt-0.5 text-[0.7rem] text-[#9aaa9f]">PDF · JPG · PNG</p>
+                  <span className="material-symbols-outlined shrink-0 text-[1.25rem]" style={{ color: fp.primary }}>description</span>
+                  <div className="fsm-rail-doc__text">
+                    <p className="fsm-rail-doc__title">Supporting document</p>
+                    <p className="fsm-rail-doc__sub">PDF · JPG · PNG</p>
                   </div>
-                  {upload?.status === 'processing' && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[#1e5a8a]" />}
-                  {upload?.status === 'done' && <CheckCircle className="h-4 w-4 shrink-0 text-[#16a34a]" />}
-                  {upload?.status === 'rejected' && <AlertCircle className="h-4 w-4 shrink-0 text-amber-500" />}
-                  {upload?.status === 'error' && <AlertCircle className="h-4 w-4 shrink-0 text-[#b91c1c]" />}
+                  {upload?.status === 'processing' && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[#1e5a8a]" aria-hidden />}
+                  {upload?.status === 'done' && <CheckCircle className="h-4 w-4 shrink-0 text-[#16a34a]" aria-hidden />}
+                  {upload?.status === 'rejected' && <AlertCircle className="h-4 w-4 shrink-0 text-amber-500" aria-hidden />}
+                  {upload?.status === 'error' && <AlertCircle className="h-4 w-4 shrink-0 text-[#b91c1c]" aria-hidden />}
                 </div>
               </div>
-              <div className="rounded-xl bg-[#f3f4f0] p-3.5">
-                <div className="mb-2 flex items-center justify-between text-[0.7rem] font-semibold text-[#9aaa9f]">
+              <div className="fsm-rail-progress">
+                <div className="fsm-rail-progress__top">
                   <span>Checklist</span>
                   <span style={{ color: docReady ? fp.primary : undefined }}>{docReady ? '1 / 1' : '0 / 1'}</span>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-[#eceee9]">
-                  <div className="h-full rounded-full transition-all duration-500"
-                    style={{ width: docReady ? '100%' : '0%', background: fp.primary }} />
+                <div className="fsm-rail-progress__bar">
+                  <div className="fsm-rail-progress__fill" style={{ width: docReady ? '100%' : '0%' }} />
                 </div>
               </div>
               {step === 2 && (
-                <div className="flex flex-col gap-2">
+                <div className="fsm-rail__stack">
                   <button type="button"
-                    className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-[#eceee9] bg-white text-sm font-semibold text-[#1a1c1a] hover:bg-[#eef0ec]"
+                    className="fsm-rail__btn fsm-rail__btn--ghost"
                     onClick={() => setStep(1)}>
-                    <ChevronLeft className="h-4 w-4" /> Back
+                    <ChevronLeft className="h-4 w-4" aria-hidden /> Back
                   </button>
                   <button type="button" disabled={!docReady}
-                    className="flex h-11 w-full items-center justify-center rounded-xl text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-[#c5cbc7]"
+                    className="fsm-rail__btn fsm-rail__btn--primary"
                     style={{ background: docReady ? fp.primary : undefined }}
                     onClick={() => { if (!docReady) { addToast('Upload your document first.', 'error', 3500); return; } setStep(3); }}>
                     Continue to verification
@@ -459,30 +453,29 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
               )}
               {step === 3 && (
                 <button type="button"
-                  className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-[#eceee9] bg-white text-sm font-semibold text-[#1a1c1a] hover:bg-[#eef0ec]"
+                  className="fsm-rail__btn fsm-rail__btn--ghost"
                   onClick={() => setStep(2)}>
-                  <ChevronLeft className="h-4 w-4" /> Back to upload
+                  <ChevronLeft className="h-4 w-4" aria-hidden /> Back to upload
                 </button>
               )}
             </>)}
 
             {/* ── Step 4 sidebar ── */}
             {step === 4 && (<>
-              <p className="m-0 text-[0.65rem] font-bold uppercase tracking-widest text-[#16a34a]">Application lodged</p>
-              <p className="m-0 -mt-3 text-sm text-[#5c6560]">Tracked under Applications.</p>
+              <p className="fsm-rail__heading" style={{ color: '#16a34a' }}>Application lodged</p>
+              <p className="m-0 text-sm leading-relaxed" style={{ color: '#5c6560' }}>Tracked under Applications.</p>
               <button type="button"
-                className="flex h-10 w-full items-center justify-center rounded-xl border border-[#eceee9] bg-white text-sm font-semibold text-[#1a1c1a] hover:bg-[#eef0ec]"
+                className="fsm-rail__btn fsm-rail__btn--ghost"
                 onClick={downloadGr}>Download GR (demo)</button>
               <button type="button"
-                className="flex h-11 w-full items-center justify-center rounded-xl text-sm font-bold text-white"
+                className="fsm-rail__btn fsm-rail__btn--primary"
                 style={{ background: fp.primary }} onClick={onClose}>Return to schemes</button>
             </>)}
 
           </div>
         </aside>
 
-        {/* ── Right panel ── */}
-        <section className="min-w-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8 sm:py-8">
+        <section className="fsm-stage min-w-0 flex-1">
             <AnimatePresence mode="wait">
               {step === 1 && (
                 <motion.div
@@ -490,24 +483,23 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
-                  className="mx-auto max-w-xl rounded-2xl border border-[#eceee9] bg-white p-5 shadow-sm"
+                  className="fsm-stage__inner"
                 >
-                  <h2 className="m-0 text-base font-bold text-[#1a1c1a]">Scheme details</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-[#5c6560]">{scheme.description}</p>
-                  <p className="mt-4 text-sm font-bold text-[#1a1c1a]">Eligibility</p>
-                  <p className="mt-1 text-sm leading-relaxed text-[#5c6560]">{scheme.eligibilityCriteria}</p>
+                  <div className="fsm-panel">
+                    <h2 className="fsm-panel__title">Scheme details</h2>
+                    <p className="fsm-panel__lead">{scheme.description}</p>
+                    <p className="fsm-panel__subtitle">Eligibility</p>
+                    <p className="fsm-panel__lead" style={{ marginTop: '0.375rem' }}>{scheme.eligibilityCriteria}</p>
+                  </div>
                 </motion.div>
               )}
 
               {step === 2 && schemeDoc && (
-                <motion.div key="s2" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-lg space-y-4">
+                <motion.div key="s2" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="fsm-stage__inner fsm-stage__inner--wide flex min-w-0 flex-col gap-5">
 
-                  {/* ── Upload card ── */}
                   <div
                     {...getRootProps()}
-                    className={`overflow-hidden rounded-2xl border-2 bg-white shadow-sm transition-all ${
-                      isDragActive ? 'border-[#1F5E3B] bg-[#EAF5EE] shadow-md' : 'border-[#eceee9] hover:border-[#c5cfcc]'
-                    }`}
+                    className={`fsm-upload${isDragActive ? ' fsm-upload--active' : ''}`}
                   >
                     <input {...getInputProps()} />
                     <input
@@ -523,82 +515,70 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
                       }}
                     />
 
-                    {/* Card header */}
-                    <div className="flex items-center gap-3.5 border-b border-[#eceee9] px-6 py-5">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: fp.primarySoft }}>
-                        <span className="material-symbols-outlined text-[1.2rem]" style={{ color: fp.primary }}>description</span>
+                    <div className="fsm-upload__head border-b border-[#eceee9]">
+                      <div className="fsm-upload__head-icon">
+                        <span className="material-symbols-outlined text-[1.35rem]" style={{ color: fp.primary }}>description</span>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h2 className="m-0 text-[0.9375rem] font-bold leading-tight text-[#1a1c1a]">Supporting document</h2>
-                        <p className="m-0 mt-0.5 text-[0.76rem] text-[#9aaa9f]">
-                          PDF · JPG · PNG &nbsp;·&nbsp; max 80 MB &nbsp;·&nbsp; files ≤ 1 MB kept as-is
+                      <div className="fsm-upload__head-text">
+                        <h2 className="fsm-upload__head-title">Supporting document</h2>
+                        <p className="fsm-upload__head-desc">
+                          PDF, JPG, or PNG · max 80 MB · files ≤ 1 MB kept as-is
                         </p>
                       </div>
                     </div>
 
-                    {/* Drop zone */}
-                    <div className={`mx-5 mt-5 flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-8 text-center transition-colors ${
-                      isDragActive ? 'border-[#1F5E3B] bg-[#EAF5EE]' : 'border-[#eceee9] bg-[#f3f4f0]'
-                    }`}>
-                      <div className={`flex h-14 w-14 items-center justify-center rounded-full transition-colors ${isDragActive ? 'bg-[#c8e6d4]' : 'bg-[#EAF5EE]'}`}>
-                        <Upload className="h-7 w-7" style={{ color: fp.primary }} />
+                    <div className="fsm-upload__drop">
+                      <div className="fsm-upload__drop-icon">
+                        <Upload className="h-7 w-7" style={{ color: fp.primary }} aria-hidden />
                       </div>
-                      <p className="m-0 mt-3 text-[0.875rem] font-semibold text-[#1a1c1a]">
-                        {isDragActive ? 'Drop your file here' : 'Drag & drop your file here'}
+                      <p className="fsm-upload__drop-title">
+                        {isDragActive ? 'Drop your file here' : 'Drag and drop your file here'}
                       </p>
-                      <p className="m-0 mt-1 text-[0.75rem] text-[#9aaa9f]">or use the buttons below to browse or capture</p>
+                      <p className="fsm-upload__drop-hint">Or use the buttons below to browse from files or capture with camera.</p>
                     </div>
 
-                    {/* Progress bar (while processing) */}
                     {upload?.progress ? (
-                      <div className="mx-5 mt-4 rounded-xl bg-[#f3f4f0] px-4 py-3">
-                        <p className="m-0 text-[0.72rem] font-bold" style={{ color: fp.primary }}>{stageLabel(upload.progress.stage)}</p>
-                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#eceee9]">
+                      <div className="fsm-upload__progress">
+                        <p className="fsm-upload__progress-label">{stageLabel(upload.progress.stage)}</p>
+                        <div className="fsm-upload__progress-track">
                           <div
-                            className="h-full rounded-full transition-all duration-300"
-                            style={{ width: `${upload.progress.pct}%`, background: fp.primary }}
+                            className="fsm-upload__progress-fill"
+                            style={{ width: `${upload.progress.pct}%` }}
                           />
                         </div>
                       </div>
                     ) : null}
 
-                    {/* Action buttons */}
-                    <div className="flex gap-3 px-5 pt-4">
+                    <div className="fsm-upload__actions">
                       <button
                         type="button"
-                        className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-bold text-white shadow-sm transition hover:opacity-90 active:scale-[0.98]"
-                        style={{ background: fp.primary }}
+                        className="fsm-upload__action-primary"
                         onClick={open}
                       >
-                        <Upload className="h-4 w-4" />
+                        <Upload className="h-4 w-4 shrink-0" aria-hidden />
                         Choose file
                       </button>
                       {!schemeDoc.pdfOnly ? (
                         <button
                           type="button"
-                          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border-2 border-[#eceee9] bg-white text-sm font-semibold text-[#1a1c1a] transition hover:border-[#c5cfcc] hover:bg-[#eef0ec] active:scale-[0.98]"
+                          className="fsm-upload__action-secondary"
                           onClick={() => cameraRef.current?.click()}
                         >
-                          <span className="material-symbols-outlined text-[1.1rem]">photo_camera</span>
+                          <span className="material-symbols-outlined text-[1.15rem] shrink-0">photo_camera</span>
                           Use camera
                         </button>
                       ) : null}
                     </div>
 
-                    {/* Remove link */}
                     {upload?.file ? (
-                      <div className="px-5 pt-3 pb-1 text-center">
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-1 text-[0.75rem] font-semibold text-[#b91c1c] underline-offset-2 hover:underline"
-                          onClick={clearUpload}
-                        >
-                          Remove &amp; re-upload
+                      <div className="fsm-upload__remove">
+                        <button type="button" onClick={clearUpload}>
+                          Remove and re-upload
                         </button>
                       </div>
                     ) : null}
 
-                    <div className="pb-5" />
+                    <div className="fsm-upload__spacer" />
                   </div>
 
                   {/* ── Processing spinner ── */}
@@ -730,8 +710,8 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
                       <ApprovalScoreCard result={upload.result} blurPreCheck={upload.blurPreCheck} />
 
                       {/* Document preview card */}
-                      <div className="overflow-hidden rounded-2xl border border-[#eceee9] bg-white shadow-sm">
-                        <div className="flex items-center justify-between gap-3 border-b border-[#eceee9] px-4 py-3">
+                      <div className="fsm-preview">
+                        <div className="fsm-preview__head">
                           <div className="min-w-0">
                             <p className="m-0 text-[0.8125rem] font-bold text-[#1a1c1a]">Document preview</p>
                             <p className="m-0 mt-0.5 text-[0.72rem] text-[#5c6560]">
@@ -768,15 +748,15 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
                           </div>
                         ) : null}
 
-                        <div className="bg-[#f3f4f0] p-3">
+                        <div className="fsm-preview__img-wrap">
                           <img
                             src={(curPage && curPage.afterUrl) || upload.result.optimizedPreviewUrl}
                             alt="Processed document preview"
-                            className="mx-auto max-h-[min(20rem,52vh)] w-full rounded-xl object-contain object-center"
+                            className="fsm-preview__img"
                           />
                         </div>
 
-                        <div className="border-t border-[#eceee9] px-4 py-2.5 text-center text-[0.72rem] text-[#5c6560]">
+                        <div className="border-t border-[#eceee9] px-4 py-3 text-center text-[0.75rem] leading-relaxed text-[#5c6560]">
                           {upload.result.passedAsIs
                             ? 'OCR and quality checks completed on your original file — no re-compression applied.'
                             : `Contrast improved · ${upload.result.compressionPct > 0 ? `−${upload.result.compressionPct}% smaller · ` : ''}sized for portal rules.`}
@@ -786,19 +766,19 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
                   )}
 
                   {/* ── Navigation row ── */}
-                  <div className="flex items-center gap-3 pt-1 pb-2">
+                  <div className="fsm-submit-row">
                     <button
                       type="button"
-                      className="flex h-11 items-center gap-1.5 rounded-xl border border-[#eceee9] bg-white px-5 text-sm font-semibold text-[#5c6560] transition hover:bg-[#eef0ec] hover:text-[#1a1c1a]"
+                      className="fsm-submit-row__back"
                       onClick={() => setStep(1)}
                     >
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronLeft className="h-4 w-4 shrink-0" aria-hidden />
                       Back
                     </button>
                     <button
                       type="button"
                       disabled={!docReady}
-                      className="flex h-11 flex-1 items-center justify-center rounded-xl text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:bg-[#c5cbc7] disabled:shadow-none"
+                      className="fsm-submit-row__next"
                       style={{ background: docReady ? fp.primary : undefined }}
                       onClick={() => {
                         if (!docReady) { addToast('Upload your document first.', 'error', 3500); return; }
@@ -813,33 +793,33 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
               )}
 
               {step === 3 && (
-                <motion.div key="s3" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-xl space-y-4">
-                  <div className="rounded-2xl border border-[#eceee9] bg-white p-5 shadow-sm">
-                    <h2 className="m-0 text-base font-bold text-[#1a1c1a]">Detected information</h2>
-                    <p className="mt-1 text-[0.8rem] text-[#5c6560]">Confirm or correct values extracted from your documents.</p>
-                    <div className="mt-4 grid gap-3">
+                <motion.div key="s3" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="fsm-stage__inner">
+                  <div className="fsm-panel">
+                    <h2 className="fsm-panel__title">Detected information</h2>
+                    <p className="fsm-panel__lead">Confirm or correct values extracted from your documents.</p>
+                    <div className="fsm-form-grid">
                       {[
                         ['farmerName', 'Farmer name'],
                         ['aadhaarLast4', 'Aadhaar last 4 digits'],
                       ].map(([key, label]) => (
-                        <label key={key} className="block text-[0.75rem] font-bold text-[#5c6560]">
-                          {label}
+                        <label key={key} className="fsm-field">
+                          <span className="fsm-field__label">{label}</span>
                           <input
-                            className="mt-1 w-full rounded-xl border border-[#eceee9] bg-[#f3f4f0] px-3 py-2.5 text-sm font-medium text-[#1a1c1a] outline-none focus:border-[#9eb8a8]"
+                            className="fsm-field__input"
                             value={mergedFields[key] || ''}
                             onChange={(e) => setMergedFields((m) => ({ ...m, [key]: e.target.value }))}
                           />
                         </label>
                       ))}
                     </div>
-                    <label className="mt-5 flex cursor-pointer gap-3 rounded-xl border border-[#eceee9] bg-[#f3f4f0] p-3">
-                      <input type="checkbox" className="mt-1 h-4 w-4 shrink-0" style={{ accentColor: fp.primary }} checked={declaration} onChange={(e) => setDeclaration(e.target.checked)} />
-                      <span className="text-sm leading-relaxed text-[#1a1c1a]">I declare that the information is true to the best of my knowledge.</span>
+                    <label className="fsm-declaration">
+                      <input type="checkbox" className="h-4 w-4 shrink-0" style={{ accentColor: fp.primary }} checked={declaration} onChange={(e) => setDeclaration(e.target.checked)} />
+                      <span>I declare that the information is true to the best of my knowledge.</span>
                     </label>
                     <button
                       type="button"
                       disabled={!declaration}
-                      className="mt-4 flex min-h-[52px] w-full items-center justify-center rounded-xl text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-[#c5cbc7]"
+                      className="fsm-panel__submit"
                       style={{ background: declaration ? fp.primary : undefined }}
                       onClick={handleSubmit}
                     >
@@ -850,14 +830,14 @@ export default function FarmerSchemeApplyFlow({ scheme, onClose, onSubmitted }) 
               )}
 
               {step === 4 && (
-                <motion.div key="s4" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="mx-auto flex max-w-md flex-col items-center rounded-2xl border border-[#eceee9] bg-white px-6 py-12 text-center shadow-sm">
-                  <CheckCircle className="h-16 w-16 text-[#1F5E3B]" strokeWidth={1.25} />
-                  <p className="m-0 mt-4 text-lg font-bold text-[#1a1c1a]">Submitted successfully</p>
-                  <p className="m-0 mt-2 font-mono text-sm font-bold" style={{ color: fp.primary }}>
-                    {submitRef}
-                  </p>
-                  <p className="m-0 mt-3 text-sm leading-relaxed text-[#5c6560]">You will receive SMS updates when the status changes.</p>
-                  <FileText className="mt-6 h-8 w-8 text-[#c5cbc7]" />
+                <motion.div key="s4" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="fsm-stage__inner">
+                  <div className="fsm-panel fsm-success-card">
+                    <CheckCircle className="mx-auto h-16 w-16 text-[#1F5E3B]" strokeWidth={1.25} aria-hidden />
+                    <p className="m-0 mt-4 text-lg font-bold text-[#1a1c1a]">Submitted successfully</p>
+                    <p className="fsm-success__ref">{submitRef}</p>
+                    <p className="fsm-success__note">You will receive SMS updates when the status changes.</p>
+                    <FileText className="mx-auto mt-6 h-8 w-8 text-[#c5cbc7]" aria-hidden />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
