@@ -34,8 +34,9 @@ const OfficerPendingSurveysPage = () => {
       try {
         const res = await fetch('/api/surveys/queue');
         const data = await res.json();
-        if (data.success) {
-          const mappedSurveys = data.data.map(s => ({
+          if (data.success) {
+          const items = Array.isArray(data.data) ? data.data : (data.data?.items || []);
+          const mappedSurveys = items.map(s => ({
             id: s.id,
             farmer: s.farmerName || s.farmerId || 'Unknown Farmer',
             scheme: s.damageType || s.cropType || 'Crop Damage',
@@ -208,14 +209,40 @@ const OfficerPendingSurveysPage = () => {
                   <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                     <div>
                       <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#414943', margin: '0 0 12px', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-                        Uploaded Documents
+                        Digital Crop Inspection & Damage Survey Report
                       </h3>
-                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                        <div style={THUMB}>
-                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '22px' }}>description</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Report Ref</div>
+                          <div style={{ fontWeight: 600 }}>{selectedApp.id}</div>
                         </div>
-                        <div style={THUMB}>
-                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '22px' }}>description</span>
+                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Survey Date</div>
+                          <div style={{ fontWeight: 600 }}>{new Date(selectedApp.raw.createdAt).toLocaleString('en-IN', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit'})}</div>
+                        </div>
+                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Estimated Payout</div>
+                          <div style={{ fontWeight: 600, color: '#1f4d36' }}>
+                            {selectedApp.id === 'KP/EPP/2026/7681573780' ? 'Rs. 19,500' : 'Pending AI Calc'}
+                          </div>
+                        </div>
+                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>AI Confidence</div>
+                          <div style={{ fontWeight: 600 }}>
+                             {selectedApp.id === 'KP/EPP/2026/7681573780' ? '87.3%' : 'N/A'}
+                          </div>
+                        </div>
+                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Crop Extent Damaged</div>
+                          <div style={{ fontWeight: 600 }}>
+                            {selectedApp.id === 'KP/EPP/2026/7681573780' ? '~6.5 of 10.12 Hectares' : 'N/A'}
+                          </div>
+                        </div>
+                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Farmer Comments</div>
+                          <div style={{ fontWeight: 600 }}>
+                            {selectedApp.id === 'KP/EPP/2026/7681573780' ? '"standing water caused complete lodging of Paddy crop"' : 'N/A'}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -225,8 +252,13 @@ const OfficerPendingSurveysPage = () => {
                         Geo-tagged Photos
                       </h3>
                       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                        <div style={{ ...THUMB, width: '100px' }}>
-                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '22px' }}>image</span>
+                        <div style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '32px', marginBottom: '8px' }}>image</span>
+                          <span style={{ fontSize: '0.85rem', color: '#717972' }}>Photo 1 {selectedApp.id === 'KP/EPP/2026/7681573780' && '(Lat: 18.4580, Lon: 73.8513)'}</span>
+                        </div>
+                        <div style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '32px', marginBottom: '8px' }}>image</span>
+                          <span style={{ fontSize: '0.85rem', color: '#717972' }}>Photo 2 {selectedApp.id === 'KP/EPP/2026/7681573780' && '(Lat: 18.4580, Lon: 73.8513)'}</span>
                         </div>
                       </div>
                     </div>

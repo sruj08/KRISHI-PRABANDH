@@ -1,8 +1,8 @@
 {
-  "scheme_name": "(?:योजना|Scheme|Subject|विषय)\\s*[:\\-]?\\s*(.{5,120}?)(?:\\n|$)",
-  "eligibility": "(?:पात्रता|Eligibility|Who can apply)\\s*[:\\-]?\\s*(.{5,200}?)(?:\\n\\n|$)",
-  "deadline": "(?:Last Date|अंतिम दिनांक|Deadline)\\s*[:\\-]?\\s*([\\d]{1,2}[/\\-\\.][\\d]{1,2}[/\\-\\.][\\d]{2,4})",
-  "subsidy_percentage": "(?:Subsidy|अनुदान|%)\\s*[:\\-]?\\s*([\\d]+(?:\\.[\\d]+)?\\s*%)",
-  "required_documents": "(?:Documents Required|आवश्यक कागदपत्रे)\\s*[:\\-]?\\s*(.{5,500}?)(?:\\n\\n|$)",
-  "conditions": "(?:Conditions|अटी|Terms)\\s*[:\\-]?\\s*(.{5,500}?)(?:\\n\\n|$)"
+  "scheme_name": "(?:योजना|Scheme|Subject|विषय|प्रकल्प)\\s*[:\\-]?\\s*(.{5,120}?)(?:\\n|$)",
+  "eligibility": "(?:पात्रता|Eligibility|Who can apply|निकष)\\s*[:\\-]?\\s*(.{5,200}?)(?:\\n\\n|$)",
+  "deadline": "(?:Last Date|अंतिम दिनांक|Deadline|मुदत)\\s*[:\\-]?\\s*([\\d]{1,2}[/\\-\\.][\\d]{1,2}[/\\-\\.][\\d]{2,4})",
+  "subsidy_percentage": "(?:Subsidy|अनुदान|%|सवलत|रक्कम)\\s*[:\\-]?\\s*([\\d]+(?:\\.[\\d]+)?\\s*%)",
+  "required_documents": "(?:Documents Required|आवश्यक कागदपत्रे|कागदपत्रे)\\s*[:\\-]?\\s*(.{5,500}?)(?:\\n\\n|$)",
+  "conditions": "(?:Conditions|अटी|Terms|शर्ती)\\s*[:\\-]?\\s*(.{5,500}?)(?:\\n\\n|$)"
 }

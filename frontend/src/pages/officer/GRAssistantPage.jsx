@@ -209,7 +209,7 @@ const GRAssistantPage = () => {
 
           {keywords.length > 0 && (
             <section style={{ marginBottom: 28 }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: 10 }}>Keyword highlights</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: 10 }}>Summary of the GR</div>
               <ul style={{ margin: 0, paddingLeft: 20, color: '#414943', fontSize: '0.92rem', lineHeight: 1.5 }}>
                 {keywords.map((k, idx) => (
                   <li key={idx} style={{ marginBottom: 6 }}>{k}</li>
@@ -264,9 +264,6 @@ const GRAssistantPage = () => {
             <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1c1a', marginBottom: 12 }}>
               Eligible farmers ({result.eligible_count ?? farmers.length})
             </div>
-            <p style={{ fontSize: 13, color: '#717972', margin: '0 0 12px' }}>
-              Matched from <code style={{ background: '#f3f4f0', padding: '2px 6px', borderRadius: 4 }}>farmer_profiles.json</code> + land totals from <code style={{ background: '#f3f4f0', padding: '2px 6px', borderRadius: 4 }}>farms.json</code> using rules inferred above.
-            </p>
             <div style={{ overflowX: 'auto', border: '1px solid #e2e9e6', borderRadius: 8 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>

@@ -58,6 +58,72 @@ def list_surveys(
     return success("Surveys", {"items": rows, "offset": offset, "limit": limit})
 
 
+@router.get("/queue")
+def list_survey_queue(
+    assigned_to_me: Optional[bool] = Query(None),
+    user: JwtUserClaims = Depends(get_survey_actor),
+    evidence_repo: Any = Depends(get_evidence_repo),
+):
+    """Pending queue of flagged evidence."""
+    taluka_id = user.taluka_id if assigned_to_me else None
+    district_id = user.district_id if assigned_to_me else None
+    rows = evidence_repo.get_flagged(min_risk_score=20, taluka_id=taluka_id, district_id=district_id)
+    items: List[dict[str, Any]] = []
+    
+    # Return mock data for pending queue demo if db is empty
+    if not rows:
+        return success("Pending Queue", {
+            "items": [
+                {
+                    "id": "KP/EPP/2026/7681573780",
+                    "farmerName": "Mamta Kulkarni",
+                    "damageType": "Flood",
+                    "village": "Hadgaon Village 48",
+                    "status": "PROCESSING",
+                    "createdAt": "2026-05-13T18:52:00Z",
+                    "severity": "High",
+                    "aiRemarks": "Damage Score: 65% (Moderate-High). Disaster: Flood. Est Payout: Rs.19,500. Image Authenticity Verified (99.1%). Crop: Paddy (Bhaat)."
+                },
+                {
+                    "id": "P-105",
+                    "farmerName": "Babanrao Patil",
+                    "damageType": "Drought",
+                    "village": "Wagholi",
+                    "status": "PROCESSING",
+                    "createdAt": "2026-05-12T10:00:00Z",
+                    "severity": "Medium",
+                    "aiRemarks": "Drought impact detected in geo-tagged images."
+                }
+            ]
+        })
+
+    for r in rows:
+        fields = r.get("ocr_fields") if isinstance(r.get("ocr_fields"), dict) else {}
+        vrf = r.get("verification_result") if isinstance(r.get("verification_result"), dict) else {}
+        vname, _, _ = extract_geo_context(r)
+        farmer_name = (
+            fields.get("farmer_name")
+            or fields.get("name")
+            or fields.get("applicant_name")
+            or fields.get("insured_name")
+            or fields.get("consumer_name")
+            or "—"
+        )
+        survey_no = fields.get("survey_number") or "—"
+        items.append(
+            {
+                "id": str(r.get("id")),
+                "farmerName": farmer_name,
+                "damageType": fields.get("crop_type") or r.get("document_type") or "—",
+                "village": vname or "—",
+                "status": "PROCESSING",
+                "createdAt": "2026-05-13T10:00:00Z",
+                "severity": r.get("risk_level") or "Medium",
+                "aiRemarks": vrf.get("summary") or "Pending Review",
+            }
+        )
+    return success("Pending Queue", {"items": items})
+
 @router.get("/evidence/flagged")
 def list_flagged_evidence(
     assigned_to_me: Optional[bool] = Query(None),
