@@ -7,28 +7,6 @@ const AIVerificationPage = () => {
   // Mock data for AI Verification
   const cases = [
     {
-      id: 'AI-4490',
-      farmer: 'Popat Shinde',
-      scheme: 'Tractor subsidy',
-      village: 'Khadki Mal',
-      confidence: 'High Risk',
-      ocr: OCR_EXTRACTION_DEMO,
-      duplicates: [DUPLICATE_DETECTION[0]],
-      suggestedAction: 'Reject / Escalate to DAO. Invoice PDF hash is a 100% match with an existing application in Solapur district.',
-      docType: 'Invoice PDF'
-    },
-    {
-      id: 'AI-4491',
-      farmer: 'Sunita Jadhav',
-      scheme: 'PM-KISAN',
-      village: 'Madha',
-      confidence: 'Needs Review',
-      ocr: [],
-      duplicates: [DUPLICATE_DETECTION[1]],
-      suggestedAction: 'Verify mobile number ownership. Mobile number and Aadhaar tail match an existing record.',
-      docType: 'Aadhaar / Bank Passbook'
-    },
-    {
       id: 'AI-4492',
       farmer: 'Srujan Ganesh Satav',
       scheme: 'Farmer Registry',
@@ -44,7 +22,27 @@ const AIVerificationPage = () => {
       ],
       suggestedAction: 'Reject Application. This Aadhaar number has already been registered in Satara district for PM-KISAN benefits.',
       docType: 'Aadhaar Card',
-      imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Aadhaar_Logo.svg/512px-Aadhaar_Logo.svg.png' // Placeholder for the actual image
+      imgUrl: '/mock-docs/aadhaar.jpeg'
+    },
+    {
+      id: 'AI-4493',
+      farmer: 'Sujata Suresh Patil',
+      scheme: 'PMFBY Rabi 2024-25',
+      village: 'Ilewadi (Barshi, Solapur)',
+      confidence: 'High Risk',
+      ocr: [
+        { field: 'Document Type', value: '7/12 & 8-A Extract', confidence: 92 },
+        { field: 'Owner Name', value: 'Sujata Suresh Patil', confidence: 85 },
+        { field: 'Gat Number', value: '2/1', confidence: 88 },
+        { field: 'Total Area', value: '1.00.00 HA', confidence: 90 },
+        { field: 'Crop (2023-24)', value: 'Soybean', confidence: 80 }
+      ],
+      duplicates: [
+        { match: 'Land Parcel (Gat No 2/1)', districts: 'Solapur', similarity: 14 }
+      ],
+      suggestedAction: 'Flag for Inspection. Fake document footprint detected. AI Fraud Confidence is extremely high. Land record match is very low (14% similarity).',
+      docType: '7/12 Extract & Crop Declaration',
+      imgUrl: '/mock-docs/7_12_extract.jpeg'
     }
   ];
 

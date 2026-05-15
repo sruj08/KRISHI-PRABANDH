@@ -101,6 +101,28 @@ const OfficerPendingSurveysPage = () => {
                         {"name": "Land_Record.pdf"},
                         {"name": "Flood_Assessment.pdf"}
                     ]
+                },
+                {
+                    "id": "PMFBY-2024-8A",
+                    "farmerName": "Sujata Suresh Patil",
+                    "damageType": "Crop Failure",
+                    "village": "Ilewadi",
+                    "status": "PROCESSING",
+                    "createdAt": "2026-05-15T12:00:00Z",
+                    "severity": "High",
+                    "aiRemarks": "Document verification flagged for 7/12 extract anomalies. Fraud risk detected.",
+                    "estPayout": "Pending Verification",
+                    "aiConfidence": "High Risk (Fraud)",
+                    "cropExtent": "1.00.00 Hectares",
+                    "farmerComments": "Sowed Soybean but yield was completely destroyed.",
+                    "media": [
+                        {"type": "image", "url": "/mock-docs/7_12_extract.jpeg", "lat": "18.2333", "lon": "75.7333"},
+                        {"type": "image", "url": "/mock-docs/crop_declaration.jpeg", "lat": "18.2333", "lon": "75.7333"}
+                    ],
+                    "documents": [
+                        {"name": "Crop_Declaration.pdf"},
+                        {"name": "7_12_Extract_Gat_2_1.pdf"}
+                    ]
                 }
             ]
           }
