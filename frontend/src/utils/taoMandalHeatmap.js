@@ -1,5 +1,5 @@
-/**
- * Baramati taluka — mandal seed points + Voronoi cells clipped to the official
+﻿/**
+ * Baramati taluka - mandal seed points + Voronoi cells clipped to the official
  * outer boundary so the heat layer never extends past the taluka/AC fence.
  * Coordinates are [lng, lat] (GeoJSON). Intensity is derived from demo metrics.
  */
@@ -99,7 +99,7 @@ export const BARAMATI_MANDAL_SEEDS = [
     status: 'Warning',
     pending: 36,
     fraudAlerts: 2,
-    description: 'HQ circle — mixed scheme intake',
+    description: 'HQ circle - mixed scheme intake',
   },
   {
     lng: 74.28,
@@ -135,7 +135,7 @@ function heatScore(props, maxP, maxF) {
 }
 
 /**
- * @param {import('geojson').Feature} talukaFeature — Polygon or MultiPolygon outer boundary
+ * @param {import('geojson').Feature} talukaFeature - Polygon or MultiPolygon outer boundary
  * @param {typeof BARAMATI_MANDAL_SEEDS} seeds
  * @returns {import('geojson').FeatureCollection | null}
  */

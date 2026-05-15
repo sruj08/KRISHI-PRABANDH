@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
 import { MOCK_APPLICATIONS, MOCK_GRIEVANCES } from '../../utils/taoMockData';
@@ -121,7 +121,7 @@ const TAODashboard = () => {
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>analytics</span>
           <span style={{ fontWeight: 700 }}>{t('Live Claims Summary')}</span>
           <span style={{ color: '#717972' }}>
-            {t('Total')}: <strong>{liveSummary.totalClaims ?? liveSummary.total_applications ?? '—'}</strong>
+            {t('Total')}: <strong>{liveSummary.totalClaims ?? liveSummary.total_applications ?? '-'}</strong>
           </span>
           {liveSummary.approved != null && (
             <span style={{ color: '#2e7d32' }}>
@@ -265,7 +265,7 @@ const TAODashboard = () => {
           </div>
           <div style={{ flex: 1 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>
-              {t('Mandal officer performance — Baramati taluka')}
+              {t('Mandal officer performance - Baramati taluka')}
             </h3>
             <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4 }}>{t('Pending files and fraud alerts by mandal under this taluka')}</p>
           </div>

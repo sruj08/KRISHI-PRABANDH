@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -8,12 +8,12 @@ import 'leaflet/dist/leaflet.css';
  *
  * Reads a GeoJSON FeatureCollection where each feature has properties.kind ∈
  *   { outerKind, innerKind }
- * — `outerKind` defines the geo-fence (e.g. district / division / state) and
+ * - `outerKind` defines the geo-fence (e.g. district / division / state) and
  * `innerKind` defines the inner sub-regions that get heat-coloured + hover-tooltipped.
  *
  * Visual / interaction parity with DistrictCommandMap:
  *   • KDE-style canvas heatmap from per-feature intensity samples
- *   • Three metric modes (penetration / NDVI stress / grievance heat)
+ *   • Three metric modes (penetration / moisture–drought stress desk proxy / grievance heat)
  *   • Mode-aware legend strip
  *   • Outer dashed geo-fence + focus mask spotlight outside the fence
  *   • Pan/zoom locked to the outer fence
@@ -32,7 +32,7 @@ const HEAT_GRADIENT = {
 
 const MAP_MODES = [
   { id: 'penetration', label: 'Scheme penetration', sub: 'MahaDBT subsidy uptake', icon: 'hub' },
-  { id: 'ndvi', label: 'Crop health / NDVI', sub: 'Sentinel-2 stress index (demo)', icon: 'satellite_alt' },
+  { id: 'ndvi', label: 'Moisture / drought stress', sub: 'Open‑Meteo rainfall desk proxy (not satellite NDVI)', icon: 'satellite_alt' },
   { id: 'grievance', label: 'Grievance heat', sub: 'Aaple Sarkar cluster intensity', icon: 'crisis_alert' },
 ];
 
@@ -201,7 +201,7 @@ function InnerBoundariesLayer({ innerGeo, innerLabel }) {
         ${p.officer ? `<div style="font-size:11px;color:#222">Officer: <b>${p.officer}</b></div>` : ''}
         ${p.tag ? `<div style="font-size:10.5px;color:#555;margin-bottom:4px;font-style:italic">${p.tag}</div>` : ''}
         ${p.schemePenetration != null ? `<div style="font-size:11px;color:#222">Scheme penetration: <b>${p.schemePenetration}%</b></div>` : ''}
-        ${p.ndviStress != null ? `<div style="font-size:11px;color:#222">NDVI stress index: <b>${p.ndviStress}</b></div>` : ''}
+        ${p.ndviStress != null ? `<div style="font-size:11px;color:#222">Moisture / drought stress (desk): <b>${p.ndviStress}%</b></div>` : ''}
         ${p.grievanceIdx != null ? `<div style="font-size:11px;color:#222">Grievance index: <b>${p.grievanceIdx}</b></div>` : ''}
         ${p.fundsCr != null ? `<div style="font-size:11px;color:#222">Allocation: <b>₹${p.fundsCr} Cr</b></div>` : ''}
         ${p.disbursedPct != null ? `<div style="font-size:11px;color:#222">Disbursed: <b>${p.disbursedPct}%</b></div>` : ''}
@@ -219,12 +219,12 @@ function InnerBoundariesLayer({ innerGeo, innerLabel }) {
 }
 
 /**
- * @param {string}  geoUrl       — Public path to the FeatureCollection geojson.
- * @param {string}  outerKind    — properties.kind for the outer fence feature(s).
- * @param {string}  innerKind    — properties.kind for the inner sub-region features.
- * @param {string}  innerLabel   — Human label appended to the tooltip name (e.g. "District").
- * @param {number}  defaultZoom  — Initial leaflet zoom before the bounds fit kicks in.
- * @param {[number,number]} centerOverride — Initial leaflet center [lat, lng].
+ * @param {string}  geoUrl       - Public path to the FeatureCollection geojson.
+ * @param {string}  outerKind    - properties.kind for the outer fence feature(s).
+ * @param {string}  innerKind    - properties.kind for the inner sub-region features.
+ * @param {string}  innerLabel   - Human label appended to the tooltip name (e.g. "District").
+ * @param {number}  defaultZoom  - Initial leaflet zoom before the bounds fit kicks in.
+ * @param {[number,number]} centerOverride - Initial leaflet center [lat, lng].
  */
 const RegionCommandMap = ({ geoUrl, outerKind, innerKind, innerLabel, defaultZoom = 8, centerOverride = [18.5, 75.0] }) => {
   const [geoData, setGeoData] = useState(null);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cvEngine } from '../../utils/cvEngine';
 import { useAuth } from '../../context/AuthContext';
@@ -108,7 +108,7 @@ function SmartUploadSlot({
         <span className="material-symbols-outlined drag-icon" style={{ color: 'var(--success, #2d6b48)' }}>
           document_scanner
         </span>
-        <p style={{ margin: 'var(--sp-2) 0', fontWeight: 600 }}>{t("Snap & check — tap to upload or use camera")}</p>
+        <p style={{ margin: 'var(--sp-2) 0', fontWeight: 600 }}>{t("Snap & check - tap to upload or use camera")}</p>
         <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{t('Max 500 KB after optimization · PDF accepted')}</span>
       </div>
       {isProcessing && (
@@ -148,7 +148,7 @@ function SmartUploadSlot({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
-            {t('Attached — ')}{((slotState.attached.size ?? 0) / 1024).toFixed(1)} KB
+            {t('Attached - ')}{((slotState.attached.size ?? 0) / 1024).toFixed(1)} KB
           </div>
           {slotState.lowQualityAck && (
             <div
@@ -346,7 +346,7 @@ function PostSubmitChecklist({ receiptOk, feePaid, postSubmitPhaseIndex }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, color: '#166534' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
-          {t('Application submitted — you are in the queue')}
+          {t('Application submitted - you are in the queue')}
         </div>
         <div
           style={{
@@ -395,7 +395,7 @@ const FarmerRegistrationLegacy = () => {
   const { t } = useLanguage();
 
   const riskyQualityIntro = t('This photo may be hard for an officer to read. It could be returned or rejected later, which often means a delay of several weeks and can affect your place in the queue.');
-  const riskyQualityChoice = t('You can retake a clearer photo, attach this file anyway, or submit it with your application — the choice is yours.');
+  const riskyQualityChoice = t('You can retake a clearer photo, attach this file anyway, or submit it with your application - the choice is yours.');
   const submitSuccess = t('Your application file is complete. Equipment receipt and fee are on record. You will not face document-related rejections for readability at the steps you cleared with the smart scanner.');
 
   const applicationStages = [
@@ -415,7 +415,7 @@ const FarmerRegistrationLegacy = () => {
       key: 'submitApp',
       label: t('Submit application'),
       headline: t('Submit your application'),
-      description: t('File your application with scheme and declaration. After submission you will see your progress here — next you will upload the dealer / equipment receipt, then pay the processing fee.'),
+      description: t('File your application with scheme and declaration. After submission you will see your progress here - next you will upload the dealer / equipment receipt, then pay the processing fee.'),
       isSubmitStep: true,
     },
   ];
@@ -648,7 +648,7 @@ const FarmerRegistrationLegacy = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 26 }}>agriculture</span>
           <div>
-            <h1 style={{ fontSize: 17, margin: 0, fontWeight: 800 }}>{t('Krishi Prabandh — Farmer')}</h1>
+            <h1 style={{ fontSize: 17, margin: 0, fontWeight: 800 }}>{t('Krishi Prabandh - Farmer')}</h1>
             <p style={{ margin: 0, fontSize: 11, opacity: 0.9 }}>
               {phase === 'register'
                 ? t('Registration (demo)')
@@ -723,7 +723,7 @@ const FarmerRegistrationLegacy = () => {
           <div className="card" style={{ padding: 20 }}>
             <h3 style={{ fontSize: 17, fontWeight: 800, margin: '0 0 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span className="material-symbols-outlined" style={{ color: '#396940' }}>verified_user</span>
-              {t('Registration — Step 1 of 2 · AgriStack')}
+              {t('Registration - Step 1 of 2 · AgriStack')}
             </h3>
             <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, marginBottom: 16 }}>
               {t('You are signed in with Farmer ID + OTP (demo). We fetch your profile from AgriStack so you do not re-type land and crop data.')}
@@ -746,9 +746,9 @@ const FarmerRegistrationLegacy = () => {
               >
                 <strong style={{ color: '#14532d' }}>{t('Profile auto-filled (~50%)')}</strong>
                 <ul style={{ margin: '10px 0 0', paddingLeft: 20, color: '#166534' }}>
-                  <li>{t('7/12 land extract — linked')}</li>
-                  <li>{t('Crop declaration (Pik Pahani) — season Kharif 2026')}</li>
-                  <li>{t('Bank name on record — verified mask ••••4120')}</li>
+                  <li>{t('7/12 land extract - linked')}</li>
+                  <li>{t('Crop declaration (Pik Pahani) - season Kharif 2026')}</li>
+                  <li>{t('Bank name on record - verified mask ••••4120')}</li>
                 </ul>
               </div>
             )}
@@ -762,7 +762,7 @@ const FarmerRegistrationLegacy = () => {
           <div className="card" style={{ padding: 20 }}>
             <div style={{ marginBottom: 14 }}>
               <span style={{ fontSize: 11, fontWeight: 800, color: '#64748b', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                {t('Registration — Step 2 of 2')}
+                {t('Registration - Step 2 of 2')}
               </span>
               <h3 style={{ fontSize: 17, fontWeight: 800, margin: '6px 0 0' }}>{t('Profile & certificates')}</h3>
             <p style={{ fontSize: 13, color: '#64748b', marginTop: 8, lineHeight: 1.5 }}>
@@ -804,7 +804,7 @@ const FarmerRegistrationLegacy = () => {
 
             <SmartUploadSlot
               title={t('Disability certificate (if applicable)')}
-              subtitle={t('Optional — same smart scan if you upload.')}
+              subtitle={t('Optional - same smart scan if you upload.')}
               showFcfsCallout={false}
               disabled={!!processingSlot}
               isProcessing={processingSlot === 'disability'}
@@ -944,8 +944,8 @@ const FarmerRegistrationLegacy = () => {
                 >
                   <strong style={{ color: '#0f172a' }}>{t('Summary')}</strong>
                   <ul style={{ margin: '10px 0 0', paddingLeft: 20 }}>
-                    <li>{t('Scheme')}: {scheme ? `${scheme} / ${subComponent}` : '—'}</li>
-                    <li>{t('Quantity / note')}: {quantity || '—'}</li>
+                    <li>{t('Scheme')}: {scheme ? `${scheme} / ${subComponent}` : '-'}</li>
+                    <li>{t('Quantity / note')}: {quantity || '-'}</li>
                     <li>{t('Terms accepted')}: {termsAccepted ? t('Yes') : t('No')}</li>
                   </ul>
                   <p style={{ margin: '12px 0 0', fontSize: 12, color: '#64748b' }}>
@@ -997,7 +997,7 @@ const FarmerRegistrationLegacy = () => {
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 800, color: '#14532d' }}>{t('Application submitted')}</div>
                   <div style={{ fontSize: 12, color: '#166534', marginTop: 4 }}>
-                    {t('Reference')} <strong>{applicationId}</strong>{t('. Your request is filed — finish the steps below (receipt, then fee).')}
+                    {t('Reference')} <strong>{applicationId}</strong>{t('. Your request is filed - finish the steps below (receipt, then fee).')}
                   </div>
                 </div>
               </div>
@@ -1042,7 +1042,7 @@ const FarmerRegistrationLegacy = () => {
                 </div>
                 <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 10px', color: '#0f172a' }}>{t('Upload proof of receipt / dealer bill')}</h3>
                 <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.6, margin: '0 0 20px' }}>
-                  {t('Upload a clear photo of your bill, delivery challan, or dealer receipt for the farm equipment or material. Blurry bills delay approval — use the smart scanner.')}
+                  {t('Upload a clear photo of your bill, delivery challan, or dealer receipt for the farm equipment or material. Blurry bills delay approval - use the smart scanner.')}
                 </p>
                 <SmartUploadSlot
                   title={t('Dealer bill / equipment receipt')}
@@ -1100,7 +1100,7 @@ const FarmerRegistrationLegacy = () => {
                 {!feePaid ? (
                   <button type="button" className="btn btn-success" style={{ width: '100%', marginBottom: 12 }} onClick={() => setFeePaid(true)}>
                     <span className="material-symbols-outlined" style={{ verticalAlign: 'middle', marginRight: 6 }}>qr_code_2</span>
-                    {t('Simulate UPI payment — ₹23.60')}
+                    {t('Simulate UPI payment - ₹23.60')}
                   </button>
                 ) : (
                   <div
@@ -1183,7 +1183,7 @@ const FarmerRegistrationLegacy = () => {
                   <>
                     <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#14532d', margin: 0, fontSize: 17 }}>
                       <span className="material-symbols-outlined">verified</span>
-                      {t('Snap & check — document is readable')}
+                      {t('Snap & check - document is readable')}
                     </h3>
                     <p style={{ margin: '8px 0 0', fontSize: 13, color: '#64748b', lineHeight: 1.45 }}>{t('✅ Perfect! 100% Readable. We have automatically adjusted the file size for you. Your application is safe from document-rejection.')}</p>
                   </>
@@ -1191,7 +1191,7 @@ const FarmerRegistrationLegacy = () => {
                   <>
                     <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#b45309', margin: 0, fontSize: 17 }}>
                       <span className="material-symbols-outlined">warning</span>
-                      {t('Quality notice — your choice')}
+                      {t('Quality notice - your choice')}
                     </h3>
                     <p style={{ margin: '8px 0 0', fontSize: 13, color: '#78350f', lineHeight: 1.55 }}>
                       {riskyQualityIntro} {riskyQualityChoice}

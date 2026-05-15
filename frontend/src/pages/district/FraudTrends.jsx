@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+﻿import React, { useState, useCallback, useMemo } from 'react';
 import { useToast } from '../../hooks/useToast.jsx';
 import { useLanguage } from '../../context/LanguageContext';
 import { fetchClaims, fetchWeather } from '../../shared/api/services';
@@ -139,7 +139,7 @@ const FraudTrends = () => {
   }
 
   const patternToast = () => addToast('Full investigation report coming soon.', 'success', 3400);
-  const escalationToast = () => addToast('Escalation case details — coming soon.', 'success', 3400);
+  const escalationToast = () => addToast('Escalation case details - coming soon.', 'success', 3400);
 
   return (
     <div style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>

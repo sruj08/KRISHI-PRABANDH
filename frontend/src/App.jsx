@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/Layout/AppLayout';
 import ToastContainer from './components/ui/Toast';
@@ -48,6 +48,9 @@ import DivisionEscalations from './pages/division/DivisionEscalations';
 import StateDashboard from './pages/state/StateDashboard';
 import DivisionalAnalysis from './pages/state/DivisionalAnalysis';
 import StateGrievanceIntelligence from './pages/state/StateGrievanceIntelligence';
+import StateApprovalsIntelligence from './pages/state/StateApprovalsIntelligence';
+import SchemeIntelligencePage from './pages/state/SchemeIntelligencePage';
+import FundMonitoring from './pages/state/FundMonitoring';
 import VisitPlanner from './pages/VisitPlanner';
 import Placeholder from './pages/Placeholder';
 import NotFound from './pages/NotFound';
@@ -146,9 +149,9 @@ const App = () => {
             <Route path="/visit-planner" element={<VisitPlanner />} />
             <Route path="/gram-sabha" element={<GramSabha />} />
 
-            {/* State & Division Executive Command Centers — same UX as DAO/TAO */}
+            {/* State & Division Executive Command Centers - same UX as DAO/TAO */}
             <Route path="/state/dashboard" element={<StateDashboard />} />
-            {/* Divisional Officer — flat IA aligned with state command shell */}
+            {/* Divisional Officer - flat IA aligned with state command shell */}
             <Route path="/division/dashboard" element={<DivisionDashboard />} />
             <Route path="/division/district-perf" element={<DivisionDistrictPerformance />} />
             <Route path="/division/resources" element={<DivisionDynamicResources />} />
@@ -159,12 +162,12 @@ const App = () => {
             <Route path="/division/survey-monitoring" element={<Navigate to="/division/dashboard" replace />} />
             <Route path="/division/analytics" element={<Navigate to="/division/dashboard" replace />} />
             <Route path="/state/map" element={<Placeholder title="Maharashtra Live Map" icon="map" sections={[{ title: 'Live Operations', type: 'cards' }, { title: 'Active Sectors', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/state/schemes" element={<Placeholder title="Schemes" icon="account_tree" sections={[{ title: 'Scheme Performance', type: 'cards' }, { title: 'Scheme Registry', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/state/fund-monitoring" element={<Placeholder title="Fund Monitoring" icon="account_balance_wallet" sections={[{ title: 'Fund Utilization', type: 'cards' }, { title: 'Distribution', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/state/approvals" element={<Placeholder title="Approvals" icon="check_circle" sections={[{ title: 'Pending Clearance', type: 'cards' }, { title: 'Approval Queue', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
-            <Route path="/state/fraud" element={<Placeholder title="Fraud Network" icon="shield_locked" sections={[{ title: 'AI Fraud Savings', type: 'cards' }, { title: 'Detected Rings', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
+            <Route path="/state/schemes" element={<SchemeIntelligencePage />} />
+            <Route path="/state/fund-monitoring" element={<FundMonitoring />} />
+            <Route path="/state/approvals" element={<StateApprovalsIntelligence />} />
+            <Route path="/state/fraud" element={<Navigate to="/state/grievances" replace />} />
             <Route path="/state/grievances" element={<StateGrievanceIntelligence />} />
-            <Route path="/state/insights" element={<Placeholder title="AI Insights" icon="lightbulb" sections={[{ title: 'System Recommendations', type: 'list' }, { title: 'Anomaly Flags', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
+            <Route path="/state/insights" element={<Navigate to="/state/divisional-analysis" replace />} />
             <Route path="/state/divisional-analysis" element={<DivisionalAnalysis />} />
             <Route path="/state/disaster" element={<Navigate to="/state/divisional-analysis" replace />} />
             <Route path="/state/analytics" element={<Placeholder title="Analytics" icon="bar_chart" sections={[{ title: 'Statewide Metrics', type: 'cards' }, { title: 'Division Performance', type: 'table' }]} rightPanels={['Critical Alerts', 'AI Recommendations', 'Disaster Escalation']} />} />
@@ -177,7 +180,7 @@ const App = () => {
             <Route path="/farmers" element={<Navigate to="/officer/farmer-registry" replace />} />
 
             <Route path="/damage" element={<Navigate to="/officer/crop-damage" replace />} />
-            <Route path="/health" element={<Placeholder title="Crop Health" icon="eco" sections={[{ title: 'NDVI Indices', type: 'cards' }, { title: 'High Stress Zones', type: 'table' }]} />} />
+            <Route path="/health" element={<Placeholder title="Crop stress (rain desk)" icon="eco" sections={[{ title: 'Moisture / drought indices', type: 'cards' }, { title: 'High stress zones', type: 'table' }]} />} />
             <Route path="/alerts" element={
               <Placeholder 
                 title="Alerts & Rainfall" 

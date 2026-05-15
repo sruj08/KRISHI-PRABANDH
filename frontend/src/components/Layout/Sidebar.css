@@ -1,5 +1,5 @@
-/* =========================================================
-   Sidebar — Stitch Agricultural Intelligence Interface
+﻿/* =========================================================
+   Sidebar - Stitch Agricultural Intelligence Interface
    Width: 200px (desktop) | Mobile/Tablet: overlay drawer
    Breakpoint: 1023px
    ========================================================= */
@@ -77,7 +77,7 @@
   }
 }
 
-/* ── Flat nav groups (e.g. state command — no accordion) ── */
+/* ── Flat nav groups (e.g. state command - no accordion) ── */
 .sidebar-nav-stack {
   display: flex;
   flex-direction: column;
@@ -303,7 +303,7 @@
   color: #ba1a1a;
 }
 
-/* Officer command rail — calmer section headers */
+/* Officer command rail - calmer section headers */
 .sidebar--officer .sidebar-section-label {
   text-transform: none;
   letter-spacing: 0.04em;

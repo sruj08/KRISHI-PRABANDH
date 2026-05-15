@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import SurveyTriageQueue from './SurveyTriageQueue';
 import SurveyEvidenceReview from './SurveyEvidenceReview';
 import { fetchReports } from '../../shared/api/services';
@@ -10,7 +10,7 @@ const SummaryStat = ({ icon, label, value, color, bg }) => (
       <span className="material-symbols-outlined text-sm" style={{ color: color || '#1f4d36' }}>{icon}</span>
     </div>
     <div>
-      <div className="text-lg font-bold font-mono" style={{ color: color || '#1f4d36' }}>{value ?? '—'}</div>
+      <div className="text-lg font-bold font-mono" style={{ color: color || '#1f4d36' }}>{value ?? '-'}</div>
       <div className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">{label}</div>
     </div>
   </div>

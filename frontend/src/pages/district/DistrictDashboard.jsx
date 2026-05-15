@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import DistrictCommandMap from './components/DistrictCommandMap';
 import {
   EXEC_KPIS,
@@ -26,7 +26,7 @@ const KpiCard = ({ icon, label, value, unit, sub, subIcon, subColor = '#717972',
       boxShadow: '0 1px 3px rgba(0,0,0,.04)',
     }}
   >
-    {/* Header — fixed height row to lock baselines across all cards */}
+    {/* Header - fixed height row to lock baselines across all cards */}
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 28, marginBottom: 14 }}>
       <div style={{ width: 26, height: 26, borderRadius: 6, background: '#f3f4f0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#717972' }}>{icon}</span>
@@ -121,71 +121,6 @@ const DistrictDashboard = () => {
       style={{ minHeight: '100%', background: '#f3f4f0', padding: '24px 32px 32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}
     >
 
-      {(surveyCount != null ||
-        user?.district_name ||
-        stats?.totalSurveyEvidence != null) && (
-          <div
-            style={{
-              background: '#fff',
-              border: '1px solid #e2e3df',
-              borderRadius: 12,
-              padding: '12px 18px',
-              fontSize: 12,
-              color: '#1a1c1a',
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 12,
-              alignItems: 'center',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#396940' }}>hub</span>
-            <span style={{ fontWeight: 700 }}>{t('CSV dataset scope')}</span>
-            {user?.district_name && (
-              <span style={{ color: '#717972' }}>
-                {t('District: ')}<strong style={{ color: '#1a1c1a' }}>{user.district_name}</strong>
-              </span>
-            )}
-            {surveyCount != null && (
-              <span style={{ color: '#717972' }}>
-                {t('Surveys in dataset (linked via farms → villages → districts): ')}
-                <strong style={{ color: '#1a1c1a' }}>{surveyCount.toLocaleString('en-IN')}</strong>
-              </span>
-            )}
-            {evidenceInDistrict != null && (
-              <span style={{ color: '#717972' }}>
-                {t('Evidence rows (this district via surveys): ')}
-                <strong style={{ color: '#1a1c1a' }}>
-                  {evidenceInDistrict.toLocaleString('en-IN')}
-                </strong>
-              </span>
-            )}
-            {evidenceInDistrict == null && stats?.totalSurveyEvidence != null && (
-              <span style={{ color: '#717972' }}>
-                {t('Evidence rows (CSV, statewide): ')}
-                <strong style={{ color: '#1a1c1a' }}>
-                  {Number(stats.totalSurveyEvidence).toLocaleString('en-IN')}
-                </strong>
-              </span>
-            )}
-            {stats?.paymentsByStatus && (
-              <span style={{ color: '#717972' }}>
-                {t('DBT: completed ')}
-                <strong>
-                  {Number(stats.paymentsByStatus.COMPLETED || 0).toLocaleString('en-IN')}
-                </strong>{' '}
-                {t('· failed ')}
-                <strong>{Number(stats.paymentsByStatus.FAILED || 0).toLocaleString('en-IN')}</strong>
-              </span>
-            )}
-            {stats?.totalSurveys != null && (
-              <span style={{ color: '#717972', marginLeft: 'auto' }}>
-                {t('Statewide surveys in CSV: ')}
-                {Number(stats.totalSurveys).toLocaleString('en-IN')}
-              </span>
-            )}
-          </div>
-        )}
-
       {/* ── KPI Strip ── */}
       <div className="district-kpi-grid">
         <KpiCard
@@ -247,7 +182,7 @@ const DistrictDashboard = () => {
           {/* Map Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{t('Taluka — Geo-fenced Command Map')}</h2>
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{t('Taluka - Geo-fenced Command Map')}</h2>
               <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>{t('Live spatial analytics and telemetry')}</p>
             </div>
           </div>

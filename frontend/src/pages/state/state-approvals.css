@@ -1,0 +1,1232 @@
+﻿/* =========================================================
+   State Approvals Intelligence Centre - Stitch-adjacent CSS
+   Maharashtra Agricultural Governance Command Center
+   ========================================================= */
+
+/* ── Bleed wrapper (full-width background) ── */
+.sai-bleed {
+  width: 100%;
+  min-height: 100%;
+  background: #eef0ec;
+  box-sizing: border-box;
+}
+
+/* ── Page canvas ── */
+.sai {
+  min-height: 100%;
+  padding: clamp(20px, 2.2vw, 32px) clamp(20px, 2.8vw, 44px) clamp(32px, 3vw, 56px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2vw, 28px);
+  max-width: 1520px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Header ── */
+.sai__header {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sai__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sai__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sai__eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #396940;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sai__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  background: #396940;
+  border-radius: 50%;
+  animation: sai-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sai-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.sai__title {
+  font-family: 'Public Sans', sans-serif;
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 800;
+  color: #0d2118;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.sai__subtitle {
+  font-size: 12px;
+  color: #717972;
+  font-weight: 500;
+  margin: 0;
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+/* ── Header action chips ── */
+.sai__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sai__sync-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #396940;
+  background: rgba(57, 105, 64, 0.08);
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid rgba(57, 105, 64, 0.15);
+}
+
+.sai__sync-dot {
+  width: 7px;
+  height: 7px;
+  background: #396940;
+  border-radius: 50%;
+  animation: sai-pulse 1.8s ease-in-out infinite;
+}
+
+.sai__anomaly-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ba1a1a;
+  background: rgba(186, 26, 26, 0.07);
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid rgba(186, 26, 26, 0.15);
+}
+
+.sai__export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: #033621;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sai__export-btn:hover {
+  background: #052e1d;
+}
+
+/* ── Filter strip ── */
+.sai__filter-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 16px 22px;
+  background: #fff;
+  border: 1px solid rgba(20, 40, 30, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(20, 40, 30, 0.04), 0 6px 20px rgba(20, 40, 30, 0.05);
+}
+
+.sai__filter-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #717972;
+}
+
+.sai__filter-select {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0d2118;
+  background: #f3f4f0;
+  border: 1px solid rgba(20, 40, 30, 0.1);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23717972' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+.sai__filter-select:focus {
+  outline: none;
+  border-color: #396940;
+}
+
+.sai__filter-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(20, 40, 30, 0.1);
+}
+
+.sai__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sai__filter-group-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca8a2;
+  line-height: 1;
+}
+
+/* ── KPI Grid ── */
+.sai__kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 1.4vw, 18px);
+}
+
+@media (max-width: 1200px) {
+  .sai__kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .sai__kpi-grid { grid-template-columns: 1fr; }
+}
+
+/* ── KPI Card ── */
+.sai__kpi {
+  background: #fff;
+  border: 1px solid rgba(20, 40, 30, 0.08);
+  border-radius: 18px;
+  padding: 22px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 200px;
+  box-shadow: 0 1px 2px rgba(20, 40, 30, 0.05), 0 8px 24px rgba(20, 40, 30, 0.06);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sai__kpi:hover {
+  box-shadow: 0 2px 4px rgba(20, 40, 30, 0.06), 0 14px 32px rgba(20, 40, 30, 0.09);
+  transform: translateY(-1px);
+}
+
+.sai__kpi--critical {
+  border-color: rgba(186, 26, 26, 0.18);
+  background: linear-gradient(135deg, #fff 80%, rgba(186, 26, 26, 0.03) 100%);
+}
+
+.sai__kpi--ai {
+  border-color: rgba(3, 54, 33, 0.16);
+  background: linear-gradient(135deg, #fff 70%, rgba(57, 105, 64, 0.04) 100%);
+}
+
+.sai__kpi--amber {
+  border-color: rgba(180, 83, 9, 0.18);
+  background: linear-gradient(135deg, #fff 80%, rgba(180, 83, 9, 0.03) 100%);
+}
+
+.sai__kpi-accent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  opacity: 0.06;
+  transform: translate(20px, -20px);
+}
+
+.sai__kpi-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sai__kpi-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.sai__kpi-icon--green { background: rgba(57, 105, 64, 0.1); color: #396940; }
+.sai__kpi-icon--red { background: rgba(186, 26, 26, 0.1); color: #ba1a1a; }
+.sai__kpi-icon--amber { background: rgba(180, 83, 9, 0.1); color: #b45309; }
+.sai__kpi-icon--blue { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+
+.sai__kpi-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #717972;
+  line-height: 1;
+}
+
+.sai__kpi-value {
+  font-family: 'Public Sans', sans-serif;
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 800;
+  color: #0d2118;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.sai__kpi-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sai__kpi-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: #717972;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1.3;
+}
+
+.sai__kpi-sub--red { color: #ba1a1a; }
+.sai__kpi-sub--green { color: #396940; }
+.sai__kpi-sub--amber { color: #b45309; }
+
+.sai__kpi-bars {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 24px;
+  margin-top: 4px;
+}
+
+.sai__kpi-bar {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  min-height: 4px;
+  transition: height 0.3s ease;
+}
+
+.sai__mini-progress {
+  height: 4px;
+  background: #eceee9;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.sai__mini-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* ── Main 2-column grid ── */
+.sai__main-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: clamp(14px, 1.6vw, 22px);
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .sai__main-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Panel (shared card shell) ── */
+.sai__panel {
+  background: #fff;
+  border: 1px solid rgba(20, 40, 30, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(20, 40, 30, 0.04), 0 8px 24px rgba(20, 40, 30, 0.06);
+}
+
+.sai__panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(20, 40, 30, 0.07);
+  background: #fafbf8;
+  gap: 12px;
+  min-height: 58px;
+}
+
+.sai__panel-body {
+  padding: 20px 24px;
+}
+
+.sai__panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #414943;
+  margin: 0;
+  line-height: 1;
+}
+
+.sai__panel-badge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.sai__panel-badge--red {
+  color: #ba1a1a;
+  background: rgba(186, 26, 26, 0.08);
+  border: 1px solid rgba(186, 26, 26, 0.12);
+}
+
+.sai__panel-badge--green {
+  color: #396940;
+  background: rgba(57, 105, 64, 0.08);
+  border: 1px solid rgba(57, 105, 64, 0.12);
+}
+
+.sai__panel-badge--amber {
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.08);
+  border: 1px solid rgba(180, 83, 9, 0.12);
+}
+
+/* ── Maharashtra District Map Grid ── */
+.sai__map-wrap {
+  padding: 22px 24px 24px;
+}
+
+.sai__map-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.sai__map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #717972;
+}
+
+.sai__map-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.sai__district-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 5px;
+}
+
+@media (max-width: 900px) {
+  .sai__district-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+.sai__district-cell {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 3px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 58px;
+}
+
+.sai__district-cell:hover {
+  transform: scale(1.06);
+  z-index: 2;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+}
+
+.sai__district-cell-abbr {
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.97);
+  text-align: center;
+  line-height: 1.1;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  letter-spacing: 0.03em;
+}
+
+.sai__district-cell-val {
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  text-align: center;
+  line-height: 1;
+  margin-top: 3px;
+  font-family: 'IBM Plex Sans', monospace;
+}
+
+.sai__district-cell-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.sai__district-cell:hover .sai__district-cell-glow {
+  opacity: 0.3;
+  background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.5), transparent 70%);
+}
+
+/* ── District Monitor Cards ── */
+.sai__district-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sai__district-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(20, 40, 30, 0.06);
+  cursor: pointer;
+  transition: background 0.12s ease;
+  text-align: left;
+  width: 100%;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  font-family: inherit;
+}
+
+.sai__district-row:last-child {
+  border-bottom: none;
+}
+
+.sai__district-row:hover {
+  background: #f3f4f0;
+}
+
+.sai__district-row--active {
+  background: rgba(3, 54, 33, 0.04);
+  border-left: 3px solid #033621;
+}
+
+.sai__district-risk {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sai__district-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0d2118;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.sai__district-stats {
+  display: flex;
+  gap: 14px;
+  flex: 1;
+  font-size: 11px;
+}
+
+.sai__district-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sai__district-stat-val {
+  font-weight: 700;
+  color: #0d2118;
+  font-family: 'IBM Plex Sans', monospace;
+}
+
+.sai__district-stat-lbl {
+  font-weight: 500;
+  color: #9ca8a2;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sai__risk-tag {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+.sai__risk-tag--high { color: #ba1a1a; background: rgba(186,26,26,0.08); }
+.sai__risk-tag--medium { color: #b45309; background: rgba(180,83,9,0.08); }
+.sai__risk-tag--low { color: #396940; background: rgba(57,105,64,0.08); }
+
+.sai__district-chevron {
+  font-size: 16px;
+  color: #c0c9c1;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.sai__district-row:hover .sai__district-chevron,
+.sai__district-row--active .sai__district-chevron {
+  transform: translateX(2px);
+  color: #396940;
+}
+
+/* ── Right Sidebar panels ── */
+.sai__right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Alert item ── */
+.sai__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid;
+  margin-bottom: 8px;
+}
+
+.sai__alert:last-child { margin-bottom: 0; }
+
+.sai__alert--critical {
+  background: rgba(186,26,26,0.05);
+  border-color: rgba(186,26,26,0.14);
+}
+
+.sai__alert--high {
+  background: rgba(180,83,9,0.05);
+  border-color: rgba(180,83,9,0.14);
+}
+
+.sai__alert--medium {
+  background: rgba(57,105,64,0.05);
+  border-color: rgba(57,105,64,0.14);
+}
+
+.sai__alert-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.sai__alert-dot--critical { background: #ba1a1a; animation: sai-pulse 1.5s ease-in-out infinite; }
+.sai__alert-dot--high { background: #b45309; }
+.sai__alert-dot--medium { background: #396940; }
+
+.sai__alert-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sai__alert-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0d2118;
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+
+.sai__alert-meta {
+  font-size: 10px;
+  color: #717972;
+  font-weight: 500;
+}
+
+.sai__alert-tag {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.sai__alert-tag--critical { color: #ba1a1a; background: rgba(186,26,26,0.1); }
+.sai__alert-tag--high { color: #b45309; background: rgba(180,83,9,0.1); }
+.sai__alert-tag--medium { color: #396940; background: rgba(57,105,64,0.1); }
+
+/* ── Officer performance row ── */
+.sai__officer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(20,40,30,0.06);
+}
+
+.sai__officer-row:last-child { border-bottom: none; }
+
+.sai__officer-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sai__officer-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0d2118;
+  line-height: 1.3;
+}
+
+.sai__officer-sub {
+  font-size: 10px;
+  color: #717972;
+  font-weight: 500;
+}
+
+.sai__officer-score {
+  font-family: 'IBM Plex Sans', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Root cause insight row ── */
+.sai__insight-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(20,40,30,0.06);
+}
+
+.sai__insight-row:last-child { border-bottom: none; }
+
+.sai__insight-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: rgba(3,54,33,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #396940;
+  flex-shrink: 0;
+}
+
+.sai__insight-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sai__insight-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0d2118;
+  line-height: 1.35;
+  margin-bottom: 2px;
+}
+
+.sai__insight-pct {
+  font-size: 10px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.sai__insight-bar-track {
+  height: 3px;
+  background: #eceee9;
+  border-radius: 99px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.sai__insight-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: #b45309;
+}
+
+/* ── Drawer overlay ── */
+.sai__drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 33, 24, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  animation: sai-overlay-in 0.2s ease;
+}
+
+@keyframes sai-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Drawer panel ── */
+.sai__drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(680px, 92vw);
+  background: #fff;
+  box-shadow: -8px 0 40px rgba(13,33,24,0.15);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: sai-drawer-in 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes sai-drawer-in {
+  from { transform: translateX(100%); opacity: 0.8; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.sai__drawer-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(20,40,30,0.08);
+  background: #fafbf8;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.sai__drawer-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #717972;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.sai__drawer-close:hover {
+  background: #eef0ec;
+  color: #0d2118;
+}
+
+.sai__drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sai__drawer-body::-webkit-scrollbar { width: 6px; }
+.sai__drawer-body::-webkit-scrollbar-track { background: #f3f4f0; }
+.sai__drawer-body::-webkit-scrollbar-thumb { background: #c0c9c1; border-radius: 3px; }
+
+/* ── Drawer section ── */
+.sai__drawer-section {
+  background: #fafbf8;
+  border: 1px solid rgba(20,40,30,0.08);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.sai__drawer-section-head {
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(20,40,30,0.07);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sai__drawer-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #414943;
+  margin: 0;
+  line-height: 1;
+}
+
+.sai__drawer-section-body {
+  padding: 14px 16px;
+}
+
+/* ── Scheme table in drawer ── */
+.sai__scheme-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sai__scheme-table th {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca8a2;
+  padding: 0 8px 8px;
+  text-align: right;
+  border-bottom: 1px solid rgba(20,40,30,0.07);
+}
+
+.sai__scheme-table th:first-child { text-align: left; }
+
+.sai__scheme-table td {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0d2118;
+  padding: 8px 8px;
+  text-align: right;
+  border-bottom: 1px solid rgba(20,40,30,0.05);
+  font-family: 'IBM Plex Sans', monospace;
+}
+
+.sai__scheme-table td:first-child {
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.sai__scheme-table tr:last-child td { border-bottom: none; }
+
+.sai__scheme-esc {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ba1a1a;
+}
+
+/* ── Approval Funnel ── */
+.sai__funnel {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.sai__funnel-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sai__funnel-box {
+  width: 100%;
+  border-radius: 6px;
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  min-height: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.sai__funnel-arrow {
+  font-size: 16px;
+  color: #c0c9c1;
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+
+.sai__funnel-val {
+  font-size: 10px;
+  font-family: 'IBM Plex Sans', monospace;
+  font-weight: 700;
+  color: #414943;
+}
+
+/* ── Rejection reasons ── */
+.sai__rejection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sai__rejection-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sai__rejection-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0d2118;
+  flex: 1;
+  min-width: 0;
+}
+
+.sai__rejection-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ba1a1a;
+  font-family: 'IBM Plex Sans', monospace;
+  flex-shrink: 0;
+  min-width: 40px;
+  text-align: right;
+}
+
+.sai__rejection-bar-wrap {
+  width: 80px;
+  height: 4px;
+  background: #eceee9;
+  border-radius: 99px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sai__rejection-bar {
+  height: 100%;
+  background: #ba1a1a;
+  border-radius: 99px;
+}
+
+/* ── Suspicion chips ── */
+.sai__suspicion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.sai__chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 5px;
+  letter-spacing: 0.04em;
+}
+
+.sai__chip--red { color: #ba1a1a; background: rgba(186,26,26,0.08); border: 1px solid rgba(186,26,26,0.12); }
+.sai__chip--amber { color: #b45309; background: rgba(180,83,9,0.08); border: 1px solid rgba(180,83,9,0.12); }
+.sai__chip--blue { color: #1d4ed8; background: rgba(29,78,216,0.07); border: 1px solid rgba(29,78,216,0.12); }
+
+/* ── Suspicion signal card ── */
+.sai__signal-card {
+  background: rgba(186,26,26,0.04);
+  border: 1px solid rgba(186,26,26,0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.sai__signal-card:last-child { margin-bottom: 0; }
+
+.sai__signal-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0d2118;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.sai__signal-meta {
+  font-size: 10px;
+  color: #717972;
+  font-weight: 500;
+}
+
+/* ── Escalation hierarchy ── */
+.sai__esc-hierarchy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sai__esc-level {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f3f4f0;
+  border-radius: 8px;
+  border-left: 3px solid;
+}
+
+.sai__esc-level--critical { border-color: #ba1a1a; }
+.sai__esc-level--high { border-color: #b45309; }
+.sai__esc-level--medium { border-color: #396940; }
+
+.sai__esc-level-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0d2118;
+  flex: 1;
+}
+
+.sai__esc-level-count {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'IBM Plex Sans', monospace;
+}
+
+/* ── AI summary block ── */
+.sai__ai-summary {
+  background: linear-gradient(135deg, rgba(3,54,33,0.04) 0%, rgba(57,105,64,0.03) 100%);
+  border: 1px solid rgba(3,54,33,0.1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 8px;
+}
+
+.sai__ai-summary-icon {
+  font-size: 16px;
+  color: #396940;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.sai__ai-summary-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #0d2118;
+  line-height: 1.55;
+  font-style: italic;
+}
+
+/* ── Policy impact cards ── */
+.sai__policy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sai__policy-card {
+  background: #f3f4f0;
+  border-radius: 10px;
+  padding: 12px 12px;
+  border: 1px solid rgba(20,40,30,0.07);
+}
+
+.sai__policy-card-val {
+  font-family: 'IBM Plex Sans', monospace;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0d2118;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.sai__policy-card-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  color: #717972;
+  line-height: 1.3;
+}
+
+/* ── Approval velocity sparkline (CSS bars) ── */
+.sai__velocity-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 36px;
+  padding: 0 2px;
+}
+
+.sai__velocity-bar {
+  flex: 1;
+  background: #396940;
+  border-radius: 2px 2px 0 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.sai__velocity-bar:hover { opacity: 1; }
+
+/* ── Scrollable page note ── */
+.sai__body-scroll {
+  overflow-y: auto;
+  max-height: calc(100vh - 340px);
+}
+
+.sai__body-scroll::-webkit-scrollbar { width: 4px; }
+.sai__body-scroll::-webkit-scrollbar-track { background: transparent; }
+.sai__body-scroll::-webkit-scrollbar-thumb { background: #c0c9c1; border-radius: 3px; }

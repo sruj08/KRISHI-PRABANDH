@@ -1,4 +1,4 @@
-/* Divisional analysis — heading hierarchy & AI cards (Stitch-aligned neutrals) */
+﻿/* Divisional analysis - heading hierarchy & AI cards (Stitch-aligned neutrals) */
 
 .da-page {
   font-family: inherit;
@@ -106,7 +106,7 @@
   margin-bottom: 8px;
 }
 
-/* Registration gap — list + pie, aligned hierarchy */
+/* Registration gap - list + pie, aligned hierarchy */
 .da-registration-layout {
   display: flex;
   flex-direction: column;

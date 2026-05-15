@@ -1,7 +1,7 @@
-/* State command dashboard — surfaces, hierarchy, alignment (Stitch-adjacent) */
+﻿/* State command dashboard - surfaces, hierarchy, alignment (Stitch-adjacent) */
 
 /* Full-width canvas: .state-dashboard is max-width centered; background on that
-   alone left gutters in <main> showing AppLayout #f3f4f0 — a visible stripe by the sidebar. */
+   alone left gutters in <main> showing AppLayout #f3f4f0 - a visible stripe by the sidebar. */
 .state-dashboard-bleed {
   width: 100%;
   min-height: 100%;

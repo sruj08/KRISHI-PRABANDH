@@ -1,6 +1,6 @@
-{
+﻿{
   "type": "FeatureCollection",
-  "name": "Haveli taluka — demonstration mandal geofence",
+  "name": "Haveli taluka - demonstration mandal geofence",
   "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
   "properties": {
     "attribution": "Taluka outline: simplified outer geofence. Mandal rings: digitized approximate administrative boundaries (irregular polygons for map display; not certified survey geometry).",
@@ -160,7 +160,7 @@
         "status": "Clear",
         "pending": 24,
         "fraudAlerts": 1,
-        "description": "Western belts around the dam reservoirs — irrigation-focused schemes"
+        "description": "Western belts around the dam reservoirs - irrigation-focused schemes"
       },
       "geometry": {
         "type": "Polygon",

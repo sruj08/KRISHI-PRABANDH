@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+﻿import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -67,7 +67,7 @@ export default defineConfig({
           }
         ]
       },
-      // Disable PWA service worker in dev — it can cache stale CSS/JS and break icons/layout.
+      // Disable PWA service worker in dev - it can cache stale CSS/JS and break icons/layout.
       devOptions: { enabled: false },
     })
   ],

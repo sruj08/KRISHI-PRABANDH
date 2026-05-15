@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 
 const NDVIBar = ({ before, after }) => {
   const pct = after * 100;
@@ -51,7 +51,7 @@ const PMFBYPanel = ({ events, onClose }) => {
             <span className="material-symbols-outlined pmfby-sat-icon">satellite_alt</span>
             <div>
               <div className="pmfby-title">PMFBY Satellite Disaster Triage</div>
-              <div className="pmfby-sub">Pradhan Mantri Fasal Bima Yojana — Haveli Mandal</div>
+              <div className="pmfby-sub">Pradhan Mantri Fasal Bima Yojana - Haveli Mandal</div>
             </div>
           </div>
           <button className="pmfby-close" onClick={onClose}>
@@ -87,8 +87,8 @@ const PMFBYPanel = ({ events, onClose }) => {
               <div>
                 <strong>
                   {event.auto_approvable
-                    ? `Satellite confirms ${event.vegetation_drop}% vegetation drop — Auto-Approval Eligible`
-                    : `Vegetation drop ${event.vegetation_drop}% — Below 70% threshold. Manual review required.`}
+                    ? `Satellite confirms ${event.vegetation_drop}% vegetation drop - Auto-Approval Eligible`
+                    : `Vegetation drop ${event.vegetation_drop}% - Below 70% threshold. Manual review required.`}
                 </strong>
                 <div>Crop: {event.crop} · Satellite: ISRO Bhuvan NDVI · Source: Mock Data</div>
               </div>

@@ -1,5 +1,5 @@
-/* =========================================================
-   Krishi-Prabandh — Design Tokens
+﻿/* =========================================================
+   Krishi-Prabandh - Design Tokens
    Source: Stitch "Agricultural Intelligence Interface"
    Project: 4810585282142419495
    ========================================================= */
@@ -19,7 +19,7 @@
   --color-secondary-light: #baf0bc;
   --color-on-secondary: #ffffff;
 
-  /* ── Tertiary (Deep Crimson — alerts) ── */
+  /* ── Tertiary (Deep Crimson - alerts) ── */
   --color-tertiary: #4d2024;
   --color-tertiary-container: #683639;
   --color-on-tertiary: #ffffff;
@@ -94,7 +94,7 @@
   --amber-light: #FEF3C7;
   --on-amber: #ffffff;
 
-  /* ── Surfaces (Tonal Layering — "The Silent Overseer") ── */
+  /* ── Surfaces (Tonal Layering - "The Silent Overseer") ── */
   --surface: #f9faf6;
   --surface-dim: #d9dad7;
   --surface-bright: #f9faf6;
@@ -121,7 +121,7 @@
   --sidebar-text: #414943;
   --sidebar-text-active: #033621;
 
-  /* ── Typography — 3-Tier Font System ── */
+  /* ── Typography - 3-Tier Font System ── */
   --font-headline: 'Public Sans', 'Noto Sans Devanagari', system-ui, sans-serif;
   --font-body: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
   --font-data: 'IBM Plex Sans', 'Noto Sans Devanagari', monospace, sans-serif;
@@ -151,13 +151,13 @@
 
   /* ── Border Radius (Rounded-XL Philosophy) ── */
   --radius-sm: 0.25rem;   /* 4px */
-  --radius: 0.5rem;       /* 8px — buttons, inputs */
+  --radius: 0.5rem;       /* 8px - buttons, inputs */
   --radius-md: 0.75rem;   /* 12px */
   --radius-lg: 1rem;      /* 16px */
-  --radius-xl: 1.5rem;    /* 24px — cards */
+  --radius-xl: 1.5rem;    /* 24px - cards */
   --radius-full: 9999px;  /* pills */
 
-  /* ── Shadows (Layered Tonal — minimal, diffused) ── */
+  /* ── Shadows (Layered Tonal - minimal, diffused) ── */
   --shadow-none: none;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.04);

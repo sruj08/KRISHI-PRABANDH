@@ -1,11 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import '../district/district.css';
 import '../state/state-dashboard.css';
 
 export const TEXT_PRIMARY = '#1a1c1a';
 export const TEXT_MUTED = '#717972';
 
-/** Presentational KPI tile — matches StateDashboard markup/classes. */
+/** Presentational KPI tile - matches StateDashboard markup/classes. */
 export const DivisionKpiCard = ({
   icon,
   label,

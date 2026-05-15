@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+﻿import React, { useEffect, useMemo, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Pie, Bar } from 'react-chartjs-2';
 import {
@@ -41,8 +41,8 @@ const ANALYSIS_MODULES = [
   },
   {
     id: 'ndvi',
-    title: 'Crop stress & NDVI',
-    hint: 'Rain proxy, stress blocks',
+    title: 'Moisture / drought stress',
+    hint: 'Open‑Meteo rain proxy - not satellite NDVI',
     icon: 'terrain',
   },
   {
@@ -308,7 +308,7 @@ const DivisionalAnalysis = () => {
 
       <div className="da-live-strip" aria-label="Division metrics strip">
         <div className="da-live-metric">
-          <div className="da-live-label">Moisture stress</div>
+          <div className="da-live-label">Moisture / drought stress</div>
           <div className="da-live-value">{props.ndviStress}%</div>
           <div className="da-live-sub">Rain archive · point sample</div>
         </div>
@@ -325,7 +325,7 @@ const DivisionalAnalysis = () => {
         <div className="da-live-metric">
           <div className="da-live-label">Mar–Jun rain (pt.)</div>
           <div className="da-live-value">
-            {liveRow?.precipMmMarJun2024 != null ? `${liveRow.precipMmMarJun2024} mm` : '—'}
+            {liveRow?.precipMmMarJun2024 != null ? `${liveRow.precipMmMarJun2024} mm` : '-'}
           </div>
           <div className="da-live-sub">
             {climateMeta?.window
@@ -483,15 +483,15 @@ const DivisionalAnalysis = () => {
 
           {focus === 'ndvi' && (
             <SectionCard
-              title="Crop stress, NDVI telemetry & geo zones"
-              subtitle={`${row.division} — ${snap.plotsWatch.toLocaleString('en-IN')} plots on automated watch vs 30-day baseline.`}
+              title="Moisture / drought stress - desk & planning blocks"
+              subtitle={`${row.division} - ${snap.plotsWatch.toLocaleString('en-IN')} plots on automated watch vs 30-day baseline (demo sizing).`}
             >
               <p style={{ fontSize: 11, color: TEXT_MUTED, margin: '0 0 14px', lineHeight: 1.55 }}>
-                Moisture stress uses archive precipitation at a division sample point. Block table below lists districts and planning notes.
+                Desk stress uses Open‑Meteo archive precipitation at a division sample point (Mar–Jun window in the climate bundle). It is <strong>not</strong> satellite NDVI. The block table lists districts and agronomic planning notes (some rows reference NDVI where field imagery is used).
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 18 }}>
                 <div style={{ border: `1px solid ${PANEL_BORDER}`, borderRadius: 12, padding: '14px 16px', background: '#fafafa' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: TEXT_MUTED, textTransform: 'uppercase' }}>Moisture stress (desk)</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: TEXT_MUTED, textTransform: 'uppercase' }}>Moisture / drought stress (desk)</div>
                   <div style={{ fontSize: 24, fontWeight: 800, marginTop: 6 }}>{snap.ndviStress}%</div>
                   <div style={{ fontSize: 9, color: TEXT_MUTED, marginTop: 6, lineHeight: 1.35 }}>Rain-recharge proxy 0–100 (higher = drier vs other divisions)</div>
                 </div>
@@ -500,7 +500,7 @@ const DivisionalAnalysis = () => {
                   <div style={{ fontSize: 24, fontWeight: 800, marginTop: 6, color: '#b45309' }}>+{snap.baselineDelta}%</div>
                 </div>
                 <div style={{ border: `1px solid ${PANEL_BORDER}`, borderRadius: 12, padding: '14px 16px', background: '#fafafa' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: TEXT_MUTED, textTransform: 'uppercase' }}>Sentinel-2 pass</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: TEXT_MUTED, textTransform: 'uppercase' }}>Optical pass cadence (demo)</div>
                   <div style={{ fontSize: 15, fontWeight: 700, marginTop: 8 }}>{snap.sentinelH}h ago</div>
                 </div>
               </div>
@@ -546,7 +546,7 @@ const DivisionalAnalysis = () => {
           {focus === 'grievance' && (
             <SectionCard
               title="Grievance mechanics & field cadence"
-              subtitle={`${row.division} — workload index ${snap.grievanceIdx} (case pipeline, not registration drivers).`}
+              subtitle={`${row.division} - workload index ${snap.grievanceIdx} (case pipeline, not registration drivers).`}
             >
               <div style={{ overflowX: 'auto', marginBottom: 20 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>

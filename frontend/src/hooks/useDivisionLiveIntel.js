@@ -33,6 +33,7 @@ export function useDivisionLiveIntel() {
           )));
           byCode[c] = {
             schemePenetration: pen,
+            /** Legacy key name: 0–100 rainfall drought / moisture stress desk proxy (not NDVI). */
             ndviStress: stress,
             grievanceIdx: griev,
             precipMmMarJun2024: cd?.precipMmMarJun2024,

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Mock flagged applications for TAO "Application Verification Layer".
  * Sample files live in `public/tao-flagged-samples/` (served as `/tao-flagged-samples/...`).
  * Pending queue thumbnails: `public/tao-pendingapps-samples/` → `/tao-pendingapps-samples/...`.
@@ -23,7 +23,7 @@ export function samplePendingAppsAsset(filename) {
   return `/tao-pendingapps-samples/${encodeURIComponent(filename)}`;
 }
 
-/** Display name for the document column — from renamed file (no extension, underscores → spaces, title case). */
+/** Display name for the document column - from renamed file (no extension, underscores → spaces, title case). */
 export function pendingSampleDisplayName(filename) {
   const base = filename.replace(/\.(jpe?g|png|webp)$/i, '').replace(/_/g, ' ');
   return base.replace(/\b\w/g, (c) => c.toUpperCase());
@@ -46,7 +46,7 @@ export function enrichPendingDocumentsWithSampleThumbs(detail, rowIndex = -1) {
       let verifyLine = '✓ Cleared for Taluka review';
       if (doc.status === 'Manual check') verifyLine = '⚠ Manual verification suggested';
       else if (doc.status !== 'Verified') verifyLine = `Status: ${doc.status}`;
-      const ocrLine = doc.aiPct != null ? `✓ OCR / AI match — ${doc.aiPct}%` : '—';
+      const ocrLine = doc.aiPct != null ? `✓ OCR / AI match - ${doc.aiPct}%` : '-';
 
       if (isTopFour && idx === 0) {
         const file = PENDING_APP_SAMPLE_FILES[rowIndex];
@@ -81,11 +81,11 @@ export const mockBulkSafeApplications = [
   { id: 'SAFE-005', farmer_name: 'Ganesh Raut', scheme: 'Custom Hiring Centre', confidence: 97, statusLines: ['OCR Verified', 'Aadhaar Verified', 'Geo Verified'] },
 ];
 
-/** TAO Pending Applications queue (demo) — includes AI confidence and full `detail` for officer view. */
+/** TAO Pending Applications queue (demo) - includes AI confidence and full `detail` for officer view. */
 const mockPendingApplicationsRaw = [
   {
     id: 'P-104',
-    label: 'APL-2204 — Drip kit verification',
+    label: 'APL-2204 - Drip kit verification',
     meta: 'Submitted 11 May 2026 · Mohol · Taluka clearance pending',
     aiConfidence: 94,
     detail: {
@@ -95,13 +95,13 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '12-03-1978',
       mobile: '9823XXXX12',
-      email: '—',
+      email: '-',
       village: 'Mohol',
       taluka: 'Mohol',
       district: 'Solapur',
       pincode: '413213',
       scheme: 'Drip Irrigation Subsidy',
-      component: 'Drip kit — 0.4 ha',
+      component: 'Drip kit - 0.4 ha',
       financialYear: '2025-26',
       surveyNo: '112/1',
       landAreaHa: '1.42',
@@ -126,7 +126,7 @@ const mockPendingApplicationsRaw = [
   },
   {
     id: 'P-105',
-    label: 'APL-2205 — Seed subsidy bundle',
+    label: 'APL-2205 - Seed subsidy bundle',
     meta: 'Submitted 11 May 2026 · Barshi · Documents complete',
     aiConfidence: 91,
     detail: {
@@ -136,13 +136,13 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '22-07-1985',
       mobile: '9011XXXX44',
-      email: '—',
+      email: '-',
       village: 'Koregaon',
       taluka: 'Barshi',
       district: 'Solapur',
       pincode: '413411',
       scheme: 'Soybean Seed Subsidy',
-      component: 'Certified seed — 2 q',
+      component: 'Certified seed - 2 q',
       financialYear: '2025-26',
       surveyNo: '88/B',
       landAreaHa: '0.85',
@@ -153,7 +153,7 @@ const mockPendingApplicationsRaw = [
       ifsc: 'HDFC0002144',
       submittedAt: '11 May 2026, 14:18',
       lastUpdated: '12 May 2026, 08:40',
-      queueStatus: 'Documents complete — awaiting TAO',
+      queueStatus: 'Documents complete - awaiting TAO',
       documents: [
         { name: 'Aadhaar', status: 'Verified', aiPct: 96 },
         { name: 'Seed dealer invoice', status: 'Verified', aiPct: 89 },
@@ -166,7 +166,7 @@ const mockPendingApplicationsRaw = [
   },
   {
     id: 'P-106',
-    label: 'APL-2206 — Equipment grant',
+    label: 'APL-2206 - Equipment grant',
     meta: 'Submitted 10 May 2026 · Pandharpur · Bank verified',
     aiConfidence: 89,
     detail: {
@@ -176,7 +176,7 @@ const mockPendingApplicationsRaw = [
       gender: 'Female',
       dob: '05-11-1990',
       mobile: '9156XXXX77',
-      email: '—',
+      email: '-',
       village: 'Pandharpur',
       taluka: 'Pandharpur',
       district: 'Solapur',
@@ -193,7 +193,7 @@ const mockPendingApplicationsRaw = [
       ifsc: 'BARB0PANDHR',
       submittedAt: '10 May 2026, 16:02',
       lastUpdated: '11 May 2026, 11:30',
-      queueStatus: 'Bank verified — taluka queue',
+      queueStatus: 'Bank verified - taluka queue',
       documents: [
         { name: 'Aadhaar', status: 'Verified', aiPct: 95 },
         { name: 'Equipment quotation', status: 'Verified', aiPct: 87 },
@@ -206,7 +206,7 @@ const mockPendingApplicationsRaw = [
   },
   {
     id: 'P-107',
-    label: 'APL-2207 — CHC rental support',
+    label: 'APL-2207 - CHC rental support',
     meta: 'Submitted 10 May 2026 · Solapur · Awaiting officer sign-off',
     aiConfidence: 93,
     detail: {
@@ -216,13 +216,13 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '18-01-1982',
       mobile: '9373XXXX09',
-      email: '—',
+      email: '-',
       village: 'Solapur (Rural)',
       taluka: 'Solapur North',
       district: 'Solapur',
       pincode: '413006',
       scheme: 'Custom Hiring Centre (CHC) Subsidy',
-      component: 'CHC service charges — rabi',
+      component: 'CHC service charges - rabi',
       financialYear: '2025-26',
       surveyNo: '201/A',
       landAreaHa: '2.10',
@@ -245,7 +245,7 @@ const mockPendingApplicationsRaw = [
   },
   {
     id: 'P-108',
-    label: 'APL-2208 — Soybean area subsidy',
+    label: 'APL-2208 - Soybean area subsidy',
     meta: 'Submitted 9 May 2026 · Madha · 7/12 matched',
     aiConfidence: 90,
     detail: {
@@ -255,13 +255,13 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '30-04-1988',
       mobile: '9422XXXX33',
-      email: '—',
+      email: '-',
       village: 'Madha',
       taluka: 'Madha',
       district: 'Solapur',
       pincode: '413209',
       scheme: 'Soybean Area Subsidy',
-      component: 'Area-based — 1.2 ha',
+      component: 'Area-based - 1.2 ha',
       financialYear: '2025-26',
       surveyNo: '448/2',
       landAreaHa: '1.20',
@@ -272,19 +272,19 @@ const mockPendingApplicationsRaw = [
       ifsc: 'SBIN0004455',
       submittedAt: '9 May 2026, 11:20',
       lastUpdated: '10 May 2026, 10:00',
-      queueStatus: '7/12 matched — taluka pending',
+      queueStatus: '7/12 matched - taluka pending',
       documents: [
         { name: 'Aadhaar', status: 'Verified', aiPct: 94 },
         { name: '7/12 extract', status: 'Verified', aiPct: 92 },
         { name: 'Crop declaration', status: 'Verified', aiPct: 86 },
       ],
       aiSummary: 'Survey number aligns with digitised land records for Madha taluka.',
-      sahayakRemarks: '—',
+      sahayakRemarks: '-',
     },
   },
   {
     id: 'P-109',
-    label: 'APL-2209 — Solar pump (small)',
+    label: 'APL-2209 - Solar pump (small)',
     meta: 'Submitted 9 May 2026 · Sangola · Geo-tag attached',
     aiConfidence: 92,
     detail: {
@@ -294,7 +294,7 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '14-09-1975',
       mobile: '9960XXXX55',
-      email: '—',
+      email: '-',
       village: 'Sangola',
       taluka: 'Sangola',
       district: 'Solapur',
@@ -311,7 +311,7 @@ const mockPendingApplicationsRaw = [
       ifsc: 'UBIN0532120',
       submittedAt: '9 May 2026, 08:10',
       lastUpdated: '10 May 2026, 09:15',
-      queueStatus: 'Geo-tag attached — review',
+      queueStatus: 'Geo-tag attached - review',
       documents: [
         { name: 'Aadhaar', status: 'Verified', aiPct: 96 },
         { name: 'Field photo + GPS', status: 'Verified', aiPct: 91 },
@@ -323,7 +323,7 @@ const mockPendingApplicationsRaw = [
   },
   {
     id: 'P-110',
-    label: 'APL-2210 — Drip lateral extension',
+    label: 'APL-2210 - Drip lateral extension',
     meta: 'Submitted 8 May 2026 · Mohol · Technical OK',
     aiConfidence: 88,
     detail: {
@@ -333,7 +333,7 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '02-06-1980',
       mobile: '9881XXXX21',
-      email: '—',
+      email: '-',
       village: 'Mohol',
       taluka: 'Mohol',
       district: 'Solapur',
@@ -350,7 +350,7 @@ const mockPendingApplicationsRaw = [
       ifsc: 'SBIN0001234',
       submittedAt: '8 May 2026, 13:40',
       lastUpdated: '9 May 2026, 16:20',
-      queueStatus: 'Technical OK — taluka pending',
+      queueStatus: 'Technical OK - taluka pending',
       documents: [
         { name: 'Aadhaar', status: 'Verified', aiPct: 95 },
         { name: 'Layout sketch', status: 'Verified', aiPct: 82 },
@@ -362,17 +362,17 @@ const mockPendingApplicationsRaw = [
   },
   {
     id: 'P-111',
-    label: 'APL-2211 — Organic input kit',
+    label: 'APL-2211 - Organic input kit',
     meta: 'Submitted 8 May 2026 · Loni Kalbhor · Invoice checked',
     aiConfidence: 86,
     detail: {
       applicationId: 'APL-2211',
       farmerName: 'Sunita Mane',
-      fatherName: '—',
+      fatherName: '-',
       gender: 'Female',
       dob: '19-12-1987',
       mobile: '9028XXXX66',
-      email: '—',
+      email: '-',
       village: 'Loni Kalbhor',
       taluka: 'Haveli',
       district: 'Pune',
@@ -389,19 +389,19 @@ const mockPendingApplicationsRaw = [
       ifsc: 'HDFC0001234',
       submittedAt: '8 May 2026, 10:05',
       lastUpdated: '9 May 2026, 12:00',
-      queueStatus: 'Invoice checked — taluka pending',
+      queueStatus: 'Invoice checked - taluka pending',
       documents: [
         { name: 'Aadhaar', status: 'Verified', aiPct: 94 },
         { name: 'Supplier bill', status: 'Verified', aiPct: 80 },
         { name: 'Bank passbook', status: 'Verified', aiPct: 88 },
       ],
       aiSummary: 'Supplier GST active; amount within district kit ceiling.',
-      sahayakRemarks: '—',
+      sahayakRemarks: '-',
     },
   },
   {
     id: 'P-112',
-    label: 'APL-2212 — Farm pond lining',
+    label: 'APL-2212 - Farm pond lining',
     meta: 'Submitted 7 May 2026 · Barshi · Field visit done',
     aiConfidence: 87,
     detail: {
@@ -411,13 +411,13 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '25-03-1972',
       mobile: '9425XXXX88',
-      email: '—',
+      email: '-',
       village: 'Barshi',
       taluka: 'Barshi',
       district: 'Solapur',
       pincode: '413411',
       scheme: 'Farm Pond (Jal Sinchan)',
-      component: 'HDPE lining — 30m × 20m',
+      component: 'HDPE lining - 30m × 20m',
       financialYear: '2025-26',
       surveyNo: '501/E',
       landAreaHa: '1.80',
@@ -428,7 +428,7 @@ const mockPendingApplicationsRaw = [
       ifsc: 'ICIC0002211',
       submittedAt: '7 May 2026, 15:30',
       lastUpdated: '8 May 2026, 09:45',
-      queueStatus: 'Field visit done — taluka pending',
+      queueStatus: 'Field visit done - taluka pending',
       documents: [
         { name: 'Aadhaar', status: 'Verified', aiPct: 93 },
         { name: 'Site photos', status: 'Verified', aiPct: 85 },
@@ -440,7 +440,7 @@ const mockPendingApplicationsRaw = [
   },
   {
     id: 'P-113',
-    label: 'APL-2213 — Tractor-driven sprayer',
+    label: 'APL-2213 - Tractor-driven sprayer',
     meta: 'Submitted 7 May 2026 · Pandharpur · Awaiting TAO',
     aiConfidence: 85,
     detail: {
@@ -450,7 +450,7 @@ const mockPendingApplicationsRaw = [
       gender: 'Female',
       dob: '08-02-1992',
       mobile: '9015XXXX41',
-      email: '—',
+      email: '-',
       village: 'Pandharpur',
       taluka: 'Pandharpur',
       district: 'Solapur',
@@ -474,13 +474,13 @@ const mockPendingApplicationsRaw = [
         { name: 'RC / tractor proof', status: 'Manual check', aiPct: 72 },
       ],
       aiSummary: 'Tractor ownership document needs one manual cross-check; other fields strong.',
-      sahayakRemarks: 'RC copy slightly blurred — officer to confirm.',
+      sahayakRemarks: 'RC copy slightly blurred - officer to confirm.',
     },
   },
   {
     id: 'P-114',
-    label: 'APL-2214 — Mulching material',
-    meta: 'Submitted 6 May 2026 · Mangalwedha · Low value — fast track',
+    label: 'APL-2214 - Mulching material',
+    meta: 'Submitted 6 May 2026 · Mangalwedha · Low value - fast track',
     aiConfidence: 95,
     detail: {
       applicationId: 'APL-2214',
@@ -489,13 +489,13 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '11-11-1984',
       mobile: '9371XXXX19',
-      email: '—',
+      email: '-',
       village: 'Mangalwedha',
       taluka: 'Mangalwedha',
       district: 'Solapur',
       pincode: '413305',
       scheme: 'Mulching Support',
-      component: 'Plastic mulch — 0.4 ha',
+      component: 'Plastic mulch - 0.4 ha',
       financialYear: '2025-26',
       surveyNo: '78/1',
       landAreaHa: '0.40',
@@ -506,7 +506,7 @@ const mockPendingApplicationsRaw = [
       ifsc: 'SBIN0006677',
       submittedAt: '6 May 2026, 09:00',
       lastUpdated: '7 May 2026, 10:10',
-      queueStatus: 'Low value — fast track',
+      queueStatus: 'Low value - fast track',
       documents: [
         { name: 'Aadhaar', status: 'Verified', aiPct: 97 },
         { name: 'Bill', status: 'Verified', aiPct: 94 },
@@ -517,7 +517,7 @@ const mockPendingApplicationsRaw = [
   },
   {
     id: 'P-115',
-    label: 'APL-2215 — Community nursery bed',
+    label: 'APL-2215 - Community nursery bed',
     meta: 'Submitted 6 May 2026 · Solapur · Gram sabha note attached',
     aiConfidence: 83,
     detail: {
@@ -527,7 +527,7 @@ const mockPendingApplicationsRaw = [
       gender: 'Male',
       dob: '03-05-1970',
       mobile: '9420XXXX27',
-      email: '—',
+      email: '-',
       village: 'Solapur (Rural)',
       taluka: 'Solapur North',
       district: 'Solapur',
@@ -551,7 +551,7 @@ const mockPendingApplicationsRaw = [
         { name: 'Estimate', status: 'Verified', aiPct: 81 },
       ],
       aiSummary: 'Resolution date and signatories match GP master list for Solapur North.',
-      sahayakRemarks: 'Community scheme — verify GP seal once.',
+      sahayakRemarks: 'Community scheme - verify GP seal once.',
     },
   },
 ];
@@ -581,10 +581,10 @@ export const mockFlaggedCases = [
       farmer_name: 'Sham Patil',
       survey_number: '112/1',
       village: 'Solapur',
-      bank_account: '—',
-      ifsc: '—',
-      invoice_amount: '—',
-      gst_number: '—',
+      bank_account: '-',
+      ifsc: '-',
+      invoice_amount: '-',
+      gst_number: '-',
     },
     risk_factors: ['Same receipt number, machine ID, UPI and time as another application; only beneficiary name differs'],
     documents: ['CHC Rental Receipt', 'Aadhaar', 'Land record'],
@@ -595,7 +595,7 @@ export const mockFlaggedCases = [
         {
           title: 'CHC Rental Receipt',
           thumb: sampleAsset('Screenshot 2026-05-14 195138.png'),
-          ocrLine: '✓ OCR Extracted — 98% confidence',
+          ocrLine: '✓ OCR Extracted - 98% confidence',
           verifyLine: '⚠ Duplicate receipt detected',
           verifyWarn: true,
           wordUrl: sampleAsset('CHC_Receipt_ROT_11872.docx'),
@@ -603,13 +603,13 @@ export const mockFlaggedCases = [
         {
           title: 'MH Lease (reference)',
           thumb: null,
-          ocrLine: '—',
+          ocrLine: '-',
           verifyLine: 'Supporting document',
           verifyWarn: false,
           wordUrl: sampleAsset('MH_Lease_Agreement_Official.docx'),
         },
         { title: 'Aadhaar.pdf', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '✓ Verified', verifyWarn: false },
-        { title: 'Land Record.pdf', thumb: null, ocrLine: '—', verifyLine: 'Manual check', verifyWarn: false },
+        { title: 'Land Record.pdf', thumb: null, ocrLine: '-', verifyLine: 'Manual check', verifyWarn: false },
       ],
       aiFindings: {
         headline: 'This receipt appears reused in another application.',
@@ -626,8 +626,8 @@ export const mockFlaggedCases = [
         confidencePct: 98,
       },
       sideBySide: {
-        leftCaption: 'Earlier application — Ravindra Pandurang Wagh',
-        rightCaption: 'This application — Sham Patil',
+        leftCaption: 'Earlier application - Ravindra Pandurang Wagh',
+        rightCaption: 'This application - Sham Patil',
         leftSrc: sampleAsset('Screenshot 2026-05-14 194953.png'),
         rightSrc: sampleAsset('Screenshot 2026-05-14 195138.png'),
         legend: 'Yellow highlights: same on both receipts. Red: changed beneficiary name.',
@@ -652,9 +652,9 @@ export const mockFlaggedCases = [
       farmer_name: 'Prakash Ingle',
       survey_number: '203/5',
       village: 'Barshi',
-      bank_account: '—',
-      ifsc: '—',
-      invoice_amount: '—',
+      bank_account: '-',
+      ifsc: '-',
+      invoice_amount: '-',
       gst_number: '27AAACK1234A1Z5',
     },
     risk_factors: ['Credit note / invoice pattern matches an earlier subsidy claim'],
@@ -666,13 +666,13 @@ export const mockFlaggedCases = [
         {
           title: 'Kaveri Seeds credit note',
           thumb: sampleAsset('Screenshot 2026-05-14 193042.png'),
-          ocrLine: '✓ OCR Extracted — 96% confidence',
+          ocrLine: '✓ OCR Extracted - 96% confidence',
           verifyLine: '⚠ Invoice reused in another subsidy claim',
           verifyWarn: true,
           wordUrl: null,
         },
         { title: 'Aadhaar.pdf', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '✓ Verified', verifyWarn: false },
-        { title: 'Bank passbook', thumb: null, ocrLine: '—', verifyLine: 'No issue flagged', verifyWarn: false },
+        { title: 'Bank passbook', thumb: null, ocrLine: '-', verifyLine: 'No issue flagged', verifyWarn: false },
       ],
       aiFindings: {
         headline: 'Invoice appears reused in another subsidy claim.',
@@ -691,7 +691,7 @@ export const mockFlaggedCases = [
   {
     id: 'APL-2026-AAD-1',
     farmer_name: 'Vikas Patil',
-    scheme: 'PM Kisan — State Top-up',
+    scheme: 'PM Kisan - State Top-up',
     village: 'Pandharpur',
     survey_number: '78/2',
     submitted: '12 May 2026',
@@ -706,10 +706,10 @@ export const mockFlaggedCases = [
       farmer_name: 'Vikas Patil',
       survey_number: '78/2',
       village: 'Pandharpur',
-      bank_account: '—',
-      ifsc: '—',
-      invoice_amount: '—',
-      gst_number: '—',
+      bank_account: '-',
+      ifsc: '-',
+      invoice_amount: '-',
+      gst_number: '-',
     },
     risk_factors: ['UID status / mapping checks failed', 'Possible duplicate beneficiary linkage'],
     documents: ['Aadhaar', '7/12 extract', 'Consent form'],
@@ -717,8 +717,8 @@ export const mockFlaggedCases = [
       tags: ['AADHAAR ISSUE', 'MANUAL REVIEW'],
       documentCards: [
         { title: 'Aadhaar.pdf', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '⚠ Aadhaar inactive / mapping issue', verifyWarn: true },
-        { title: '7/12 extract', thumb: null, ocrLine: '—', verifyLine: 'Manual check', verifyWarn: false },
-        { title: 'Consent form', thumb: null, ocrLine: '—', verifyLine: '—', verifyWarn: false },
+        { title: '7/12 extract', thumb: null, ocrLine: '-', verifyLine: 'Manual check', verifyWarn: false },
+        { title: 'Consent form', thumb: null, ocrLine: '-', verifyLine: '-', verifyWarn: false },
       ],
       verificationRemarks: [
         '⚠ Aadhaar inactive',
@@ -751,10 +751,10 @@ export const mockFlaggedCases = [
       farmer_name: 'Sunil Kadam',
       survey_number: '448/4',
       village: 'Madha',
-      bank_account: '—',
-      ifsc: '—',
-      invoice_amount: '—',
-      gst_number: '—',
+      bank_account: '-',
+      ifsc: '-',
+      invoice_amount: '-',
+      gst_number: '-',
     },
     risk_factors: ['Same ownership / survey pattern repeated across multiple subsidy claims'],
     documents: ['7/12 extract', 'Crop declaration', 'Aadhaar'],
@@ -762,7 +762,7 @@ export const mockFlaggedCases = [
       tags: ['SURVEY DUPLICATE', 'HIGH RISK', 'MANUAL REVIEW'],
       documentCards: [
         { title: '7/12 extract', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '⚠ Same survey pattern as other claims', verifyWarn: true },
-        { title: 'Crop declaration', thumb: null, ocrLine: '—', verifyLine: 'Cross-check advised', verifyWarn: false },
+        { title: 'Crop declaration', thumb: null, ocrLine: '-', verifyLine: 'Cross-check advised', verifyWarn: false },
         { title: 'Aadhaar.pdf', thumb: null, ocrLine: '✓ OCR Extracted', verifyLine: '✓ Format OK', verifyWarn: false },
       ],
       aiFindings: {
@@ -800,7 +800,7 @@ export const mockFlaggedCases = [
       gst_number: '27AABCS1234A1Z5',
     },
     risk_factors: [
-      'Duplicate invoice — used in APL-0092',
+      'Duplicate invoice - used in APL-0092',
       'Aadhaar name does not match land records',
       'Bank account inactive',
     ],
@@ -866,8 +866,8 @@ export const mockFlaggedCases = [
       village: 'Loni Kalbhor',
       bank_account: '3322114455',
       ifsc: 'MAHB0000987',
-      invoice_amount: '—',
-      gst_number: '—',
+      invoice_amount: '-',
+      gst_number: '-',
     },
     risk_factors: ['Stamp serial appears on multiple applications', 'Owner / tenant name divergence'],
     documents: ['Bhade Khat', 'Aadhaar', 'Satbara'],
@@ -899,8 +899,8 @@ export const mockFlaggedCases = [
       village: 'Madha',
       bank_account: '5544332211',
       ifsc: 'SBIN0004455',
-      invoice_amount: '—',
-      gst_number: '—',
+      invoice_amount: '-',
+      gst_number: '-',
     },
     risk_factors: ['Same stamp serial cluster as Loni Kalbhor batch'],
     documents: ['Bhade Khat', 'Satbara'],
@@ -933,8 +933,8 @@ export const mockFlaggedCases = [
       village: 'Pandharpur',
       bank_account: '6677889900',
       ifsc: 'BARB0PANDHR',
-      invoice_amount: '—',
-      gst_number: '—',
+      invoice_amount: '-',
+      gst_number: '-',
     },
     risk_factors: ['Identical coordinates across two field photos', 'Same capture timestamp'],
     documents: ['Field Photo A', 'Field Photo B', 'Aadhaar'],
@@ -969,7 +969,7 @@ export const mockFlaggedCases = [
       bank_account: '0011223344',
       ifsc: 'SBIN0001234',
       invoice_amount: '₹32,000',
-      gst_number: '—',
+      gst_number: '-',
     },
     risk_factors: ['Beneficiary account marked inactive', 'No recent transactions on record'],
     documents: ['Bank Passbook', 'Aadhaar', 'Invoice'],

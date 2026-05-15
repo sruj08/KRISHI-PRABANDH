@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useToast } from '../../hooks/useToast.jsx';
 import { useLanguage } from '../../context/LanguageContext';
 import {
@@ -130,10 +130,10 @@ function MiddlePanel({ c }) {
       <RowKV k={t('Farmer name')} v={f.farmer_name || c.farmer_name} />
       <RowKV k={t('Survey no.')} v={f.survey_number || c.survey_number} />
       <RowKV k={t('Village')} v={f.village || c.village} />
-      <RowKV k={t('Bank account')} v={f.bank_account || '—'} />
-      <RowKV k={t('IFSC')} v={f.ifsc || '—'} />
-      <RowKV k={t('Invoice amount')} v={f.invoice_amount || '—'} />
-      <RowKV k={t('GST no.')} v={f.gst_number || c.gst_number || '—'} />
+      <RowKV k={t('Bank account')} v={f.bank_account || '-'} />
+      <RowKV k={t('IFSC')} v={f.ifsc || '-'} />
+      <RowKV k={t('Invoice amount')} v={f.invoice_amount || '-'} />
+      <RowKV k={t('GST no.')} v={f.gst_number || c.gst_number || '-'} />
     </>
   );
 
@@ -188,7 +188,7 @@ function MiddlePanel({ c }) {
             {t('Image A (placeholder)')}
           </div>
           <div style={{ height: 96, background: '#fde8e8', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: RED, textAlign: 'center', padding: 8 }}>
-            {t('Image B — DUPLICATE')}
+            {t('Image B - DUPLICATE')}
           </div>
         </div>
       </>
@@ -254,9 +254,9 @@ function RightPanel({ c }) {
   if (c.fraud_type === 'duplicate_invoice') {
     return (
       <>
-        <ResultLine label="Invoice duplicate" value={`✗ YES — ${dupRef ? `used in ${dupRef}` : 'linked'}`} state="no" />
+        <ResultLine label="Invoice duplicate" value={`✗ YES - ${dupRef ? `used in ${dupRef}` : 'linked'}`} state="no" />
         <ResultLine label="GST format" value="✓ VALID" state="yes" />
-        <ResultLine label="Amount vs. norm" value="✗ FLAG — above avg ₹35k" state="no" />
+        <ResultLine label="Amount vs. norm" value="✗ FLAG - above avg ₹35k" state="no" />
         <ResultLine label="Fraud score" value={`${c.risk_score}/100`} state="no" />
         <div style={{ marginTop: 12, fontSize: 11, fontWeight: 700, color: TEXT }}>{t('Risk factors')}</div>
         <ul style={{ margin: '6px 0 0', paddingLeft: 18, color: MUTED, fontSize: 11, lineHeight: 1.55 }}>
@@ -270,7 +270,7 @@ function RightPanel({ c }) {
   if (c.fraud_type === 'bhade_khat') {
     return (
       <>
-        <ResultLine label="Stamp serial unique" value="✗ NO — 3 applications" state="no" />
+        <ResultLine label="Stamp serial unique" value="✗ NO - 3 applications" state="no" />
         <ResultLine label="Signature detected" value="✗ NOT FOUND" state="no" />
         <ResultLine label="Owner name match" value="✗ MISMATCH" state="no" />
         <div style={{ marginTop: 12, fontSize: 11, fontWeight: 700, color: TEXT }}>{t('Risk factors')}</div>
@@ -285,7 +285,7 @@ function RightPanel({ c }) {
   if (c.fraud_type === 'geo_duplicate') {
     return (
       <>
-        <ResultLine label="Unique geo-tag" value="✗ NO — duplicate" state="no" />
+        <ResultLine label="Unique geo-tag" value="✗ NO - duplicate" state="no" />
         <ResultLine label="Timestamp valid" value="✗ DUPLICATE TIME" state="no" />
         <ResultLine label="Crop area match" value="? UNVERIFIED" state="unknown" />
         <div style={{ marginTop: 12, fontSize: 11, fontWeight: 700, color: TEXT }}>{t('Risk factors')}</div>
@@ -315,7 +315,7 @@ function RightPanel({ c }) {
   if (c.fraud_type === 'suspicious_pricing') {
     return (
       <>
-        <ResultLine label="Amount within limit" value="✗ NO — ₹1,20,000 vs avg ₹35k" state="no" />
+        <ResultLine label="Amount within limit" value="✗ NO - ₹1,20,000 vs avg ₹35k" state="no" />
         <ResultLine label="Dealer verified" value="? NOT IN DATABASE" state="unknown" />
         <ResultLine label="GST valid" value="✓ YES" state="yes" />
         <div style={{ marginTop: 12, fontSize: 11, fontWeight: 700, color: TEXT }}>{t('Risk factors')}</div>
@@ -390,7 +390,7 @@ function DocumentPreviewModal({ preview, onClose }) {
           <img src={src} alt="" style={{ width: '100%', height: 'auto', borderRadius: 12, border: `1px solid ${PANEL}` }} />
         ) : downloadUrl ? (
           <div style={{ padding: 16, background: '#fafbf9', borderRadius: 12, border: `1px solid ${PANEL}` }}>
-            <p style={{ margin: '0 0 12px', fontSize: 13, color: TEXT }}>Word document — download to open.</p>
+            <p style={{ margin: '0 0 12px', fontSize: 13, color: TEXT }}>Word document - download to open.</p>
             <a className="btn btn-primary" href={downloadUrl} download style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               <span className="material-symbols-outlined" style={{ fontSize: 18 }}>download</span>
               Download
@@ -458,7 +458,7 @@ function ReviewDocumentCard({ doc, onOpen }) {
         <div style={{ fontSize: 10, color: GREEN, fontWeight: 600, lineHeight: 1.35 }}>{doc.ocrLine}</div>
         <div style={{ fontSize: 10, color: doc.verifyWarn ? AMBER : MUTED, fontWeight: 700, marginTop: 4 }}>{doc.verifyLine}</div>
         {doc.wordUrl ? (
-          <span style={{ fontSize: 9, color: MUTED, marginTop: 4, display: 'block' }}>.docx on file — click card to open</span>
+          <span style={{ fontSize: 9, color: MUTED, marginTop: 4, display: 'block' }}>.docx on file - click card to open</span>
         ) : null}
       </div>
     </button>

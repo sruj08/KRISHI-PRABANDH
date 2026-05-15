@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useHierarchy } from '../../context/HierarchyContext';
 
 const HierarchySelector = () => {
@@ -100,7 +100,7 @@ const HierarchySelector = () => {
               ))}
             </div>
 
-            {/* Sahayak section — only shown when mandal selected */}
+            {/* Sahayak section - only shown when mandal selected */}
             {currentMandal && (
               <div style={{ padding: '8px 16px 12px' }}>
                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>

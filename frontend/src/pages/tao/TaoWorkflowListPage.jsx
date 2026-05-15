@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useToast } from '../../hooks/useToast.jsx';
 import { useLanguage } from '../../context/LanguageContext';
 import {
@@ -115,8 +115,8 @@ function PendingReviewDocumentCard({ doc, onOpen }) {
       )}
       <div style={{ minWidth: 0 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{doc.name}</div>
-        <div style={{ fontSize: 10, color: GREEN, fontWeight: 600, lineHeight: 1.35 }}>{doc.ocrLine || '—'}</div>
-        <div style={{ fontSize: 10, color: doc.verifyWarn ? AMBER : MUTED, fontWeight: 700, marginTop: 4 }}>{doc.verifyLine || '—'}</div>
+        <div style={{ fontSize: 10, color: GREEN, fontWeight: 600, lineHeight: 1.35 }}>{doc.ocrLine || '-'}</div>
+        <div style={{ fontSize: 10, color: doc.verifyWarn ? AMBER : MUTED, fontWeight: 700, marginTop: 4 }}>{doc.verifyLine || '-'}</div>
       </div>
     </button>
   );
@@ -126,7 +126,7 @@ function DetailKV({ k, v }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8, fontSize: 12, padding: '6px 0', borderBottom: '1px solid #f3f4f0' }}>
       <span style={{ color: MUTED, fontWeight: 700 }}>{k}</span>
-      <span style={{ color: TEXT, fontWeight: 600 }}>{v || '—'}</span>
+      <span style={{ color: TEXT, fontWeight: 600 }}>{v || '-'}</span>
     </div>
   );
 }
@@ -243,7 +243,7 @@ function PendingApplicationDetailModal({ row, onClose }) {
 
           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: MUTED, marginBottom: 8 }}>UPLOADED DOCUMENTS</div>
           <p style={{ margin: '0 0 10px', fontSize: 10, color: MUTED, lineHeight: 1.45 }}>
-            Sample scans from the upload queue — click a card to enlarge (demo).
+            Sample scans from the upload queue - click a card to enlarge (demo).
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10, marginBottom: 14 }}>
             {(d.documents || []).map((doc) => (
@@ -265,7 +265,7 @@ function PendingApplicationDetailModal({ row, onClose }) {
                   <tr key={doc.name} style={{ borderTop: `1px solid ${PANEL}` }}>
                     <td style={{ padding: '8px 10px', fontWeight: 600, color: TEXT }}>{doc.name}</td>
                     <td style={{ padding: '8px 10px', fontWeight: 700, color: docStatusColor(doc.status) }}>{doc.status}</td>
-                    <td style={{ padding: '8px 10px', fontWeight: 700 }}>{doc.aiPct != null ? `${doc.aiPct}%` : '—'}</td>
+                    <td style={{ padding: '8px 10px', fontWeight: 700 }}>{doc.aiPct != null ? `${doc.aiPct}%` : '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -429,7 +429,7 @@ const TaoWorkflowListPage = ({ title, subtitle, rows, emptyHint, bulkApprove, on
               key={r.id}
               onClick={() => {
                 if (onApplicationSelect) onApplicationSelect(r);
-                else addToast(`Queued item ${r.id} — detail view coming soon.`, 'success', 2800);
+                else addToast(`Queued item ${r.id} - detail view coming soon.`, 'success', 2800);
               }}
               style={{
                 width: '100%',
@@ -545,9 +545,9 @@ export function TaoFieldVerificationPage() {
       title={t('Field Verification Requests')}
       subtitle={t('TAO-coordinated field visits requested from circle teams. Assignments are illustrative only.')}
       rows={[
-        { id: 'F-12', label: 'Visit — Loni Kalbhor cluster', meta: 'Due 16 May 2026 · High backlog' },
-        { id: 'F-13', label: 'Re-verify — Barshi dealer yard', meta: 'Due 18 May 2026 · Evidence pack attached' },
-        { id: 'F-14', label: 'Spot check — Sangola warehouse', meta: 'Due 20 May 2026 · Standard rotation' },
+        { id: 'F-12', label: 'Visit - Loni Kalbhor cluster', meta: 'Due 16 May 2026 · High backlog' },
+        { id: 'F-13', label: 'Re-verify - Barshi dealer yard', meta: 'Due 18 May 2026 · Evidence pack attached' },
+        { id: 'F-14', label: 'Spot check - Sangola warehouse', meta: 'Due 20 May 2026 · Standard rotation' },
       ]}
     />
   );

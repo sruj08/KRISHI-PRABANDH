@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Realistic operational mock data for Taluka Agriculture Officer flows.
  * Preloaded across officer command-center pages (no backend required for demo).
  */
@@ -35,7 +35,7 @@ export const PRIORITY_QUEUE = [
     id: 'pq-2',
     urgency: 'high',
     title: '3 duplicate Aadhaar alerts detected',
-    detail: 'Same masked UID tail across unrelated khata numbers — NPCI rejects elevated.',
+    detail: 'Same masked UID tail across unrelated khata numbers - NPCI rejects elevated.',
     actionLabel: 'Review duplicates',
     path: '/officer/ai-verification',
     timeLabel: 'Updated 07:15',
@@ -77,13 +77,13 @@ export const AI_INSIGHTS = [
   },
   {
     id: 'ai-2',
-    text: 'Repeated inactive Aadhaar failures from Malegaon cluster — same IFSC branch mapping.',
+    text: 'Repeated inactive Aadhaar failures from Malegaon cluster - same IFSC branch mapping.',
     severity: 'medium',
     path: '/officer/alerts',
   },
   {
     id: 'ai-3',
-    text: 'Unusual compensation spike in Nimbut and Rui — check rainfall layer vs self-reported loss.',
+    text: 'Unusual compensation spike in Nimbut and Rui - check rainfall layer vs self-reported loss.',
     severity: 'medium',
     path: '/officer/crop-damage',
   },
@@ -99,11 +99,11 @@ export const VILLAGE_HEAT = [
 ];
 
 export const ACTIVITY_FEED = [
-  { id: 'a1', type: 'approval', text: 'Approved PMFBY intimation — Kadam, Rui', time: '09:12' },
-  { id: 'a2', type: 'flag', text: 'Flagged tractor subsidy — invoice hash match', time: '08:56' },
+  { id: 'a1', type: 'approval', text: 'Approved PMFBY intimation - Kadam, Rui', time: '09:12' },
+  { id: 'a2', type: 'flag', text: 'Flagged tractor subsidy - invoice hash match', time: '08:56' },
   { id: 'a3', type: 'ai', text: 'AI: duplicate chassis alert linked to Satara claim', time: '08:40' },
-  { id: 'a4', type: 'field', text: 'Field photo upload — soybean plot, GPS verified', time: '08:22' },
-  { id: 'a5', type: 'release', text: 'Compensation batch released — 6 farmers', time: 'Yesterday' },
+  { id: 'a4', type: 'field', text: 'Field photo upload - soybean plot, GPS verified', time: '08:22' },
+  { id: 'a5', type: 'release', text: 'Compensation batch released - 6 farmers', time: 'Yesterday' },
 ];
 
 export const ALERTS_FEED = [
@@ -114,10 +114,10 @@ export const ALERTS_FEED = [
 ];
 
 export const DAILY_TASKS = [
-  { id: 'd1', title: 'Verify PM-KISAN batch — Madha circle', time: '10:30', priority: 'HIGH', route: '/officer/application-review' },
-  { id: 'd2', title: 'Field visit — drip subsidy, Nimbut', time: '14:00', priority: 'MEDIUM', route: '/officer/field-verification' },
-  { id: 'd3', title: 'Sign panchanama pack — hailstorm case', time: '16:00', priority: 'HIGH', route: '/officer/crop-damage' },
-  { id: 'd4', title: 'DAO escalation response — duplicate land', time: 'EOD', priority: 'LOW', route: '/officer/alerts' },
+  { id: 'd1', title: 'Verify PM-KISAN batch - Madha circle', time: '10:30', priority: 'HIGH', route: '/officer/application-review' },
+  { id: 'd2', title: 'Field visit - drip subsidy, Nimbut', time: '14:00', priority: 'MEDIUM', route: '/officer/field-verification' },
+  { id: 'd3', title: 'Sign panchanama pack - hailstorm case', time: '16:00', priority: 'HIGH', route: '/officer/crop-damage' },
+  { id: 'd4', title: 'DAO escalation response - duplicate land', time: 'EOD', priority: 'LOW', route: '/officer/alerts' },
 ];
 
 export const FARMER_REGISTRY = [
@@ -231,7 +231,7 @@ export const ELIGIBILITY_QUEUE = [
     riskScore: 88,
     passed: ['Land record linked', 'Crop declaration present'],
     failed: ['Invoice authenticity', 'Dealer distance rule'],
-    aiNote: 'Recommend manual review — application similarity 92% with rejected claim APP-2025-991.',
+    aiNote: 'Recommend manual review - application similarity 92% with rejected claim APP-2025-991.',
   },
   {
     id: 'EL-02',
@@ -275,7 +275,7 @@ export const FIELD_VISITS = [
     scheme: 'Tractor subsidy',
     km: 12.1,
     risk: 'HIGH',
-    lastVisit: '—',
+    lastVisit: '-',
     photos: 5,
     gpsOk: true,
     remarks: 'Chassis stamp matches RC; invoice pending DAO.',
@@ -290,7 +290,7 @@ export const FIELD_VISITS = [
     lastVisit: '2026-04-18',
     photos: 4,
     gpsOk: true,
-    remarks: 'Loss photo hash duplicate — AI flagged.',
+    remarks: 'Loss photo hash duplicate - AI flagged.',
   },
 ];
 

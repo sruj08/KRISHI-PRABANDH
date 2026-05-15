@@ -1,5 +1,5 @@
-/**
- * Pune district command map — Voronoi “micro-cells” per taluka, each clipped to
+﻿/**
+ * Pune district command map - Voronoi “micro-cells” per taluka, each clipped to
  * that taluka’s ring (same pattern as `taoMandalHeatmap.js` / TAO mandal map).
  * Nothing is drawn outside a taluka boundary; tiles together cover the district.
  */
@@ -130,8 +130,8 @@ function buildSeedsForTaluka(talukaFeature, mapMode) {
 }
 
 /**
- * @param {import('geojson').Feature} talukaFeature — Polygon or MultiPolygon, kind taluka
- * @param {string} mapMode — penetration | ndvi | grievance
+ * @param {import('geojson').Feature} talukaFeature - Polygon or MultiPolygon, kind taluka
+ * @param {string} mapMode - penetration | ndvi | grievance
  * @returns {import('geojson').FeatureCollection | null}
  */
 function voronoiCellsForOneTaluka(talukaFeature, mapMode) {
@@ -184,7 +184,7 @@ function voronoiCellsForOneTaluka(talukaFeature, mapMode) {
 }
 
 /**
- * @param {import('geojson').FeatureCollection | null} talukaFc — only kind:taluka features
+ * @param {import('geojson').FeatureCollection | null} talukaFc - only kind:taluka features
  * @param {string} mapMode
  * @returns {import('geojson').FeatureCollection | null}
  */

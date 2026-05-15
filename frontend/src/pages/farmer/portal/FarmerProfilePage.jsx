@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import { FARMER_PROFILE } from '../../../mock/farmerDashboardMock';
@@ -30,9 +30,9 @@ export default function FarmerProfilePage() {
       case 'address':
         return profile.address;
       case 'bank':
-        return t('Bank account ending ****3210 — NPCI Aadhaar mapping status is shown under Payments.');
+        return t('Bank account ending ****3210 - NPCI Aadhaar mapping status is shown under Payments.');
       case 'aadhaar':
-        return `${profile.maskedAadhaar} — ${t('eKYC completed on record.')}`;
+        return `${profile.maskedAadhaar} - ${t('eKYC completed on record.')}`;
       case 'land':
         return t('Survey numbers and extracts are managed under Land Records.');
       case 'family':

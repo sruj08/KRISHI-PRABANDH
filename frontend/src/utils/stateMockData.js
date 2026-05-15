@@ -1,4 +1,4 @@
-/** Sample data for Maharashtra state command views (replace with API when wired). */
+﻿/** Sample data for Maharashtra state command views (replace with API when wired). */
 
 export const STATE_PROFILE = {
   state: 'Maharashtra',
@@ -29,15 +29,15 @@ export const FRICTION_MONTH = {
   ],
   counts: [12480, 9620, 8104, 6312, 4108],
   topThreeRecommendations: [
-    'Drought relief in Marathwada is behind schedule against the seasonal target — prioritise PFMS clearance and align division releases with actual disbursement pace.',
-    'Cross-district PMFBY anomalies are elevated in the western cluster — schedule a coordinated Aadhaar and land-record reconciliation before the next claim window.',
-    'Cotton belt stress indicators in Vidarbha are above the usual range — keep field verification and compensation workflows on standby ahead of the monsoon review.',
+    'Drought relief in Marathwada is behind schedule against the seasonal target - prioritise PFMS clearance and align division releases with actual disbursement pace.',
+    'Cross-district PMFBY anomalies are elevated in the western cluster - schedule a coordinated Aadhaar and land-record reconciliation before the next claim window.',
+    'Cotton belt stress indicators in Vidarbha are above the usual range - keep field verification and compensation workflows on standby ahead of the monsoon review.',
   ],
 };
 
 export const PFMS_BATCHES = [
-  { id: 'PFMS-MH-2026-CB-0421', beneficiaries: 38420, amountCr: 162.8, avgConfidence: 0.92, scheme: 'PMFBY — Kharif claim consolidated release' },
-  { id: 'PFMS-MH-2026-CB-0422', beneficiaries: 21840, amountCr: 98.6, avgConfidence: 0.90, scheme: 'Mechanization — Tractor & Power tiller (statewide)' },
+  { id: 'PFMS-MH-2026-CB-0421', beneficiaries: 38420, amountCr: 162.8, avgConfidence: 0.92, scheme: 'PMFBY - Kharif claim consolidated release' },
+  { id: 'PFMS-MH-2026-CB-0422', beneficiaries: 21840, amountCr: 98.6, avgConfidence: 0.90, scheme: 'Mechanization - Tractor & Power tiller (statewide)' },
   { id: 'PFMS-MH-2026-CB-0423', beneficiaries: 56210, amountCr: 41.2, avgConfidence: 0.88, scheme: 'PM-KISAN top-up (state contribution)' },
 ];
 
@@ -51,8 +51,8 @@ export const DIVISION_MATRIX = [
 ];
 
 export const DISASTER_TRIAGE = {
-  event: 'Marathwada drought + Vidarbha cotton stress — May 2026',
+  event: 'Marathwada drought + Vidarbha cotton stress - May 2026',
   automatedHeatZones: 27,
   priorityDivisions: ['Chh. Sambhajinagar', 'Amravati'],
-  ndviDeltaSummary: 'Mean NDVI drop >28% vs 5-year baseline across 84,200 geo-fenced plots — Marathwada belt + Yavatmal cotton stress zones.',
+  ndviDeltaSummary: 'Rain-recharge stress elevated vs 5-year baseline across 84,200 geo-fenced plots - Marathwada belt + Yavatmal cotton belts (desk narrative; not satellite NDVI).',
 };

@@ -1,4 +1,4 @@
-# KrishiPrabandh — Agricultural Scheme Management Platform
+﻿# KrishiPrabandh - Agricultural Scheme Management Platform
 
 > A full-stack field operations and scheme processing platform for Maharashtra Government agricultural officers.
 
@@ -95,13 +95,13 @@ UI runs at: `http://localhost:5173`
 
 ## Features
 
-- **Applications Dashboard** — Filter, sort, and action scheme applications with live priority scoring
-- **Visit Planner** — Field officer daily route with risk-level tracking; post-visit state transitions (Approve / Reject)
-- **Capture Photo** — Live camera capture or file-picker upload; image sent as `multipart/form-data` to backend
-- **Fraud Alerts** — Automated detection of duplicate claims and anomalous applications
-- **Advanced Tools** — CV-based document analysis engine
-- **Multilingual UI** — English / Marathi toggle via Language context
-- **Audit Logs** — Every status change and upload is recorded server-side
+- **Applications Dashboard** - Filter, sort, and action scheme applications with live priority scoring
+- **Visit Planner** - Field officer daily route with risk-level tracking; post-visit state transitions (Approve / Reject)
+- **Capture Photo** - Live camera capture or file-picker upload; image sent as `multipart/form-data` to backend
+- **Fraud Alerts** - Automated detection of duplicate claims and anomalous applications
+- **Advanced Tools** - CV-based document analysis engine
+- **Multilingual UI** - English / Marathi toggle via Language context
+- **Audit Logs** - Every status change and upload is recorded server-side
 
 ---
 

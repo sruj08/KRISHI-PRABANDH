@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -10,7 +10,7 @@ const DISTRICT_GEO_URL = geoAsset('geo/pune-boundary.json');
 
 /**
  * Metric ramp for Voronoi cell fills: cool blue → green → yellow → orange → deep red
- * (same legend strip as the command map). Cells are clipped per taluka — no bleed.
+ * (same legend strip as the command map). Cells are clipped per taluka - no bleed.
  */
 const TALUKA_HEAT_RGB_STOPS = [
   [0.0, [199, 228, 245]],
@@ -170,7 +170,7 @@ function DistrictVoronoiHeatLayer({ layerKey, heatGeo, showHeat }) {
       <div style="min-width:172px;line-height:1.45;position:relative;padding-right:12px">
         <div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#222">${p.talukaName} Taluka</div>
         <div style="font-size:11px;color:#222">Scheme penetration: <b>${p.penetration}%</b></div>
-        <div style="font-size:11px;color:#222">NDVI stress index: <b>${p.ndviStress}</b></div>
+        <div style="font-size:11px;color:#222">Moisture / drought stress (desk): <b>${p.ndviStress}%</b></div>
         <div style="font-size:11px;color:#222">Grievance index: <b>${p.grievanceIdx}</b></div>
         <div style="font-size:11px;color:#222;margin-top:4px">Map intensity (local): <b>${pct}%</b></div>
         <span style="position:absolute;right:4px;bottom:2px;width:8px;height:8px;border-radius:50%;background:${heatColorFromMetric01(t)};display:inline-block" aria-hidden="true"></span>
@@ -220,7 +220,7 @@ function TalukaBoundariesLayer({ talukaGeo, showHeat }) {
       <div style="min-width:172px;line-height:1.45">
         <div style="font-weight:700;font-size:13px;margin-bottom:4px">${p.name} Taluka</div>
         <div style="font-size:11px;color:#222">Scheme penetration: <b>${p.penetration}%</b></div>
-        <div style="font-size:11px;color:#222">NDVI stress index: <b>${p.ndviStress}</b></div>
+        <div style="font-size:11px;color:#222">Moisture / drought stress (desk): <b>${p.ndviStress}%</b></div>
         <div style="font-size:11px;color:#222">Grievance index: <b>${p.grievanceIdx}</b></div>
       </div>`;
     layer.bindTooltip(html, { sticky: true, direction: 'auto', opacity: 0.96, className: 'district-taluka-tooltip' });
@@ -252,7 +252,7 @@ function TalukaBoundariesLayer({ talukaGeo, showHeat }) {
 
 const MAP_MODES = [
   { id: 'penetration', label: 'Scheme penetration', sub: 'MahaDBT subsidy uptake by taluka', icon: 'hub' },
-  { id: 'ndvi', label: 'Crop health / NDVI', sub: 'Sentinel-2 stress index (demo)', icon: 'satellite_alt' },
+  { id: 'ndvi', label: 'Moisture / drought stress', sub: 'Open‑Meteo rainfall desk proxy (not satellite NDVI)', icon: 'satellite_alt' },
   { id: 'grievance', label: 'Grievance heat', sub: 'Aaple Sarkar cluster intensity', icon: 'crisis_alert' },
 ];
 

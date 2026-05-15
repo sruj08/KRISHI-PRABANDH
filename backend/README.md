@@ -1,4 +1,4 @@
-# KRISHI-PRABANDH — Backend (FastAPI + Supabase)
+﻿# KRISHI-PRABANDH - Backend (FastAPI + Supabase)
 
 Survey-centric workflow: **FARMER → FARM → SURVEY → EVIDENCE → APPROVAL → COMPENSATION**.
 
@@ -25,7 +25,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ## Layout
 
 ```
-api/           # Routers — validation + service calls only
+api/           # Routers - validation + service calls only
 services/      # Workflow & policy
 db/            # Supabase client + repositories
 schemas/       # Pydantic models
@@ -41,7 +41,7 @@ tests/
 | Variable | Purpose |
 |----------|---------|
 | `SUPABASE_URL` | Project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key (bypasses RLS — enforce auth in API) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key (bypasses RLS - enforce auth in API) |
 | `JWT_SECRET` | Signing key for API JWTs |
 | `CORS_ORIGINS` | Comma-separated browser origins |
 

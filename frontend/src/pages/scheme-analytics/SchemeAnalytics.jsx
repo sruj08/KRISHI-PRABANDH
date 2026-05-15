@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   SEASON, DISTRICT, TALUKA,
   CIRCLE_DATA, PAYMENT_DATA, MONTHLY_TREND,
@@ -313,7 +313,7 @@ export default function SchemeAnalytics() {
             Circle-wise scheme analysis
           </h1>
           <div style={{ fontSize: 12, color: MUTED, fontWeight: 600, marginTop: 6, maxWidth: 640, lineHeight: 1.45 }}>
-            Compare revenue circles within {TALUKA} taluka ({DISTRICT}) — applications, clearances, rainfall context, and DBT outcomes for {SEASON}.
+            Compare revenue circles within {TALUKA} taluka ({DISTRICT}) - applications, clearances, rainfall context, and DBT outcomes for {SEASON}.
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 7, fontSize: 12, color: MUTED, fontWeight: 600 }}>
             <span style={{ color: GREEN, fontWeight: 800 }}>{SEASON}</span>
@@ -390,7 +390,7 @@ export default function SchemeAnalytics() {
           does not leave a dead band of background above the charts row. */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 292px', gap: 16, marginBottom: 16, alignItems: 'stretch' }}>
 
-        {/* Circle table — report-style comparison (no trading-style spark/pulse UI) */}
+        {/* Circle table - report-style comparison (no trading-style spark/pulse UI) */}
         <div style={{
           background: WHITE,
           border: `1px solid ${PANEL}`,
@@ -415,7 +415,7 @@ export default function SchemeAnalytics() {
           }}>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: TEXT, letterSpacing: '-0.02em' }}>
-                Revenue circles — comparison
+                Revenue circles - comparison
               </div>
               <div style={{ fontSize: 11, color: MUTED, fontWeight: 600, marginTop: 8, lineHeight: 1.5 }}>
                 {CIRCLE_DATA.length} circles in {TALUKA} taluka · {circleContext.totalV} villages ·{' '}

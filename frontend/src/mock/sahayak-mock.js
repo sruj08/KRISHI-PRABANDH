@@ -1,5 +1,5 @@
-/**
- * Krishi Prabandh — Sahayak Mock Data
+﻿/**
+ * Krishi Prabandh - Sahayak Mock Data
  * Realistic Indian agriculture / government style data for
  * Baramati Taluka, Pune District, Maharashtra
  */
@@ -327,7 +327,7 @@ export const MOCK_TASKS = [
     priority: 'HIGH',
     icon: 'gpp_bad',
     title: '2 anomaly flags require review',
-    subtitle: 'Potential duplicate Aadhaar — Morgaon village',
+    subtitle: 'Potential duplicate Aadhaar - Morgaon village',
     route: '/officer/ai-verification',
     time: null,
     date: '2026-05-14',
@@ -389,7 +389,7 @@ export const MOCK_GRAM_SABHA = [
     village: 'Katewadi',
     date: '2026-05-10',
     time: '10:30 AM',
-    agenda: ['Soil health card distribution', 'Grievance resolution — irrigation'],
+    agenda: ['Soil health card distribution', 'Grievance resolution - irrigation'],
     attendees_expected: 28,
     attendees_actual: 31,
     status: 'COMPLETED',
@@ -438,7 +438,7 @@ export const MOCK_NOTIFICATIONS = [
     icon: 'check_circle',
     color: '#396940',
     title: 'Application Approved',
-    body: 'APP-2026-01201 — Balu Patil (Pargaon) approved by TAO',
+    body: 'APP-2026-01201 - Balu Patil (Pargaon) approved by TAO',
     time: '09:45 AM',
     read: false,
   },
@@ -448,7 +448,7 @@ export const MOCK_NOTIFICATIONS = [
     icon: 'warning',
     color: '#B45309',
     title: 'Anomaly Flagged',
-    body: 'Duplicate Aadhaar detected in Morgaon village — review required',
+    body: 'Duplicate Aadhaar detected in Morgaon village - review required',
     time: '08:22 AM',
     read: false,
   },
@@ -526,7 +526,7 @@ export const MOCK_REPORTS = [
   },
   {
     id: 'rpt-002',
-    title: 'PM-KISAN Disbursement Status — April 2026',
+    title: 'PM-KISAN Disbursement Status - April 2026',
     generated_at: '2026-05-01',
     type: 'PAYMENT',
     status: 'READY',

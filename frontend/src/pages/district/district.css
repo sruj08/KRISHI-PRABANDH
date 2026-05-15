@@ -1,4 +1,4 @@
-/* District Executive Command Center — extends CAO executive shell */
+﻿/* District Executive Command Center - extends CAO executive shell */
 
 .district-dash-root {
   width: 100%;
@@ -122,7 +122,7 @@
   filter: brightness(1.05);
 }
 
-/* State dashboard — KPI row: auto-fit avoids empty grid columns (no blank strip) */
+/* State dashboard - KPI row: auto-fit avoids empty grid columns (no blank strip) */
 .state-dashboard-kpi-grid {
   display: grid;
   gap: 16px;

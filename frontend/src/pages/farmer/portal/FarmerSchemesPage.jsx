@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+﻿import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   CheckCircle,
@@ -347,7 +347,7 @@ export default function FarmerSchemesPage() {
       <div className="min-h-0 flex-1" style={{ background: PAGE_BG }}>
         <FarmerPageShell
           title={t('Schemes')}
-          subtitle={t('Eligible lines, deadlines, and subsidy caps — apply or track from one place (demo).')}
+          subtitle={t('Eligible lines, deadlines, and subsidy caps - apply or track from one place (demo).')}
         >
           <div className="mb-4 flex gap-1 overflow-x-auto border-b border-neutral-200 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {TABS.map(({ key, label }) => (

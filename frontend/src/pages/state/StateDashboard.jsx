@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import RegionalMap from '../../components/maps/RegionalMap';
 import { geoAsset } from '../../utils/geoAsset';
 import {
@@ -133,7 +133,7 @@ const StateDashboard = () => {
           <span className="material-symbols-outlined state-dashboard__strip-icon">analytics</span>
           <span className="state-dashboard__strip-title">{t('Live Claims Summary', lang)}</span>
           <span style={{ color: '#5c6560' }}>
-            {t('Total', lang)}: <strong style={{ color: '#1a1c1a' }}>{totalClaims ?? '—'}</strong>
+            {t('Total', lang)}: <strong style={{ color: '#1a1c1a' }}>{totalClaims ?? '-'}</strong>
           </span>
           {approvedCount != null && (
             <span style={{ color: '#2e7d32' }}>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import { fetchReports } from '../../shared/api/services';
 import usePolling from '../../hooks/usePolling';
 
@@ -147,7 +147,7 @@ const SurveyTriageQueue = ({ onSelectSurvey }) => {
                           {r.farmerName || 'Unknown'}
                         </div>
                         <div className="text-[11px] text-gray-500 font-mono truncate">
-                          {r.village || '—'}
+                          {r.village || '-'}
                           {r.taluka ? `, ${r.taluka}` : ''}
                           {r.cropType ? ` · ${r.cropType}` : ''}
                         </div>
@@ -158,7 +158,7 @@ const SurveyTriageQueue = ({ onSelectSurvey }) => {
                       </span>
                     </div>
                     <div className="text-[10px] font-mono text-primary font-bold truncate">
-                      {r.reportId || r.id || '—'}
+                      {r.reportId || r.id || '-'}
                     </div>
                     <div className="flex justify-between items-center mt-auto pt-2 border-t border-gray-200">
                       <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"

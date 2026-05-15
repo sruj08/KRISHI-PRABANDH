@@ -1,4 +1,4 @@
-/* Krishi Prabandh — Farmer portal (MahaDBT / DigiLocker inspired) */
+﻿/* Krishi Prabandh - Farmer portal (MahaDBT / DigiLocker inspired) */
 
 .farmer-portal-root {
   --fp-primary: #1f5e3b;
@@ -26,7 +26,7 @@
   font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
   background: var(--fp-bg);
   color: var(--fp-text);
-  /* Lock layout to one viewport — only main pane scrolls */
+  /* Lock layout to one viewport - only main pane scrolls */
   height: 100vh;
   max-height: 100vh;
   height: 100dvh;
@@ -52,7 +52,7 @@
   overflow: hidden;
 }
 
-/* Sidebar — fixed column, no internal scroll */
+/* Sidebar - fixed column, no internal scroll */
 .fp-sidebar {
   width: var(--fp-sidebar-w);
   flex-shrink: 0;
@@ -153,7 +153,7 @@ a.fp-nav-btn {
   font-size: 13px;
 }
 
-/* Main column — only this column’s content area scrolls */
+/* Main column - only this column’s content area scrolls */
 .fp-main-col {
   flex: 1 1 0;
   min-width: 0;
@@ -271,7 +271,7 @@ a.fp-nav-btn {
   }
 }
 
-/* Mobile top bar (hamburger) — stays fixed above scrollable main */
+/* Mobile top bar (hamburger) - stays fixed above scrollable main */
 .fp-mobile-top {
   display: flex;
   flex-shrink: 0;
@@ -425,7 +425,7 @@ a.fp-nav-btn {
   border-color: #d8dde4;
 }
 
-/* Stat tiles on home — equal height columns */
+/* Stat tiles on home - equal height columns */
 .fp-stat-grid {
   display: grid;
   gap: clamp(0.75rem, 2vw, 1rem);
@@ -640,7 +640,7 @@ a.fp-nav-btn {
   }
 }
 
-/* Chip row — aligned wrap */
+/* Chip row - aligned wrap */
 .fp-chip-row {
   display: flex;
   flex-wrap: wrap;

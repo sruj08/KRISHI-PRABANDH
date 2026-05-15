@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Pane, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { geoAsset } from '../../../utils/geoAsset';
 import { buildMandalHeatmapClippedToTaluka } from '../../../utils/taoMandalHeatmap';
 
-/** Baramati Assembly Constituency boundary — outer fence; mandals are Voronoi-clipped inside this ring. */
+/** Baramati Assembly Constituency boundary - outer fence; mandals are Voronoi-clipped inside this ring. */
 const GEO_URL = geoAsset('geo/baramati-ac.json');
 
 /** Choropleth fill from 0 (low load) → 1 (high load), never outside taluka geometry. */
@@ -76,7 +76,7 @@ function MandalBoundariesLayer({ mandalGeo, onSelectMandal }) {
     const heat = typeof p.heat === 'number' ? p.heat : 0;
     const fill = heatFillColor(heat);
     const pct = Math.round(heat * 100);
-    /* Compact panel — same structure as district taluka tooltip (readable, solid white). */
+    /* Compact panel - same structure as district taluka tooltip (readable, solid white). */
     const html = `
       <div style="min-width:172px;line-height:1.45;position:relative;padding-right:14px">
         <div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#222">${p.name} Mandal</div>
@@ -97,7 +97,7 @@ function MandalBoundariesLayer({ mandalGeo, onSelectMandal }) {
           id: p.id,
           name: p.name,
           marathi: p.marathi,
-          caoName: p.caoName || '—',
+          caoName: p.caoName || '-',
           status: p.status || 'Clear',
           pending: p.pending ?? 0,
           fraudAlerts: p.fraudAlerts ?? 0,
@@ -227,7 +227,7 @@ const TAOMap = () => {
     <div className="card tao-map-root" style={{ padding: '0', overflow: 'hidden', border: 'none', borderRadius: 0, background: 'transparent', display: 'flex', flexDirection: 'column', width: '100%', minHeight: 480 }}>
       <div style={{ padding: '18px 28px', background: '#fff', borderBottom: '1px solid #e2e3df', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', flexWrap: 'wrap', minHeight: '70px' }}>
         <div style={{ minWidth: 0 }}>
-          <h3 className="fw-bold m-0" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)', lineHeight: 1.3 }}>Baramati taluka — mandal load map</h3>
+          <h3 className="fw-bold m-0" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)', lineHeight: 1.3 }}>Baramati taluka - mandal load map</h3>
           <p className="text-sm text-muted m-0" style={{ marginTop: '5px', fontSize: '11.5px', lineHeight: 1.4 }}>Voronoi mandal cells clipped to the published boundary · choropleth by pending + fraud</p>
         </div>
         <div style={{ display: 'flex', gap: '20px', fontSize: '11.5px', color: 'var(--text-muted)', flexShrink: 0, alignItems: 'center' }}>
@@ -292,12 +292,12 @@ const TAOMap = () => {
               )}
             </Pane>
 
-            {/* Outer dashed AC / taluka fence — drawn above heat cells */}
+            {/* Outer dashed AC / taluka fence - drawn above heat cells */}
             <GeoJSON data={boundaryGeo} style={styleBoundaryFence} />
           </MapContainer>
         )}
 
-        {/* Info Panel Overlay — z-index 2000 so it sits above any leaflet
+        {/* Info Panel Overlay - z-index 2000 so it sits above any leaflet
             pane (capped at 500 by the global rule). */}
         {selectedPoint && (
           <div style={{

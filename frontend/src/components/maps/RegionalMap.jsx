@@ -1,22 +1,22 @@
-/**
- * RegionalMap — Scalable, reusable react-leaflet map component.
+﻿/**
+ * RegionalMap - Scalable, reusable react-leaflet map component.
  *
  * Props:
  *   layerType   : 'state' | 'division' | 'taluka'
  *   boundaryUrl : URL string to fetch the boundary file from (GeoJSON or TopoJSON)
  *
  * Supports:
- *   • TopoJSON input (division level) — parsed via topojson-client
- *   • GeoJSON input (state / taluka) — used directly
+ *   • TopoJSON input (division level) - parsed via topojson-client
+ *   • GeoJSON input (state / taluka) - used directly
  *   • Inverted polygon mask to isolate the active region
  *   • Division / district choropleth from overlay GeoJSON (`kind: division` or
  *     `kind: district`) + canvas KDE heat (default)
- *   • Optional Voronoi micro-mesh per division (disabled — use choropleth + KDE)
- *   • Three interactive metric modes: Scheme penetration / Crop health / Grievance heat
+ *   • Optional Voronoi micro-mesh per division (disabled - use choropleth + KDE)
+ *   • Three interactive metric modes: Scheme penetration / Moisture–drought stress (rain desk) / Grievance heat
  *   • Zoom/pan locked to active boundary
  *   • Top-3 centroid pins (most critical locations per mode)
  *
- * Z-index overlay order (Leaflet overlayPane ≈ 400 — mask must sit above it or heat /
+ * Z-index overlay order (Leaflet overlayPane ≈ 400 - mask must sit above it or heat /
  *   Voronoi “leaks” past the state geofence; same pattern as TAO taluka focus mask):
  *   TileLayer → Division choropleth → [optional Voronoi] → KDE (overlayPane)
  *   → Inverted mask (state/taluka hole punch) → Dashed geofence → Centroid pins / tooltips
@@ -50,7 +50,7 @@ import { bareDivisionCode } from '../../utils/divisionIntelMock';
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Choropleth fill opacity — constant so hover/selection does not shift colour vs legend */
+/** Choropleth fill opacity - constant so hover/selection does not shift colour vs legend */
 const CHOROPLETH_FILL_OPACITY = 0.5;
 
 /** Heatmap colour ramp matching the requested design spec */
@@ -70,9 +70,9 @@ const MAP_MODES = [
   },
   {
     id: 'ndvi',
-    label: 'Crop health / NDVI',
+    label: 'Moisture / drought stress',
     icon: 'satellite_alt',
-    sub: 'Moisture stress (Open-Meteo rain)',
+    sub: 'Open‑Meteo rainfall desk proxy (not satellite NDVI)',
   },
   {
     id: 'grievance',
@@ -101,10 +101,10 @@ const LEGEND = {
   ],
 };
 
-/** Legend strip title — short label for the active map mode */
+/** Legend strip title - short label for the active map mode */
 const MAP_INTENSITY_STRIP_LABEL = {
   penetration: 'Scheme',
-  ndvi: 'Stress',
+  ndvi: 'Drought',
   grievance: 'Grievance',
 };
 
@@ -116,7 +116,7 @@ const HEAT_CONFIG = {
   taluka:   { radius: 40, blur: 28, pointCount:  30 },
 };
 
-/** Dense per-division Voronoi cells — off: command maps use choropleth + smooth KDE only. */
+/** Dense per-division Voronoi cells - off: command maps use choropleth + smooth KDE only. */
 const ENABLE_DIVISION_VORONOI_MESH = false;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ function getAllOuterRings(featureCollection) {
   return rings;
 }
 
-/** Ray-casting point-in-polygon — GeoJSON coords are [lng, lat] */
+/** Ray-casting point-in-polygon - GeoJSON coords are [lng, lat] */
 function pointInPolygon(lat, lng, ring) {
   let inside = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -207,7 +207,7 @@ function ringCentroid(ring) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Mock data engine — strictly boundary-clipped
+// Mock data engine - strictly boundary-clipped
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Seeded pseudo-random to keep dataset stable per mode */
@@ -281,15 +281,15 @@ function metricNormalizedFromProps(props, mapMode) {
 }
 
 function formatMetricPct(v) {
-  if (v == null || v === '') return '—';
+  if (v == null || v === '') return '-';
   const n = Number(v);
-  return Number.isFinite(n) ? `${Math.round(n)}%` : '—';
+  return Number.isFinite(n) ? `${Math.round(n)}%` : '-';
 }
 
 function formatMetricIdx(v) {
-  if (v == null || v === '') return '—';
+  if (v == null || v === '') return '-';
   const n = Number(v);
-  return Number.isFinite(n) ? String(Math.round(n)) : '—';
+  return Number.isFinite(n) ? String(Math.round(n)) : '-';
 }
 
 /** Map hover: name, then a two-word label + value for the active mode; pending is separate in scheme mode. */
@@ -299,7 +299,7 @@ function divisionChoroplethTooltipForMode(p, mapMode, treatPenetrationAsFraud = 
     if (treatPenetrationAsFraud) return `${name}\nDistrict fraud alerts ${formatMetricPct(p.schemePenetration)}`;
     return `${name}\nScheme uptake ${formatMetricPct(p.schemePenetration)}`;
   }
-  if (mapMode === 'ndvi') return `${name}\nMoisture stress ${formatMetricPct(p.ndviStress)}`;
+  if (mapMode === 'ndvi') return `${name}\nMoisture / drought stress ${formatMetricPct(p.ndviStress)}`;
   return `${name}\nGrievance index ${formatMetricIdx(p.grievanceIdx)}`;
 }
 
@@ -405,7 +405,7 @@ function parseBoundaryData(raw) {
   // Standard GeoJSON FeatureCollection
   if (raw.type === 'FeatureCollection') return raw;
 
-  // Single Feature — wrap it
+  // Single Feature - wrap it
   if (raw.type === 'Feature') return { type: 'FeatureCollection', features: [raw] };
 
   return null;
@@ -596,11 +596,11 @@ function DivisionVoronoiHeatLayer({
       const p = feature?.properties;
       if (!p || p.kind !== 'division-heat-cell') return;
       const title = (p.regionName || 'Division').replace(/</g, '&lt;');
-      let val = '—';
-      if (mapMode === 'penetration') val = p.schemePenetration != null ? `${p.schemePenetration}%` : '—';
-      else if (mapMode === 'ndvi') val = p.ndviStress != null ? `${p.ndviStress}%` : '—';
-      else val = p.grievanceIdx != null ? String(p.grievanceIdx) : '—';
-      const lbl = mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index';
+      let val = '-';
+      if (mapMode === 'penetration') val = p.schemePenetration != null ? `${p.schemePenetration}%` : '-';
+      else if (mapMode === 'ndvi') val = p.ndviStress != null ? `${p.ndviStress}%` : '-';
+      else val = p.grievanceIdx != null ? String(p.grievanceIdx) : '-';
+      const lbl = mapMode === 'penetration' ? 'Scheme uptake' : mapMode === 'ndvi' ? 'Moisture / drought stress' : 'Grievance index';
       const html = `
       <div style="min-width:120px;line-height:1.45">
         <div style="font-weight:700;font-size:13px;color:#222">${title}</div>
@@ -676,7 +676,7 @@ function DivisionVoronoiHeatLayer({
  * @param {object} [props.fitBoundsOptions] - Optional Leaflet `fitBounds` options (e.g. asymmetric padding to bias framing)
  * @param {string} [props.title]     - Optional header title
  * @param {string} [props.subtitle]  - Optional header subtitle
- * @param {Record<string, { schemePenetration?: number, ndviStress?: number, grievanceIdx?: number }>} [props.liveDivisionMetrics] - Bare division codes (KKN, PNE, …) merged into overlay GeoJSON for heatmap + tooltips
+ * @param {Record<string, { schemePenetration?: number, ndviStress?: number, grievanceIdx?: number }>} [props.liveDivisionMetrics] - Bare division codes (KKN, PNE, …). `ndviStress` is the legacy property name for the 0–100 **rainfall drought / moisture stress desk proxy** (not satellite NDVI).
  * @param {boolean} [props.treatPenetrationLayerAsFraudHeat] - When true, first map mode labels tooltips/legend as district fraud intensity (values still use `schemePenetration` slot)
  */
 const RegionalMap = ({
@@ -727,7 +727,7 @@ const RegionalMap = ({
   const penetrationMetricTitle = treatPenetrationLayerAsFraudHeat ? 'District fraud alerts' : 'Scheme uptake';
   const penetrationMetricTitleLong = treatPenetrationLayerAsFraudHeat ? 'District fraud alerts' : 'Scheme penetration';
 
-  // ── Fetch boundary data (state outline — never modified on disk) ───────────
+  // ── Fetch boundary data (state outline - never modified on disk) ───────────
   useEffect(() => {
     if (!boundaryUrl) return;
     let cancelled = false;
@@ -776,8 +776,8 @@ const RegionalMap = ({
 
   /**
    * Choropleth source from overlay GeoJSON:
-   * - `kind: district` — per-district polygons (division command map)
-   * - else `kind: division` — revenue-division rings (state command map)
+   * - `kind: district` - per-district polygons (division command map)
+   * - else `kind: division` - revenue-division rings (state command map)
    */
   const divisionCollection = useMemo(() => {
     if (!rawDivisionData) return null;
@@ -816,7 +816,7 @@ const RegionalMap = ({
     [featureCollection],
   );
 
-  /** Leaflet [lat, lng] — required before fitBounds; must never be undefined */
+  /** Leaflet [lat, lng] - required before fitBounds; must never be undefined */
   const defaultCenter = useMemo(() => {
     if (!allRings.length) return [19.75, 74.5];
     const box = mergedBBox(allRings);
@@ -850,7 +850,7 @@ const RegionalMap = ({
     ENABLE_DIVISION_VORONOI_MESH && showHeat && divisionVoronoiGeo?.features?.length,
   );
 
-  // ── Mock heatmap points (KDE) — skipped when Voronoi division mesh is active ──
+  // ── Mock heatmap points (KDE) - skipped when Voronoi division mesh is active ──
   const heatPoints = useMemo(() => {
     if (divisionVoronoiGeo?.features?.length) return [];
     if (divisionCollection?.features?.length) {
@@ -1248,7 +1248,7 @@ const RegionalMap = ({
                 )}
               </Pane>
 
-              {/* 4 ── Dashed geofence (state outline) — above mask so the fence stays crisp */}
+              {/* 4 ── Dashed geofence (state outline) - above mask so the fence stays crisp */}
               <Pane
                 name="geofencePane"
                 style={{ zIndex: 530, pointerEvents: 'none' }}
@@ -1280,8 +1280,8 @@ const RegionalMap = ({
                           <div style={{ fontWeight: 700, fontSize: 12 }}>{pin.label}</div>
                           <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
                             {(divisionCollection?.features?.length || showDivisionVoronoi)
-                              ? `Top divisions by ${mapMode === 'penetration' ? (treatPenetrationLayerAsFraudHeat ? 'fraud alert intensity' : 'scheme uptake') : mapMode === 'ndvi' ? 'moisture stress' : 'grievance load'}`
-                              : `Sample point · ${mapMode === 'penetration' ? (treatPenetrationLayerAsFraudHeat ? 'fraud' : 'uptake') : mapMode === 'ndvi' ? 'stress' : 'grievance'}`}
+                              ? `Top divisions by ${mapMode === 'penetration' ? (treatPenetrationLayerAsFraudHeat ? 'fraud alert intensity' : 'scheme uptake') : mapMode === 'ndvi' ? 'moisture / drought stress' : 'grievance load'}`
+                              : `Sample point · ${mapMode === 'penetration' ? (treatPenetrationLayerAsFraudHeat ? 'fraud' : 'uptake') : mapMode === 'ndvi' ? 'drought stress' : 'grievance'}`}
                           </div>
                         </>
                       )}
@@ -1352,9 +1352,9 @@ const RegionalMap = ({
                 selectedDivision.matrixRow
                 ?? matrixRowForDivision(divisionMatrix, p.name, p.code);
               const dp = row?.disbursedPct ?? p.disbursedPct;
-              const disbursedText = dp == null || dp === '' ? '—' : `${String(dp).replace(/%$/, '')}%`;
+              const disbursedText = dp == null || dp === '' ? '-' : `${String(dp).replace(/%$/, '')}%`;
               const pen = p.schemePenetration;
-              const ndvi = p.ndviStress;
+              const stressProxy = p.ndviStress;
               const griv = p.grievanceIdx;
 
               const panelShellStyle = {
@@ -1392,7 +1392,7 @@ const RegionalMap = ({
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#717972', textTransform: 'uppercase' }}>
-                          Map preview · {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Crop stress' : 'Grievance load'}
+                          Map preview · {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Moisture / drought stress' : 'Grievance load'}
                         </div>
                         <div style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.25, marginTop: 4, color: '#0f172a' }}>
                           {p.name}
@@ -1415,7 +1415,7 @@ const RegionalMap = ({
                             marginBottom: 6,
                           }}
                           >
-                            {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index'}
+                            {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Moisture / drought stress' : 'Grievance index'}
                           </div>
                           <div style={{
                             fontSize: 26,
@@ -1425,9 +1425,9 @@ const RegionalMap = ({
                             color: '#0f172a',
                           }}
                           >
-                            {mapMode === 'penetration' && <>{pen != null ? `${pen}%` : '—'}</>}
-                            {mapMode === 'ndvi' && <>{ndvi != null ? `${ndvi}%` : '—'}</>}
-                            {mapMode === 'grievance' && <>{griv != null ? griv : '—'}</>}
+                            {mapMode === 'penetration' && <>{pen != null ? `${pen}%` : '-'}</>}
+                            {mapMode === 'ndvi' && <>{stressProxy != null ? `${stressProxy}%` : '-'}</>}
+                            {mapMode === 'grievance' && <>{griv != null ? griv : '-'}</>}
                           </div>
                         </div>
                       </div>
@@ -1479,15 +1479,15 @@ const RegionalMap = ({
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px' }}>
                       <div>
                         <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>JDA / lead</span>
-                        <strong style={{ fontSize: 13, color: '#1a1c1a' }}>{row?.officer || p.officer || '—'}</strong>
+                        <strong style={{ fontSize: 13, color: '#1a1c1a' }}>{row?.officer || p.officer || '-'}</strong>
                       </div>
                       <div>
                         <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Districts</span>
-                        <strong style={{ fontSize: 13 }}>{row?.districts ?? p.districts ?? '—'}</strong>
+                        <strong style={{ fontSize: 13 }}>{row?.districts ?? p.districts ?? '-'}</strong>
                       </div>
                       <div>
                         <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Funds (Cr)</span>
-                        <strong style={{ fontSize: 13 }}>{row?.fundsCr ?? p.fundsCr ?? '—'}</strong>
+                        <strong style={{ fontSize: 13 }}>{row?.fundsCr ?? p.fundsCr ?? '-'}</strong>
                       </div>
                       <div>
                         <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Disbursed</span>
@@ -1495,11 +1495,11 @@ const RegionalMap = ({
                       </div>
                       <div>
                         <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Pending files</span>
-                        <strong style={{ fontSize: 13 }}>{row?.pending != null ? Number(row.pending).toLocaleString('en-IN') : '—'}</strong>
+                        <strong style={{ fontSize: 13 }}>{row?.pending != null ? Number(row.pending).toLocaleString('en-IN') : '-'}</strong>
                       </div>
                       <div>
                         <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Fraud alerts</span>
-                        <strong style={{ fontSize: 13, color: '#ba1a1a' }}>{row?.fraudAlerts ?? p.fraudAlerts ?? '—'}</strong>
+                        <strong style={{ fontSize: 13, color: '#ba1a1a' }}>{row?.fraudAlerts ?? p.fraudAlerts ?? '-'}</strong>
                       </div>
                     </div>
 
@@ -1516,7 +1516,7 @@ const RegionalMap = ({
                     }}
                     >
                       <span style={{ fontWeight: 700, color: '#1a365d' }}>Map lens:</span>
-                      <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? penetrationMetricTitleLong : mapMode === 'ndvi' ? 'Moisture stress (NDVI lens)' : 'Grievance heat'}</span>
+                      <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? penetrationMetricTitleLong : mapMode === 'ndvi' ? 'Moisture / drought stress (desk)' : 'Grievance heat'}</span>
                       {row?.status && (
                         <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 999, background: '#f3f4f0', color: '#1a1c1a' }}>
                           {row.status}
@@ -1612,12 +1612,12 @@ const RegionalMap = ({
                     marginBottom: 8,
                   }}
                   >
-                    {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Moisture stress' : 'Grievance index'}
+                    {mapMode === 'penetration' ? penetrationMetricTitle : mapMode === 'ndvi' ? 'Moisture / drought stress' : 'Grievance index'}
                   </div>
                   <div style={{ fontSize: 28, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: '#0f172a' }}>
-                    {mapMode === 'penetration' && (pen != null ? `${pen}%` : '—')}
-                    {mapMode === 'ndvi' && (ndvi != null ? `${ndvi}%` : '—')}
-                    {mapMode === 'grievance' && (griv != null ? griv : '—')}
+                    {mapMode === 'penetration' && (pen != null ? `${pen}%` : '-')}
+                    {mapMode === 'ndvi' && (stressProxy != null ? `${stressProxy}%` : '-')}
+                    {mapMode === 'grievance' && (griv != null ? griv : '-')}
                   </div>
                 </div>
 
@@ -1627,15 +1627,15 @@ const RegionalMap = ({
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px' }}>
                   <div>
                     <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>JDA / lead</span>
-                    <strong style={{ fontSize: 13, color: '#1a1c1a' }}>{row?.officer || p.officer || '—'}</strong>
+                    <strong style={{ fontSize: 13, color: '#1a1c1a' }}>{row?.officer || p.officer || '-'}</strong>
                   </div>
                   <div>
                     <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Districts</span>
-                    <strong style={{ fontSize: 13 }}>{row?.districts ?? p.districts ?? '—'}</strong>
+                    <strong style={{ fontSize: 13 }}>{row?.districts ?? p.districts ?? '-'}</strong>
                   </div>
                   <div>
                     <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Funds (Cr)</span>
-                    <strong style={{ fontSize: 13 }}>{row?.fundsCr ?? p.fundsCr ?? '—'}</strong>
+                    <strong style={{ fontSize: 13 }}>{row?.fundsCr ?? p.fundsCr ?? '-'}</strong>
                   </div>
                   <div>
                     <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Disbursed</span>
@@ -1643,11 +1643,11 @@ const RegionalMap = ({
                   </div>
                   <div>
                     <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Pending files</span>
-                    <strong style={{ fontSize: 13 }}>{row?.pending != null ? Number(row.pending).toLocaleString('en-IN') : '—'}</strong>
+                    <strong style={{ fontSize: 13 }}>{row?.pending != null ? Number(row.pending).toLocaleString('en-IN') : '-'}</strong>
                   </div>
                   <div>
                     <span style={{ fontSize: 10, color: '#717972', display: 'block', marginBottom: 2 }}>Fraud alerts</span>
-                    <strong style={{ fontSize: 13, color: '#ba1a1a' }}>{row?.fraudAlerts ?? p.fraudAlerts ?? '—'}</strong>
+                    <strong style={{ fontSize: 13, color: '#ba1a1a' }}>{row?.fraudAlerts ?? p.fraudAlerts ?? '-'}</strong>
                   </div>
                 </div>
 
@@ -1664,7 +1664,7 @@ const RegionalMap = ({
                 }}
                 >
                   <span style={{ fontWeight: 700, color: '#1a365d' }}>Active map layer:</span>
-                  <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? penetrationMetricTitleLong : mapMode === 'ndvi' ? 'Moisture stress (NDVI lens)' : 'Grievance heat'}</span>
+                  <span style={{ fontWeight: 600 }}>{mapMode === 'penetration' ? penetrationMetricTitleLong : mapMode === 'ndvi' ? 'Moisture / drought stress (desk)' : 'Grievance heat'}</span>
                   {row?.status && (
                     <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: '#f3f4f0', color: '#1a1c1a' }}>
                       Status · {row.status}

@@ -1,4 +1,4 @@
-# KRISHI-PRABANDH — Backend Refactor: Audit & Architecture (Survey-Centric)
+﻿# KRISHI-PRABANDH - Backend Refactor: Audit & Architecture (Survey-Centric)
 
 This document is the **principal-engineering record** for retiring the hackathon-era backend and operating as **enterprise workflow software** around:
 
@@ -12,15 +12,15 @@ This document is the **principal-engineering record** for retiring the hackathon
 
 | Area | Finding |
 |------|---------|
-| **Data model** | Dominated by `applications`, `mandals`, `sahayaks`, `vistar_sessions`, GR parser coupling — **not** the survey workflow you now require. |
-| **Persistence** | README still claimed JSON flat-file; code had **partial** Supabase in `app/db/client.py` using **frontend publishable keys** (`NEXT_PUBLIC_*`) — **wrong** for a server: no service role, RLS bypass risk, credential leakage pattern. |
+| **Data model** | Dominated by `applications`, `mandals`, `sahayaks`, `vistar_sessions`, GR parser coupling - **not** the survey workflow you now require. |
+| **Persistence** | README still claimed JSON flat-file; code had **partial** Supabase in `app/db/client.py` using **frontend publishable keys** (`NEXT_PUBLIC_*`) - **wrong** for a server: no service role, RLS bypass risk, credential leakage pattern. |
 | **Structure** | `app/api/v1/*` called `app/domain/*` with repositories sometimes **bypassed**; business rules mixed into routes (e.g. GR upload, MKA aggregations). |
-| **Coupling** | `gr.py` imports `ApplicationRepository` — **survey workflow is not the spine**. |
-| **Security** | No JWT, no RBAC middleware, no password verification layer in FastAPI — “stateless frontend LocalStorage” from README. |
+| **Coupling** | `gr.py` imports `ApplicationRepository` - **survey workflow is not the spine**. |
+| **Security** | No JWT, no RBAC middleware, no password verification layer in FastAPI - “stateless frontend LocalStorage” from README. |
 | **Responses** | Inconsistent: some routes used ad-hoc `ok(data)` helpers; no global error schema. |
-| **Ops** | `patch_applications.py`, `supabase_migration.sql` targeting **deprecated** tables — technical debt. |
-| **Noise** | `backend/package.json` + Express/pg — **dead weight** next to FastAPI; `src/index.js` orphan. |
-| **Tests** | No `tests/` package — regressions inevitable. |
+| **Ops** | `patch_applications.py`, `supabase_migration.sql` targeting **deprecated** tables - technical debt. |
+| **Noise** | `backend/package.json` + Express/pg - **dead weight** next to FastAPI; `src/index.js` orphan. |
+| **Tests** | No `tests/` package - regressions inevitable. |
 
 ### Verdict
 
@@ -47,7 +47,7 @@ The old backend was a **demo API + document parser + mandal dashboard feeds**, n
 | `app/domain/gr_parser/*` | **Delete** (reintroduce as `services/evidence_ai_service.py` when product owns scope) |
 | `app/db/client.py` | **Delete** (replaced by `db/supabase.py` + settings) |
 | `patch_applications.py` | **Delete** |
-| `supabase_migration.sql` | **Replace** with `docs/sql/survey_schema_bootstrap.sql` (reference DDL aligned to your table list — adjust types in Supabase UI) |
+| `supabase_migration.sql` | **Replace** with `docs/sql/survey_schema_bootstrap.sql` (reference DDL aligned to your table list - adjust types in Supabase UI) |
 | `backend/package.json`, `package-lock.json`, `src/index.js` | **Delete** (Python is the runtime) |
 
 ---
@@ -158,7 +158,7 @@ HTTP Request
 
 1. **One client** in `db/supabase.py` using **`SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`** (server only, never `NEXT_PUBLIC_*`).
 2. **Repositories** per aggregate: `SurveyRepository`, `FarmRepository`, `UserRepository`, `AuditRepository`, etc.
-3. **PostGIS**: store geometry in `farms.boundary` (or `geom`); use RPC/SQL for heavy geo — add `db/queries/geo.sql` when needed.
+3. **PostGIS**: store geometry in `farms.boundary` (or `geom`); use RPC/SQL for heavy geo - add `db/queries/geo.sql` when needed.
 4. **Migrations**: author in Supabase Dashboard or `supabase db diff`; keep **`docs/sql/`** as human-readable reference aligned to product.
 
 ---
@@ -181,12 +181,12 @@ HTTP Request
 ### Implementation status
 
 - `pytest` smoke: `tests/test_health.py` (2 tests) passes with `.env` defaults from `tests/conftest.py`.
-- **Frontend** still targets legacy `/api/v1/*` routes — a dedicated FE migration must repoint to `/auth`, `/surveys`, etc. (see §4).
+- **Frontend** still targets legacy `/api/v1/*` routes - a dedicated FE migration must repoint to `/auth`, `/surveys`, etc. (see §4).
 
 ---
 
 ## Honest gap list (post-merge)
 
-- **GR PDF pipeline** removed — re-scope as **evidence ingestion** + `survey_ai_interviews` when PM specs it.
-- **RLS policies** not SQL-generated here — must be applied in Supabase for defense in depth.
+- **GR PDF pipeline** removed - re-scope as **evidence ingestion** + `survey_ai_interviews` when PM specs it.
+- **RLS policies** not SQL-generated here - must be applied in Supabase for defense in depth.
 - **Integration tests** against a real Supabase project are still required before prod sign-off.

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+﻿import React, { useState, useCallback, useMemo } from 'react';
 import RegionalMap from '../../components/maps/RegionalMap';
 import { geoAsset } from '../../utils/geoAsset';
 import {
@@ -68,7 +68,7 @@ const DivisionDashboard = () => {
             <span className="material-symbols-outlined state-dashboard__strip-icon">analytics</span>
             <span className="state-dashboard__strip-title">{t('Live Claims Summary')}</span>
             <span style={{ color: '#5c6560' }}>
-              {t('Total')}: <strong style={{ color: '#1a1c1a' }}>{liveSummary.totalClaims ?? liveSummary.total_applications ?? '—'}</strong>
+              {t('Total')}: <strong style={{ color: '#1a1c1a' }}>{liveSummary.totalClaims ?? liveSummary.total_applications ?? '-'}</strong>
             </span>
             {liveSummary.approved != null && (
               <span style={{ color: '#2e7d32' }}>
@@ -174,7 +174,7 @@ const DivisionDashboard = () => {
               <div>
                 <h2 className="state-dashboard__map-title">{t('districtCommandMapTitle')}</h2>
                 <p className="state-dashboard__map-sub">
-                  {DIVISION_PROFILE.division} · {DIVISION_PROFILE.role} — {t('districtCommandMapSub')}
+                  {DIVISION_PROFILE.division} · {DIVISION_PROFILE.role} - {t('districtCommandMapSub')}
                 </p>
                 {liveIntelError && (
                   <p className="state-dashboard__live-warn">{t('liveDivisionMetricsWarn')}</p>
@@ -183,7 +183,7 @@ const DivisionDashboard = () => {
                   <p className="state-dashboard__map-sub" style={{ marginTop: 8, fontSize: 11 }}>
                     {t('mapClimateSourceLine', {
                       source: climateMeta.source,
-                      window: climateMeta.window ? `${climateMeta.window.start} → ${climateMeta.window.end}` : '—',
+                      window: climateMeta.window ? `${climateMeta.window.start} → ${climateMeta.window.end}` : '-',
                     })}
                   </p>
                 )}

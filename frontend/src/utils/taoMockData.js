@@ -1,4 +1,4 @@
-/** Demo data for Taluka Agriculture Officer (TAO) dashboard routes. */
+﻿/** Demo data for Taluka Agriculture Officer (TAO) dashboard routes. */
 
 export const MOCK_TAO_STATS = {
   filesProcessedYtd: 1402,
@@ -24,7 +24,7 @@ export const MOCK_APPLICATIONS = [
     scheme: 'Micro Irrigation',
     anomalyType: null,
     riskScore: 12,
-    details: { alert: 'Low risk — routine verification.' },
+    details: { alert: 'Low risk - routine verification.' },
   },
 ];
 

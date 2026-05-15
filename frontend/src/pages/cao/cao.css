@@ -1,5 +1,5 @@
-/* =========================================================
-   CAO Intelligence Dashboard — Minimalist Light Styles
+﻿/* =========================================================
+   CAO Intelligence Dashboard - Minimalist Light Styles
    ========================================================= */
 
 /* ── Dashboard shell (inside AppLayout main) ── */
@@ -285,7 +285,7 @@
   color: #fff;
 }
 
-/* Supervision panel — fills full column height with flex scroll */
+/* Supervision panel - fills full column height with flex scroll */
 .cao-panel--supervision {
   display: flex;
   flex-direction: column;

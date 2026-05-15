@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useHierarchy } from '../../context/HierarchyContext';
 import {
@@ -27,7 +27,7 @@ const StatCard = ({ icon, label, value, color, bg }) => (
   <div style={{ background: bg, border: `1px solid ${color}22`, borderRadius: '12px', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
     <span className="material-symbols-outlined" style={{ color, fontSize: '28px' }}>{icon}</span>
     <div>
-      <div style={{ fontSize: '22px', fontWeight: 800, color, lineHeight: 1 }}>{value ?? '—'}</div>
+      <div style={{ fontSize: '22px', fontWeight: 800, color, lineHeight: 1 }}>{value ?? '-'}</div>
       <div style={{ fontSize: '11px', color, opacity: 0.8, marginTop: '2px' }}>{label}</div>
     </div>
   </div>
@@ -142,22 +142,22 @@ const MandalDashboard = () => {
           <div className="cao-kpi-strip" style={{ margin: '0 -var(--sp-6)', borderTop: '1px solid var(--outline-card)', borderBottom: '1px solid var(--outline-card)' }}>
             <div className="kpi-card-stitch">
               <div className="kpi-card-header"><span className="material-symbols-outlined" style={{ color: '#0055A4' }}>assignment</span> <span style={{ color: '#0055A4' }}>{t('TOTAL APPS')}</span></div>
-              <div className="kpi-card-value" style={{ color: '#0055A4' }}>{summary?.total_applications ?? '—'}</div>
+              <div className="kpi-card-value" style={{ color: '#0055A4' }}>{summary?.total_applications ?? '-'}</div>
               <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>{t('Mandal-wide')}</div>
             </div>
             <div className="kpi-card-stitch">
               <div className="kpi-card-header"><span className="material-symbols-outlined" style={{ color: '#e65100' }}>pending</span> <span style={{ color: '#e65100' }}>{t('PENDING ACTION')}</span></div>
-              <div className="kpi-card-value" style={{ color: '#e65100' }}>{(summary?.by_status?.Applied || 0) + (summary?.by_status?.['Under Scrutiny'] || 0) || '—'}</div>
+              <div className="kpi-card-value" style={{ color: '#e65100' }}>{(summary?.by_status?.Applied || 0) + (summary?.by_status?.['Under Scrutiny'] || 0) || '-'}</div>
               <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>{t('Awaiting review')}</div>
             </div>
             <div className="kpi-card-stitch">
               <div className="kpi-card-header"><span className="material-symbols-outlined" style={{ color: '#2e7d32' }}>check_circle</span> <span style={{ color: '#2e7d32' }}>{t('APPROVED')}</span></div>
-              <div className="kpi-card-value" style={{ color: '#2e7d32' }}>{summary?.by_status?.Approved ?? '—'}</div>
+              <div className="kpi-card-value" style={{ color: '#2e7d32' }}>{summary?.by_status?.Approved ?? '-'}</div>
               <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}>{t('Verified clear')}</div>
             </div>
             <div className="kpi-card-stitch">
               <div className="kpi-card-header"><span className="material-symbols-outlined" style={{ color: '#c62828' }}>gpp_bad</span> <span style={{ color: '#c62828' }}>{t('FRAUD ALERTS')}</span></div>
-              <div className="kpi-card-value" style={{ color: '#c62828' }}>{summary?.fraud_alerts ?? '—'}</div>
+              <div className="kpi-card-value" style={{ color: '#c62828' }}>{summary?.fraud_alerts ?? '-'}</div>
               <div className="kpi-card-footer" style={{ color: 'var(--text-muted)' }}><span className="badge badge-error p-0 bg-transparent" style={{ color: '#c62828' }}>{t('Needs Audit')}</span></div>
             </div>
           </div>
@@ -233,7 +233,7 @@ const MandalDashboard = () => {
       {/* ── TAB: APPLICATION INTELLIGENCE ────────────────────────── */}
       {!loading && activeTab === 'apps' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <SectionHeader icon="analytics" title={t('Application Intelligence')} subtitle={t('Supervisory view only — no approve/reject actions')} />
+          <SectionHeader icon="analytics" title={t('Application Intelligence')} subtitle={t('Supervisory view only - no approve/reject actions')} />
 
           {/* Status funnel */}
           <div style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: '12px', padding: '14px' }}>
@@ -331,7 +331,7 @@ const MandalDashboard = () => {
                 <div key={s.session_id} style={{ marginBottom: '10px', padding: '12px', background: s.risk === 'HIGH' ? '#ffebee' : '#fff8e1', borderRadius: '10px', border: `1px solid ${s.risk === 'HIGH' ? '#ffcdd2' : '#ffe082'}` }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: '13px' }}>{s.village} — {s.topic}</div>
+                      <div style={{ fontWeight: 700, fontSize: '13px' }}>{s.village} - {s.topic}</div>
                       <div style={{ fontSize: '11px', color: '#888' }}>{s.date} · {s.sahayak_name} · {s.session_id}</div>
                     </div>
                     <RiskBadge risk={s.risk} t={t} />
@@ -361,13 +361,13 @@ const MandalDashboard = () => {
             {fraudSes.concat(
               (vistar?.sahayak_performance || [])
                 .filter(p => p.overall_risk === 'CLEAN')
-                .map(p => ({ session_id: p.sahayak_id + '-clean', sahayak_name: p.sahayak_name, risk: 'CLEAN', date: '—', village: '—', topic: `${p.total_sessions}${t(' clean sessions')}`, gap_pct: 0 }))
+                .map(p => ({ session_id: p.sahayak_id + '-clean', sahayak_name: p.sahayak_name, risk: 'CLEAN', date: '-', village: '-', topic: `${p.total_sessions}${t(' clean sessions')}`, gap_pct: 0 }))
             ).slice(0, 8).map((s, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingBottom: '10px', marginBottom: '10px', borderBottom: '1px solid #f0f0f0' }}>
                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', flexShrink: 0, background: s.risk === 'HIGH' ? '#ef5350' : s.risk === 'MODERATE' ? '#ff9800' : '#4caf50' }} />
                 <div style={{ flex: 1, fontSize: '12px' }}>
-                  <b>{s.village !== '—' ? s.village : s.sahayak_name}</b> — {s.topic}
-                  <div style={{ color: '#aaa', fontSize: '10px' }}>{s.date !== '—' ? s.date : ''} {s.sahayak_name}</div>
+                  <b>{s.village !== '-' ? s.village : s.sahayak_name}</b> - {s.topic}
+                  <div style={{ color: '#aaa', fontSize: '10px' }}>{s.date !== '-' ? s.date : ''} {s.sahayak_name}</div>
                 </div>
                 <RiskBadge risk={s.risk} t={t} />
               </div>

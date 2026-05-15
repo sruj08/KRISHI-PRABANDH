@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 const VILLAGES_LIST = ['Shirur', 'Pabal', 'Wagholi', 'Lohegaon', 'Kharadi', 'Kesnand'];
@@ -52,12 +52,12 @@ const GramSabha = () => {
         name,
         email,
         category: 'Open',
-        village: village || '—',
+        village: village || '-',
       },
       'manual',
     );
     setManualEmail('');
-    setManualMsg(`✅ Added ${name} (demo — no database)`);
+    setManualMsg(`✅ Added ${name} (demo - no database)`);
     setTimeout(() => setManualMsg(''), 4000);
   };
 
@@ -79,7 +79,7 @@ const GramSabha = () => {
       <header style={{ padding: 'var(--sp-4)', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '18px', margin: 0, fontWeight: 'bold' }}>{t('Gram Sabha Attendance', lang)}</h1>
-          <p style={{ fontSize: '12px', opacity: 0.85, margin: 0 }}>{t('Digital Muster — Dual Intake System', lang)}</p>
+          <p style={{ fontSize: '12px', opacity: 0.85, margin: 0 }}>{t('Digital Muster - Dual Intake System', lang)}</p>
         </div>
         <button className="btn btn-secondary btn-sm" onClick={() => navigate('/officer')}>{t('← Back', lang)}</button>
       </header>
@@ -154,7 +154,7 @@ const GramSabha = () => {
           <div className="card" style={{ textAlign: 'center', padding: 'var(--sp-5)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', marginBottom: 'var(--sp-3)', justifyContent: 'center' }}>
               <span className="material-symbols-outlined" style={{ color: 'var(--primary)' }}>qr_code_2</span>
-              <h3 style={{ fontSize: '15px', margin: 0, color: 'var(--primary)' }}>{t('Intake A — Smartphone Users', lang)}</h3>
+              <h3 style={{ fontSize: '15px', margin: 0, color: 'var(--primary)' }}>{t('Intake A - Smartphone Users', lang)}</h3>
             </div>
             <img src={qrUrl} alt="Attendance QR Code"
               style={{ width: '220px', height: '220px', borderRadius: 'var(--radius)', border: '4px solid var(--primary-light)', margin: '0 auto' }} />
@@ -167,7 +167,7 @@ const GramSabha = () => {
           <div className="card" style={{ borderLeft: '4px solid var(--amber)', padding: 'var(--sp-4)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)', marginBottom: 'var(--sp-2)' }}>
               <span className="material-symbols-outlined" style={{ color: 'var(--accent)' }}>phone_callback</span>
-              <h3 style={{ fontSize: '15px', margin: 0, color: 'var(--accent-dark)' }}>{t('Intake B — Feature Phones', lang)}</h3>
+              <h3 style={{ fontSize: '15px', margin: 0, color: 'var(--accent-dark)' }}>{t('Intake B - Feature Phones', lang)}</h3>
             </div>
             <div style={{ backgroundColor: 'var(--amber-light)', borderRadius: 'var(--radius)', padding: 'var(--sp-3)', textAlign: 'center', margin: '0 0 var(--sp-3)' }}>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: 4 }}>{t('No Smartphone? Give a missed call to', lang)}</div>
@@ -260,7 +260,7 @@ const GramSabha = () => {
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface-lowest)' }}>
       <header className="no-print" style={{ padding: 'var(--sp-3) var(--sp-5)', backgroundColor: 'var(--success-dark)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '17px', margin: 0, fontWeight: 'bold' }}>{t('Session Complete — Report Generated', lang)}</h1>
+          <h1 style={{ fontSize: '17px', margin: 0, fontWeight: 'bold' }}>{t('Session Complete - Report Generated', lang)}</h1>
           <p style={{ fontSize: '12px', opacity: 0.85, margin: 0 }}>{attendees.length} {t('verified attendees', lang)} · {village}</p>
         </div>
         <div style={{ display: 'flex', gap: 'var(--sp-3)' }}>
@@ -309,8 +309,8 @@ const GramSabha = () => {
         <div className="card" style={{ padding: 'var(--sp-8)', border: '2px solid var(--outline-variant)' }} id="printable-report">
           {/* Official Header */}
           <div style={{ textAlign: 'center', borderBottom: '2px solid var(--text-dark)', paddingBottom: 'var(--sp-4)', marginBottom: 'var(--sp-6)' }}>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: 4 }}>महाराष्ट्र शासन — कृषी विभाग</div>
-            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-dark)' }}>{t('Government of Maharashtra — Agriculture Department', lang)}</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: 4 }}>महाराष्ट्र शासन - कृषी विभाग</div>
+            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-dark)' }}>{t('Government of Maharashtra - Agriculture Department', lang)}</div>
             <div style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--primary)', marginTop: 8 }}>{t('Digital Gram Sabha Attendance Register', lang)}</div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: 4 }}>{t('System Generated · No Physical Signature Required · AgriStack Verified', lang)}</div>
           </div>

@@ -1,13 +1,31 @@
 import React, { useState } from 'react';
 import { APPLICATION_REVIEW } from '../../mock/officer-operations';
 
+const THUMB = { width: '80px', height: '100px', background: '#e2e9e6', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 };
+
+const ActionBtn = ({ onClick, variant = 'ghost', children }) => {
+  const base = {
+    padding: '10px 20px',
+    borderRadius: '8px',
+    fontSize: '0.875rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    border: '1px solid',
+    whiteSpace: 'nowrap',
+    lineHeight: 1,
+    fontFamily: 'inherit',
+  };
+  const styles = {
+    danger:   { ...base, background: '#fff',    borderColor: 'rgba(186,26,26,0.35)', color: '#ba1a1a' },
+    ghost:    { ...base, background: '#fff',    borderColor: '#e2e9e6',              color: '#414943' },
+    primary:  { ...base, background: '#1f4d36', borderColor: '#1f4d36',              color: '#fff',   padding: '10px 24px' },
+  };
+  return <button onClick={onClick} style={styles[variant]}>{children}</button>;
+};
+
 const OfficerPendingSurveysPage = () => {
   const [selectedApp, setSelectedApp] = useState(APPLICATION_REVIEW[0] || null);
   const [modalAction, setModalAction] = useState(null);
-
-  const handleAction = (action) => {
-    setModalAction(action);
-  };
 
   const confirmAction = () => {
     alert(`Successfully processed action: ${modalAction} for ${selectedApp?.id}`);
@@ -15,149 +33,244 @@ const OfficerPendingSurveysPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 60px)', background: '#f8f9f8', margin: '-24px -32px', overflow: 'hidden' }}>
-      
-      {/* LEFT PANE: QUEUE */}
-      <div style={{ width: '380px', borderRight: '1px solid #e2e9e6', background: '#fff', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '24px 20px', borderBottom: '1px solid #e2e9e6' }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1a1c1a', margin: '0 0 8px' }}>Pending Queue</h2>
-          <p style={{ margin: 0, fontSize: '0.85rem', color: '#717972' }}>{APPLICATION_REVIEW.length} items require review</p>
+    <div style={{
+      display: 'flex',
+      height: 'calc(100vh - 60px)',
+      background: '#f8f9f8',
+      overflow: 'hidden',
+    }}>
+
+      {/* ── LEFT PANE: QUEUE ── */}
+      <div style={{
+        width: '320px',
+        minWidth: '280px',
+        borderRight: '1px solid #e2e9e6',
+        background: '#fff',
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
+      }}>
+        {/* Queue header */}
+        <div style={{ padding: '20px', borderBottom: '1px solid #e2e9e6' }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#1a1c1a', margin: '0 0 4px' }}>
+            Pending Queue
+          </h2>
+          <p style={{ margin: 0, fontSize: '0.8125rem', color: '#717972' }}>
+            {APPLICATION_REVIEW.length} items require review
+          </p>
         </div>
-        
-        <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
-          {APPLICATION_REVIEW.map((app) => (
-            <div 
-              key={app.id} 
-              onClick={() => setSelectedApp(app)}
-              style={{
-                padding: '16px', 
-                marginBottom: '8px',
-                borderRadius: '8px', 
-                cursor: 'pointer',
-                border: selectedApp?.id === app.id ? '2px solid #1f4d36' : '1px solid #e2e9e6',
-                background: selectedApp?.id === app.id ? '#f3f4f0' : '#fff'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontWeight: 600, color: '#1a1c1a' }}>{app.farmer}</span>
-                <span style={{ fontSize: '0.75rem', color: '#717972' }}>{app.daysOpen}d ago</span>
+
+        {/* Queue list */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
+          {APPLICATION_REVIEW.map((app) => {
+            const isActive = selectedApp?.id === app.id;
+            return (
+              <div
+                key={app.id}
+                onClick={() => setSelectedApp(app)}
+                style={{
+                  padding: '14px 16px',
+                  marginBottom: '6px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  border: isActive ? '2px solid #1f4d36' : '1px solid #e2e9e6',
+                  background: isActive ? '#f3f4f0' : '#fff',
+                  transition: 'border-color 0.15s, background 0.15s',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                  <span style={{ fontWeight: 600, fontSize: '0.9375rem', color: '#1a1c1a', lineHeight: 1.3 }}>
+                    {app.farmer}
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: '#9eaa9f', whiteSpace: 'nowrap', marginLeft: '8px', paddingTop: '2px' }}>
+                    {app.daysOpen}d ago
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.8125rem', color: '#5c6656', marginBottom: '8px' }}>
+                  {app.scheme} &bull; {app.village}
+                </div>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  background: app.priority === 'HIGH' ? '#fff0ef' : '#eef0eb',
+                  color: app.priority === 'HIGH' ? '#ba1a1a' : '#414943',
+                }}>
+                  AI: {app.stage}
+                </span>
               </div>
-              <div style={{ fontSize: '0.85rem', color: '#414943', marginBottom: '4px' }}>
-                {app.scheme} &bull; {app.village}
-              </div>
-              <div style={{ 
-                display: 'inline-block', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600,
-                background: app.priority === 'HIGH' ? '#fff0ef' : '#eef0eb',
-                color: app.priority === 'HIGH' ? '#ba1a1a' : '#414943',
-                marginTop: '6px'
-              }}>
-                AI: {app.stage}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* RIGHT PANE: DETAIL VIEW */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fafbf8' }}>
+      {/* ── RIGHT PANE: DETAIL VIEW ── */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: '#f4f5f1' }}>
         {selectedApp ? (
           <>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '32px' }}>
-              <div style={{ background: '#fff', border: '1px solid #e2e9e6', borderRadius: '12px', padding: '24px' }}>
-                
-                <div style={{ borderBottom: '1px solid #e2e9e6', paddingBottom: '20px', marginBottom: '24px' }}>
-                  <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a1c1a', margin: '0 0 8px' }}>
+            {/* Scrollable content */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+              <div style={{
+                background: '#fff',
+                border: '1px solid #e2e9e6',
+                borderRadius: '12px',
+                overflow: 'hidden',
+              }}>
+
+                {/* Farmer header */}
+                <div style={{ padding: '24px', borderBottom: '1px solid #e2e9e6' }}>
+                  <h1 style={{ fontSize: '1.375rem', fontWeight: 600, color: '#1a1c1a', margin: '0 0 10px' }}>
                     {selectedApp.farmer}
                   </h1>
-                  <div style={{ display: 'flex', gap: '16px', color: '#717972', fontSize: '0.9rem' }}>
-                    <span><strong>ID:</strong> {selectedApp.id}</span>
-                    <span><strong>Village:</strong> {selectedApp.village}</span>
-                    <span><strong>Scheme:</strong> {selectedApp.scheme}</span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 20px', color: '#717972', fontSize: '0.875rem', alignItems: 'center' }}>
+                    <span><strong style={{ color: '#414943' }}>ID:</strong> {selectedApp.id}</span>
+                    <span style={{ color: '#c8d0c4' }}>·</span>
+                    <span><strong style={{ color: '#414943' }}>Village:</strong> {selectedApp.village}</span>
+                    <span style={{ color: '#c8d0c4' }}>·</span>
+                    <span><strong style={{ color: '#414943' }}>Scheme:</strong> {selectedApp.scheme}</span>
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '32px' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#414943', marginBottom: '12px' }}>AI Summary & Remarks</h3>
-                  <div style={{ background: '#fff0ef', border: '1px solid #f9dcdb', borderRadius: '8px', padding: '16px', color: '#ba1a1a', fontSize: '0.9rem', lineHeight: '1.5' }}>
-                    {selectedApp.summary}
-                  </div>
-                </div>
+                {/* Card body */}
+                <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#414943', marginBottom: '12px' }}>Uploaded Documents</h3>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                      <div style={{ width: '80px', height: '100px', background: '#e2e9e6', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span className="material-symbols-outlined" style={{ color: '#9eaa9f' }}>description</span>
-                      </div>
-                      <div style={{ width: '80px', height: '100px', background: '#e2e9e6', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span className="material-symbols-outlined" style={{ color: '#9eaa9f' }}>description</span>
+                  {/* AI Summary */}
+                  <section>
+                    <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#414943', margin: '0 0 10px', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                      AI Summary &amp; Remarks
+                    </h3>
+                    <div style={{
+                      background: '#fff8f7',
+                      border: '1px solid #f4d0ce',
+                      borderLeft: '3px solid #ba1a1a',
+                      borderRadius: '8px',
+                      padding: '14px 16px',
+                      color: '#7a1212',
+                      fontSize: '0.9rem',
+                      lineHeight: '1.6',
+                    }}>
+                      {selectedApp.summary}
+                    </div>
+                  </section>
+
+                  {/* Docs + Photos */}
+                  <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                    <div>
+                      <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#414943', margin: '0 0 12px', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                        Uploaded Documents
+                      </h3>
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        <div style={THUMB}>
+                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '22px' }}>description</span>
+                        </div>
+                        <div style={THUMB}>
+                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '22px' }}>description</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#414943', marginBottom: '12px' }}>Geo-tagged Photos</h3>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                      <div style={{ width: '120px', height: '100px', background: '#e2e9e6', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span className="material-symbols-outlined" style={{ color: '#9eaa9f' }}>image</span>
+
+                    <div>
+                      <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#414943', margin: '0 0 12px', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                        Geo-tagged Photos
+                      </h3>
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        <div style={{ ...THUMB, width: '100px' }}>
+                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '22px' }}>image</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </section>
 
-                <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#414943', marginBottom: '12px' }}>Officer Remarks</h3>
-                  <textarea 
-                    placeholder="Add your review notes here..."
-                    style={{ width: '100%', height: '100px', padding: '12px', border: '1px solid #e2e9e6', borderRadius: '8px', fontSize: '0.9rem', resize: 'vertical' }}
-                  />
-                </div>
+                  {/* Officer Remarks */}
+                  <section>
+                    <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#414943', margin: '0 0 10px', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                      Officer Remarks
+                    </h3>
+                    <textarea
+                      placeholder="Add your review notes here..."
+                      style={{
+                        width: '100%',
+                        height: '96px',
+                        padding: '12px',
+                        border: '1px solid #dde3d9',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        lineHeight: '1.5',
+                        resize: 'vertical',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                        color: '#1a1c1a',
+                        background: '#fafbf8',
+                        outline: 'none',
+                      }}
+                    />
+                  </section>
 
+                </div>
               </div>
             </div>
 
-            {/* BOTTOM ACTION BAR */}
-            <div style={{ background: '#fff', borderTop: '1px solid #e2e9e6', padding: '20px 32px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button 
-                onClick={() => handleAction('Flag for Inspection')}
-                style={{ padding: '10px 20px', background: '#fff', border: '1px solid #e2e9e6', borderRadius: '6px', color: '#ba1a1a', fontWeight: 600, cursor: 'pointer' }}>
+            {/* ── BOTTOM ACTION BAR ── */}
+            <div style={{
+              background: '#fff',
+              borderTop: '1px solid #e2e9e6',
+              padding: '16px 24px',
+              display: 'flex',
+              gap: '10px',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              flexShrink: 0,
+            }}>
+              <ActionBtn onClick={() => setModalAction('Flag for Inspection')} variant="danger">
                 Flag for Inspection
-              </button>
-              <button 
-                onClick={() => handleAction('Request Clarification')}
-                style={{ padding: '10px 20px', background: '#fff', border: '1px solid #e2e9e6', borderRadius: '6px', color: '#414943', fontWeight: 600, cursor: 'pointer' }}>
+              </ActionBtn>
+              <ActionBtn onClick={() => setModalAction('Request Clarification')} variant="ghost">
                 Request Clarification
-              </button>
-              <button 
-                onClick={() => handleAction('Send Back')}
-                style={{ padding: '10px 20px', background: '#fff', border: '1px solid #e2e9e6', borderRadius: '6px', color: '#414943', fontWeight: 600, cursor: 'pointer' }}>
+              </ActionBtn>
+              <ActionBtn onClick={() => setModalAction('Send Back')} variant="ghost">
                 Send Back
-              </button>
-              <button 
-                onClick={() => handleAction('Approve')}
-                style={{ padding: '10px 24px', background: '#1f4d36', border: 'none', borderRadius: '6px', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>
+              </ActionBtn>
+              <ActionBtn onClick={() => setModalAction('Approve')} variant="primary">
                 Approve Application
-              </button>
+              </ActionBtn>
             </div>
           </>
         ) : (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9eaa9f' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9eaa9f', fontSize: '0.9375rem' }}>
             Select an application to review
           </div>
         )}
       </div>
 
-      {/* CONFIRMATION MODAL */}
+      {/* ── CONFIRMATION MODAL ── */}
       {modalAction && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#fff', padding: '32px', borderRadius: '12px', width: '400px', maxWidth: '90%' }}>
-            <h2 style={{ margin: '0 0 16px', fontSize: '1.25rem', color: '#1a1c1a' }}>Confirm Action</h2>
-            <p style={{ margin: '0 0 24px', color: '#414943', lineHeight: '1.5' }}>
-              Are you sure you want to <strong>{modalAction}</strong> for application {selectedApp?.id}?
+        <div style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(12,14,10,0.45)',
+          zIndex: 2000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px',
+        }}>
+          <div style={{
+            background: '#fff',
+            padding: '28px',
+            borderRadius: '12px',
+            width: '100%',
+            maxWidth: '400px',
+            border: '1px solid #e2e9e6',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
+          }}>
+            <h2 style={{ margin: '0 0 12px', fontSize: '1.125rem', fontWeight: 600, color: '#1a1c1a' }}>
+              Confirm Action
+            </h2>
+            <p style={{ margin: '0 0 24px', color: '#5c6656', lineHeight: '1.6', fontSize: '0.9rem' }}>
+              Are you sure you want to <strong style={{ color: '#1a1c1a' }}>{modalAction}</strong> for application <strong style={{ color: '#1a1c1a' }}>{selectedApp?.id}</strong>?
             </p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button onClick={() => setModalAction(null)} style={{ padding: '8px 16px', background: 'none', border: '1px solid #e2e9e6', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
-              <button onClick={confirmAction} style={{ padding: '8px 16px', background: '#1f4d36', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Confirm</button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <ActionBtn onClick={() => setModalAction(null)} variant="ghost">Cancel</ActionBtn>
+              <ActionBtn onClick={confirmAction} variant="primary">Confirm</ActionBtn>
             </div>
           </div>
         </div>

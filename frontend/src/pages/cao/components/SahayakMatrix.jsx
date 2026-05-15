@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 
-// Muted enterprise palette — soft tints with subtle 1px borders.
+// Muted enterprise palette - soft tints with subtle 1px borders.
 // All status tokens share the same shape so badges, avatars, and
 // rank pills compose into one cohesive design system.
 const STATUS_META = {
@@ -26,7 +26,7 @@ const STATUS_META = {
   },
 };
 
-// Tonal rank chips — first place gets a subtle gold tint, others sit neutral.
+// Tonal rank chips - first place gets a subtle gold tint, others sit neutral.
 const RANK_META = [
   { fg: '#7a5310', bg: '#fdf4dc', border: 'rgba(122, 83, 16, 0.16)' },
   { fg: '#5f676b', bg: '#f3f4f0', border: 'rgba(20, 40, 30, 0.08)' },
