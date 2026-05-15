@@ -1,174 +1,103 @@
-﻿import React, { useCallback, useMemo, useRef, useState } from 'react';
-import {
-  AlertCircle,
-  CheckCircle,
-  ChevronRight,
-  Droplets,
-  FileText,
-  Sun,
-  Tractor,
-  Upload,
-  X,
-} from 'lucide-react';
+﻿import React, { useCallback, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Droplets, FileText, ShieldCheck, Sun, Tractor, Warehouse, X } from 'lucide-react';
 import { useToast } from '../../../hooks/useToast.jsx';
 import { useLanguage } from '../../../context/LanguageContext';
-import { FarmerPageShell } from './farmerPortalUi';
+import { Btn, FarmerPageShell, FpCard, fp } from './farmerPortalUi';
+import FarmerSchemeApplyFlow from './FarmerSchemeApplyFlow';
 
-const PRIMARY = '#2D6A4F';
-const PRIMARY_SOFT = '#E8F1EC';
-const PAGE_BG = '#F3F4F6';
-
-const MAX_BYTES = 2 * 1024 * 1024;
-
-const TABS = [
-  { key: 'eligible', label: 'Eligible' },
-  { key: 'applied', label: 'Applied' },
-  { key: 'approved', label: 'Approved' },
-  { key: 'rejected', label: 'Rejected' },
-  { key: 'recommended', label: 'Recommended' },
+const STATUS_TABS = [
+  { key: 'Eligible', label: 'Eligible' },
+  { key: 'Applied', label: 'Applied' },
+  { key: 'Under Verification', label: 'Under verification' },
+  { key: 'Rejected', label: 'Rejected' },
+  { key: 'Approved', label: 'Approved' },
 ];
 
 function buildInitialSchemes() {
+  const singleDoc = {
+    id: 'scheme-doc',
+    label: 'Supporting document (one file)',
+    hint: 'PDF, JPG, or PNG — max 80 MB upload. Blur is checked first. If your file is already under 1 MB it is kept as-is; larger files are compressed for the portal.',
+    required: true,
+    pdfOnly: false,
+  };
+
   return [
     {
-      id: 'S1',
-      name: 'Micro Irrigation (Drip)',
-      dept: 'Agriculture Dept.',
+      id: 'drip',
+      name: 'Drip Irrigation (Micro Irrigation)',
+      dept: 'Agriculture Department, GoM',
       subsidy: 'Up to ₹1,25,000 / ha',
+      subsidyAmount: '₹1,25,000 / ha',
       deadline: '30 Jun 2026',
-      stage: 'Not applied',
-      appliedViaPortal: false,
+      portalStatus: 'Eligible',
       iconKey: 'droplets',
       description:
-        'Subsidy support for drip irrigation systems on cultivated land as per MahaDBT norms. Covers material and installation subject to technical approval and bill verification.',
+        'Central–State converged assistance for drip / sprinkler systems on notified crops. Beneficiary contribution and technical sanction apply as per MahaDBT circulars.',
       eligibilityCriteria:
-        'Farmer must hold valid 7/12 land record in Maharashtra, minimum 0.2 ha under cultivation, and no duplicate subsidy for the same plot in the last five years. Priority for water-stress blocks.',
-      requiredDocs: [
-        {
-          id: 's1d1',
-          label: '7/12 Satbara Extract (Land Record)',
-          hint: 'JPG/PNG/PDF, max 2MB',
-          required: true,
-          pdfOnly: false,
-        },
-        {
-          id: 's1d2',
-          label: 'Supplier Invoice / Purchase Bill',
-          hint: 'JPG/PNG/PDF, max 2MB',
-          required: true,
-          pdfOnly: false,
-        },
-        {
-          id: 's1d3',
-          label: 'Geo-Tagged Installation Photo (with GPS coordinates visible)',
-          hint: 'JPG/PNG, max 2MB',
-          required: true,
-          pdfOnly: false,
-          imagesOnly: true,
-        },
-        {
-          id: 's1d4',
-          label: 'Panchanama Report (signed by Talathi/Patwari)',
-          hint: 'JPG/PNG/PDF, max 2MB',
-          required: true,
-          pdfOnly: false,
-        },
-        {
-          id: 's1d5',
-          label: 'Bank Passbook / Cancelled Cheque',
-          hint: 'JPG/PNG, max 2MB',
-          required: true,
-          pdfOnly: false,
-        },
-      ],
+        'Maharashtra land record (7/12), minimum cultivated area norms, no duplicate subsidy on the same plot in the last five years, and compliance with water-use audit where applicable.',
+      requiredDocs: [singleDoc],
     },
     {
-      id: 'S2',
-      name: 'Farm Mechanization',
-      dept: 'Agriculture Dept.',
-      subsidy: '40% on equipment',
-      deadline: '15 Jul 2026',
-      stage: 'Document check pending',
-      appliedViaPortal: false,
-      iconKey: 'tractor',
-      description:
-        'Capital subsidy on purchase of tractors, power tillers, and approved farm machinery through registered dealers under the State Agriculture Mechanization Programme.',
-      eligibilityCriteria:
-        'Applicant must be an individual farmer or FPO member with land records matching subsidy norms. Equipment must be new, invoiced by an authorized dealer, and inspected where mandatory.',
-      requiredDocs: [
-        { id: 's2d1', label: '7/12 Satbara Extract (Land Record)', hint: 'JPG/PNG/PDF, max 2MB', required: true, pdfOnly: false },
-        {
-          id: 's2d2',
-          label: 'Equipment Purchase Invoice from Registered Dealer',
-          hint: 'JPG/PNG/PDF, max 2MB',
-          required: true,
-          pdfOnly: false,
-        },
-        {
-          id: 's2d3',
-          label: 'Inspection Report (Central Govt. recognized body)',
-          hint: 'PDF, max 2MB',
-          required: true,
-          pdfOnly: true,
-        },
-        {
-          id: 's2d4',
-          label: 'Geo-Tagged Photo of Equipment on Farm',
-          hint: 'JPG/PNG, max 2MB',
-          required: true,
-          pdfOnly: false,
-          imagesOnly: true,
-        },
-        {
-          id: 's2d5',
-          label: 'Self-Declaration / Prior Consent Letter',
-          hint: 'JPG/PNG/PDF, max 2MB',
-          required: true,
-          pdfOnly: false,
-        },
-        { id: 's2d6', label: 'Bank Passbook / Cancelled Cheque', hint: 'JPG/PNG, max 2MB', required: true, pdfOnly: false },
-      ],
-    },
-    {
-      id: 'S3',
+      id: 'solar',
       name: 'Solar Agricultural Pump',
-      dept: 'Energy Dept.',
+      dept: 'Energy Department, GoM',
       subsidy: 'Up to 90% (capped)',
+      subsidyAmount: '90% (capped)',
       deadline: '20 Aug 2026',
-      stage: 'Not applied',
-      appliedViaPortal: false,
+      portalStatus: 'Under Verification',
       iconKey: 'sun',
       description:
-        'Financial assistance for solar-powered agricultural pumps connected to grid or off-grid systems as per MSEDCL-approved vendor list and energy department circulars.',
+        'Capital subsidy for replacement of conventional pumps with grid-compliant solar pumps through empanelled vendors and DISCOM technical clearance.',
       eligibilityCriteria:
-        'Farmer should have valid Aadhaar seeding for DBT, active agricultural pump connection where replacement is permitted, and compliance with DISCOM technical standards.',
-      requiredDocs: [
-        { id: 's3d1', label: '7/12 Satbara Extract (Land Record)', hint: 'JPG/PNG/PDF, max 2MB', required: true, pdfOnly: false },
-        {
-          id: 's3d2',
-          label: 'Purchase Invoice / Bill from MSEDCL-approved vendor',
-          hint: 'JPG/PNG/PDF, max 2MB',
-          required: true,
-          pdfOnly: false,
-        },
-        {
-          id: 's3d3',
-          label: 'Geo-Tagged Photo of Installed Solar Pump',
-          hint: 'JPG/PNG, max 2MB',
-          required: true,
-          pdfOnly: false,
-          imagesOnly: true,
-        },
-        {
-          id: 's3d4',
-          label: 'Panchanama / Site Inspection Report',
-          hint: 'JPG/PNG/PDF, max 2MB',
-          required: true,
-          pdfOnly: false,
-        },
-        { id: 's3d5', label: 'Aadhaar Card (self-attested)', hint: 'JPG/PNG, max 2MB', required: true, pdfOnly: false, imagesOnly: true },
-        { id: 's3d6', label: 'Bank Passbook / Cancelled Cheque', hint: 'JPG/PNG, max 2MB', required: true, pdfOnly: false },
-      ],
+        'Active agricultural pump, valid Aadhaar seeding for DBT, land record match, and vendor bill from approved list.',
+      requiredDocs: [singleDoc],
+    },
+    {
+      id: 'mech',
+      name: 'Farm Mechanization',
+      dept: 'Agriculture Department, GoM',
+      subsidy: '40% on notified equipment',
+      subsidyAmount: '40% subsidy',
+      deadline: '15 Jul 2026',
+      portalStatus: 'Applied',
+      iconKey: 'tractor',
+      description:
+        'Subsidy on purchase of tractors, power tillers, and custom-hiring centre equipment through registered dealers with inspection where mandated.',
+      eligibilityCriteria:
+        'Individual farmer or FPO member with matching land records; new equipment only; invoice from authorized dealer.',
+      requiredDocs: [singleDoc],
+    },
+    {
+      id: 'poly',
+      name: 'Polyhouse / Protected Cultivation',
+      dept: 'Horticulture, GoM',
+      subsidy: 'Up to 50% (project capped)',
+      subsidyAmount: '50% (capped)',
+      deadline: '05 Sep 2026',
+      portalStatus: 'Approved',
+      iconKey: 'poly',
+      description:
+        'Assistance for poly-shade nets, walk-in tunnels, and micro-irrigation integration for horticulture clusters under state horticulture mission.',
+      eligibilityCriteria:
+        'Cluster proximity norms, horticulture crop plan, bankable project report, and geo-tagged site readiness certificate.',
+      requiredDocs: [singleDoc],
+    },
+    {
+      id: 'pmfby',
+      name: 'Crop Insurance (PMFBY / State)',
+      dept: 'Agriculture Insurance, GoM',
+      subsidy: 'Premium subsidy as per season',
+      subsidyAmount: 'Premium support',
+      deadline: '31 Jul 2026',
+      portalStatus: 'Rejected',
+      iconKey: 'shield',
+      description:
+        'Seasonal crop insurance enrolment with premium support for notified crops and risk periods as per RWBCIS guidelines.',
+      eligibilityCriteria:
+        'Crop declaration within window, valid land parcel linkage, and premium payment confirmation through CSC / bank channel.',
+      requiredDocs: [singleDoc],
     },
   ];
 }
@@ -177,615 +106,267 @@ function SchemeIcon({ iconKey, className }) {
   const cn = className || 'h-5 w-5';
   if (iconKey === 'tractor') return <Tractor className={cn} aria-hidden />;
   if (iconKey === 'sun') return <Sun className={cn} aria-hidden />;
+  if (iconKey === 'poly') return <Warehouse className={cn} aria-hidden />;
+  if (iconKey === 'shield') return <ShieldCheck className={cn} aria-hidden />;
   return <Droplets className={cn} aria-hidden />;
 }
 
-function acceptAttr(doc) {
-  if (doc.pdfOnly) return '.pdf,application/pdf';
-  if (doc.imagesOnly) return 'image/jpeg,image/png,.jpg,.jpeg,.png';
-  return 'image/jpeg,image/png,.jpg,.jpeg,.png,.pdf,application/pdf';
-}
-
-function validateFile(file, doc) {
-  if (!file) return 'No file selected';
-  if (file.size > MAX_BYTES) return 'File size exceeds 2MB limit';
-  const ext = (file.name.split('.').pop() || '').toLowerCase();
-  const mime = file.type || '';
-  if (doc.pdfOnly) {
-    if (mime !== 'application/pdf' && ext !== 'pdf') return 'Please upload a PDF file';
-    return null;
+function statusPillStyle(status) {
+  switch (status) {
+    case 'Eligible':
+      return { bg: fp.primarySoft, fg: fp.primary, ring: '#c5d9cc' };
+    case 'Applied':
+      return { bg: '#eff6ff', fg: '#1e40af', ring: '#bfdbfe' };
+    case 'Under Verification':
+      return { bg: '#fffbeb', fg: '#b45309', ring: '#fde68a' };
+    case 'Rejected':
+      return { bg: '#fef2f2', fg: '#b91c1c', ring: '#fecaca' };
+    case 'Approved':
+      return { bg: '#ecfdf5', fg: '#047857', ring: '#a7f3d0' };
+    default:
+      return { bg: '#f4f4f5', fg: '#52525b', ring: '#e4e4e7' };
   }
-  if (doc.imagesOnly) {
-    const okMime = mime.startsWith('image/');
-    const okExt = ['jpg', 'jpeg', 'png'].includes(ext);
-    if (!okMime && !okExt) return 'Please upload a JPG or PNG image';
-    return null;
-  }
-  const okMime = mime.startsWith('image/') || mime === 'application/pdf';
-  const okExt = ['jpg', 'jpeg', 'png', 'pdf'].includes(ext);
-  if (!okMime && !okExt) return 'Please upload JPG, PNG, or PDF';
-  return null;
-}
-
-function generateAppRef() {
-  const n = String(Math.floor(10000 + Math.random() * 90000));
-  return `MH-AGR-2026-${n}`;
 }
 
 export default function FarmerSchemesPage() {
   const { t } = useLanguage();
   const { addToast } = useToast();
   const [schemes, setSchemes] = useState(buildInitialSchemes);
-  const [tab, setTab] = useState('eligible');
+  const [tab, setTab] = useState('Eligible');
   const [detailsScheme, setDetailsScheme] = useState(null);
-  const [apply, setApply] = useState(null);
-  const inputRefs = useRef({});
+  const [applyScheme, setApplyScheme] = useState(null);
 
-  const setInputRef = (docId) => (el) => {
-    if (el) inputRefs.current[docId] = el;
-    else delete inputRefs.current[docId];
-  };
+  const filtered = useMemo(() => schemes.filter((s) => s.portalStatus === tab), [schemes, tab]);
 
-  const filteredSchemes = useMemo(() => {
-    if (tab === 'eligible') return schemes.filter((s) => !s.appliedViaPortal);
-    if (tab === 'applied') return schemes.filter((s) => s.appliedViaPortal);
-    return [];
-  }, [schemes, tab]);
-
-  const revokeUploads = useCallback((uploadMap) => {
-    Object.values(uploadMap || {}).forEach((u) => {
-      if (u?.preview) URL.revokeObjectURL(u.preview);
-    });
+  const handleApplySubmitted = useCallback((schemeId) => {
+    setSchemes((prev) =>
+      prev.map((s) => (s.id === schemeId ? { ...s, portalStatus: 'Applied' } : s)),
+    );
+    setTab('Applied');
   }, []);
 
-  const closeApply = useCallback(() => {
-    setApply((prev) => {
-      if (prev?.uploads) revokeUploads(prev.uploads);
-      return null;
-    });
-  }, [revokeUploads]);
-
-  const openApply = (scheme) => {
-    setApply({
-      scheme,
-      step: 1,
-      confirmEligible: false,
-      declaration: false,
-      uploads: {},
-      ref: null,
-    });
-  };
-
-  const updateUpload = (schemeId, docId, patch) => {
-    setApply((prev) => {
-      if (!prev || prev.scheme.id !== schemeId) return prev;
-      const cur = prev.uploads[docId];
-      if (cur?.preview && patch.preview !== cur.preview) URL.revokeObjectURL(cur.preview);
-      return {
-        ...prev,
-        uploads: { ...prev.uploads, [docId]: { ...cur, ...patch } },
-      };
-    });
-  };
-
-  const onPickFile = (schemeId, doc, fileList) => {
-    const file = fileList?.[0];
-    const input = inputRefs.current[doc.id];
-    if (input) input.value = '';
-    if (!file) return;
-    const err = validateFile(file, doc);
-    if (err) {
-      updateUpload(schemeId, doc.id, { file: null, preview: null, error: err });
-      return;
-    }
-    const preview = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
-    updateUpload(schemeId, doc.id, { file, preview, error: null });
-  };
-
-  const removeFile = (schemeId, docId) => {
-    setApply((prev) => {
-      if (!prev || prev.scheme.id !== schemeId) return prev;
-      const cur = prev.uploads[docId];
-      if (cur?.preview) URL.revokeObjectURL(cur.preview);
-      const next = { ...prev.uploads };
-      delete next[docId];
-      return { ...prev, uploads: next };
-    });
-  };
-
-  const uploadProgress = useMemo(() => {
-    if (!apply?.scheme) return { done: 0, total: 0 };
-    const docs = apply.scheme.requiredDocs;
-    const done = docs.filter((d) => apply.uploads[d.id]?.file && !apply.uploads[d.id]?.error).length;
-    return { done, total: docs.length };
-  }, [apply]);
-
-  const allDocsOk =
-    apply &&
-    apply.scheme.requiredDocs.every((d) => {
-      const u = apply.uploads[d.id];
-      return u?.file && !u.error;
-    });
-
-  const handleSubmitApplication = () => {
-    if (!apply || !allDocsOk || !apply.declaration) {
-      addToast('Please upload all required documents and accept the declaration.', 'error', 4500);
-      return;
-    }
-    const ref = generateAppRef();
-    setApply((a) => (a ? { ...a, step: 'success', ref } : a));
-    addToast(`Application submitted! Ref: ${ref}`, 'success', 6000, { align: 'top-right' });
-  };
-
-  const finishSuccessClose = () => {
-    if (!apply?.scheme || !apply.ref) {
-      closeApply();
-      return;
-    }
-    const sid = apply.scheme.id;
-    setSchemes((prev) =>
-      prev.map((s) =>
-        s.id === sid
-          ? {
-              ...s,
-              appliedViaPortal: true,
-              stage: 'Application submitted – Under Review',
-            }
-          : s,
-      ),
-    );
-    closeApply();
-    setTab('applied');
-  };
-
-  const handleDownloadGr = () => {
-    addToast('GR document downloading...', 'success', 2800);
+  const downloadGr = (scheme) => {
+    const body = `Government Resolution (Demo)\nScheme: ${scheme.name}\nDepartment: ${scheme.dept}\nIssued for: Krishi Prabandh Farmer Portal demo\n`;
+    const blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `GR-${scheme.id}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    addToast('GR file downloaded.', 'success', 2800);
   };
 
   return (
     <>
-      <div className="min-h-0 flex-1" style={{ background: PAGE_BG }}>
-        <FarmerPageShell
-          title={t('Schemes')}
-          subtitle={t('Eligible lines, deadlines, and subsidy caps - apply or track from one place (demo).')}
-        >
-          <div className="mb-4 flex gap-1 overflow-x-auto border-b border-neutral-200 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {TABS.map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setTab(key)}
-                className={`shrink-0 rounded-lg px-3 py-2 text-[0.75rem] font-bold transition-colors sm:px-4 sm:text-[0.8125rem] ${
-                  tab === key ? 'text-white shadow-sm' : 'bg-white/80 text-neutral-600 hover:bg-white'
-                }`}
-                style={tab === key ? { background: PRIMARY } : {}}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {filteredSchemes.length === 0 ? (
-            <div
-              className="rounded-2xl border border-neutral-200 bg-white px-4 py-14 text-center shadow-sm sm:px-8"
-              style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+      <FarmerPageShell
+        title={t('Schemes')}
+        subtitle={t('Government subsidy schemes — apply with guided uploads, validation, and tracking (live demo).')}
+      >
+        <div className="fp-filter-tabs" role="tablist" aria-label={t('Filter by status')}>
+          {STATUS_TABS.map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={tab === key}
+              onClick={() => setTab(key)}
+              className={`fp-filter-tab ${tab === key ? 'fp-filter-tab--active' : ''}`}
             >
-              <FileText className="mx-auto h-10 w-10 text-neutral-300" aria-hidden />
-              <p className="mt-4 text-base font-bold text-neutral-800">No schemes in this tab yet.</p>
-              <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">Explore eligible schemes to get started.</p>
-              <button
-                type="button"
-                className="mt-6 rounded-xl px-5 py-2.5 text-sm font-bold text-white"
-                style={{ background: PRIMARY }}
-                onClick={() => setTab('eligible')}
-              >
-                Explore Eligible Schemes
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {filteredSchemes.map((s) => (
-                <div
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {filtered.length === 0 ? (
+          <FpCard className="py-12 text-center sm:py-14">
+            <FileText className="mx-auto h-10 w-10" style={{ color: '#c5cbc7' }} aria-hidden />
+            <p className="fp-heading mt-4 text-base font-bold" style={{ color: fp.text }}>
+              No schemes in this view
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-sm" style={{ color: fp.muted }}>
+              Try another status tab to see applications.
+            </p>
+          </FpCard>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+            {filtered.map((s) => {
+              const st = statusPillStyle(s.portalStatus);
+              const canApply = s.portalStatus === 'Eligible';
+              return (
+                <motion.article
                   key={s.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-5"
-                  style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <div className="flex gap-3">
-                    <div
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12"
-                      style={{ background: PRIMARY_SOFT, color: PRIMARY }}
-                    >
-                      <SchemeIcon iconKey={s.iconKey} className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold leading-snug text-neutral-900 sm:text-[1.02rem]">{s.name}</p>
-                      <p className="text-[0.6875rem] text-neutral-500 sm:text-xs">{s.dept}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm font-semibold sm:text-[0.9375rem]" style={{ color: PRIMARY }}>
-                    {s.subsidy}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <span
-                      className="rounded-full px-2.5 py-1 text-[0.65rem] font-bold sm:text-[0.6875rem]"
-                      style={
-                        s.appliedViaPortal
-                          ? { background: '#e0e7ff', color: '#3730a3' }
-                          : { background: '#dbeafe', color: '#1e40af' }
-                      }
-                    >
-                      {s.appliedViaPortal ? 'Applied' : 'Eligible'}
-                    </span>
-                    <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[0.65rem] font-bold text-amber-900 ring-1 ring-inset ring-amber-200/80 sm:text-[0.6875rem]">
-                      Deadline: {s.deadline}
-                    </span>
-                  </div>
-                  <p className="text-sm text-neutral-600">
-                    <span className="font-semibold text-neutral-900">Stage:</span> {s.stage}
-                  </p>
-                  <div className="mt-auto flex w-full flex-col gap-2.5 border-t border-neutral-100 pt-4 sm:flex-row sm:items-stretch sm:gap-3">
-                    {s.appliedViaPortal ? (
-                      <button
-                        type="button"
-                        disabled
-                        className="inline-flex min-h-[44px] w-full items-center justify-center rounded-xl border border-neutral-200 bg-neutral-100 px-4 py-2.5 text-sm font-bold text-neutral-500"
+                  <FpCard className="fp-scheme-card">
+                    {/* ── Header: circular icon + dept above title + status pill ── */}
+                    <div className="flex items-start gap-3 p-4 sm:p-5">
+                      <div
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                        style={{
+                          background: fp.primarySoft,
+                          color: fp.primary,
+                          boxShadow: `0 0 0 3px rgba(31,94,59,0.08), inset 0 1px 0 rgba(255,255,255,0.9)`,
+                        }}
                       >
-                        Applied ✓
-                      </button>
-                    ) : (
-                      <>
+                        <SchemeIcon iconKey={s.iconKey} className="h-[1.1rem] w-[1.1rem]" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="m-0 text-[0.6rem] font-semibold uppercase tracking-widest" style={{ color: fp.muted }}>
+                          {s.dept}
+                        </p>
+                        <h3 className="fp-heading m-0 mt-0.5 text-[0.9375rem] font-bold leading-snug" style={{ color: fp.text }}>
+                          {s.name}
+                        </h3>
+                      </div>
+                      {/* Status pill — top-right */}
+                      <span
+                        className="ml-1 shrink-0 self-start rounded-full px-2.5 py-[3px] text-[0.6rem] font-bold"
+                        style={{
+                          background: st.bg,
+                          color: st.fg,
+                          boxShadow: `inset 0 0 0 1px ${st.ring}`,
+                        }}
+                      >
+                        {s.portalStatus}
+                      </span>
+                    </div>
+
+                    {/* ── 2-col details: subsidy | deadline ── */}
+                    <div
+                      className="grid grid-cols-2"
+                      style={{ borderTop: `1px solid ${fp.divider}`, borderBottom: `1px solid ${fp.divider}` }}
+                    >
+                      <div className="px-4 py-3" style={{ borderRight: `1px solid ${fp.divider}` }}>
+                        <p className="m-0 text-[0.625rem] font-bold uppercase" style={{ letterSpacing: '0.07em', color: fp.muted }}>
+                          Subsidy
+                        </p>
+                        <p className="m-0 mt-0.5 text-[0.9375rem] font-bold tabular-nums leading-snug" style={{ color: fp.primary, letterSpacing: '-0.01em' }}>
+                          {s.subsidyAmount || s.subsidy}
+                        </p>
+                      </div>
+                      <div className="px-4 py-3">
+                        <p className="m-0 text-[0.625rem] font-bold uppercase" style={{ letterSpacing: '0.07em', color: fp.muted }}>
+                          Deadline
+                        </p>
+                        <p className="m-0 mt-0.5 text-[0.875rem] font-bold leading-snug" style={{ color: fp.text, letterSpacing: '-0.01em' }}>
+                          {s.deadline}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* ── Action buttons ── */}
+                    <div className="grid grid-cols-2 gap-2 p-4 sm:p-5">
+                      {canApply ? (
                         <button
                           type="button"
-                          className="inline-flex min-h-[44px] w-full flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-[0.97] sm:min-w-0"
-                          style={{ background: PRIMARY, boxShadow: '0 2px 8px rgba(45,106,79,0.35)' }}
-                          onClick={() => openApply(s)}
+                          className="fp-btn fp-btn--primary min-h-[40px] text-[0.8125rem]"
+                          onClick={() => setApplyScheme(s)}
                         >
                           Apply
                         </button>
+                      ) : (
                         <button
                           type="button"
-                          className="inline-flex min-h-[44px] w-full flex-1 items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-neutral-800 shadow-sm ring-1 ring-inset ring-neutral-300 transition hover:bg-neutral-50 sm:min-w-0"
-                          onClick={() => setDetailsScheme(s)}
+                          disabled
+                          className="fp-btn min-h-[40px] cursor-not-allowed text-[0.8125rem] font-semibold"
+                          style={{ border: `1px solid ${fp.divider}`, background: '#f3f4f0', color: '#9aa19c' }}
                         >
-                          View Details
+                          Apply
                         </button>
-                        <button
-                          type="button"
-                          className="inline-flex min-h-[44px] w-full flex-1 items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-[#2D6A4F] shadow-sm ring-2 ring-inset ring-[#2D6A4F] transition hover:bg-[#f4faf7] sm:min-w-0"
-                          onClick={handleDownloadGr}
-                        >
-                          Download GR
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </FarmerPageShell>
-      </div>
-
-      {detailsScheme && (
-        <div className="fixed inset-0 z-[2200] flex items-end justify-center p-0 sm:items-center sm:p-4">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/40"
-            aria-label="Close"
-            onClick={() => setDetailsScheme(null)}
-          />
-          <div className="relative max-h-[85vh] w-full max-w-md overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl">
-            <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
-              <h2 className="pr-2 text-base font-bold text-neutral-900">{detailsScheme.name}</h2>
-              <button type="button" className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100" onClick={() => setDetailsScheme(null)}>
-                <X className="h-5 w-5" aria-hidden />
-              </button>
-            </div>
-            <div className="max-h-[calc(85vh-52px)] overflow-y-auto p-4 text-sm leading-relaxed text-neutral-600">
-              <p className="m-0 font-bold text-neutral-800">Description</p>
-              <p className="mt-2">{detailsScheme.description}</p>
-              <p className="mb-2 mt-4 font-bold text-neutral-800">Eligibility criteria</p>
-              <p className="m-0">{detailsScheme.eligibilityCriteria}</p>
-            </div>
-            <div className="flex justify-end border-t border-neutral-200 px-4 py-3">
-              <button
-                type="button"
-                className="rounded-xl px-4 py-2 text-sm font-bold text-white"
-                style={{ background: PRIMARY }}
-                onClick={() => setDetailsScheme(null)}
-              >
-                Close
-              </button>
-            </div>
+                      )}
+                      <button
+                        type="button"
+                        className="fp-btn fp-btn--ghost min-h-[40px] text-[0.8125rem]"
+                        onClick={() => setDetailsScheme(s)}
+                      >
+                        Know more info
+                      </button>
+                    </div>
+                  </FpCard>
+                </motion.article>
+              );
+            })}
           </div>
-        </div>
-      )}
+        )}
+      </FarmerPageShell>
 
-      {apply && (
-        <div className="fixed inset-0 z-[2300] flex justify-end">
-          <button type="button" className="absolute inset-0 bg-black/40" aria-label="Close" onClick={closeApply} />
-          <div
-            className="relative flex h-full w-full max-w-full flex-col border-l border-neutral-200 bg-[#fafafa] shadow-2xl sm:max-w-lg"
-            role="dialog"
-            aria-modal="true"
+      <AnimatePresence>
+        {detailsScheme ? (
+          <motion.div
+            className="fixed inset-0 z-[4800] flex items-end justify-center bg-black/45 p-0 sm:items-center sm:p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <div className="flex shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-3 py-3 sm:px-4">
-              <div className="min-w-0 pr-2">
-                <p className="truncate text-sm font-bold text-neutral-900 sm:text-base">{apply.scheme.name}</p>
-                <p className="text-[0.6875rem] text-neutral-500">MahaDBT-style application (demo)</p>
-              </div>
-              <button type="button" className="shrink-0 rounded-lg p-2 text-neutral-500 hover:bg-neutral-100" onClick={closeApply}>
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {apply.step !== 'success' ? (
-              <>
-                <div className="shrink-0 border-b border-neutral-200 bg-white px-3 py-3 sm:px-4">
-                  <div className="flex items-center justify-between gap-0.5 text-[0.6rem] font-bold sm:gap-1 sm:text-[0.7rem]">
-                    {[1, 2, 3].map((n) => {
-                      const active = apply.step === n;
-                      const done = apply.step > n;
-                      return (
-                        <React.Fragment key={n}>
-                          {n > 1 ? (
-                            <ChevronRight className="mx-0.5 h-3 w-3 shrink-0 text-neutral-300 sm:h-3.5 sm:w-3.5" aria-hidden />
-                          ) : null}
-                          <div
-                            className={`flex min-w-0 flex-1 items-center justify-center gap-1 rounded-lg py-2 ${
-                              active ? 'text-white' : done ? '' : 'bg-neutral-100 text-neutral-500'
-                            }`}
-                            style={
-                              active
-                                ? { background: PRIMARY }
-                                : done
-                                  ? { background: PRIMARY_SOFT, color: PRIMARY }
-                                  : {}
-                            }
-                          >
-                            {done ? <CheckCircle className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
-                            <span className="truncate">{n === 1 ? 'Confirm' : n === 2 ? 'Upload' : 'Submit'}</span>
-                          </div>
-                        </React.Fragment>
-                      );
-                    })}
-                  </div>
-                  <p className="mt-2 text-center text-[0.65rem] font-semibold text-neutral-500">
-                    Step {apply.step} of 3: {apply.step === 1 ? 'Confirm Details' : apply.step === 2 ? 'Upload Documents' : 'Submit'}
+            <button type="button" className="absolute inset-0" aria-label="Close" onClick={() => setDetailsScheme(null)} />
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 16, opacity: 0 }}
+              className="fp-modal-panel relative max-h-[90vh] w-full max-w-lg overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className="flex items-start justify-between gap-3 border-b px-4 py-3.5 sm:px-5 sm:py-4" style={{ borderColor: fp.border }}>
+                <div className="min-w-0">
+                  <h2 className="fp-heading m-0 text-[1.0625rem] font-bold" style={{ color: fp.text }}>
+                    {detailsScheme.name}
+                  </h2>
+                  <p className="m-0 mt-1 text-[0.8125rem]" style={{ color: fp.muted }}>
+                    {detailsScheme.dept}
                   </p>
                 </div>
-
-                <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-4">
-                  {apply.step === 1 && (
-                    <div className="space-y-4">
-                      <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm">
-                        <Row k="Scheme" v={apply.scheme.name} />
-                        <Row k="Department" v={apply.scheme.dept} />
-                        <Row k="Subsidy" v={apply.scheme.subsidy} />
-                        <Row k="Deadline" v={apply.scheme.deadline} last />
-                      </div>
-                      <label className="flex cursor-pointer gap-3 rounded-xl border border-neutral-200 bg-white p-4">
-                        <input
-                          type="checkbox"
-                          className="mt-0.5 h-4 w-4 shrink-0 accent-[#2D6A4F]"
-                          checked={apply.confirmEligible}
-                          onChange={(e) => setApply((a) => (a ? { ...a, confirmEligible: e.target.checked } : a))}
-                        />
-                        <span className="text-sm text-neutral-700">I confirm I am eligible and the details are correct</span>
-                      </label>
-                      <button
-                        type="button"
-                        disabled={!apply.confirmEligible}
-                        className="w-full rounded-xl py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-neutral-300"
-                        style={{ background: apply.confirmEligible ? PRIMARY : undefined }}
-                        onClick={() => setApply((a) => (a ? { ...a, step: 2 } : a))}
-                      >
-                        Next
-                      </button>
-                    </div>
-                  )}
-
-                  {apply.step === 2 && (
-                    <div className="space-y-4">
-                      {apply.scheme.requiredDocs.map((doc) => {
-                        const u = apply.uploads[doc.id];
-                        const hasFile = !!(u?.file && !u.error);
-                        return (
-                          <div
-                            key={doc.id}
-                            className={`rounded-xl border-2 border-dashed bg-white p-3 transition-colors sm:p-4 ${
-                              hasFile ? 'border-emerald-500/80' : 'border-neutral-200'
-                            }`}
-                          >
-                            <div className="flex flex-wrap items-start justify-between gap-2">
-                              <div className="min-w-0">
-                                <p className="text-sm font-bold text-neutral-900">
-                                  {doc.required ? <span className="text-red-600">* </span> : null}
-                                  {doc.label}
-                                </p>
-                                <p className="mt-0.5 text-[0.6875rem] text-neutral-500">{doc.hint}</p>
-                              </div>
-                              <input
-                                ref={setInputRef(doc.id)}
-                                type="file"
-                                className="sr-only"
-                                accept={acceptAttr(doc)}
-                                onChange={(e) => onPickFile(apply.scheme.id, doc, e.target.files)}
-                              />
-                              {!hasFile ? (
-                                <button
-                                  type="button"
-                                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[0.6875rem] font-bold"
-                                  style={{ borderColor: PRIMARY, color: PRIMARY }}
-                                  onClick={() => inputRefs.current[doc.id]?.click()}
-                                >
-                                  <Upload className="h-3.5 w-3.5" />
-                                  Upload
-                                </button>
-                              ) : (
-                                <div className="flex shrink-0 items-center gap-2">
-                                  <CheckCircle className="h-5 w-5 text-emerald-600" aria-hidden />
-                                  <button
-                                    type="button"
-                                    className="text-[0.6875rem] font-bold text-red-600 underline"
-                                    onClick={() => removeFile(apply.scheme.id, doc.id)}
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                            {u?.error ? (
-                              <p className="mt-2 flex items-center gap-1 text-[0.6875rem] font-semibold text-red-600">
-                                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                                {u.error}
-                              </p>
-                            ) : null}
-                            {hasFile && u.preview ? (
-                              <div className="mt-3">
-                                <img src={u.preview} alt="" className="h-20 w-auto max-w-full rounded-lg border border-neutral-200 object-cover" />
-                              </div>
-                            ) : null}
-                            {hasFile && !u.preview ? (
-                              <p className="mt-3 flex items-center gap-1 text-[0.6875rem] font-medium text-neutral-600">
-                                <FileText className="h-4 w-4 shrink-0" />
-                                {u.file.name}
-                              </p>
-                            ) : null}
-                          </div>
-                        );
-                      })}
-                      <div className="rounded-xl bg-neutral-200/80 px-3 py-2">
-                        <div className="mb-1 flex justify-between text-[0.6875rem] font-bold text-neutral-700">
-                          <span>Progress</span>
-                          <span>
-                            {uploadProgress.done} of {uploadProgress.total} documents uploaded
-                          </span>
-                        </div>
-                        <div className="h-2 overflow-hidden rounded-full bg-neutral-300">
-                          <div
-                            className="h-full rounded-full transition-all duration-300"
-                            style={{
-                              width: `${uploadProgress.total ? (100 * uploadProgress.done) / uploadProgress.total : 0}%`,
-                              background: PRIMARY,
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          className="flex-1 rounded-xl border border-neutral-300 py-3 text-sm font-bold text-neutral-700"
-                          onClick={() => setApply((a) => (a ? { ...a, step: 1 } : a))}
-                        >
-                          Back
-                        </button>
-                        <button
-                          type="button"
-                          disabled={!allDocsOk}
-                          className="flex-1 rounded-xl py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-neutral-300"
-                          style={{ background: allDocsOk ? PRIMARY : undefined }}
-                          onClick={() => {
-                            if (!allDocsOk) {
-                              addToast('Upload all required documents before continuing.', 'error', 4000);
-                              return;
-                            }
-                            setApply((a) => (a ? { ...a, step: 3 } : a));
-                          }}
-                        >
-                          Next
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {apply.step === 3 && (
-                    <div className="space-y-4">
-                      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white text-sm">
-                        <table className="w-full text-left">
-                          <tbody>
-                            <tr className="border-b border-neutral-100">
-                              <th className="px-3 py-2 font-semibold text-neutral-600">Scheme</th>
-                              <td className="px-3 py-2 text-neutral-900">{apply.scheme.name}</td>
-                            </tr>
-                            <tr className="border-b border-neutral-100">
-                              <th className="px-3 py-2 font-semibold text-neutral-600">Documents</th>
-                              <td className="px-3 py-2 text-neutral-900">{uploadProgress.done} uploaded</td>
-                            </tr>
-                            <tr>
-                              <th className="px-3 py-2 font-semibold text-neutral-600">Deadline</th>
-                              <td className="px-3 py-2 text-neutral-900">{apply.scheme.deadline}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <p className="text-sm leading-relaxed text-neutral-700">
-                        I hereby declare that all information and documents submitted are true and correct to the best of my knowledge. I
-                        understand that any false information may lead to rejection of my application.
-                      </p>
-                      <label className="flex cursor-pointer gap-3 rounded-xl border border-neutral-200 bg-white p-4">
-                        <input
-                          type="checkbox"
-                          className="mt-0.5 h-4 w-4 shrink-0 accent-[#2D6A4F]"
-                          checked={apply.declaration}
-                          onChange={(e) => setApply((a) => (a ? { ...a, declaration: e.target.checked } : a))}
-                        />
-                        <span className="text-sm text-neutral-700">I accept the declaration above</span>
-                      </label>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          className="flex-1 rounded-xl border border-neutral-300 py-3 text-sm font-bold text-neutral-700"
-                          onClick={() => setApply((a) => (a ? { ...a, step: 2 } : a))}
-                        >
-                          Back
-                        </button>
-                      </div>
-                      <button
-                        type="button"
-                        disabled={!apply.declaration}
-                        className="w-full rounded-xl py-3.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-neutral-300"
-                        style={{ background: apply.declaration ? PRIMARY : undefined }}
-                        onClick={handleSubmitApplication}
-                      >
-                        Submit Application
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-1 flex-col items-center justify-center px-4 py-10 text-center">
-                <CheckCircle className="h-16 w-16 text-emerald-600" strokeWidth={1.5} aria-hidden />
-                <p className="mt-4 text-lg font-bold text-neutral-900">Application Submitted Successfully!</p>
-                <p className="mt-2 font-mono text-sm font-semibold" style={{ color: PRIMARY }}>
-                  {apply.ref}
-                </p>
-                <p className="mt-3 max-w-xs text-sm text-neutral-600">
-                  Your application is under review. You will receive SMS updates.
-                </p>
                 <button
                   type="button"
-                  className="mt-8 w-full max-w-xs rounded-xl py-3 text-sm font-bold text-white"
-                  style={{ background: PRIMARY }}
-                  onClick={finishSuccessClose}
+                  className="icon-btn-soft shrink-0"
+                  aria-label={t('Close')}
+                  onClick={() => setDetailsScheme(null)}
                 >
-                  Close
+                  <X className="h-5 w-5" />
                 </button>
               </div>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+              <div className="max-h-[calc(90vh-140px)] overflow-y-auto px-4 py-4 text-[0.875rem] leading-relaxed sm:px-5" style={{ color: fp.muted }}>
+                <p className="m-0 font-bold" style={{ color: fp.text }}>
+                  Description
+                </p>
+                <p className="m-0 mt-2">{detailsScheme.description}</p>
+                <p className="m-0 mt-4 font-bold" style={{ color: fp.text }}>
+                  Eligibility
+                </p>
+                <p className="m-0 mt-2">{detailsScheme.eligibilityCriteria}</p>
+              </div>
+              <div className="flex flex-wrap justify-end gap-2 border-t px-4 py-3 sm:px-5" style={{ borderColor: fp.border }}>
+                <Btn variant="ghost" onClick={() => downloadGr(detailsScheme)}>
+                  {t('Download GR')}
+                </Btn>
+                <Btn variant="ghost" onClick={() => setDetailsScheme(null)}>
+                  {t('Close')}
+                </Btn>
+                {detailsScheme.portalStatus === 'Eligible' ? (
+                  <Btn
+                    onClick={() => {
+                      setDetailsScheme(null);
+                      setApplyScheme(detailsScheme);
+                    }}
+                  >
+                    {t('Start application')}
+                  </Btn>
+                ) : null}
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
-function Row({ k, v, last }) {
-  return (
-    <div className={`flex justify-between gap-3 py-2 text-neutral-800 ${last ? '' : 'border-b border-neutral-100'}`}>
-      <span className="text-neutral-500">{k}</span>
-      <span className="max-w-[60%] text-right font-medium">{v}</span>
-    </div>
+      <AnimatePresence>
+        {applyScheme ? (
+          <FarmerSchemeApplyFlow scheme={applyScheme} onClose={() => setApplyScheme(null)} onSubmitted={handleApplySubmitted} />
+        ) : null}
+      </AnimatePresence>
+    </>
   );
 }

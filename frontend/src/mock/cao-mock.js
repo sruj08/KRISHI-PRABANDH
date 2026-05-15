@@ -32,6 +32,9 @@ export const TALUKAS = [
   {
     id: 'barshi',
     name: 'Barshi',
+    /** Approximate taluka centroid (WGS84) for map markers — Solapur district */
+    lat: 18.2345,
+    lng: 75.6946,
     villages: 94,
     pending: 22,
     approved: 54,
@@ -48,6 +51,8 @@ export const TALUKAS = [
   {
     id: 'madha',
     name: 'Madha',
+    lat: 17.5067,
+    lng: 75.7847,
     villages: 76,
     pending: 12,
     approved: 43,
@@ -64,6 +69,8 @@ export const TALUKAS = [
   {
     id: 'pandharpur',
     name: 'Pandharpur',
+    lat: 17.6756,
+    lng: 75.3296,
     villages: 112,
     pending: 18,
     approved: 67,
@@ -80,6 +87,8 @@ export const TALUKAS = [
   {
     id: 'sangola',
     name: 'Sangola',
+    lat: 17.4374,
+    lng: 74.738,
     villages: 88,
     pending: 10,
     approved: 51,
@@ -96,6 +105,8 @@ export const TALUKAS = [
   {
     id: 'mohol',
     name: 'Mohol',
+    lat: 17.81,
+    lng: 75.62,
     villages: 66,
     pending: 9,
     approved: 38,

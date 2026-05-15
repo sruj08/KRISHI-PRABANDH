@@ -4,25 +4,25 @@
   --fp-primary: #1f5e3b;
   --fp-primary-hover: #174a2f;
   --fp-primary-soft: #eaf5ee;
-  --fp-bg: #f7f8fa;
+  --fp-bg: #eef0ec;
   --fp-surface: #ffffff;
-  --fp-border: #e4e8ec;
-  --fp-text: #1a1f1c;
+  --fp-border: rgba(20, 40, 30, 0.09);
+  --fp-text: #1a1c1a;
   --fp-muted: #5c6560;
   --fp-info: #1e5a8a;
   --fp-amber: #b45309;
   --fp-amber-bg: #fffbeb;
   --fp-red: #b91c1c;
   --fp-red-bg: #fef2f2;
-  --fp-radius: 18px;
-  --fp-radius-sm: 12px;
-  --fp-sidebar-w: 248px;
+  --fp-radius: 16px;
+  --fp-radius-sm: 10px;
+  --fp-sidebar-w: 216px;
   --fp-header-h: 64px;
   --fp-page-pad-x: clamp(1rem, 4vw, 2rem);
   --fp-page-pad-y: clamp(1rem, 3vw, 1.75rem);
   --fp-page-max: 72rem;
-  --fp-shadow-card: 0 1px 2px rgba(15, 35, 25, 0.04), 0 4px 16px rgba(15, 35, 25, 0.06);
-  --fp-shadow-card-hover: 0 2px 4px rgba(15, 35, 25, 0.06), 0 8px 24px rgba(15, 35, 25, 0.08);
+  --fp-shadow-card: 0 1px 2px rgba(20, 40, 30, 0.05), 0 8px 24px rgba(20, 40, 30, 0.06);
+  --fp-shadow-card-hover: 0 2px 4px rgba(20, 40, 30, 0.06), 0 12px 28px rgba(20, 40, 30, 0.08);
   font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
   background: var(--fp-bg);
   color: var(--fp-text);
@@ -66,16 +66,16 @@
 }
 
 .fp-sidebar-brand {
-  padding: 1rem 1rem 0.75rem;
+  padding: 0.85rem 0.85rem 0.65rem;
   border-bottom: 1px solid var(--fp-border);
 }
 
 .fp-nav-group-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--fp-muted);
-  padding: 0.75rem 1rem 0.35rem;
+  padding: 0.55rem 0.85rem 0.25rem;
   text-transform: uppercase;
 }
 
@@ -89,11 +89,11 @@ a.fp-nav-btn {
 .fp-nav-btn {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  width: calc(100% - 1rem);
-  margin: 0 0.5rem;
-  min-height: 44px;
-  padding: 0.5rem 0.65rem;
+  gap: 0.55rem;
+  width: calc(100% - 0.75rem);
+  margin: 0 0.375rem;
+  min-height: 42px;
+  padding: 0.45rem 0.55rem;
   border: none;
   border-radius: 10px;
   background: transparent;
@@ -136,21 +136,46 @@ a.fp-nav-btn {
 
 .fp-sidebar-footer {
   margin-top: auto;
-  padding: 0.75rem;
+  padding: 0.5rem 0.65rem 0.65rem;
   border-top: 1px solid var(--fp-border);
-  background: var(--fp-bg);
+  background: linear-gradient(180deg, #f3f4f0 0%, var(--fp-bg) 100%);
 }
 
 .fp-helpline {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--fp-muted);
-  margin-bottom: 0.5rem;
+}
+
+.fp-helpline--compact {
+  margin-bottom: 0;
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+}
+
+.fp-helpline-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .fp-helpline strong {
   display: block;
   color: var(--fp-primary);
-  font-size: 13px;
+  font-size: 12px;
+  margin-top: 0.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+button.fp-nav-btn.fp-nav-logout {
+  margin-top: 0.25rem;
+  color: var(--fp-red);
+}
+
+button.fp-nav-btn.fp-nav-logout:hover {
+  background: var(--fp-red-bg);
+  color: var(--fp-red);
 }
 
 /* Main column - only this column’s content area scrolls */
@@ -250,7 +275,7 @@ a.fp-nav-btn {
   .fp-sidebar.fp-sidebar-collapsed .fp-sidebar-brand-text,
   .fp-sidebar.fp-sidebar-collapsed .fp-nav-group-label,
   .fp-sidebar.fp-sidebar-collapsed .fp-nav-label,
-  .fp-sidebar.fp-sidebar-collapsed .fp-helpline > span:first-child {
+  .fp-sidebar.fp-sidebar-collapsed .fp-helpline-label {
     display: none;
   }
 
@@ -259,10 +284,6 @@ a.fp-nav-btn {
     justify-content: center;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-  }
-
-  .fp-sidebar.fp-sidebar-collapsed .fp-sidebar-footer .fp-nav-btn {
-    padding: 0.5rem;
   }
 
   .fp-sidebar.fp-sidebar-collapsed .fp-helpline strong {
@@ -417,12 +438,12 @@ a.fp-nav-btn {
 
 .fp-home-hero.fp-card:hover {
   box-shadow: var(--fp-shadow-card-hover);
-  border-color: #d8dde4;
+  border-color: rgba(31, 77, 54, 0.14);
 }
 
 .fp-stat-card.fp-card:hover {
   box-shadow: var(--fp-shadow-card-hover);
-  border-color: #d8dde4;
+  border-color: rgba(31, 77, 54, 0.14);
 }
 
 /* Stat tiles on home - equal height columns */
@@ -640,6 +661,259 @@ a.fp-nav-btn {
   }
 }
 
+/* ── Home dashboard twin panels ────────────────────────────── */
+.fp-grid-2.fp-dashboard-twin {
+  align-items: stretch;
+}
+
+.fp-grid-2.fp-dashboard-twin > .fp-card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Panel header shared by both twin cards */
+.fp-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  flex-shrink: 0;
+}
+
+.fp-panel-head h2 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--fp-text);
+}
+
+.fp-panel-head a {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fp-info);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.fp-panel-head a:hover {
+  text-decoration: underline;
+}
+
+/* Pending-for-you list */
+.fp-pending-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.fp-pending-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--fp-radius-sm);
+  border: 1px solid var(--fp-border);
+  background: var(--fp-bg);
+}
+
+.fp-pending-row__icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  line-height: 1;
+}
+
+.fp-pending-row__icon .material-symbols-outlined {
+  font-size: 1.25rem;
+  display: block;
+  line-height: 1;
+}
+
+.fp-pending-row__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.fp-pending-row__title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fp-text);
+}
+
+.fp-pending-row__desc {
+  margin: 0.3rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--fp-muted);
+}
+
+.fp-pending-row__link {
+  display: inline-block;
+  margin-top: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--fp-primary);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.fp-pending-row__link:hover {
+  text-decoration: underline;
+}
+
+/* Latest-updates list */
+.fp-updates-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.fp-update-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--fp-border);
+  border-radius: var(--fp-radius-sm);
+}
+
+.fp-update-row__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.fp-update-row__title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--fp-text);
+}
+
+.fp-update-row__body {
+  margin: 0.3rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--fp-muted);
+}
+
+.fp-update-row__time {
+  margin: 0.375rem 0 0;
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  color: #9aa19c;
+}
+
+.fp-update-row__dot {
+  flex-shrink: 0;
+  margin-top: 0.3125rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--fp-primary);
+}
+
+/* ── Application tracking stepper ──────────────────────────── */
+/*
+  Layout: [circle][connector-line][circle][connector-line]…
+  The connector sits between step-columns at the same row as circles.
+  We use a single flex row; each step is a column (circle on top, label below).
+  The connector has the same height as the circle so it baseline-aligns to center.
+*/
+.fp-app-stepper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;   /* steps start at top; connector top = circle top */
+  min-width: max-content;
+  width: 100%;
+}
+
+.fp-app-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 5.5rem;
+}
+
+@media (min-width: 640px) {
+  .fp-app-step {
+    width: 6.25rem;
+  }
+}
+
+.fp-app-step__circle {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fp-app-step__circle .material-symbols-outlined {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.fp-app-step__label {
+  margin: 0.5rem 0 0;
+  width: 100%;
+  padding: 0 0.25rem;
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fp-text);
+  /* reserve identical height regardless of whether text wraps */
+  min-height: 2.5rem;
+}
+
+/* Connector: same height as the circle (2.25rem) so the line lands dead-center */
+.fp-app-step__connector {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 2.25rem;           /* ← must equal .fp-app-step__circle height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fp-app-step__connector-line {
+  width: 100%;
+  height: 2px;
+  border-radius: 1px;
+}
+
+/* Application card action buttons */
+.fp-app-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--fp-border);
+}
+
+.fp-app-actions .fp-btn {
+  min-height: 2.375rem;
+  padding: 0 0.875rem;
+  font-size: 0.75rem;
+}
+
 /* Chip row - aligned wrap */
 .fp-chip-row {
   display: flex;
@@ -700,7 +974,7 @@ a.fp-nav-btn {
 .farmer-portal-root a.fp-icon-btn:hover,
 .farmer-portal-root button.fp-icon-btn:hover {
   background: var(--fp-bg);
-  border-color: #d8dde4;
+  border-color: rgba(31, 77, 54, 0.14);
 }
 
 .farmer-portal-root button.fp-icon-btn--wide {
@@ -796,5 +1070,82 @@ a.fp-nav-btn {
   .fp-sidebar.fp-sidebar-collapsed .fp-nav-btn.fp-nav-active {
     box-shadow: none;
     background: var(--fp-primary-soft);
+  }
+}
+
+/* Horizontal filter tabs (schemes status, etc.) — matches portal density */
+.fp-filter-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--fp-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.fp-filter-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.fp-filter-tab {
+  flex-shrink: 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--fp-border);
+  background: var(--fp-surface);
+  color: var(--fp-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.fp-filter-tab:hover {
+  background: var(--fp-bg);
+  color: var(--fp-text);
+}
+
+.fp-filter-tab.fp-filter-tab--active {
+  background: var(--fp-primary);
+  border-color: var(--fp-primary);
+  color: #fff;
+}
+
+.fp-filter-tab:focus-visible {
+  outline: 2px solid var(--fp-primary);
+  outline-offset: 2px;
+}
+
+/* Scheme grid cards: same shell as .fp-card, zero padding for custom sections */
+.fp-scheme-card.fp-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.fp-scheme-card.fp-card:hover {
+  box-shadow: var(--fp-shadow-card-hover);
+  border-color: rgba(31, 77, 54, 0.14);
+}
+
+/* Modal / bottom sheet panel — consistent with portal radius */
+.fp-modal-panel {
+  border-radius: var(--fp-radius) var(--fp-radius) 0 0;
+  background: var(--fp-surface);
+  border: 1px solid var(--fp-border);
+  box-shadow: var(--fp-shadow-card-hover);
+}
+
+@media (min-width: 640px) {
+  .fp-modal-panel {
+    border-radius: var(--fp-radius);
   }
 }
