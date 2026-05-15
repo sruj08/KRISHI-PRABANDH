@@ -3,13 +3,16 @@ import React from 'react';
 export const fp = {
   primary: '#1F5E3B',
   primarySoft: '#EAF5EE',
-  bg: '#F7F8FA',
-  border: '#e4e8ec',
-  text: '#1a1f1c',
+  bg: '#eef0ec',
+  border: 'rgba(20, 40, 30, 0.09)',
+  borderSolid: '#e0e3de',
+  text: '#1a1c1a',
   muted: '#5c6560',
   info: '#1e5a8a',
   amber: '#b45309',
   red: '#b91c1c',
+  surfaceLow: '#f3f4f0',
+  divider: '#eceee9',
 };
 
 export function FarmerPageShell({ title, subtitle, children }) {

@@ -15,14 +15,9 @@ import FarmerPortalLayout from './components/farmer/FarmerPortalLayout';
 import { FarmerRegistrationProvider } from './context/FarmerRegistrationContext';
 import FarmerHomePage from './pages/farmer/portal/FarmerHomePage';
 import FarmerProfilePage from './pages/farmer/portal/FarmerProfilePage';
-import FarmerLandPage from './pages/farmer/portal/FarmerLandPage';
 import FarmerSchemesPage from './pages/farmer/portal/FarmerSchemesPage';
 import FarmerApplicationsPage from './pages/farmer/portal/FarmerApplicationsPage';
-import FarmerDocumentsPage from './pages/farmer/portal/FarmerDocumentsPage';
-import FarmerPaymentsPage from './pages/farmer/portal/FarmerPaymentsPage';
-import FarmerNotificationsPage from './pages/farmer/portal/FarmerNotificationsPage';
 import FarmerGrievancesPage from './pages/farmer/portal/FarmerGrievancesPage';
-import FarmerHelpPage from './pages/farmer/portal/FarmerHelpPage';
 import FarmerSettingsPage from './pages/farmer/portal/FarmerSettingsPage';
 import SurveyOperationsDashboard from './features/survey_operations/SurveyOperationsDashboard';
 import SchemeAnalytics from './pages/scheme-analytics/SchemeAnalytics';
@@ -108,15 +103,15 @@ const App = () => {
           >
             <Route index element={<FarmerHomePage />} />
             <Route path="profile" element={<FarmerProfilePage />} />
-            <Route path="land" element={<FarmerLandPage />} />
             <Route path="schemes" element={<FarmerSchemesPage />} />
             <Route path="applications" element={<FarmerApplicationsPage />} />
-            <Route path="documents" element={<FarmerDocumentsPage />} />
-            <Route path="payments" element={<FarmerPaymentsPage />} />
-            <Route path="notifications" element={<FarmerNotificationsPage />} />
             <Route path="grievances" element={<FarmerGrievancesPage />} />
-            <Route path="help" element={<FarmerHelpPage />} />
             <Route path="settings" element={<FarmerSettingsPage />} />
+            <Route path="land" element={<Navigate to="/farmer/schemes" replace />} />
+            <Route path="documents" element={<Navigate to="/farmer/schemes" replace />} />
+            <Route path="payments" element={<Navigate to="/farmer/applications" replace />} />
+            <Route path="notifications" element={<Navigate to="/farmer" replace />} />
+            <Route path="help" element={<Navigate to="/farmer/settings" replace />} />
             <Route path="*" element={<Navigate to="/farmer" replace />} />
           </Route>
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
