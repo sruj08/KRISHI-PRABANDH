@@ -105,6 +105,7 @@ const AppLayout = () => {
               className="icon-btn-soft text-[11px] font-bold px-2"
               onClick={cycleLanguage}
               aria-label="Switch language"
+              data-notranslate
             >
               <span className="material-symbols-outlined text-[18px]">translate</span>
               <span className="hidden sm:inline ml-0.5">{currentLabel}</span>

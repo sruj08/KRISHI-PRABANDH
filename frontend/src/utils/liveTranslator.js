@@ -26,7 +26,9 @@
 import { translations } from './translations';
 
 const ORIGINAL_TEXT = new WeakMap();
+const LAST_WRITE_TEXT = new WeakMap();
 const ORIGINAL_ATTRS = new WeakMap();
+const LAST_WRITE_ATTRS = new WeakMap();
 
 const SKIP_TAGS = new Set([
   'SCRIPT',
@@ -121,33 +123,29 @@ function isInsideSkippedTree(node) {
   return false;
 }
 
-function processTextNode(node, fromMutation) {
+function processTextNode(node /* fromMutation kept for signature parity */) {
   if (!node || node.nodeType !== 3) return;
   if (!node.parentNode) return;
   if (isInsideSkippedTree(node)) return;
 
   const current = node.nodeValue;
   if (!current || !current.trim()) return;
-  // Already in Devanagari and not in dictionary as a key — leave alone.
-  // (Devanagari source text is either an already-translated value or hand-authored
-  // native content; either way we must not re-translate it.)
-  if (DEVANAGARI_RE.test(current) && !ORIGINAL_TEXT.has(node)) {
-    return;
-  }
 
-  // If this is the first time we see the node, or React just rewrote it
-  // (characterData mutation), record its current English text as the original.
-  if (!ORIGINAL_TEXT.has(node) || fromMutation) {
-    // Only replace stored original when the incoming text isn't itself a
-    // translation we previously wrote. Heuristic: if the incoming text is
-    // pure-English-or-numbers/punctuation, it's safe to treat as a fresh
-    // original. If it contains Devanagari, it's our own translation – keep
-    // the previously stored original.
-    if (fromMutation && ORIGINAL_TEXT.has(node) && DEVANAGARI_RE.test(current)) {
-      // ignore — current text is our own write
-    } else {
-      ORIGINAL_TEXT.set(node, current);
-    }
+  // Reconcile against React.
+  //
+  // We track our own last write per node in LAST_WRITE_TEXT. If the current
+  // DOM text matches what we last wrote, the stored "original" is still the
+  // authoritative source-of-truth English (React hasn't touched it).
+  //
+  // If the current text DOESN'T match our last write, React (or some other
+  // owner) has put a fresh value there — adopt it as the new original.
+  // This is critical for components like the language switcher that
+  // intentionally render Devanagari labels per the chosen language: we treat
+  // their native text as the new authoritative original and avoid clobbering
+  // it on subsequent passes.
+  const ourLastWrite = LAST_WRITE_TEXT.get(node);
+  if (current !== ourLastWrite) {
+    ORIGINAL_TEXT.set(node, current);
   }
   const original = ORIGINAL_TEXT.get(node) || current;
 
@@ -159,6 +157,11 @@ function processTextNode(node, fromMutation) {
   }
   if (next !== node.nodeValue) {
     node.nodeValue = next;
+    LAST_WRITE_TEXT.set(node, next);
+  } else {
+    // Mark current value as "ours" so a subsequent identical pass doesn't
+    // mistakenly re-adopt our own output as a new original.
+    LAST_WRITE_TEXT.set(node, current);
   }
 }
 
@@ -169,19 +172,24 @@ function processElementAttrs(el) {
   for (const attr of ATTR_TARGETS) {
     if (!el.hasAttribute(attr)) continue;
     const current = el.getAttribute(attr);
-    let bucket = ORIGINAL_ATTRS.get(el);
-    if (!bucket) {
-      bucket = {};
-      ORIGINAL_ATTRS.set(el, bucket);
+
+    let originals = ORIGINAL_ATTRS.get(el);
+    if (!originals) {
+      originals = {};
+      ORIGINAL_ATTRS.set(el, originals);
     }
-    if (!(attr in bucket)) {
-      // First time we see this attribute — store original
-      // (skip if the current value is Devanagari, meaning it was authored
-      // natively or we lost track — leave it alone)
-      if (DEVANAGARI_RE.test(current)) continue;
-      bucket[attr] = current;
+    let lastWrites = LAST_WRITE_ATTRS.get(el);
+    if (!lastWrites) {
+      lastWrites = {};
+      LAST_WRITE_ATTRS.set(el, lastWrites);
     }
-    const original = bucket[attr];
+
+    // Same reconciliation logic as for text nodes: trust the current DOM
+    // value as the new original whenever it doesn't match what we last wrote.
+    if (current !== lastWrites[attr]) {
+      originals[attr] = current;
+    }
+    const original = originals[attr];
 
     let next;
     if (currentLang === 'en' || !translationMap) {
@@ -191,6 +199,9 @@ function processElementAttrs(el) {
     }
     if (next !== current) {
       el.setAttribute(attr, next);
+      lastWrites[attr] = next;
+    } else {
+      lastWrites[attr] = current;
     }
   }
 }
@@ -198,7 +209,7 @@ function processElementAttrs(el) {
 function walkAndTranslate(root) {
   if (!root) return;
   if (root.nodeType === 3) {
-    processTextNode(root, false);
+    processTextNode(root);
     return;
   }
   if (root.nodeType !== 1 && root.nodeType !== 9 && root.nodeType !== 11) return;
@@ -216,7 +227,7 @@ function walkAndTranslate(root) {
   });
   let n;
   while ((n = textWalker.nextNode())) {
-    processTextNode(n, false);
+    processTextNode(n);
   }
 
   // Walk element descendants for attribute translation
@@ -245,7 +256,7 @@ function flushPending() {
     for (const node of targets) {
       if (!node) continue;
       if (node.nodeType === 3) {
-        processTextNode(node, true);
+        processTextNode(node);
       } else if (node.nodeType === 1) {
         // For a mutated element, re-walk its subtree.
         walkAndTranslate(node);

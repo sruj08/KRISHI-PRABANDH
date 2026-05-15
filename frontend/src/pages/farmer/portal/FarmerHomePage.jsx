@@ -69,7 +69,7 @@ export default function FarmerHomePage() {
                 <span className="material-symbols-outlined text-[22px]">notifications</span>
                 <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-[#b91c1c]" />
               </Link>
-              <button type="button" className="fp-icon-btn fp-icon-btn--wide" onClick={cycleLanguage} aria-label={t('Language')}>
+              <button type="button" className="fp-icon-btn fp-icon-btn--wide" onClick={cycleLanguage} aria-label={t('Language')} data-notranslate>
                 <span className="material-symbols-outlined text-[20px]">translate</span>
                 <span className="hidden text-[0.7rem] font-bold sm:inline">{currentLabel}</span>
               </button>

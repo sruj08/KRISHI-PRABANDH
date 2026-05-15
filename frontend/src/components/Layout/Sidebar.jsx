@@ -296,7 +296,12 @@ const Sidebar = ({ isOpen, onClose }) => {
       <div className="sidebar-footer">
         <div className="sidebar-lang-row">
           <span className="sidebar-lang-label">{t('Language')}</span>
-          <button type="button" className="sidebar-lang-btn" onClick={cycleLanguage}>
+          <button
+            type="button"
+            className="sidebar-lang-btn"
+            data-notranslate
+            onClick={cycleLanguage}
+          >
             {langLabels[lang] || lang}
           </button>
         </div>
