@@ -252,14 +252,22 @@ const OfficerPendingSurveysPage = () => {
                         Geo-tagged Photos
                       </h3>
                       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                        <div style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '32px', marginBottom: '8px' }}>image</span>
-                          <span style={{ fontSize: '0.85rem', color: '#717972' }}>Photo 1 {selectedApp.id === 'KP/EPP/2026/7681573780' && '(Lat: 18.4580, Lon: 73.8513)'}</span>
-                        </div>
-                        <div style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                          <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '32px', marginBottom: '8px' }}>image</span>
-                          <span style={{ fontSize: '0.85rem', color: '#717972' }}>Photo 2 {selectedApp.id === 'KP/EPP/2026/7681573780' && '(Lat: 18.4580, Lon: 73.8513)'}</span>
-                        </div>
+                        {selectedApp.id === 'KP/EPP/2026/7681573780' ? (
+                          <>
+                            <div style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                              <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '32px', marginBottom: '8px' }}>image</span>
+                              <span style={{ fontSize: '0.85rem', color: '#717972' }}>Photo 1 (Lat: 18.4580, Lon: 73.8513)</span>
+                            </div>
+                            <div style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                              <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '32px', marginBottom: '8px' }}>image</span>
+                              <span style={{ fontSize: '0.85rem', color: '#717972' }}>Photo 2 (Lat: 18.4580, Lon: 73.8513)</span>
+                            </div>
+                          </>
+                        ) : (
+                          <div style={{ ...THUMB, width: '100px' }}>
+                            <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '22px' }}>image</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </section>
