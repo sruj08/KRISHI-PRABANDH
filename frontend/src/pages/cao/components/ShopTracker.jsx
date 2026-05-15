@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 const FERTILIZER_SHOPS = [];
 const SAHAYAKS = [];
 
 const getDaysSince = (dateStr) =>
   Math.floor((new Date() - new Date(dateStr)) / 86400000);
 
-// Muted enterprise status palette — matches SahayakMatrix tokens
+// Muted enterprise status palette - matches SahayakMatrix tokens
 // so badges/icons compose into a single visual system.
 const getShopStatus = (days, complaints) => {
   if (days > 90 || complaints >= 4)
@@ -118,7 +118,7 @@ const ShopTracker = () => {
                     {SAHAYAKS.map(s => (
                       <button key={s.id} className="shop-sahayak-btn" onClick={() => handleAssign(shop.id, s.name)}>
                         <span className="material-symbols-outlined">person</span>
-                        {s.name} — Circle {s.circle}
+                        {s.name} - Circle {s.circle}
                       </button>
                     ))}
                     <button className="shop-cancel-btn" onClick={() => setAssigningSahayak(null)}>Cancel</button>

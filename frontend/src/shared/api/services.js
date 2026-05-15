@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 /** Same-origin in dev (Vite proxy → backend); override with VITE_API_ORIGIN in prod. */
 function getAxiosBaseURL() {
@@ -92,7 +92,7 @@ function riskLevelToSeverity(level, score) {
   return 'LOW';
 }
 
-/** Officer triage queue — flagged survey evidence (`GET /api/surveys/queue`). */
+/** Officer triage queue - flagged survey evidence (`GET /api/surveys/queue`). */
 export async function fetchSurveyQueue() {
   const { data } = await api.get('/api/surveys/queue');
   const payload = unwrapApiPayload(data) || {};
@@ -107,7 +107,7 @@ export async function fetchSurveyQueue() {
     severityLevel: riskLevelToSeverity(row.severity, row.confidenceScore),
     workflowStage: row.workflowStage,
     confidenceScore: row.confidenceScore != null ? row.confidenceScore / 100 : null,
-    timestamp: row.createdAt || '—',
+    timestamp: row.createdAt || '-',
   }));
 }
 
@@ -149,7 +149,7 @@ export async function fetchSurveyReport(surveyId) {
   };
 }
 
-/** Grievances API not wired yet — return empty list so the panel still renders. */
+/** Grievances API not wired yet - return empty list so the panel still renders. */
 export async function fetchSurveyGrievances(_surveyId) {
   return [];
 }

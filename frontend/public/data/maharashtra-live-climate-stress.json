@@ -1,6 +1,6 @@
-{
+﻿{
   "fetchedAt": "2026-05-14T13:57:37.723Z",
-  "source": "Open-Meteo Archive API — daily precipitation_sum (https://open-meteo.com/)",
+  "source": "Open-Meteo Archive API - daily precipitation_sum (https://open-meteo.com/)",
   "window": { "start": "2024-03-01", "end": "2024-06-30" },
   "note": "Point samples at division representative lat/lon (not district polygons). droughtStressProxy0to100 = 100 minus min–max normalised cumulative Mar–Jun 2024 rainfall across the six samples (higher = drier relative to other divisions in this window).",
   "divisions": {

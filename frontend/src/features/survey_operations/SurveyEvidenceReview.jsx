@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import GeoVerifiedMedia from '../../shared/components/GeoVerifiedMedia';
 import { fetchSurveyReport, fetchSurveyGrievances, updateSurveyAction, getApiOrigin } from '../../shared/api/services';
 import usePolling from '../../hooks/usePolling';
@@ -89,7 +89,7 @@ const GrievancePanel = ({ grievances = [], loading }) => {
               {g.status || 'PENDING'}
             </span>
           </div>
-          <p className="text-xs text-gray-800 font-mono leading-relaxed">{g.description || g.detail || g.message || '—'}</p>
+          <p className="text-xs text-gray-800 font-mono leading-relaxed">{g.description || g.detail || g.message || '-'}</p>
           {g.submittedAt && (
             <p className="text-[10px] text-gray-500 font-mono mt-2">{g.submittedAt}</p>
           )}
@@ -102,7 +102,7 @@ const GrievancePanel = ({ grievances = [], loading }) => {
 const InfoRow = ({ label, value }) => (
   <div className="flex justify-between items-center py-1.5 border-b border-gray-200 last:border-b-0">
     <span className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">{label}</span>
-    <span className="text-xs text-gray-900 font-mono font-medium text-right max-w-[60%] truncate">{value || '—'}</span>
+    <span className="text-xs text-gray-900 font-mono font-medium text-right max-w-[60%] truncate">{value || '-'}</span>
   </div>
 );
 
@@ -213,11 +213,11 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
               Panchnama: {r.reportId || reportId}
             </h1>
             <p className="text-[11px] text-gray-500 uppercase tracking-[0.2em] font-mono mt-1 flex items-center gap-3 flex-wrap">
-              <span>Farmer: {r.farmerName || '—'}</span>
+              <span>Farmer: {r.farmerName || '-'}</span>
               <span>•</span>
-              <span>{r.village || '—'}{r.taluka ? `, ${r.taluka}` : ''}{r.district ? `, ${r.district}` : ''}</span>
+              <span>{r.village || '-'}{r.taluka ? `, ${r.taluka}` : ''}{r.district ? `, ${r.district}` : ''}</span>
               <span>•</span>
-              <span>Crop: {r.cropType || '—'}</span>
+              <span>Crop: {r.cropType || '-'}</span>
               {r.damageType && <><span>•</span><span>Damage: {r.damageType}</span></>}
             </p>
           </div>
@@ -275,19 +275,19 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
             <table className="w-full text-xs font-mono text-gray-800">
               <tbody className="divide-y divide-gray-200">
                 {[
-                  { label: 'Farmer', value: r.farmerName || '—' },
-                  { label: 'Farmer ID', value: r.farmerId || '—' },
-                  { label: 'Village', value: r.village || '—' },
-                  { label: 'Taluka', value: r.taluka || '—' },
-                  { label: 'District', value: r.district || '—' },
-                  { label: 'Crop Type', value: r.cropType || '—' },
-                  { label: 'Damage Type', value: r.damageType || '—' },
-                  { label: 'Severity', value: r.severityLevel || '—' },
-                  { label: 'Confidence', value: confidence ? `${confidence}%` : '—' },
-                  { label: 'Geo Verified', value: r.geoVerified != null ? (r.geoVerified ? 'YES' : 'NO') : '—' },
-                  { label: 'Assigned Officer', value: r.assignedOfficer || '—' },
-                  { label: 'Created', value: r.createdAt ? new Date(r.createdAt).toLocaleString() : '—' },
-                  { label: 'Updated', value: r.updatedAt ? new Date(r.updatedAt).toLocaleString() : '—' },
+                  { label: 'Farmer', value: r.farmerName || '-' },
+                  { label: 'Farmer ID', value: r.farmerId || '-' },
+                  { label: 'Village', value: r.village || '-' },
+                  { label: 'Taluka', value: r.taluka || '-' },
+                  { label: 'District', value: r.district || '-' },
+                  { label: 'Crop Type', value: r.cropType || '-' },
+                  { label: 'Damage Type', value: r.damageType || '-' },
+                  { label: 'Severity', value: r.severityLevel || '-' },
+                  { label: 'Confidence', value: confidence ? `${confidence}%` : '-' },
+                  { label: 'Geo Verified', value: r.geoVerified != null ? (r.geoVerified ? 'YES' : 'NO') : '-' },
+                  { label: 'Assigned Officer', value: r.assignedOfficer || '-' },
+                  { label: 'Created', value: r.createdAt ? new Date(r.createdAt).toLocaleString() : '-' },
+                  { label: 'Updated', value: r.updatedAt ? new Date(r.updatedAt).toLocaleString() : '-' },
                 ].map((item, i) => (
                   <tr key={i} className={`${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} hover:bg-primary/5 transition-none`}>
                     <td className="py-2.5 px-4 text-gray-500 uppercase tracking-wider font-bold w-2/5">{item.label}</td>
@@ -399,17 +399,17 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
             <h3 className="text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-3">Report Details</h3>
             <div className="divide-y divide-gray-200">
               <InfoRow label="Report ID" value={r.reportId || reportId} />
-              <InfoRow label="Farmer ID" value={r.farmerId || '—'} />
-              <InfoRow label="Village" value={r.village || '—'} />
-              <InfoRow label="Taluka" value={r.taluka || '—'} />
-              <InfoRow label="District" value={r.district || '—'} />
-              <InfoRow label="Crop Type" value={r.cropType || '—'} />
-              <InfoRow label="Damage Type" value={r.damageType || '—'} />
-              <InfoRow label="Assigned Officer" value={r.assignedOfficer || '—'} />
-              <InfoRow label="Geo Verified" value={r.geoVerified != null ? (r.geoVerified ? 'YES' : 'NO') : '—'} />
-              <InfoRow label="Confidence" value={confidence ? `${confidence}%` : '—'} />
-              <InfoRow label="Created" value={r.createdAt ? new Date(r.createdAt).toLocaleString() : '—'} />
-              <InfoRow label="Updated" value={r.updatedAt ? new Date(r.updatedAt).toLocaleString() : '—'} />
+              <InfoRow label="Farmer ID" value={r.farmerId || '-'} />
+              <InfoRow label="Village" value={r.village || '-'} />
+              <InfoRow label="Taluka" value={r.taluka || '-'} />
+              <InfoRow label="District" value={r.district || '-'} />
+              <InfoRow label="Crop Type" value={r.cropType || '-'} />
+              <InfoRow label="Damage Type" value={r.damageType || '-'} />
+              <InfoRow label="Assigned Officer" value={r.assignedOfficer || '-'} />
+              <InfoRow label="Geo Verified" value={r.geoVerified != null ? (r.geoVerified ? 'YES' : 'NO') : '-'} />
+              <InfoRow label="Confidence" value={confidence ? `${confidence}%` : '-'} />
+              <InfoRow label="Created" value={r.createdAt ? new Date(r.createdAt).toLocaleString() : '-'} />
+              <InfoRow label="Updated" value={r.updatedAt ? new Date(r.updatedAt).toLocaleString() : '-'} />
             </div>
           </div>
 

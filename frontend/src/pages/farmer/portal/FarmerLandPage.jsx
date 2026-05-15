@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { LAND_PARCELS } from '../../../mock/farmerDashboardMock';
 import { Btn, FarmerPageShell, FpCard, fp } from './farmerPortalUi';
@@ -10,11 +10,11 @@ export default function FarmerLandPage() {
   return (
     <FarmerPageShell
       title={t('Land records')}
-      subtitle={t('7/12 extracts, ownership, irrigation, and crop declaration — as on government records (demo data).')}
+      subtitle={t('7/12 extracts, ownership, irrigation, and crop declaration - as on government records (demo data).')}
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-[0.875rem] leading-relaxed" style={{ color: fp.muted }}>
-          {t('Malegaon / Barshi — soybean parcels and joint holding examples.')}
+          {t('Malegaon / Barshi - soybean parcels and joint holding examples.')}
         </p>
         <Btn variant="ghost" className="shrink-0">
           <span className="material-symbols-outlined text-[18px]">add_link</span>

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+﻿import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { DOCUMENTS } from '../../../mock/farmerDashboardMock';
 import { Btn, DocStatusPill, FarmerPageShell, FpCard, fp } from './farmerPortalUi';
@@ -35,7 +35,7 @@ export default function FarmerDocumentsPage() {
   const pendingDocRef = useRef(null);
   const docsRef = useRef([]);
   const [docs, setDocs] = useState(() => DOCUMENTS.map((d) => ({ ...d })));
-  /** Local upload preview in modal — not OCR */
+  /** Local upload preview in modal - not OCR */
   const [filePreview, setFilePreview] = useState(null);
 
   docsRef.current = docs;
@@ -129,7 +129,7 @@ export default function FarmerDocumentsPage() {
     <>
       <FarmerPageShell
         title={t('Document center')}
-        subtitle={t('DigiLocker-style vault — upload, replace, and track verification for each proof (demo).')}
+        subtitle={t('DigiLocker-style vault - upload, replace, and track verification for each proof (demo).')}
       >
         <input
           ref={fileInputRef}
@@ -166,7 +166,7 @@ export default function FarmerDocumentsPage() {
                   type="button"
                   className="hover:underline"
                   onClick={() => openFilePicker(d)}
-                  aria-label={`${t('Upload')} — ${d.title}`}
+                  aria-label={`${t('Upload')} - ${d.title}`}
                 >
                   {t('Upload')}
                 </button>
@@ -175,7 +175,7 @@ export default function FarmerDocumentsPage() {
                   type="button"
                   className="hover:underline"
                   onClick={() => openUploadedPreview(d)}
-                  aria-label={`${t('Preview')} — ${d.title}`}
+                  aria-label={`${t('Preview')} - ${d.title}`}
                 >
                   {t('Preview')}
                 </button>
@@ -184,7 +184,7 @@ export default function FarmerDocumentsPage() {
                   type="button"
                   className="hover:underline"
                   onClick={() => openFilePicker(d)}
-                  aria-label={`${t('Replace')} — ${d.title}`}
+                  aria-label={`${t('Replace')} - ${d.title}`}
                 >
                   {t('Replace')}
                 </button>
@@ -215,7 +215,7 @@ export default function FarmerDocumentsPage() {
             <div className="flex shrink-0 items-center justify-between border-b border-[#e4e8ec] px-4 py-3 sm:px-5">
               <div className="min-w-0 pr-2">
                 <h2 id="file-preview-title" className="fp-heading truncate text-[1.0625rem] font-bold" style={{ color: fp.text }}>
-                  {t('Document preview')} — {filePreview.title}
+                  {t('Document preview')} - {filePreview.title}
                 </h2>
                 <p className="mt-0.5 truncate text-[0.6875rem]" style={{ color: fp.muted }}>
                   {filePreview.fileName}

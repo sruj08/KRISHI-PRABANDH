@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useHierarchy } from '../context/HierarchyContext';
@@ -158,15 +158,15 @@ const VisitPlanner = () => {
               className="card p-0"
               style={{ overflow: 'hidden', opacity: isBusy ? 0.65 : 1, borderLeft: `4px solid ${rc.borderColor}` }}
             >
-              {/* Card header — click for insight modal */}
+              {/* Card header - click for insight modal */}
               <div className="p-4 flex justify-between items-start" style={{ cursor: 'pointer' }} onClick={() => setSelectedApp(visit)}>
                 <div style={{ flex: 1 }}>
                   <h3 className="fw-bold mb-1">{visit.farmer_id || t('Unknown Farmer', lang)}</h3>
-                  <p className="text-sm fw-bold text-muted mb-0">{visit.component || '—'}</p>
-                  <p className="text-xs text-muted mb-2">{visit.scheme_name || '—'}</p>
+                  <p className="text-sm fw-bold text-muted mb-0">{visit.component || '-'}</p>
+                  <p className="text-xs text-muted mb-2">{visit.scheme_name || '-'}</p>
                   <div className="flex gap-2 flex-wrap">
                     <span className={`badge ${rc.badgeClass}`}>{t(rc.label, lang)}</span>
-                    <span className="badge badge-grey" style={{ fontSize: '10px' }}>{visit.scheme_category || '—'}</span>
+                    <span className="badge badge-grey" style={{ fontSize: '10px' }}>{visit.scheme_category || '-'}</span>
                     {completed && (
                       <span
                         className="badge"
@@ -238,7 +238,7 @@ const VisitPlanner = () => {
                   </button>
                 )}
 
-                {/* Capture photo link — passes appId as query param */}
+                {/* Capture photo link - passes appId as query param */}
                 {(canMarkVisited || completed) && (
                   <button
                     disabled={isBusy}
@@ -250,10 +250,10 @@ const VisitPlanner = () => {
                   </button>
                 )}
 
-                {/* Terminal state — no more actions */}
+                {/* Terminal state - no more actions */}
                 {!canMarkVisited && !canInvestigate && !canApprove && !canReject && (
                   <div className="text-xs text-muted text-center" style={{ width: '100%', padding: '6px' }}>
-                    {t('Status:', lang)} <strong>{visit.status}</strong> {t('— No further actions available', lang)}
+                    {t('Status:', lang)} <strong>{visit.status}</strong> {t('- No further actions available', lang)}
                   </div>
                 )}
               </div>

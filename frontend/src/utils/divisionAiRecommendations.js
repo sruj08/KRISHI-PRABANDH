@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Rule-based desk recommendations from live metrics + analysis bundle keywords.
- * Not a hosted LLM — deterministic, auditable logic for competition / gov desk use.
+ * Not a hosted LLM - deterministic, auditable logic for competition / gov desk use.
  */
 
 export function buildDivisionAiPack({ divisionName, liveRow, snap, deep }) {
@@ -17,16 +17,16 @@ export function buildDivisionAiPack({ divisionName, liveRow, snap, deep }) {
   if (stress >= 72) {
     items.push({
       priority: 'high',
-      tag: 'Moisture stress',
-      title: 'Treat satellite / crop-health view as drought-sensitive this week',
+      tag: 'Moisture / drought stress',
+      title: 'Rainfall drought proxy is in the top band - treat as drought-sensitive this week',
       body:
-        `Relative moisture stress for ${divisionName} is in the top band (${stress}% proxy from Mar–Jun precipitation recharge vs other divisions). `
-        + 'Pre-position drought codes, cattle camps, and PFMS advance where soil moisture is likely limiting—not only where complaints spike.',
+        `Relative moisture / drought stress for ${divisionName} is in the top band (${stress}% proxy from Mar–Jun precipitation recharge vs other divisions). `
+        + 'Pre-position drought codes, cattle camps, and PFMS advance where soil moisture is likely limiting-not only where complaints spike.',
     });
   } else if (stress <= 25) {
     items.push({
       priority: 'low',
-      tag: 'Moisture stress',
+      tag: 'Moisture / drought stress',
       title: 'Rain-recharge window looks supportive',
       body:
         `${divisionName} sits in a lower relative stress band (${stress}%). Use freed capacity to clear PMFBY crop-cutting backlogs and bank KYC friction rather than climate escalations.`,
@@ -59,7 +59,7 @@ export function buildDivisionAiPack({ divisionName, liveRow, snap, deep }) {
       tag: 'Rain gauge',
       title: 'Archive Mar–Jun precip was below peer divisions',
       body:
-        `Open-Meteo archive shows ${pmm} mm cumulative rain at the division sample point — compare with IMD district grids before declaring revenue relief; point samples can miss localised storms.`,
+        `Open-Meteo archive shows ${pmm} mm cumulative rain at the division sample point - compare with IMD district grids before declaring revenue relief; point samples can miss localised storms.`,
     });
   }
 
@@ -81,7 +81,7 @@ export function buildDivisionAiPack({ divisionName, liveRow, snap, deep }) {
       tag: 'Inclusion',
       title: 'Eligible–applied gap is wide in the model cohort',
       body:
-        `Gap ≈ ${snap.gap.toLocaleString('en-IN')} in the merged eligibility cohort — align camps with the top two “non-registration” slices in the pie before adding new schemes.`,
+        `Gap ≈ ${snap.gap.toLocaleString('en-IN')} in the merged eligibility cohort - align camps with the top two “non-registration” slices in the pie before adding new schemes.`,
     });
   }
 

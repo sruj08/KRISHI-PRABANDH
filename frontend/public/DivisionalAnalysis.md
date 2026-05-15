@@ -1,4 +1,4 @@
-# Divisional analysis — data methodology
+﻿# Divisional analysis - data methodology
 
 **As of:** 2026-05-14  
 **Scope:** Maharashtra revenue divisions (bare codes: KKN, PNE, NSK, CSN, AMR, NGP)  
@@ -6,9 +6,9 @@
 
 ---
 
-## 1. Moisture stress (NDVI module label; not satellite NDVI)
+## 1. Moisture / drought stress (Open‑Meteo rain desk - not satellite NDVI)
 
-**Source:** [Open-Meteo Archive API](https://open-meteo.com/) — `precipitation_sum` daily, aggregated Mar–Jun 2024.
+**Source:** [Open-Meteo Archive API](https://open-meteo.com/) - `precipitation_sum` daily, aggregated Mar–Jun 2024.
 
 **Committed bundle:** `/data/maharashtra-live-climate-stress.json`
 
@@ -32,13 +32,13 @@
 
 ## 2. Scheme penetration (desk index)
 
-**Source file:** `/data/division-scheme-grievance-referenced.json` — field `schemePenetration.byCode`.
+**Source file:** `/data/division-scheme-grievance-referenced.json` - field `schemePenetration.byCode`.
 
 **Press anchor (narrative only; not a district MIS extract):**
 
 - Headline (summary): Maharashtra reported large farmer registration under PMFBY in a recent Kharif push.
 - URL: `https://krishijagran.com/agriculture-world/pmfby-over-50-lakh-farmers-in-maharashtra-register-for-pm-crop-insurance-scheme/`
-- JSON `note`: Division % values are **modelled desk indices (0–100)** scaled to that statewide intensity — replace with Agristack / PMFBY MIS when integrated.
+- JSON `note`: Division % values are **modelled desk indices (0–100)** scaled to that statewide intensity - replace with Agristack / PMFBY MIS when integrated.
 
 | Code | Scheme desk % (0–100) |
 |------|------------------------|
@@ -62,7 +62,7 @@ grievanceIdx = clamp( round( 0.44 × droughtStressProxy0to100 + 0.36 × (100 −
 **Press anchor (topic context):**
 
 - URL: `https://www.etnownews.com/personal-finance/pmfby-1-75-lakh-farmers-in-maharashtra-to-face-disqualification-who-is-eligible-who-is-not-find-out-here-article-116215477`
-- Use: explains eligibility / compliance friction in press — **not** a division-level grievance count series.
+- Use: explains eligibility / compliance friction in press - **not** a division-level grievance count series.
 
 **Example (NSK):** stress 100, scheme 74 → `0.44×100 + 0.36×26 + 14` ≈ **67** (after clamp rules in code).
 

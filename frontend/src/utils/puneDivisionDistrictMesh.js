@@ -1,5 +1,5 @@
-/**
- * Pune Division (DJDA) — five district polygons inside the published division
+﻿/**
+ * Pune Division (DJDA) - five district polygons inside the published division
  * boundary: five interior seed sites → Voronoi → each cell clipped to the
  * outer ring (full coverage, no bleed). Metrics align with `DISTRICT_MATRIX`.
  */
@@ -17,7 +17,7 @@ import {
 } from '@turf/turf';
 import { DISTRICT_MATRIX } from './divisionMockData';
 
-/** Map-mode fields 0–100 derived from the division desk matrix row (demo). */
+/** Map-mode fields 0–100 derived from the division desk matrix row (demo). `ndviStress` = legacy key for moisture/drought stress proxy. */
 function districtPropsFromMatrixRow(row) {
   const schemePenetration = Math.round(Math.min(96, 48 + row.disbursedPct * 0.82));
   const ndviStress = Math.min(92, 20 + Math.round(row.pending / 35));
@@ -102,7 +102,7 @@ function fiveSeedsInPolygon(polyFeature) {
 }
 
 /**
- * @param {import('geojson').FeatureCollection} boundaryFc — e.g. Pune division TopoJSON parse result
+ * @param {import('geojson').FeatureCollection} boundaryFc - e.g. Pune division TopoJSON parse result
  * @returns {import('geojson').FeatureCollection | null} five `kind: division` district polygons
  */
 export function buildPuneDivisionDistrictFeatureCollection(boundaryFc) {

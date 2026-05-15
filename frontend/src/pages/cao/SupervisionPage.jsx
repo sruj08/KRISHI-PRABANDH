@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useHierarchy } from '../../context/HierarchyContext';
 import { useKrishiData } from '../../context/KrishiDataContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -158,7 +158,7 @@ const VistarSupervisionPanel = ({ vistar, fraudSes }) => {
               <div key={s.session_id} style={{ padding: '12px 0', borderBottom: i < Math.min(arr.length, 4) - 1 ? `1px solid ${PANEL_DIVIDER}` : 'none' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 6 }}>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: '12.5px', fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1.3 }}>{s.village} — {s.topic}</div>
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1.3 }}>{s.village} - {s.topic}</div>
                     <div style={{ fontSize: '11px', color: TEXT_MUTED, marginTop: 3 }}>{s.date} · {s.sahayak_name}</div>
                   </div>
                   <RiskBadge risk={s.risk} />
@@ -296,7 +296,7 @@ const SupervisionPage = () => {
     const totalSurveys = stats?.totalSurveys ?? 4046;
     return {
       fallbackSummary: { total_applications: Math.min(900, Math.round(totalSurveys / 5)), by_status: { Applied: 18, 'Under Scrutiny': 12, Approved: 95, Rejected: 17 }, fraud_alerts: rows.reduce((s, r) => s + r.overdue_15d, 0), sahayak_breakdown: rows.map((s) => ({ sahayak_id: s.id, name: s.name, total: s.verifications_week + s.total_pending, pending: s.total_pending, approved: s.verifications_week })) },
-      fallbackVistar: { total_sessions: 48, avg_reported_attendance: 42, avg_digital_attendance: 31, fraud_flagged_count: 5, overall_gap_pct: 26, sahayak_performance: rows.map((s) => ({ sahayak_id: s.id, sahayak_name: s.name, total_sessions: Math.round(s.verifications_week * 1.3), overall_compliance_ratio: s.status === 'excellent' ? 0.92 : s.status === 'good' ? 0.78 : 0.55, fraud_flags: s.overdue_15d, overall_risk: s.status === 'excellent' ? 'CLEAN' : s.status === 'good' ? 'MODERATE' : 'HIGH' })), insights: [`${mandal?.district_name || 'District'} — ${mandal?.name || 'circle'} linked to CSV (${rows.length} Sahayaks).`, `Statewide survey records: ${totalSurveys.toLocaleString('en-IN')}.`] },
+      fallbackVistar: { total_sessions: 48, avg_reported_attendance: 42, avg_digital_attendance: 31, fraud_flagged_count: 5, overall_gap_pct: 26, sahayak_performance: rows.map((s) => ({ sahayak_id: s.id, sahayak_name: s.name, total_sessions: Math.round(s.verifications_week * 1.3), overall_compliance_ratio: s.status === 'excellent' ? 0.92 : s.status === 'good' ? 0.78 : 0.55, fraud_flags: s.overdue_15d, overall_risk: s.status === 'excellent' ? 'CLEAN' : s.status === 'good' ? 'MODERATE' : 'HIGH' })), insights: [`${mandal?.district_name || 'District'} - ${mandal?.name || 'circle'} linked to CSV (${rows.length} Sahayaks).`, `Statewide survey records: ${totalSurveys.toLocaleString('en-IN')}.`] },
       fallbackAppIntel: { total_applications: 142, by_status: { Applied: 18, 'Under Scrutiny': 12, Approved: 95, Rejected: 17 }, by_scheme_category: { 'Drip Irrigation': 38, 'PM-KUSUM Solar': 22, 'Seed Subsidy': 31, 'PMFBY Insurance': 27, 'Fertilizer DBT': 16, Other: 8 } },
     };
   }, [sahayakMatrixRows, mandal, stats]);

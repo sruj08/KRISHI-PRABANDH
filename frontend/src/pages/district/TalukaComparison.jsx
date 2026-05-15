@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { fetchClaims, fetchClaimsSummary } from '../../shared/api/services';
 import usePolling from '../../hooks/usePolling';
@@ -61,7 +61,7 @@ const TalukaComparison = () => {
   for (const c of claims) {
     const officer = c.assignedOfficer || 'Unassigned';
     if (!officerPerf[officer]) {
-      officerPerf[officer] = { name: officer, taluka: c.taluka || '—', pending: 0, total: 0, avgReviewDays: 0 };
+      officerPerf[officer] = { name: officer, taluka: c.taluka || '-', pending: 0, total: 0, avgReviewDays: 0 };
     }
     const stage = c.workflowStage || c.status || '';
     if (stage.includes('Review') || stage.includes('Pending') || stage === 'Applied' || stage === 'Under Scrutiny') {
@@ -159,7 +159,7 @@ const TalukaComparison = () => {
                       <tr style={{ background: '#fafbf9' }}>
                         <td colSpan={5} style={{ padding: '14px 18px 18px', fontSize: 12, color: TEXT, lineHeight: 1.55, borderBottom: `1px solid ${PANEL}` }}>
                           <div style={{ fontWeight: 800, marginBottom: 8 }}>
-                            {t('{taluka} — Detailed breakdown', { taluka: row.taluka })}
+                            {t('{taluka} - Detailed breakdown', { taluka: row.taluka })}
                           </div>
                           <div>
                             <strong>{t('Top fraud types:')}</strong> {detail.top_fraud_types}

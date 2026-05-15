@@ -1,4 +1,4 @@
-/** District governance intelligence — mock aggregates (no live services). */
+﻿/** District governance intelligence - mock aggregates (no live services). */
 
 export const mockTalukaData = [
   { taluka: 'Barshi', total: 142, approved: 87, flagged: 38, fraud_rate: 26.7, pending: 24, intensity: 'high' },
@@ -28,7 +28,7 @@ export const mockEscalationQueue = [
   {
     id: 'ESC-001',
     severity: 'critical',
-    description: 'Organized dealer fraud — same dealer in 14 applications across 3 villages.',
+    description: 'Organized dealer fraud - same dealer in 14 applications across 3 villages.',
     taluka: 'Barshi',
   },
   {
@@ -40,7 +40,7 @@ export const mockEscalationQueue = [
   {
     id: 'ESC-003',
     severity: 'high',
-    description: 'Crop geo-tag clustering — 12 applications share near-identical GPS.',
+    description: 'Crop geo-tag clustering - 12 applications share near-identical GPS.',
     taluka: 'Pandharpur',
   },
 ];

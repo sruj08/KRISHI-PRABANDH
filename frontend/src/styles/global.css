@@ -1,9 +1,9 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import './variables.css';
 @import 'leaflet/dist/leaflet.css';
 
 /* =========================================================
-   Krishi Prabandh — Global Styles
+   Krishi Prabandh - Global Styles
    Design: Agricultural Intelligence Interface (Stitch)
    ========================================================= */
 
@@ -88,7 +88,7 @@ img { max-width: 100%; height: auto; display: block; }
   margin-bottom: var(--sp-4);
 }
 
-/* ── Label Caps (IBM Plex Sans — data labels) ── */
+/* ── Label Caps (IBM Plex Sans - data labels) ── */
 .label-caps {
   font-family: var(--font-data);
   font-size: var(--font-size-xs);
@@ -207,10 +207,10 @@ input, textarea, select {
 .animate-slide-up { animation: slideUp 0.35s ease; }
 
 /* =========================================================
-   Dashboard Polish — Leaflet zoom & attribution breathing room
+   Dashboard Polish - Leaflet zoom & attribution breathing room
    Used across DAO / TAO / CAO maps.
    ========================================================= */
-/* Stacking fix — Leaflet defaults its controls/panes up to z-index 1000,
+/* Stacking fix - Leaflet defaults its controls/panes up to z-index 1000,
    which would otherwise bleed over our sticky header (now at 1100).
    Cap every Leaflet pane and control well below the header layer so
    the map stays cleanly underneath the top chrome while scrolling. */
@@ -234,7 +234,7 @@ input, textarea, select {
   z-index: 1;
 }
 
-/* Restore the tile pane to its leaflet default z-index (200) — the blanket
+/* Restore the tile pane to its leaflet default z-index (200) - the blanket
    .leaflet-pane { z-index: 500 } rule above would otherwise paint tiles on
    top of the focus-mask pane (350), hiding the spotlight effect. */
 .leaflet-pane.leaflet-tile-pane {
@@ -248,7 +248,7 @@ input, textarea, select {
 
    Sits ABOVE the tile pane (200) but BELOW overlay / marker panes (500) and
    well below tooltip (800) / popup (810), so its backdrop-filter only blurs
-   the basemap — never on-top UI like tooltips or markers. */
+   the basemap - never on-top UI like tooltips or markers. */
 .leaflet-pane.geo-focus-mask-pane {
   pointer-events: none;
   z-index: 350 !important;
@@ -258,7 +258,7 @@ input, textarea, select {
   -webkit-backdrop-filter: blur(3px) saturate(0.55);
 }
 
-/* Mandal hover tooltip — TAO map; match district taluka card (solid panel + multi-line) */
+/* Mandal hover tooltip - TAO map; match district taluka card (solid panel + multi-line) */
 .leaflet-tooltip.tao-mandal-tooltip {
   opacity: 1 !important;
   border: 1px solid #e2e3df;
@@ -308,16 +308,16 @@ input, textarea, select {
 }
 
 /* =========================================================
-   Premium SaaS Polish — soft surfaces, ambient shadows, hover
+   Premium SaaS Polish - soft surfaces, ambient shadows, hover
    Applied via class helpers so JSX structure stays untouched.
    ========================================================= */
 
-/* Warm-cream dashboard background — replaces #f3f4f0 (cooler) */
+/* Warm-cream dashboard background - replaces #f3f4f0 (cooler) */
 .dashboard-bg {
   background: #f6f7f2;
 }
 
-/* Soft floating surface — replaces "border + shadow-sm" pattern.
+/* Soft floating surface - replaces "border + shadow-sm" pattern.
    - Hairline border (almost invisible)
    - 2-layer ambient shadow (tight contact + diffuse halo)
    - Subtle warm undertone */
@@ -339,7 +339,7 @@ input, textarea, select {
     0 1px 2px rgba(20, 40, 30, 0.04),
     0 10px 28px -6px rgba(20, 40, 30, 0.06);
 }
-/* "Static" variant — no hover lift (for cards that aren't interactive) */
+/* "Static" variant - no hover lift (for cards that aren't interactive) */
 .surface-card-static:hover {
   border-color: rgba(20, 40, 30, 0.06);
   box-shadow:
@@ -359,7 +359,7 @@ input, textarea, select {
   border-color: rgba(31, 77, 54, 0.45) !important;
 }
 
-/* Subtle input — softer border + warm tint + focus glow */
+/* Subtle input - softer border + warm tint + focus glow */
 .input-soft {
   background: #fafbf8;
   border: 1px solid rgba(20, 40, 30, 0.08);
@@ -392,7 +392,7 @@ input, textarea, select {
   color: #1a1c1a;
 }
 
-/* Premium primary button — softer green, ambient shadow, rounded */
+/* Premium primary button - softer green, ambient shadow, rounded */
 .btn-primary-soft {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   background: linear-gradient(180deg, #2d6b48 0%, #1f4d36 100%);
@@ -417,7 +417,7 @@ input, textarea, select {
 }
 .btn-primary-soft:active { transform: translateY(0.5px); }
 
-/* Premium secondary button — light, hairline border */
+/* Premium secondary button - light, hairline border */
 .btn-secondary-soft {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   background: #ffffff;
@@ -442,7 +442,7 @@ input, textarea, select {
   background: rgba(20, 40, 30, 0.025) !important;
 }
 
-/* State / RegionalMap — keep tiles + heat canvas clipped to rounded map frame */
+/* State / RegionalMap - keep tiles + heat canvas clipped to rounded map frame */
 .regional-map-frame {
   overflow: hidden;
   border-radius: inherit;
@@ -457,7 +457,7 @@ input, textarea, select {
   width: 100%;
 }
 
-/* RegionalMap — pane stacking under the dashboard-wide rule
+/* RegionalMap - pane stacking under the dashboard-wide rule
    `.leaflet-pane { z-index: 500 !important; }` (lines ~217–222).
    Without this, overlayPane (leaflet.heat canvas) and the inverted mask both
    sit at 500; DOM order can paint the heat *above* the mask so KDE blur leaks

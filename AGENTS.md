@@ -1,4 +1,4 @@
-<!-- code-review-graph MCP tools -->
+﻿<!-- code-review-graph MCP tools -->
 
 # MCP Tools: code-review-graph
 
@@ -123,7 +123,7 @@ Goal:
 This project uses a Stitch-generated UI system.
 
 Reference design:
-“Remix of Remix of Pixel-Perfect Page (Desktop) — ID: 4810585282142419495”
+“Remix of Remix of Pixel-Perfect Page (Desktop) - ID: 4810585282142419495”
 
 Requirements:
 - Preserve exact Stitch visual fidelity.

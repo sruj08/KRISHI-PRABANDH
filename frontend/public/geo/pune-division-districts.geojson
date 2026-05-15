@@ -1,9 +1,9 @@
-{
+﻿{
   "type": "FeatureCollection",
-  "name": "Pune Division — demonstration district geofence",
+  "name": "Pune Division - demonstration district geofence",
   "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
   "properties": {
-    "attribution": "Division outline: simplified outer geofence. District rings: digitized approximate administrative boundaries (irregular polygons for map display; not certified survey geometry).",
+    "attribution": "Division outline: simplified outer geofence. District rings: digitized approximate administrative boundaries (irregular polygons for map display; not certified survey geometry). Desk fields schemePenetration / ndviStress / grievanceIdx: ndviStress is a legacy key for the 0–100 moisture–drought stress proxy (not satellite NDVI).",
     "division": "Pune",
     "state": "Maharashtra"
   },

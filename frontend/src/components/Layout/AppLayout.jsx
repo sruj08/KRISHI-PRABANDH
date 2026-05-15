@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import BottomNav from './BottomNav';
@@ -36,7 +36,7 @@ const AppLayout = () => {
           paddingTop: 'env(safe-area-inset-top)',
         }}
       >
-        {/* Hamburger — always visible */}
+        {/* Hamburger - always visible */}
         <button
           type="button"
           className="icon-btn-soft"
@@ -89,9 +89,9 @@ const AppLayout = () => {
           )}
         </div>
 
-        {/* Actions — simplified for Sahayak */}
+        {/* Actions - simplified for Sahayak */}
         <div className="flex items-center gap-1 ml-2">
-          {/* Language toggle — desktop only for Sahayak, always for others */}
+          {/* Language toggle - desktop only for Sahayak, always for others */}
           {!isSahayak && (
             <button
               className="icon-btn-soft text-[11px] font-bold px-2"

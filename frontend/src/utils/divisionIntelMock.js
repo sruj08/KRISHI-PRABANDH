@@ -1,6 +1,9 @@
-/**
+﻿/**
  * Deterministic mock intelligence for state command map + divisional analysis.
  * Values derive from division code so UI stays stable across reloads.
+ *
+ * The map field `ndviStress` is a **legacy name** for the 0–100 moisture / drought stress **desk proxy**
+ * (rain-recharge ranking in live data - not satellite NDVI).
  */
 
 /** Mirrors `public/geo/maharashtra-divisions.geojson` (division features). */
@@ -14,10 +17,10 @@ export const DIVISION_MAP_METRICS = {
 };
 
 /**
- * NDVI / crop-stress monitoring blocks aligned to Maharashtra revenue divisions.
+ * Agronomic planning blocks by revenue division (desk narratives; may reference satellite NDVI where relevant).
  * District lists follow the official 6-division grouping (Konkan, Pune, Nashik,
  * Chhatrapati Sambhajinagar / Marathwada, Amravati, Nagpur). Stress % and
- * hectares remain demo-derived but stable per seed — use for layout & desk logic only.
+ * hectares remain demo-derived but stable per seed - use for layout & desk logic only.
  */
 export const NDVI_MONITORING_ZONES = {
   KKN: [
@@ -34,7 +37,7 @@ export const NDVI_MONITORING_ZONES = {
     {
       label: 'Ratnagiri mid-coast',
       districts: 'Ratnagiri',
-      deskNote: 'Lateritic slopes and horticulture: hail and wind squalls spike claims — keep taluka-wise SMS nudges in sync with IMD nowcasts.',
+      deskNote: 'Lateritic slopes and horticulture: hail and wind squalls spike claims - keep taluka-wise SMS nudges in sync with IMD nowcasts.',
     },
     {
       label: 'Sindhudurg south coast',
@@ -46,12 +49,12 @@ export const NDVI_MONITORING_ZONES = {
     {
       label: 'Pune district & Ghat fringe',
       districts: 'Pune',
-      deskNote: 'High-value horticulture + urban fringe; NDVI drops often track irrigation scheduling — cross-check with canal rotation.',
+      deskNote: 'High-value horticulture + urban fringe; NDVI drops often track irrigation scheduling - cross-check with canal rotation.',
     },
     {
       label: 'Satara plateau',
       districts: 'Satara',
-      deskNote: 'Sugarcane–cereal mix on leeward side of ghats; stress spikes usually precede pest cycles — brief TAO teams on cotton & millet.',
+      deskNote: 'Sugarcane–cereal mix on leeward side of ghats; stress spikes usually precede pest cycles - brief TAO teams on cotton & millet.',
     },
     {
       label: 'Sangli–Kolhapur basin',
@@ -68,7 +71,7 @@ export const NDVI_MONITORING_ZONES = {
     {
       label: 'Nashik upland & vineyards',
       districts: 'Nashik',
-      deskNote: 'Godavari upper basin: grape + onion belt — frost / hail false positives are common; confirm with mandal crop books.',
+      deskNote: 'Godavari upper basin: grape + onion belt - frost / hail false positives are common; confirm with mandal crop books.',
     },
     {
       label: 'Ahmednagar sugar & coarse cereals',
@@ -78,7 +81,7 @@ export const NDVI_MONITORING_ZONES = {
     {
       label: 'Jalgaon irrigated corridor',
       districts: 'Jalgaon',
-      deskNote: 'Banana + cotton under irrigation: sudden NDVI drops may be power or bore failure — coordinate with MSEDCL outage feeds.',
+      deskNote: 'Banana + cotton under irrigation: sudden NDVI drops may be power or bore failure - coordinate with MSEDCL outage feeds.',
     },
     {
       label: 'Dhule–Nandurbar tribal uplands',
@@ -90,17 +93,17 @@ export const NDVI_MONITORING_ZONES = {
     {
       label: 'Chhatrapati Sambhajinagar–Jalna–Parbhani',
       districts: 'Chhatrapati Sambhajinagar (Aurangabad), Jalna, Parbhani',
-      deskNote: 'Core Marathwada corridor: combine NDVI with groundwater stage data before declaring distress — avoids over-alerting.',
+      deskNote: 'Core Marathwada corridor: combine NDVI with groundwater stage data before declaring distress - avoids over-alerting.',
     },
     {
       label: 'Beed–Dharashiv (Osmanabad) belt',
       districts: 'Beed, Dharashiv (Osmanabad)',
-      deskNote: 'Cotton–soy dominant; stress clusters often align with delayed monsoon onset — sync with agromet advisories.',
+      deskNote: 'Cotton–soy dominant; stress clusters often align with delayed monsoon onset - sync with agromet advisories.',
     },
     {
       label: 'Latur–Nanded south-east',
       districts: 'Latur, Nanded',
-      deskNote: 'Ujjani command fringe: canal delays mimic drought in satellite view — verify with irrigation department schedules.',
+      deskNote: 'Ujjani command fringe: canal delays mimic drought in satellite view - verify with irrigation department schedules.',
     },
     {
       label: 'Hingoli pocket',
@@ -112,12 +115,12 @@ export const NDVI_MONITORING_ZONES = {
     {
       label: 'Amravati–Akola cotton belt',
       districts: 'Amravati, Akola',
-      deskNote: 'Pink bollworm history: pair NDVI stress with entomology traps before scaling pesticide subsidies.',
+      deskNote: 'Pink bollworm history: pair satellite NDVI (when available) with entomology traps before scaling pesticide subsidies.',
     },
     {
       label: 'Buldhana cotton–soy mosaic',
       districts: 'Buldhana',
-      deskNote: 'Vidarbha west entry: watch for false green from late sowing — validate with sowing window registry.',
+      deskNote: 'Vidarbha west entry: watch for false green from late sowing - validate with sowing window registry.',
     },
     {
       label: 'Yavatmal high-stress cotton',
@@ -134,7 +137,7 @@ export const NDVI_MONITORING_ZONES = {
     {
       label: 'Nagpur–Wardha central plain',
       districts: 'Nagpur, Wardha',
-      deskNote: 'Orange belt + soy: irrigation shifts from wells can mimic crop failure — confirm with pump energisation data.',
+      deskNote: 'Orange belt + soy: irrigation shifts from wells can mimic crop failure - confirm with pump energisation data.',
     },
     {
       label: 'Bhandara–Gondia rice bowl',
@@ -144,7 +147,7 @@ export const NDVI_MONITORING_ZONES = {
     {
       label: 'Chandrapur forest–farm edge',
       districts: 'Chandrapur',
-      deskNote: 'Forest fringe fires and smoke can distort NDVI — cross-read with Forest Dept fire alerts.',
+      deskNote: 'Forest fringe fires and smoke can distort NDVI - cross-read with Forest Dept fire alerts.',
     },
     {
       label: 'Gadchiroli forest division',
@@ -154,7 +157,7 @@ export const NDVI_MONITORING_ZONES = {
   ],
 };
 
-/** Planning blocks for uptake bar chart — same revenue-division district reality, different grouping from NDVI zones. */
+/** Planning blocks for uptake bar chart - same revenue-division district reality, different grouping from stress monitoring zones. */
 export const UPTAKE_PLANNING_BLOCKS = {
   KKN: [
     { label: 'MMR outreach block', districts: 'Mumbai City, Mumbai Suburban, Thane' },
@@ -323,7 +326,7 @@ export function buildDeepAnalysisBundle({ key, divisionCode, divisionName }) {
 
   const schemePortfolio = [
     { scheme: 'PM-KISAN', sharePct: 22 + (seed % 12), backlogK: Math.floor(rnd() * 8) },
-    { scheme: 'PMFBY — Kharif', sharePct: 28 + (seed % 10), backlogK: Math.floor(rnd() * 12) },
+    { scheme: 'PMFBY - Kharif', sharePct: 28 + (seed % 10), backlogK: Math.floor(rnd() * 12) },
     { scheme: 'Mechanization', sharePct: 8 + (seed % 6), backlogK: Math.floor(rnd() * 4) },
     { scheme: 'Soil health / micro-irrigation', sharePct: 12 + (seed % 8), backlogK: Math.floor(rnd() * 6) },
     { scheme: 'State top-up / allied', sharePct: 10 + (seed % 7), backlogK: Math.floor(rnd() * 5) },

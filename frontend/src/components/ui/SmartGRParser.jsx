@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 
 const API_BASE = 'http://localhost:8000/api/v1';
 
@@ -89,11 +89,11 @@ function EligibleFarmersModal({ apps, components, lang, onClose }) {
                   >
                     <td style={{ padding: '9px 10px', color: 'var(--text-muted)', fontSize: 11 }}>{i + 1}</td>
                     <td style={{ padding: '9px 10px', fontWeight: 600, color: 'var(--text-dark)', fontFamily: 'monospace' }}>
-                      {app.farmer_id || '—'}
+                      {app.farmer_id || '-'}
                     </td>
-                    <td style={{ padding: '9px 10px', color: 'var(--text-gray)' }}>{app.component || '—'}</td>
+                    <td style={{ padding: '9px 10px', color: 'var(--text-gray)' }}>{app.component || '-'}</td>
                     <td style={{ padding: '9px 10px', color: 'var(--text-gray)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {app.scheme_name || '—'}
+                      {app.scheme_name || '-'}
                     </td>
                     <td style={{ padding: '9px 10px' }}>
                       <span style={{

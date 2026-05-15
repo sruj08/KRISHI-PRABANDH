@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -57,7 +57,6 @@ const Sidebar = ({ isOpen, onClose }) => {
             { to: '/state/schemes', icon: 'account_tree', label: 'Schemes' },
             { to: '/state/fund-monitoring', icon: 'account_balance_wallet', label: 'Fund Monitoring' },
             { to: '/state/approvals', icon: 'check_circle', label: 'Approvals' },
-            { to: '/state/grievances', icon: 'gavel', label: 'Grievance Intelligence' },
           ],
         },
         {
@@ -65,9 +64,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           flat: true,
           label: 'INTELLIGENCE',
           items: [
-            { to: '/state/fraud', icon: 'shield_locked', label: 'Fraud Network' },
-            { to: '/state/insights', icon: 'lightbulb', label: 'AI Insights' },
             { to: '/state/divisional-analysis', icon: 'analytics', label: 'Divisional Analysis' },
+            { to: '/state/grievances', icon: 'gavel', label: 'Grievance Intelligence' },
           ],
         },
       ];
@@ -118,7 +116,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         ]},
         { id: 'dao_modules', label: 'ANALYTICS', items: [
           { to: '/survey', icon: 'bar_chart', label: 'Scheme Analytics' },
-          { to: '/geo', icon: 'eco', label: 'Crop Health / NDVI' },
+          { to: '/geo', icon: 'eco', label: t('Crop stress (rain desk)') },
           { to: '/applications', icon: 'account_balance', label: 'PFMS Monitoring' },
           { to: '/dao/grievances', icon: 'priority_high', label: 'Grievance Command' },
           { to: '/audit-logs', icon: 'history', label: 'Audit Logs' },
@@ -152,7 +150,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       ];
     }
 
-    // ── Krishi Sahayak (Officer) — command-center IA (6 groups) ──
+    // ── Krishi Sahayak (Officer) - command-center IA (6 groups) ──
     return [
       {
         id: 'officer_workflow',

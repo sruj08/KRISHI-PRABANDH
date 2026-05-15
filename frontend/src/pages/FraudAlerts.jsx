@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useHierarchy } from '../context/HierarchyContext';
 import { useToast } from '../hooks/useToast.jsx';
@@ -29,10 +29,10 @@ const FraudAlerts = () => {
           return c.duplicateRisk > 0 || risk > 50;
         }).map((c) => ({
           application_id: c.farmerId || c.id || c.application_id,
-          farmer_id: c.farmerId || '—',
+          farmer_id: c.farmerId || '-',
           status: c.workflowStage || c.status || 'Under Scrutiny',
-          component: c.scheme || '—',
-          scheme_name: c.scheme || '—',
+          component: c.scheme || '-',
+          scheme_name: c.scheme || '-',
           scheme_category: 'Fraud Alert',
           rejection_reason: c.duplicateRisk > 0 ? `Duplicate risk: ${c.duplicateRisk}` : `Low confidence: ${((1 - (c.confidenceScore || 0)) * 100).toFixed(0)}% risk`,
           explanation: `⚠️ Application flagged by AI. confidenceScore: ${c.confidenceScore != null ? (c.confidenceScore * 100).toFixed(0) + '%' : 'N/A'}, geoVerified: ${c.geoVerified != null ? (c.geoVerified ? 'Yes' : 'No') : 'N/A'}, rainfallMatched: ${c.rainfallMatched != null ? (c.rainfallMatched ? 'Yes' : 'No') : 'N/A'}. assignedOfficer: ${c.assignedOfficer || 'Unassigned'}.`,
@@ -125,7 +125,7 @@ const FraudAlerts = () => {
               <div className="alert-detail-grid">
                 <div>
                   <div className="alert-detail-label">{t('Farmer ID', lang)}</div>
-                  <div className="alert-detail-value fw-bold">{alert.farmer_id || '—'}</div>
+                  <div className="alert-detail-value fw-bold">{alert.farmer_id || '-'}</div>
                 </div>
                 <div>
                   <div className="alert-detail-label">{t('Status', lang)}</div>
@@ -133,15 +133,15 @@ const FraudAlerts = () => {
                 </div>
                 <div className="alert-detail-full">
                   <div className="alert-detail-label">{t('Component', lang)}</div>
-                  <div className="alert-detail-value fw-bold">{alert.component || '—'}</div>
+                  <div className="alert-detail-value fw-bold">{alert.component || '-'}</div>
                 </div>
                 <div className="alert-detail-full">
                   <div className="alert-detail-label">{t('Scheme', lang)}</div>
-                  <div className="alert-detail-value">{alert.scheme_name || '—'}</div>
+                  <div className="alert-detail-value">{alert.scheme_name || '-'}</div>
                 </div>
                 <div>
                   <div className="alert-detail-label">{t('Category', lang)}</div>
-                  <span className="badge badge-grey" style={{ fontSize: '10px' }}>{alert.scheme_category || '—'}</span>
+                  <span className="badge badge-grey" style={{ fontSize: '10px' }}>{alert.scheme_category || '-'}</span>
                 </div>
               </div>
 

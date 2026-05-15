@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Realistic mock data for Farmer Portal (MahaDBT-style).
  * Malegaon / Barshi taluka context.
  */
@@ -49,8 +49,8 @@ export const LAND_PARCELS = [
     irrigationTag: 'rainfed',
     ownership: 'Joint',
     ownershipTags: ['joint', 'verified'],
-    cropDeclared: '— Pending update',
-    season: '—',
+    cropDeclared: '- Pending update',
+    season: '-',
   },
   {
     id: 'L3',
@@ -108,7 +108,7 @@ export const SCHEMES = {
       dept: 'Cooperation Dept.',
       subsidy: 'Premium subsidized',
       eligibility: 'Applied',
-      deadline: '—',
+      deadline: '-',
       stage: 'Under scrutiny',
       icon: 'shield',
     },
@@ -120,7 +120,7 @@ export const SCHEMES = {
       dept: 'Agriculture Dept.',
       subsidy: '₹4,500 credited',
       eligibility: 'Approved',
-      deadline: '—',
+      deadline: '-',
       stage: 'Payment completed',
       icon: 'grass',
     },
@@ -130,9 +130,9 @@ export const SCHEMES = {
       id: 'S6',
       name: 'Farm Pond (NABARD)',
       dept: 'Rural Development',
-      subsidy: '—',
+      subsidy: '-',
       eligibility: 'Rejected',
-      deadline: '—',
+      deadline: '-',
       stage: 'Land record mismatch',
       icon: 'waves',
     },
@@ -193,7 +193,7 @@ export const DOCUMENTS = [
   { id: 'D4', title: 'Bank Passbook', type: 'Bank', status: 'verified', uploadedAt: '14 Feb 2025', icon: 'account_balance_wallet' },
   { id: 'D5', title: 'Income Certificate', type: 'Income', status: 'rejected', uploadedAt: '20 Apr 2026', icon: 'request_quote' },
   { id: 'D6', title: 'Caste Certificate', type: 'Category', status: 'verified', uploadedAt: '10 Mar 2025', icon: 'groups' },
-  { id: 'D7', title: 'Crop Declaration', type: 'Crop', status: 'pending', uploadedAt: '—', icon: 'agriculture' },
+  { id: 'D7', title: 'Crop Declaration', type: 'Crop', status: 'pending', uploadedAt: '-', icon: 'agriculture' },
   { id: 'D8', title: 'Insurance Receipt', type: 'Insurance', status: 'verified', uploadedAt: '22 Jul 2025', icon: 'shield' },
   { id: 'D9', title: 'Equipment Invoice', type: 'Subsidy', status: 'expired', uploadedAt: '01 Nov 2024', icon: 'receipt_long' },
 ];
@@ -211,9 +211,9 @@ export const PAYMENTS = [
     id: 'P2',
     scheme: 'Micro Irrigation (Drip)',
     amount: '₹62,000.00',
-    txnId: '—',
+    txnId: '-',
     status: 'processing',
-    date: '—',
+    date: '-',
   },
   {
     id: 'P3',
@@ -221,7 +221,7 @@ export const PAYMENTS = [
     amount: '₹38,200.00',
     txnId: 'DBT-MH-2026-771902',
     status: 'awaiting',
-    date: '—',
+    date: '-',
   },
 ];
 
@@ -235,7 +235,7 @@ export const PAYMENT_FAILURES = [
   {
     id: 'F2',
     title: 'Bank account not mapped to Aadhaar',
-    detail: 'NPCI mapping failed — visit bank branch with Aadhaar seeding form.',
+    detail: 'NPCI mapping failed - visit bank branch with Aadhaar seeding form.',
     code: 'NPCI-NOT-MAPPED',
   },
   {
@@ -247,7 +247,7 @@ export const PAYMENT_FAILURES = [
   {
     id: 'F4',
     title: 'Name mismatch with bank records',
-    detail: 'Bank passbook name differs from Aadhaar — upload corrected passbook.',
+    detail: 'Bank passbook name differs from Aadhaar - upload corrected passbook.',
     code: 'BANK-MISMATCH',
   },
 ];
@@ -284,7 +284,7 @@ export const NOTIFICATIONS = [
     id: 'N4',
     type: 'scheme',
     title: 'Scheme deadline',
-    body: 'Micro Irrigation — last date 30 Jun 2026.',
+    body: 'Micro Irrigation - last date 30 Jun 2026.',
     time: '5d ago',
     unread: false,
     priority: 'low',

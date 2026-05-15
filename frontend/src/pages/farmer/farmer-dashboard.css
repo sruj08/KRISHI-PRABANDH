@@ -1,4 +1,4 @@
-/* Farmer MahaDBT workspace — tokens & surfaces aligned with TAO / District command dashboards */
+﻿/* Farmer MahaDBT workspace - tokens & surfaces aligned with TAO / District command dashboards */
 
 .farmer-dash-root {
   width: 100%;
@@ -99,7 +99,7 @@
   margin-bottom: 16px;
 }
 
-/* Optional: top rule only — same weight as TAO panel headers, no accent bar */
+/* Optional: top rule only - same weight as TAO panel headers, no accent bar */
 .farmer-dash-card__top {
   padding-bottom: 16px;
   margin-bottom: 16px;

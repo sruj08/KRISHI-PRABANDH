@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { fetchClaims, fetchClaimsSummary } from '../../shared/api/services';
 import usePolling from '../../hooks/usePolling';
@@ -64,16 +64,16 @@ const DistrictAnalytics = () => {
 
   const insightsFeed = [];
   if (highPct > 15) {
-    insightsFeed.push({ severity: 'critical', time: 'LIVE', text: `High risk claims at ${highPct}% — immediate review recommended.` });
+    insightsFeed.push({ severity: 'critical', time: 'LIVE', text: `High risk claims at ${highPct}% - immediate review recommended.` });
   }
   if (reviewPct > 25) {
-    insightsFeed.push({ severity: 'medium', time: 'LIVE', text: `${reviewPct}% of claims flagged for review — escalate to district officers.` });
+    insightsFeed.push({ severity: 'medium', time: 'LIVE', text: `${reviewPct}% of claims flagged for review - escalate to district officers.` });
   }
   if (fraudTypeBars.length > 0) {
     const topFraud = fraudTypeBars[0];
     insightsFeed.push({ severity: 'medium', time: 'LIVE', text: `Top fraud type: "${topFraud.label}" at ${topFraud.pct}% of total claims.` });
   }
-  insightsFeed.push({ severity: 'low', time: 'LIVE', text: `Total ${totalApps} claims processed — ${safePct}% safe, ${reviewPct}% needs review.` });
+  insightsFeed.push({ severity: 'low', time: 'LIVE', text: `Total ${totalApps} claims processed - ${safePct}% safe, ${reviewPct}% needs review.` });
 
   const schemeLeakageMap = {};
   for (const c of claims) {
@@ -121,7 +121,7 @@ const DistrictAnalytics = () => {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
         <div style={{ background: '#fff', border: `1px solid ${PANEL}`, borderRadius: 16, padding: '22px 22px', boxShadow: '0 1px 3px rgba(0,0,0,.04)' }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: '0 0 16px' }}>{t('Risk Distribution — All Applications')}</h3>
+          <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, margin: '0 0 16px' }}>{t('Risk Distribution - All Applications')}</h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', width: 140, height: 140, flexShrink: 0 }}>
               <div

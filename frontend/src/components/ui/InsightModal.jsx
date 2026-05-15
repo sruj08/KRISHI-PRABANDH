@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import Modal from './Modal';
@@ -52,7 +52,7 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
         <div className="alert-detail-grid">
           <div>
             <div className="alert-detail-label">{t('Farmer ID')}</div>
-            <div className="alert-detail-value fw-bold">{app.farmer_id || '—'}</div>
+            <div className="alert-detail-value fw-bold">{app.farmer_id || '-'}</div>
           </div>
           <div>
             <div className="alert-detail-label">{t('Status')}</div>
@@ -60,19 +60,19 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
           </div>
           <div className="alert-detail-full">
             <div className="alert-detail-label">{t('Component')}</div>
-            <div className="alert-detail-value fw-bold">{app.component || '—'}</div>
+            <div className="alert-detail-value fw-bold">{app.component || '-'}</div>
           </div>
           <div className="alert-detail-full">
             <div className="alert-detail-label">{t('Scheme Name')}</div>
-            <div className="alert-detail-value">{app.scheme_name || '—'}</div>
+            <div className="alert-detail-value">{app.scheme_name || '-'}</div>
           </div>
           <div>
             <div className="alert-detail-label">{t('Category')}</div>
-            <span className="badge badge-grey" style={{ fontSize: '11px' }}>{app.scheme_category || '—'}</span>
+            <span className="badge badge-grey" style={{ fontSize: '11px' }}>{app.scheme_category || '-'}</span>
           </div>
           <div>
             <div className="alert-detail-label">{t('Applied')}</div>
-            <div className="alert-detail-value">{app.application_date || '—'} {daysSince > 0 ? `(${daysSince}d ${t('ago')})` : ''}</div>
+            <div className="alert-detail-value">{app.application_date || '-'} {daysSince > 0 ? `(${daysSince}d ${t('ago')})` : ''}</div>
           </div>
         </div>
 
@@ -99,7 +99,7 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
           <div className="text-sm">{app.remarks || t('No remarks')}</div>
         </div>
 
-        {/* Rejection reason — only if present */}
+        {/* Rejection reason - only if present */}
         {app.rejection_reason && (
           <div style={{ backgroundColor: '#ffebee', borderRadius: 'var(--radius)', padding: '10px 12px', border: '1px solid #ffcdd2' }}>
             <div className="alert-detail-label mb-1" style={{ color: '#c62828' }}>{t('Rejection Reason')}</div>
@@ -113,7 +113,7 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
           <div className="text-sm">{t(explanation)}</div>
         </div>
 
-        {/* Action buttons — only rendered when callbacks provided */}
+        {/* Action buttons - only rendered when callbacks provided */}
         {(onApprove || onReject) && (
           <div className="flex gap-2 mt-2">
             {onApprove && (
@@ -137,7 +137,7 @@ const InsightModal = ({ app, onClose, onApprove, onReject, actionLoading }) => {
           </div>
         )}
 
-        {/* Upload Photo button — always available */}
+        {/* Upload Photo button - always available */}
         <button
           id="insight-upload-photo-btn"
           onClick={handleUploadPhoto}

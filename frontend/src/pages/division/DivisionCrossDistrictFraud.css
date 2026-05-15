@@ -1,4 +1,4 @@
-/* AI Cross-District Fraud Intelligence — Maharashtra agri admin desk (minimal gov UI) */
+﻿/* AI Cross-District Fraud Intelligence - Maharashtra agri admin desk (minimal gov UI) */
 
 .fi-page {
   --fi-bg: #f4f5f3;
@@ -235,7 +235,7 @@
 }
 
 /* Stretch to full feed column height so `position: sticky` on the aside is bounded
-   to the investigation block — panel stays beside the feed until the section ends. */
+   to the investigation block - panel stays beside the feed until the section ends. */
 .fi-feed-rail {
   min-width: 0;
   min-height: 0;
@@ -431,7 +431,7 @@
   isolation: isolate;
 }
 
-/* Cards inside floating cloud — glass inner surfaces */
+/* Cards inside floating cloud - glass inner surfaces */
 .fi-hover-cloud .fi-intel-card {
   padding: 12px 14px 14px;
   border-radius: 18px;
@@ -455,7 +455,7 @@
   color: #6d756d;
 }
 
-/* ── AI insight — own card, natural height */
+/* ── AI insight - own card, natural height */
 .fi-intel-card--insight {
   min-height: 0;
   max-height: none;
@@ -611,7 +611,7 @@
 
 /* ── Investigation queue cards ─────────────────────────────────────────── */
 
-/* Severity colour tokens — only used for the left edge stripe */
+/* Severity colour tokens - only used for the left edge stripe */
 :root {
   --sev-p1: #c72626;
   --sev-p2: #b87208;
@@ -729,7 +729,7 @@
   font-weight: 500;
 }
 
-/* Case card — collapsed summary; expand for narrative + why flagged */
+/* Case card - collapsed summary; expand for narrative + why flagged */
 .fi-case {
   background: var(--fi-surface);
   border: 1px solid var(--fi-border);
@@ -875,7 +875,7 @@
 }
 
 .fi-case__obs li::before {
-  content: '—';
+  content: '-';
   position: absolute;
   left: 0;
   color: #bbb;
@@ -914,7 +914,7 @@
   color: #111;
 }
 
-/* linked applications — minimal table */
+/* linked applications - minimal table */
 .fi-case__linked {
   display: flex;
   flex-direction: column;

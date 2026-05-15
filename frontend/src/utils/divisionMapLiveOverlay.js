@@ -5,6 +5,8 @@
  * @param {Record<string, object>|null} liveByCode - from useDivisionLiveIntel
  * @param {{ code: string, pending?: number, fraudAlerts?: number, disbursedPct?: number }[]} districtRows
  * @param {string} [divisionCode='PNE'] - bare division code for demo Pune division desk
+ *
+ * Per-district `ndviStress` in the return object is the 0–100 moisture / drought stress desk proxy (legacy property name; not satellite NDVI).
  */
 export function buildLiveDistrictMapMetrics(liveByCode, districtRows, divisionCode = 'PNE') {
   if (!districtRows?.length) return liveByCode || undefined;
@@ -42,6 +44,7 @@ export function buildLiveDistrictMapMetrics(liveByCode, districtRows, divisionCo
  *
  * @param {{ code: string, fraudSeverityScore?: number, fraudAlerts?: number, suspiciousApplicationsEst?: number }[]} fraudDensityRows
  * @returns {Record<string, { schemePenetration: number, ndviStress: number, grievanceIdx: number }>|undefined}
+ *   Choropleth uses `schemePenetration` in fraud-heat mode; companion fields satisfy RegionalMap merge shape.
  */
 export function buildFraudDistrictMapMetrics(fraudDensityRows) {
   if (!fraudDensityRows?.length) return undefined;

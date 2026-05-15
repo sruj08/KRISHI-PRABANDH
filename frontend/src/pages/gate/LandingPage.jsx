@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../hooks/useToast.jsx';
 import './LandingPage.css';
@@ -14,6 +14,18 @@ const LandingPage = () => {
   const { pickOfficerForUiRole, loginPayloadFromOfficer } = useKrishiData();
 
   const [selectedRole, setSelectedRole] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleEnterDashboard = (e) => {
     e.preventDefault();
@@ -47,6 +59,8 @@ const LandingPage = () => {
     { id: 'state',    title: t('Commissioner of Agriculture (State)') },
   ];
 
+  const selectedLabel = roles.find(r => r.id === selectedRole)?.title;
+
   return (
     <div style={{
       height: '100vh',
@@ -68,17 +82,22 @@ const LandingPage = () => {
 
         <div className="brand-top">
           <div aria-hidden="true" className="seal">
-            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>public</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>public</span>
           </div>
           <div>
             <div className="brand-eyebrow">{t('Krishi Prabandh')}</div>
-            <div className="brand-org">{t('Government of Maharashtra · Department of Agriculture')}</div>
+            <div className="brand-org">{t('Gov. Maharashtra · Agriculture Dept.')}</div>
           </div>
         </div>
 
         <div className="brand-hero">
-          <h1>{t('Krishi Prabandh')}</h1>
-          <p className="sub">{t('AGRICULTURAL ADMINISTRATION PLATFORM')}</p>
+          <div className="eyebrow-tag">
+            <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>agriculture</span>
+            {t('Agricultural Intelligence Platform')}
+          </div>
+          <h1 style={{ whiteSpace: 'pre-line' }}>{t('Krishi\nPrabandh')}</h1>
+          <p className="sub">{t('Government of Maharashtra · Department of Agriculture')}</p>
+          <div className="divider"></div>
           <p className="tag">{t('Superhuman Vision. Millisecond Decisions.')}</p>
           
           <div aria-hidden="true" className="telemetry">
@@ -133,68 +152,47 @@ const LandingPage = () => {
               fontSize: '22px',
               fontWeight: 700,
               color: '#1a202c',
-              margin: '0 0 8px',
+              margin: '0',
             }}>
               {t('Choose role')}
             </h2>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '14px',
-              color: '#718096',
-              margin: 0,
-            }}>
-              {t('Demo mode: pick a role to open the matching dashboard. No server or sign-in required.')}
-            </p>
           </div>
 
           <form onSubmit={handleEnterDashboard} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Role Selection */}
             <div>
-              <label style={{
-                display: 'block',
-                fontFamily: 'var(--font-data)',
-                fontSize: '11px',
-                fontWeight: 700,
-                color: '#4a5568',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '8px',
-              }}>
-                {t('SELECT USER ROLE')}
-              </label>
-              <div style={{ position: 'relative' }}>
-                <select
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '14px 16px',
-                    borderRadius: '12px',
-                    border: '1px solid #e2e8f0',
-                    backgroundColor: '#f8fafc',
-                    fontSize: '15px',
-                    color: selectedRole ? '#1a202c' : '#718096',
-                    appearance: 'none',
-                    cursor: 'pointer',
-                    outline: 'none',
-                  }}
+              <label className="rp-label">{t('SELECT USER ROLE')}</label>
+              <div className="rp-dropdown" ref={dropdownRef}>
+                <button
+                  type="button"
+                  className={`rp-trigger ${dropdownOpen ? 'open' : ''} ${selectedRole ? 'selected' : ''}`}
+                  onClick={() => setDropdownOpen(o => !o)}
+                  aria-haspopup="listbox"
+                  aria-expanded={dropdownOpen}
                 >
-                  <option value="" disabled>{t('Choose your role')}</option>
-                  {roles.map((role) => (
-                    <option key={role.id} value={role.id}>{role.title}</option>
-                  ))}
-                </select>
-                <span className="material-symbols-outlined" style={{
-                  position: 'absolute',
-                  right: '16px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'none',
-                  color: '#718096',
-                  fontSize: '20px',
-                }}>
-                  expand_more
-                </span>
+                  <span>{selectedLabel || t('Choose your role')}</span>
+                  <span className={`material-symbols-outlined rp-chevron ${dropdownOpen ? 'rotated' : ''}`}>
+                    expand_more
+                  </span>
+                </button>
+                {dropdownOpen && (
+                  <ul className="rp-menu" role="listbox">
+                    {roles.map((role) => (
+                      <li
+                        key={role.id}
+                        role="option"
+                        aria-selected={selectedRole === role.id}
+                        className={`rp-option ${selectedRole === role.id ? 'active' : ''}`}
+                        onClick={() => { setSelectedRole(role.id); setDropdownOpen(false); }}
+                      >
+                        <span className="rp-option-text">{role.title}</span>
+                        {selectedRole === role.id && (
+                          <span className="material-symbols-outlined rp-check">check</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
 
@@ -224,24 +222,6 @@ const LandingPage = () => {
               {t('Open dashboard')} <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>arrow_forward</span>
             </button>
           </form>
-
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              backgroundColor: '#f0fdf4',
-              color: '#166534',
-              fontSize: '12px',
-              fontWeight: 600,
-              border: '1px solid #bbf7d0',
-            }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>science</span>
-              {t('Offline demo — data is illustrative only')}
-            </div>
-          </div>
         </div>
 
         {/* Footer */}

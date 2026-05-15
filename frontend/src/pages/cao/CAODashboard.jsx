@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import ActionMap from './components/ActionMap';
 import PMFBYPanel from './components/PMFBYPanel';
@@ -308,7 +308,7 @@ const VistarSupervisionPanel = ({ vistar, fraudSes }) => {
       flexDirection: 'column',
       gap: 14,
     }}>
-      {/* KPI grid — neutral, no pastel boxes */}
+      {/* KPI grid - neutral, no pastel boxes */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <StatTile icon="event" label={t('Total Sessions')} value={vistar.total_sessions} />
         <StatTile icon="people" label={t('Avg Digital Att')} value={vistar.avg_digital_attendance} />
@@ -400,7 +400,7 @@ const VistarSupervisionPanel = ({ vistar, fraudSes }) => {
         </div>
       </div>
 
-      {/* Fraud alerts — minimal, no pink card */}
+      {/* Fraud alerts - minimal, no pink card */}
       {fraudSes && fraudSes.length > 0 && (
         <div style={{
           background: '#fff',
@@ -429,7 +429,7 @@ const VistarSupervisionPanel = ({ vistar, fraudSes }) => {
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 6 }}>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: '12.5px', fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1.3 }}>{s.village} — {s.topic}</div>
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1.3 }}>{s.village} - {s.topic}</div>
                     <div style={{ fontSize: '11px', color: TEXT_MUTED, marginTop: 3 }}>{s.date} · {s.sahayak_name}</div>
                   </div>
                   <RiskBadge risk={s.risk} />
@@ -477,7 +477,7 @@ const MandalOverviewPanel = ({ summary, appIntel, vistar }) => {
         />
       </div>
 
-      {/* Vistar snapshot — clean white card with subtle accent */}
+      {/* Vistar snapshot - clean white card with subtle accent */}
       {vistar && (
         <div style={{
           background: '#fff',
@@ -694,7 +694,7 @@ const CAODashboard = () => {
         <div className="cao-map-column" style={{ background: '#fff', border: '1px solid #e2e3df', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,.04)', overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #f3f4f0', flexShrink: 0, gap: 12 }}>
             <div>
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{t('Circle — Geo-fenced Command Map')}</h2>
+              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1a', margin: 0, lineHeight: 1.3 }}>{t('Circle - Geo-fenced Command Map')}</h2>
               <p style={{ fontSize: 11, color: '#717972', margin: 0, marginTop: 4, lineHeight: 1.4 }}>{t('Circle boundary loaded from project GeoJSON (Baramati AC assembly segment).')}</p>
             </div>
           </div>

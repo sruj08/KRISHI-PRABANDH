@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useHierarchy } from '../context/HierarchyContext';
 import { useToast } from '../hooks/useToast.jsx';
@@ -60,7 +60,7 @@ const getDaysSince = (d) => {
 
 const mapBackendClaim = (claim) => ({
   application_id: claim.farmerId || claim.id || claim.application_id,
-  farmer_id: claim.farmerId || '—',
+  farmer_id: claim.farmerId || '-',
   farmer_name: claim.farmerName || claim.farmer_name,
   workflowStage: claim.workflowStage || claim.status || 'Applied',
   status: claim.workflowStage || claim.status || 'Applied',
@@ -71,8 +71,8 @@ const mapBackendClaim = (claim) => ({
   reviewRemarks: claim.reviewRemarks || claim.remarks || '',
   assignedOfficer: claim.assignedOfficer || '',
   landParcelId: claim.landParcelId || '',
-  component: claim.scheme || claim.component || '—',
-  scheme_name: claim.scheme || claim.scheme_name || '—',
+  component: claim.scheme || claim.component || '-',
+  scheme_name: claim.scheme || claim.scheme_name || '-',
   scheme_category: claim.scheme_category || 'General',
   application_date: claim.applicationDate || claim.application_date || '2026-05-01',
   auditTrail: claim.auditTrail || [],
@@ -302,7 +302,7 @@ const Applications = () => {
               <div className="p-4 flex justify-between items-start" style={{ cursor: 'pointer' }} onClick={() => setSelectedApp(app)}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="flex items-center gap-2 mb-1">
-                    <h2 className="text-md fw-bold" style={{ margin: 0 }}>{app.farmer_id || '—'}</h2>
+                    <h2 className="text-md fw-bold" style={{ margin: 0 }}>{app.farmer_id || '-'}</h2>
                     {app.assignedOfficer && (
                       <span className="badge badge-grey" style={{ fontSize: '10px' }}>{t('Officer', lang)}: {app.assignedOfficer}</span>
                     )}
@@ -319,8 +319,8 @@ const Applications = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-muted mt-1" style={{ margin: 0 }}>{app.component || '—'}</p>
-                  <p className="text-xs text-muted" style={{ margin: '2px 0 0' }}>{app.scheme_name || '—'}</p>
+                  <p className="text-sm text-muted mt-1" style={{ margin: 0 }}>{app.component || '-'}</p>
+                  <p className="text-xs text-muted" style={{ margin: '2px 0 0' }}>{app.scheme_name || '-'}</p>
                   {(showGeo || showRainfall || showDuplicate) && (
                     <div className="flex gap-2 mt-2" style={{ flexWrap: 'wrap' }}>
                       {showGeo && (
@@ -377,13 +377,13 @@ const Applications = () => {
 
               <div className="flex justify-between items-center" style={{ borderTop: '1px solid var(--outline-variant)', backgroundColor: 'var(--surface-low)', padding: '8px 16px' }}>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span className="badge badge-grey" style={{ fontSize: '10px' }}>{app.scheme_category || '—'}</span>
+                  <span className="badge badge-grey" style={{ fontSize: '10px' }}>{app.scheme_category || '-'}</span>
                   {app.landParcelId && (
                     <span style={{ fontSize: '10px', color: '#717972' }}>{t('Parcel', lang)}: {app.landParcelId}</span>
                   )}
                 </div>
                 <span className={`text-xs ${app.priority === 'HIGH' ? 'text-error fw-bold' : 'text-muted'}`}>
-                  {app.daysSince}{t('d ago', lang)} • {app.application_date || '—'}
+                  {app.daysSince}{t('d ago', lang)} • {app.application_date || '-'}
                 </span>
               </div>
             </article>

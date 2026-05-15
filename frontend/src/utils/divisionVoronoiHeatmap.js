@@ -1,5 +1,5 @@
-/**
- * Division-level command maps — Voronoi micro-cells per division polygon, each
+﻿/**
+ * Division-level command maps - Voronoi micro-cells per division polygon, each
  * clipped to that division’s ring (same pattern as `districtVoronoiHeatmap.js`
  * and TAO mandal Voronoi). Heat never crosses a division boundary.
  */
@@ -190,7 +190,7 @@ function voronoiCellsForOneDivision(divisionFeature, mapMode) {
 }
 
 /**
- * @param {import('geojson').FeatureCollection | null} divisionFc — features with kind:division (recommended)
+ * @param {import('geojson').FeatureCollection | null} divisionFc - features with kind:division (recommended)
  * @param {string} mapMode
  * @returns {import('geojson').FeatureCollection | null}
  */

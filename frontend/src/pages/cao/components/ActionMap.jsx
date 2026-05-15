@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -41,7 +41,7 @@ const circleBoundaryStyle = () => ({
   dashArray: '6 5',
 });
 
-/** Malegaon Outer + Central AC segments (Nashik) — distinct from Baramati on the same CAO map. */
+/** Malegaon Outer + Central AC segments (Nashik) - distinct from Baramati on the same CAO map. */
 const malegaonBoundaryStyle = () => ({
   color: '#B45309',
   weight: 2,

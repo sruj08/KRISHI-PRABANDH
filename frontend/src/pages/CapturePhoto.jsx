@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+﻿import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../hooks/useToast.jsx';
@@ -36,7 +36,7 @@ const CapturePhoto = () => {
     } catch (err) {
       console.error('Camera error:', err);
       setCameraError(true);
-      addToast(t('Camera not available — use file picker instead', lang), 'error');
+      addToast(t('Camera not available - use file picker instead', lang), 'error');
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -77,7 +77,7 @@ const CapturePhoto = () => {
 
     canvas.toBlob(blob => {
       if (!blob) {
-        addToast(t('Could not capture frame — try again', lang), 'error');
+        addToast(t('Could not capture frame - try again', lang), 'error');
         setIsCapturing(false);
         return;
       }
@@ -124,7 +124,7 @@ const CapturePhoto = () => {
       return;
     }
     if (!applicationId) {
-      addToast(t('No application selected — go back and select one', lang), 'error');
+      addToast(t('No application selected - go back and select one', lang), 'error');
       return;
     }
 
@@ -148,7 +148,7 @@ const CapturePhoto = () => {
       navigate('/applications');
     } catch (err) {
       console.error('Upload error:', err);
-      addToast(err.message || t('Upload failed — please retry', lang), 'error');
+      addToast(err.message || t('Upload failed - please retry', lang), 'error');
     } finally {
       setIsUploading(false);
     }

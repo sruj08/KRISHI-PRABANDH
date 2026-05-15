@@ -1,4 +1,4 @@
-/** Mock data for Scheme Analytics — Baramati Taluka (Pune) · Kharif 2025 · revenue circle aggregates. */
+﻿/** Mock data for Scheme Analytics - Baramati Taluka (Pune) · Kharif 2025 · revenue circle aggregates. */
 
 export const SEASON = 'Kharif 2025';
 export const DISTRICT = 'Pune';
@@ -148,7 +148,7 @@ export const MONTHLY_TREND = [
 ];
 
 export const AI_ALERTS = [
-  { id: 1, severity: 'high', text: 'Duplicate survey number cluster in Baramati (City/Rural) — 4 applications.', time: '2 hrs ago' },
+  { id: 1, severity: 'high', text: 'Duplicate survey number cluster in Baramati (City/Rural) - 4 applications.', time: '2 hrs ago' },
   { id: 2, severity: 'high', text: 'Same bank account used in 3 claims in Malegaon circle.', time: '5 hrs ago' },
   { id: 3, severity: 'medium', text: 'High claim volume from a single village in Pandare circle.', time: 'Yesterday' },
   { id: 4, severity: 'medium', text: 'Repeated Aadhaar failure pattern in Loni Bhapkar / Shirsuphal.', time: '2 days ago' },
@@ -156,7 +156,7 @@ export const AI_ALERTS = [
 ];
 
 export const RAINFALL_INSIGHTS = [
-  { circle: 'Loni Bhapkar / Shirsuphal', rainfall: 62, note: 'Lowest rainfall in taluka — stress on bajra and pulses', crop: 'Bajra / Pulses', claims: 178, tone: 'warn' },
+  { circle: 'Loni Bhapkar / Shirsuphal', rainfall: 62, note: 'Lowest rainfall in taluka - stress on bajra and pulses', crop: 'Bajra / Pulses', claims: 178, tone: 'warn' },
   { circle: 'Pandare', rainfall: 66, note: 'Central belt; onion claims elevated vs prior season', crop: 'Onion / Vegetables', claims: 268, tone: 'warn' },
   { circle: 'Baramati (City/Rural)', rainfall: 72, note: 'Highest rainfall band; sugarcane approvals steady', crop: 'Sugarcane', claims: 512, tone: 'info' },
   { circle: 'Morgaon', rainfall: 70, note: 'Near-normal monsoon; religious-fair season footfall claims monitored', crop: 'Sugarcane', claims: 176, tone: 'info' },

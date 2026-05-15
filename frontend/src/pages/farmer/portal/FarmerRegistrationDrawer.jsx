@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+﻿import React, { Suspense, lazy } from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useFarmerRegistration } from '../../../context/FarmerRegistrationContext';
 
@@ -29,7 +29,7 @@ export default function FarmerRegistrationDrawer() {
               {t('Continue registration')}
             </p>
             <p className="mt-1 text-[0.75rem] leading-snug" style={{ color: '#5c6560' }}>
-              {t('Complete steps here — your dashboard stays open behind this panel.')}
+              {t('Complete steps here - your dashboard stays open behind this panel.')}
             </p>
           </div>
           <button type="button" className="icon-btn-soft shrink-0" onClick={closeRegistration}>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+﻿import React, { useMemo, useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -19,7 +19,7 @@ import { DivisionKpiCard, STATUS_CHIP } from './divisionDashboardUi';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-/** Western Maharashtra centroid — Open-Meteo public API (no key). */
+/** Western Maharashtra centroid - Open-Meteo public API (no key). */
 const OPEN_METEO_URL =
   'https://api.open-meteo.com/v1/forecast?latitude=17.65&longitude=74.25&daily=precipitation_sum&forecast_days=7&timezone=Asia%2FKolkata';
 
@@ -234,12 +234,12 @@ const DivisionDynamicResources = () => {
                       <td style={{ padding: '14px 10px', fontSize: 14, fontWeight: 600, color: '#1a1c1a' }}>{r.district}</td>
                       <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.pendingSurveys.toLocaleString('en-IN')}</td>
                       <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.pendingClaims.toLocaleString('en-IN')}</td>
-                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.pendingGrievances?.toLocaleString('en-IN') ?? '—'}</td>
-                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.soilHealthTestBacklog?.toLocaleString('en-IN') ?? '—'}</td>
-                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.agriInputCouponQueue?.toLocaleString('en-IN') ?? '—'}</td>
-                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.droughtReliefPending?.toLocaleString('en-IN') ?? '—'}</td>
-                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.fieldDemoFortnight ?? '—'}</td>
-                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.mandalReviewBacklog ?? '—'}</td>
+                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.pendingGrievances?.toLocaleString('en-IN') ?? '-'}</td>
+                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.soilHealthTestBacklog?.toLocaleString('en-IN') ?? '-'}</td>
+                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.agriInputCouponQueue?.toLocaleString('en-IN') ?? '-'}</td>
+                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.droughtReliefPending?.toLocaleString('en-IN') ?? '-'}</td>
+                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.fieldDemoFortnight ?? '-'}</td>
+                      <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.mandalReviewBacklog ?? '-'}</td>
                       <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.activeFieldStaff}</td>
                       <td style={{ padding: '14px 10px', fontSize: 12, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.avgResolutionHrs}h</td>
                       <td style={{ padding: '14px 10px' }}>

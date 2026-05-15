@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+﻿import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './DivisionCrossDistrictFraud.css';
 
@@ -36,7 +36,7 @@ const CROSS_DIS_FARM_REG_JPEGS = [
 ];
 
 /**
- * Investigation cards — Maharashtra agri subsidy context only.
+ * Investigation cards - Maharashtra agri subsidy context only.
  */
 const FRAUD_CASES = [
   {
@@ -44,7 +44,7 @@ const FRAUD_CASES = [
     severity: 'P1',
     schemeTag: 'Tractor Subsidy',
     dealerTag: 'Mahalakshmi Agro Barshi',
-    title: 'Tractor subsidy — same invoice reused across districts',
+    title: 'Tractor subsidy - same invoice reused across districts',
     districts: ['Pune', 'Satara', 'Solapur'],
     narrative:
       'Same chassis number and dealer tax invoice PDF attached to multiple Farm Mechanization (tractor) subsidy claims. Dealer and invoice timestamps do not align with field verification dates.',
@@ -68,7 +68,7 @@ const FRAUD_CASES = [
     severity: 'P1',
     schemeTag: 'PM-KISAN',
     dealerTag: null,
-    title: 'PM-KISAN — shared mobile and masked Aadhaar tail cluster',
+    title: 'PM-KISAN - shared mobile and masked Aadhaar tail cluster',
     districts: ['Solapur', 'Sangli', 'Kolhapur'],
     narrative:
       'Several PM-KISAN beneficiary records show one registered mobile number across households, with repeating last-four Aadhaar pattern and inactive Aadhaar seeding failures at bank NPCI.',
@@ -109,7 +109,7 @@ const FRAUD_CASES = [
     severity: 'P2',
     schemeTag: 'Drip Irrigation',
     dealerTag: 'Sai Irrigation Pune',
-    title: 'Drip irrigation — dealer invoice burst in one window',
+    title: 'Drip irrigation - dealer invoice burst in one window',
     districts: ['Solapur', 'Pune'],
     narrative:
       'Sai Irrigation Pune issued identical line-item invoices for drip laterals; twelve claims filed within 36 hours using the same PDF from AgroCare Solapur counter series.',
@@ -132,7 +132,7 @@ const FRAUD_CASES = [
     severity: 'P1',
     schemeTag: 'PMFBY',
     dealerTag: null,
-    title: 'PMFBY — same geotagged crop-loss photo across villages',
+    title: 'PMFBY - same geotagged crop-loss photo across villages',
     districts: ['Satara', 'Pune', 'Sangli'],
     narrative:
       'Kharif soybean loss intimation photos carry identical GPS coordinates and file hash though village names differ; survey numbers on attached 7/12 excerpts do not match village cadastre.',
@@ -155,7 +155,7 @@ const FRAUD_CASES = [
     severity: 'P3',
     schemeTag: 'Soyabean Compensation',
     dealerTag: null,
-    title: 'Soyabean compensation — overlapping survey numbers on relief list',
+    title: 'Soyabean compensation - overlapping survey numbers on relief list',
     districts: ['Kolhapur', 'Sangli'],
     narrative:
       'Relief survey list for soyabean weather loss shows duplicate survey numbers mapped to two different farmer names; khata continuity broken in one case; amounts within single-taluka reconciliation.',
@@ -188,7 +188,7 @@ const RISK_BAND = ['Low', 'Low–med', 'Medium', 'High', 'Critical'];
 const districtCrispRows = (d) => [
   { label: 'AI alerts', value: String(d.alerts) },
   { label: 'Suspicious claims', value: String(d.claims) },
-  { label: 'Risk band', value: RISK_BAND[d.intensity - 1] ?? '—' },
+  { label: 'Risk band', value: RISK_BAND[d.intensity - 1] ?? '-' },
 ];
 
 const schemeCrispRows = (scheme) => {
@@ -444,7 +444,7 @@ const DivisionCrossDistrictFraud = () => {
             <h2 id="fi-heat-title" className="fi-heat__title">
               District concentration (suspicious claims · AI alerts)
             </h2>
-            <span className="fi-heat__hint">Pune division cluster — illustrative counts for desk review</span>
+            <span className="fi-heat__hint">Pune division cluster - illustrative counts for desk review</span>
           </div>
           <div className="fi-heat__row">
             {DISTRICT_HEAT.map((d) => (
@@ -637,7 +637,7 @@ const DivisionCrossDistrictFraud = () => {
                                   {row.farmRegJpeg ? 'JPEG' : 'PDF'}
                                 </a>
                               ) : (
-                                <span className="fi-case__linked-inv-dash" aria-hidden>—</span>
+                                <span className="fi-case__linked-inv-dash" aria-hidden>-</span>
                               )}
                             </span>
                           </div>

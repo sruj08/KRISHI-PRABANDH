@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+﻿import React, { useMemo, useState, useCallback } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -64,9 +64,9 @@ function compareParamDefs(t) {
 }
 
 function formatCompareCell(row, def) {
-  if (!row) return '—';
+  if (!row) return '-';
   const v = row[def.id];
-  if (v == null) return '—';
+  if (v == null) return '-';
   if (def.id === 'status') return String(v);
   if (def.id === 'fundsCr') return `₹${v}`;
   if (def.suffix) return `${v}${def.suffix}`;
@@ -326,8 +326,8 @@ const DivisionDistrictPerformance = () => {
               <thead>
                 <tr style={{ background: '#fafafa', borderBottom: '1px solid #e2e3df' }}>
                   <th style={{ padding: '12px 14px', fontSize: 10, letterSpacing: '0.08em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{t('parameter')}</th>
-                  <th style={{ padding: '12px 14px', fontSize: 10, letterSpacing: '0.08em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{rowA?.district ?? '—'}</th>
-                  <th style={{ padding: '12px 14px', fontSize: 10, letterSpacing: '0.08em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{rowB?.district ?? '—'}</th>
+                  <th style={{ padding: '12px 14px', fontSize: 10, letterSpacing: '0.08em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{rowA?.district ?? '-'}</th>
+                  <th style={{ padding: '12px 14px', fontSize: 10, letterSpacing: '0.08em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{rowB?.district ?? '-'}</th>
                   <th style={{ padding: '12px 14px', fontSize: 10, letterSpacing: '0.08em', color: '#717972', textAlign: 'left', textTransform: 'uppercase', fontWeight: 700 }}>{t('delta')}</th>
                 </tr>
               </thead>
@@ -335,7 +335,7 @@ const DivisionDistrictPerformance = () => {
                 {paramDefs.filter((p) => paramsOn[p.id]).map((p, i) => {
                   const a = formatCompareCell(rowA, p);
                   const b = formatCompareCell(rowB, p);
-                  let delta = '—';
+                  let delta = '-';
                   if (p.numeric) {
                     const na = parseNumericCompare(rowA, p);
                     const nb = parseNumericCompare(rowB, p);
@@ -388,13 +388,13 @@ const DivisionDistrictPerformance = () => {
                   return (
                     <tr key={r.code}>
                       <td className="ddp-td-left" style={{ fontWeight: 600, color: '#1a1c1a' }}>{r.district}</td>
-                      <td className="ddp-td-num">{r.pendingFiles != null ? Number(r.pendingFiles).toLocaleString('en-IN') : '—'}</td>
-                      <td className="ddp-td-num">{r.avgApprovalDays != null ? `${r.avgApprovalDays} ${t('days')}` : '—'}</td>
-                      <td className="ddp-td-num">{r.surveyCompletionPct != null ? `${r.surveyCompletionPct}%` : '—'}</td>
-                      <td className="ddp-td-num">{r.escalation30d ?? '—'}</td>
-                      <td className="ddp-td-num">{r.schemeEfficiencyPct != null ? `${r.schemeEfficiencyPct}%` : '—'}</td>
-                      <td className="ddp-td-num">{r.staffUtilizationPct != null ? `${r.staffUtilizationPct}%` : '—'}</td>
-                      <td className="ddp-td-num">{r.beneficiaryThroughputPerDay != null ? `${r.beneficiaryThroughputPerDay} ${t('perDay')}` : '—'}</td>
+                      <td className="ddp-td-num">{r.pendingFiles != null ? Number(r.pendingFiles).toLocaleString('en-IN') : '-'}</td>
+                      <td className="ddp-td-num">{r.avgApprovalDays != null ? `${r.avgApprovalDays} ${t('days')}` : '-'}</td>
+                      <td className="ddp-td-num">{r.surveyCompletionPct != null ? `${r.surveyCompletionPct}%` : '-'}</td>
+                      <td className="ddp-td-num">{r.escalation30d ?? '-'}</td>
+                      <td className="ddp-td-num">{r.schemeEfficiencyPct != null ? `${r.schemeEfficiencyPct}%` : '-'}</td>
+                      <td className="ddp-td-num">{r.staffUtilizationPct != null ? `${r.staffUtilizationPct}%` : '-'}</td>
+                      <td className="ddp-td-num">{r.beneficiaryThroughputPerDay != null ? `${r.beneficiaryThroughputPerDay} ${t('perDay')}` : '-'}</td>
                       <td className="ddp-td-num" style={{ fontWeight: 600 }}>₹{r.fundsCr}</td>
                       <td className="ddp-td-num">{r.pending?.toLocaleString('en-IN')}</td>
                       <td className="ddp-td-left">
