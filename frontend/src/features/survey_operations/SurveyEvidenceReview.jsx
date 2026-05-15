@@ -166,6 +166,20 @@ const SurveyEvidenceReview = ({ survey, onBack }) => {
   }
 
   if (error && !report) {
+    const isProcessing = error.toLowerCase().includes('not found') || error.includes('404') || survey?.status === 'PROCESSING';
+    
+    if (isProcessing) {
+      return (
+        <div className="flex flex-col h-full bg-surface font-body text-gray-900 items-center justify-center">
+          <div className="flex flex-col items-center gap-4 text-gray-500 font-mono">
+            <span className="material-symbols-outlined text-4xl animate-spin text-primary">model_training</span>
+            <span className="text-sm text-primary font-bold">PROCESSING AI VERIFICATION</span>
+            <span className="text-xs text-gray-500">The report is currently being analyzed by AI. Please wait...</span>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col h-full bg-surface font-body text-gray-900 items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-gray-500 font-mono">
