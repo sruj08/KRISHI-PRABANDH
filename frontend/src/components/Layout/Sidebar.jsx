@@ -113,7 +113,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { to: '/cao/field-operations', icon: 'agriculture', label: 'Field Operations' },
         ]},
         { id: 'cao_analytics', flat: true, label: 'ANALYTICS', items: [
-          { to: '/cao/rain-crop-stress', icon: 'water_drop', label: 'Rain & Crop Stress Desk' },
+          { to: '/cao/rain-crop-stress', icon: 'water_drop', label: 'Rain & Crop Stress' },
           { to: '/cao/pmfby', icon: 'verified_user', label: 'PMFBY Monitoring' },
           { to: '/cao/grievances', icon: 'gavel', label: 'Grievance Command' },
           { to: '/cao/audit', icon: 'history', label: 'Audit Logs' },
