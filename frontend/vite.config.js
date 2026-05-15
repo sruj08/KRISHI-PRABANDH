@@ -74,8 +74,12 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
+      // FastAPI GR assistant (same repo) — must be before generic /surveys → legacy :5000
+      '/surveys/gr-assistant': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
       '/api': {
-        target: 'http://localhost:5000',
         target: 'http://localhost:5000',
         changeOrigin: true,
       },

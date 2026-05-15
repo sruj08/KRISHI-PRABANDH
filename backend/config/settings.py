@@ -12,7 +12,10 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "KRISHI-PRABANDH API"
-    debug: bool = False
+    debug: bool = Field(
+        default=True,
+        description="When True, unauthenticated survey/GR routes use a synthetic Krushi Sahayak (local UI). Set False in production.",
+    )
 
     jwt_secret: str = Field(
         default="local-dev-only-jwt-secret-change-me-32chars-min",

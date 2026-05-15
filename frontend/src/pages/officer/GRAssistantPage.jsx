@@ -1,9 +1,21 @@
 import React, { useRef, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+
+/** Dev: Vite proxies `/api/gr` → FastAPI :8000. Prod: set VITE_API_ORIGIN. */
+function grParseUrl() {
+  const origin = typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_ORIGIN
+    ? String(import.meta.env.VITE_API_ORIGIN).replace(/\/$/, '')
+    : '';
+  if (origin) return `${origin}/surveys/gr-assistant`;
+  return '/surveys/gr-assistant';
+}
 
 const GRAssistantPage = () => {
+  const { token } = useAuth();
   const inputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
 
   const onPick = (f) => {
@@ -14,6 +26,7 @@ const GRAssistantPage = () => {
     }
     setFile(f);
     setResult(null);
+    setError(null);
   };
 
   const onDrop = (e) => {
@@ -22,35 +35,55 @@ const GRAssistantPage = () => {
     onPick(f);
   };
 
-  const runExtract = () => {
+  const runExtract = async () => {
     if (!file) return;
     setBusy(true);
-    // Simulate AI extraction
-    setTimeout(() => {
-      setResult({
-        scheme_name: 'PM-KISAN Update 2026',
-        eligibility: 'All farmers with less than 2ha land.',
-        deadline: '31/05/2026',
-        subsidy_percentage: 'N/A',
-        required_documents: 'Aadhaar Card\nBank Passbook\n7/12 Extract',
-        conditions: 'Must have active bank account linked to Aadhaar.',
-        confidence: 94
-      });
+    setError(null);
+    setResult(null);
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    const headers = {};
+    if (token) headers.Authorization = `Bearer ${token}`;
+    try {
+      const res = await fetch(grParseUrl(), { method: 'POST', body: fd, headers });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.success === false) {
+        const msg = body.error || body.detail || body.message || res.statusText || 'Request failed';
+        setError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+        return;
+      }
+      const data = body.data;
+      if (!data) {
+        setError('Unexpected response from server');
+        return;
+      }
+      setResult(data);
+    } catch (err) {
+      setError(err?.message || String(err));
+    } finally {
       setBusy(false);
-    }, 1500);
+    }
   };
 
   const clearAll = () => {
     setFile(null);
     setResult(null);
+    setError(null);
     if (inputRef.current) inputRef.current.value = '';
   };
 
+  const f = result?.fields || {};
+  const keywords = result?.keywords || [];
+  const farmers = result?.eligible_farmers || [];
+  const inferred = result?.inferred_filters || {};
+
   return (
-    <div style={{ padding: '24px 32px' }}>
+    <div style={{ padding: '24px 32px', maxWidth: 1100, margin: '0 auto' }}>
       <header style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a1c1a', margin: '0 0 8px' }}>GR Assistant</h1>
-        <p style={{ margin: 0, color: '#717972', fontSize: '0.95rem' }}>Upload Government Resolutions (PDF) to get AI-generated highlights in simple language.</p>
+        <p style={{ margin: 0, color: '#717972', fontSize: '0.95rem' }}>
+          Upload a Government Resolution (PDF). The server extracts text, pulls structured fields using keywords, and lists farmers from the local registry who likely match land and category rules mentioned in the GR.
+        </p>
       </header>
 
       <div style={{ background: '#fff', border: '1px solid #e2e9e6', borderRadius: '8px', padding: '32px', marginBottom: '24px' }}>
@@ -77,15 +110,15 @@ const GRAssistantPage = () => {
             background: '#f8f9f8',
             transition: 'background 0.2s',
           }}
-          onMouseOver={(e) => e.currentTarget.style.background = '#f3f4f0'}
-          onMouseOut={(e) => e.currentTarget.style.background = '#f8f9f8'}
+          onMouseOver={(e) => { e.currentTarget.style.background = '#f3f4f0'; }}
+          onMouseOut={(e) => { e.currentTarget.style.background = '#f8f9f8'; }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: '48px', color: '#1f4d36' }}>
             upload_file
           </span>
           <div style={{ marginTop: '16px', fontWeight: 600, color: '#1a1c1a', fontSize: '1.1rem' }}>Drag & drop or click to upload PDF</div>
           <div style={{ fontSize: '0.85rem', color: '#717972', marginTop: '8px' }}>
-            Maximum file size: 10 MB
+            Text-based PDFs work best. Scanned pages need full OCR on the server.
           </div>
           {file && (
             <div style={{ marginTop: '16px', fontSize: '0.95rem', color: '#1f4d36', fontWeight: 600, background: '#eef0eb', display: 'inline-block', padding: '8px 16px', borderRadius: '4px' }}>
@@ -94,72 +127,170 @@ const GRAssistantPage = () => {
           )}
         </div>
 
-        <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center' }}>
-          <button 
-            type="button" 
-            disabled={!file || busy} 
+        <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center', gap: 12 }}>
+          <button
+            type="button"
+            disabled={!file || busy}
             onClick={runExtract}
-            style={{ 
-              padding: '12px 24px', background: !file || busy ? '#e2e9e6' : '#1f4d36', 
-              color: !file || busy ? '#9eaa9f' : '#fff', border: 'none', borderRadius: '6px', 
-              fontWeight: 600, fontSize: '1rem', cursor: !file || busy ? 'not-allowed' : 'pointer',
-              display: 'flex', alignItems: 'center', gap: '8px'
+            style={{
+              padding: '12px 24px',
+              background: !file || busy ? '#e2e9e6' : '#1f4d36',
+              color: !file || busy ? '#9eaa9f' : '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: !file || busy ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
             }}
           >
             {busy ? (
               <>
                 <span className="material-symbols-outlined" style={{ animation: 'spin 1s linear infinite' }}>hourglass_empty</span>
-                Processing...
+                Processing…
               </>
             ) : (
-              'Extract Highlights'
+              <>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>document_scanner</span>
+                Extract from GR (backend)
+              </>
             )}
           </button>
         </div>
       </div>
 
+      {error && (
+        <div style={{ background: '#fde8e8', border: '1px solid #f5c6c6', color: '#b00020', padding: 14, borderRadius: 8, marginBottom: 20, fontSize: 14 }}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
       {result && (
         <div style={{ background: '#fff', border: '1px solid #e2e9e6', borderRadius: '8px', padding: '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #e2e9e6', paddingBottom: '16px' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1c1a', margin: 0 }}>GR Summary</h2>
-            <div style={{ fontSize: '0.85rem', color: '#1f4d36', fontWeight: 600, background: '#eef0eb', padding: '4px 12px', borderRadius: '12px' }}>
-              OCR Confidence: {result.confidence}%
-            </div>
-          </div>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-            <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Scheme Name</div>
-              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{result.scheme_name}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Last Date</div>
-              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{result.deadline}</div>
-            </div>
-            <div style={{ gridColumn: 'span 2' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Eligibility</div>
-              <div style={{ fontSize: '1rem', color: '#414943' }}>{result.eligibility}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Required Documents</div>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: '#414943', fontSize: '1rem' }}>
-                {result.required_documents.split('\n').map((doc, idx) => <li key={idx}>{doc}</li>)}
-              </ul>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Important Conditions</div>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: '#414943', fontSize: '1rem' }}>
-                {result.conditions.split('\n').map((cond, idx) => <li key={idx}>{cond}</li>)}
-              </ul>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #e2e9e6', paddingBottom: '16px', flexWrap: 'wrap', gap: 12 }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1a1c1a', margin: 0 }}>GR summary</h2>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.85rem', color: '#1f4d36', fontWeight: 600, background: '#eef0eb', padding: '4px 12px', borderRadius: '12px' }}>
+                Confidence: {result.confidence}%
+              </span>
+              <span style={{ fontSize: '0.8rem', color: '#717972' }}>
+                Engine: {result.engine} · {result.text_length?.toLocaleString?.() ?? result.text_length} chars
+              </span>
             </div>
           </div>
 
-          <div style={{ marginTop: '32px', textAlign: 'center' }}>
-            <button 
+          {keywords.length > 0 && (
+            <section style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: 10 }}>Keyword highlights</div>
+              <ul style={{ margin: 0, paddingLeft: 20, color: '#414943', fontSize: '0.92rem', lineHeight: 1.5 }}>
+                {keywords.map((k, idx) => (
+                  <li key={idx} style={{ marginBottom: 6 }}>{k}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          <section style={{ marginBottom: 24, fontSize: 13, color: '#414943', background: '#f8faf8', padding: 12, borderRadius: 8, border: '1px solid #e2e9e6' }}>
+            <strong>Inferred rules for farmer matching:</strong>
+            {' '}
+            {inferred.land_cap_ha != null && inferred.land_cap_ha !== undefined ? (
+              <span>Land cap ≤ {inferred.land_cap_ha} ha. </span>
+            ) : (
+              <span>No hectare cap parsed from GR text. </span>
+            )}
+            {Array.isArray(inferred.reserved_categories) && inferred.reserved_categories.length > 0 ? (
+              <span>Reserved categories mentioned: {inferred.reserved_categories.join(', ')}.</span>
+            ) : (
+              <span>No SC/ST/OBC-only wording detected — category filter not applied.</span>
+            )}
+          </section>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px', marginBottom: 28 }}>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Scheme / subject</div>
+              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{f.scheme_name || '—'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Last date / deadline</div>
+              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{f.deadline || '—'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Subsidy / %</div>
+              <div style={{ fontSize: '1rem', color: '#1a1c1a', fontWeight: 600 }}>{f.subsidy_percentage || '—'}</div>
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Eligibility (extracted)</div>
+              <div style={{ fontSize: '1rem', color: '#414943', lineHeight: 1.5 }}>{f.eligibility || '—'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Required documents</div>
+              <div style={{ fontSize: '0.95rem', color: '#414943', whiteSpace: 'pre-wrap' }}>{f.required_documents || '—'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#9eaa9f', textTransform: 'uppercase', marginBottom: '8px' }}>Conditions</div>
+              <div style={{ fontSize: '0.95rem', color: '#414943', whiteSpace: 'pre-wrap' }}>{f.conditions || '—'}</div>
+            </div>
+          </div>
+
+          <section style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1a1c1a', marginBottom: 12 }}>
+              Eligible farmers ({result.eligible_count ?? farmers.length})
+            </div>
+            <p style={{ fontSize: 13, color: '#717972', margin: '0 0 12px' }}>
+              Matched from <code style={{ background: '#f3f4f0', padding: '2px 6px', borderRadius: 4 }}>farmer_profiles.json</code> + land totals from <code style={{ background: '#f3f4f0', padding: '2px 6px', borderRadius: 4 }}>farms.json</code> using rules inferred above.
+            </p>
+            <div style={{ overflowX: 'auto', border: '1px solid #e2e9e6', borderRadius: 8 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#f3f4f0', textAlign: 'left' }}>
+                    <th style={{ padding: '10px 12px', fontWeight: 700, color: '#37474f' }}>Name</th>
+                    <th style={{ padding: '10px 12px', fontWeight: 700, color: '#37474f' }}>ID</th>
+                    <th style={{ padding: '10px 12px', fontWeight: 700, color: '#37474f' }}>Category</th>
+                    <th style={{ padding: '10px 12px', fontWeight: 700, color: '#37474f' }}>Total land (ha)</th>
+                    <th style={{ padding: '10px 12px', fontWeight: 700, color: '#37474f' }}>Phone</th>
+                    <th style={{ padding: '10px 12px', fontWeight: 700, color: '#37474f' }}>Why included</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {farmers.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ padding: 16, color: '#717972' }}>No farmers matched the inferred rules.</td>
+                    </tr>
+                  ) : farmers.map((row) => (
+                    <tr key={row.farmer_id} style={{ borderTop: '1px solid #eceee9' }}>
+                      <td style={{ padding: '10px 12px', fontWeight: 600 }}>{row.name}</td>
+                      <td style={{ padding: '10px 12px' }}>{row.farmer_id_external}</td>
+                      <td style={{ padding: '10px 12px' }}>{row.category}</td>
+                      <td style={{ padding: '10px 12px' }}>{row.total_land_ha}</td>
+                      <td style={{ padding: '10px 12px' }}>{row.phone}</td>
+                      <td style={{ padding: '10px 12px', color: '#515851', maxWidth: 280 }}>
+                        {(row.match_reasons || []).join(' · ')}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {result.text_preview && (
+            <details style={{ marginBottom: 16 }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#37474f' }}>Raw text preview (first 3500 chars)</summary>
+              <pre style={{ marginTop: 12, padding: 12, background: '#f8f9f8', borderRadius: 8, overflow: 'auto', fontSize: 11, whiteSpace: 'pre-wrap', maxHeight: 240 }}>
+                {result.text_preview}
+              </pre>
+            </details>
+          )}
+
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <button
+              type="button"
               onClick={clearAll}
               style={{ background: 'none', border: '1px solid #e2e9e6', color: '#414943', padding: '10px 20px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
             >
-              Clear & Upload Another GR
+              Clear & upload another GR
             </button>
           </div>
         </div>

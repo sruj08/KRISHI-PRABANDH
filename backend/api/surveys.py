@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, List, Optional
 from uuid import UUID
 
@@ -9,6 +11,7 @@ from config.constants import (
     DISTRICT_AUTHORITY,
     FARMER,
     KRUSHI_SAHAYAK,
+    ROLE_SAHAYAK,
     STATE_AUTHORITY,
     TALUKA_AUTHORITY,
     VILLAGE_AUTHORITY,
@@ -17,7 +20,6 @@ from db.repositories.farm_repository import FarmRepository
 from middleware.auth import get_current_user
 from schemas.auth import JwtUserClaims
 from schemas.survey import SurveyCreate
-from services.evidence_ocr_service import EvidenceOCRService
 from services.survey_service import SurveyService
 from utils.evidence_geo import extract_geo_context
 from utils.response import failure, success
@@ -113,7 +115,7 @@ async def attach_evidence(
     file: UploadFile = File(...),
     document_type: Optional[str] = Form(default=None),
     user: JwtUserClaims = Depends(get_survey_actor),
-    evidence_ocr_service: EvidenceOCRService = Depends(get_evidence_ocr_service),
+    evidence_ocr_service: Any = Depends(get_evidence_ocr_service),
 ):
     """
     Attach evidence file to a survey. OCR runs server-side; response is officer-safe
@@ -168,18 +170,23 @@ async def attach_evidence(
 async def gr_assistant(
     file: UploadFile = File(...),
     user: JwtUserClaims = Depends(get_survey_actor),
-    evidence_ocr_service: EvidenceOCRService = Depends(get_evidence_ocr_service),
 ):
-    """GR PDF upload for Krishi Sahayak — structured GR fields only (no raw OCR text)."""
-    if user.role != KRUSHI_SAHAYAK:
+    """GR PDF upload for Krishi Sahayak — PDF text + keyword summary + eligible farmers (local registry)."""
+    if user.role not in (ROLE_SAHAYAK, KRUSHI_SAHAYAK, "officer"):
         raise HTTPException(status_code=403, detail="Insufficient permissions for this operation")
+    if not file.filename:
+        return failure("Uploaded file must include a filename")
     raw_bytes = await file.read()
-    try:
-        result = await evidence_ocr_service.process_gr_document(
-            file_bytes=raw_bytes,
-            filename=file.filename or "gr.pdf",
-            uploaded_by=user.sub,
-        )
-    except ValueError as e:
-        return failure(str(e), status_code=400)
-    return success("GR insights", result)
+    if not raw_bytes:
+        return failure("Uploaded file is empty")
+
+    from services.gr_assistant_service import process_gr_pdf
+
+    result = process_gr_pdf(raw_bytes)
+    if not result.get("ok"):
+        code = result.get("error") or "failed"
+        status = 503 if code == "missing_dependency" else 422 if code == "no_text" else 400
+        return failure(result.get("detail", "GR parse failed"), status_code=status)
+
+    result["actor_sub"] = user.sub
+    return success("GR parsed", result)
