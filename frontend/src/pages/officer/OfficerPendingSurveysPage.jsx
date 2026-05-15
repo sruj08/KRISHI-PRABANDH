@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { APPLICATION_REVIEW } from '../../mock/officer-operations';
+import React, { useState, useEffect } from 'react';
 
 const THUMB = { width: '80px', height: '100px', background: '#e2e9e6', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 };
 
@@ -24,8 +23,52 @@ const ActionBtn = ({ onClick, variant = 'ghost', children }) => {
 };
 
 const OfficerPendingSurveysPage = () => {
-  const [selectedApp, setSelectedApp] = useState(APPLICATION_REVIEW[0] || null);
+  const [surveys, setSurveys] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedApp, setSelectedApp] = useState(null);
   const [modalAction, setModalAction] = useState(null);
+
+  useEffect(() => {
+    const fetchSurveys = async () => {
+      try {
+        const res = await fetch('/api/surveys/queue');
+        const data = await res.json();
+        if (data.success) {
+          const mappedSurveys = data.data.map(s => ({
+            id: s.id,
+            farmer: s.farmerName || s.farmerId || 'Unknown Farmer',
+            scheme: s.damageType || s.cropType || 'Crop Damage',
+            village: s.village || 'Unknown Village',
+            stage: s.workflowStage || s.status || 'PROCESSING',
+            daysOpen: Math.floor((new Date() - new Date(s.createdAt)) / (1000 * 60 * 60 * 24)) || 0,
+            priority: s.severity === 'Critical' || s.severity === 'High' ? 'HIGH' : 'MEDIUM',
+            summary: s.aiRemarks || s.description || 'Survey submitted and processing.',
+            raw: s
+          }));
+          setSurveys(mappedSurveys);
+          
+          // Only auto-select if nothing is selected or the selected app is no longer in the list
+          setSelectedApp(prev => {
+            if (!prev && mappedSurveys.length > 0) return mappedSurveys[0];
+            const stillExists = mappedSurveys.find(m => m.id === prev?.id);
+            return stillExists || (mappedSurveys.length > 0 ? mappedSurveys[0] : null);
+          });
+        } else {
+          setError(data.error || 'Failed to load surveys');
+        }
+      } catch (err) {
+        console.error('Error fetching surveys:', err);
+        setError('Network error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSurveys();
+    const interval = setInterval(fetchSurveys, 10000); // 10s poll for real-time visibility
+    return () => clearInterval(interval);
+  }, []);
 
   const confirmAction = () => {
     alert(`Successfully processed action: ${modalAction} for ${selectedApp?.id}`);
@@ -56,14 +99,19 @@ const OfficerPendingSurveysPage = () => {
             Pending Queue
           </h2>
           <p style={{ margin: 0, fontSize: '0.8125rem', color: '#717972' }}>
-            {APPLICATION_REVIEW.length} items require review
+            {loading ? 'Loading...' : `${surveys.length} items require review`}
           </p>
         </div>
 
         {/* Queue list */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
-          {APPLICATION_REVIEW.map((app) => {
-            const isActive = selectedApp?.id === app.id;
+          {loading && surveys.length === 0 ? (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#717972' }}>Loading surveys...</div>
+          ) : error ? (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#ba1a1a' }}>{error}</div>
+          ) : (
+            surveys.map((app) => {
+              const isActive = selectedApp?.id === app.id;
             return (
               <div
                 key={app.id}
@@ -98,11 +146,12 @@ const OfficerPendingSurveysPage = () => {
                   background: app.priority === 'HIGH' ? '#fff0ef' : '#eef0eb',
                   color: app.priority === 'HIGH' ? '#ba1a1a' : '#414943',
                 }}>
-                  AI: {app.stage}
+                  Status: {app.stage}
                 </span>
               </div>
             );
-          })}
+          })
+          )}
         </div>
       </div>
 
