@@ -52,8 +52,9 @@ const OfficerPendingSurveysPage = () => {
                     "cropExtent": "~8.0 of 12.0 Hectares",
                     "farmerComments": "Heavy winds and rain damaged the entire field.",
                     "media": [
-                        {"type": "image", "url": "https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?auto=format&fit=crop&q=80&w=400", "lat": "18.4580", "lon": "73.8513"},
-                        {"type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "lat": "18.4581", "lon": "73.8514"}
+                        {"type": "video", "url": "/mock-docs/videos/vid1.mp4", "lat": "18.4580", "lon": "73.8513"},
+                        {"type": "image", "url": "/mock-docs/crops/crop1.jpg", "lat": "18.4580", "lon": "73.8513"},
+                        {"type": "image", "url": "/mock-docs/crops/crop2.jpg", "lat": "18.4581", "lon": "73.8514"}
                     ],
                     "documents": [
                         {"name": "Claim_Form.pdf"},
@@ -74,7 +75,9 @@ const OfficerPendingSurveysPage = () => {
                     "cropExtent": "~4.5 of 10.0 Hectares",
                     "farmerComments": "Lack of rain has ruined the crops.",
                     "media": [
-                        {"type": "image", "url": "https://images.unsplash.com/photo-1584485509930-7411bc215037?auto=format&fit=crop&q=80&w=400", "lat": "19.0760", "lon": "72.8777"}
+                        {"type": "video", "url": "/mock-docs/videos/vid2.mp4", "lat": "19.0760", "lon": "72.8777"},
+                        {"type": "image", "url": "/mock-docs/crops/crop3.jpg", "lat": "19.0760", "lon": "72.8777"},
+                        {"type": "image", "url": "/mock-docs/crops/crop4.jpg", "lat": "19.0761", "lon": "72.8778"}
                     ],
                     "documents": [
                         {"name": "Survey_Report.pdf"}
@@ -94,8 +97,9 @@ const OfficerPendingSurveysPage = () => {
                     "cropExtent": "~6.5 of 10.12 Hectares",
                     "farmerComments": "\"standing water caused complete lodging of Paddy crop\"",
                     "media": [
-                        {"type": "image", "url": "https://images.unsplash.com/photo-1473655584856-f08e4210a54d?auto=format&fit=crop&q=80&w=400", "lat": "18.5204", "lon": "73.8567"},
-                        {"type": "image", "url": "https://images.unsplash.com/photo-1468276311594-df7cb65d8df6?auto=format&fit=crop&q=80&w=400", "lat": "18.5205", "lon": "73.8568"}
+                        {"type": "video", "url": "/mock-docs/videos/vid3.mp4", "lat": "18.5204", "lon": "73.8567"},
+                        {"type": "image", "url": "/mock-docs/crops/crop5.jpg", "lat": "18.5204", "lon": "73.8567"},
+                        {"type": "image", "url": "/mock-docs/crops/crop6.jpg", "lat": "18.5205", "lon": "73.8568"}
                     ],
                     "documents": [
                         {"name": "Land_Record.pdf"},
