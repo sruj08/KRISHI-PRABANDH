@@ -11,12 +11,12 @@ const OfficerFarmerRegistryPage = () => {
     if (s) {
       list = list.filter(
         (f) =>
-          f.name.toLowerCase().includes(s) ||
-          f.aadhaarLast4.includes(s) ||
-          f.mobile.includes(s) ||
-          f.surveyNo.toLowerCase().includes(s) ||
-          f.village.toLowerCase().includes(s) ||
-          f.appId.toLowerCase().includes(s),
+          (f.name || '').toLowerCase().includes(s) ||
+          (f.aadhaarLast4 || '').includes(s) ||
+          (f.mobile || '').includes(s) ||
+          (f.surveyNo || '').toLowerCase().includes(s) ||
+          (f.village || '').toLowerCase().includes(s) ||
+          (f.appId || '').toLowerCase().includes(s),
       );
     }
     return list;
@@ -76,8 +76,8 @@ const OfficerFarmerRegistryPage = () => {
                 <td style={{ padding: '16px' }}>
                   <span style={{ 
                     padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600,
-                    background: f.verification.includes('Pending') ? '#fff0ef' : '#eef0eb',
-                    color: f.verification.includes('Pending') ? '#ba1a1a' : '#414943'
+                    background: (f.verification || '').includes('Pending') ? '#fff0ef' : '#eef0eb',
+                    color: (f.verification || '').includes('Pending') ? '#ba1a1a' : '#414943'
                   }}>
                     {f.verification}
                   </span>
