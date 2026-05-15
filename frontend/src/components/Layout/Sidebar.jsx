@@ -189,7 +189,15 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar brand header (only visible on mobile/tablet overlay) */}
       <div className="flex items-center gap-2 px-4 py-4 border-b border-[#e2e9e6] lg:hidden shrink-0">
-        <span className="material-symbols-outlined text-[20px]" style={{ color: '#1f4d36' }}>public</span>
+        <img
+          src="/krishi-logo-128.webp"
+          alt="Krishi Prabandh"
+          width="26"
+          height="26"
+          style={{ width: 26, height: 26, objectFit: 'contain', display: 'block' }}
+          loading="eager"
+          decoding="async"
+        />
         <span className="font-bold text-[13px] tracking-tight text-[#1a1c1a]">Krishi Prabandh</span>
         <button
           className="ml-auto icon-btn-soft"
