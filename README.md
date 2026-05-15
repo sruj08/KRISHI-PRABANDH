@@ -1,113 +1,71 @@
-﻿# KrishiPrabandh - Agricultural Scheme Management Platform
+<p align="center">
+  <img src="./logo/KRISHI_PRABANDH_LOGO.png" width="120" alt="Krishi Prabandh Logo" />
+</p>
 
-> A full-stack field operations and scheme processing platform for Maharashtra Government agricultural officers.
+<h1 align="center">Krishi Prabandh Web Portal</h1>
 
----
+<p align="center">
+  <strong>Agricultural Scheme Management & Officer Dashboard</strong>
+</p>
 
-## Tech Stack
-
-| Layer     | Technology                              |
-|-----------|-----------------------------------------|
-| Frontend  | React 18 + Vite, Vanilla CSS            |
-| Backend   | FastAPI (Python 3.11+), Uvicorn         |
-| Data      | JSON flat-file store (`backend/data/`)  |
-| Auth      | LocalStorage-based session (mock auth)  |
-
----
-
-## Project Structure
-
-```
-KRISHI-PRABANDH/
-├── frontend/                  # React + Vite UI
-│   └── src/
-│       ├── pages/             # Route-level page components
-│       ├── components/        # Reusable UI components
-│       ├── context/           # Auth & Language context providers
-│       ├── hooks/             # Custom hooks (useToast, etc.)
-│       ├── utils/             # API client, translations, CV engine
-│       └── styles/            # Global CSS design tokens
-│
-├── backend/                   # FastAPI server
-│   ├── main.py                # App entry point + CORS config
-│   ├── routes/                # API route handlers
-│   ├── services/              # Business logic (workflow, fraud)
-│   ├── models/                # Pydantic request/response schemas
-│   ├── utils/                 # Data loader, file utilities
-│   └── data/
-│       └── applications.json  # Live application records (flat-file DB)
-│
-└── README.md
-```
+<p align="center">
+  <a href="./DETAIL.md">Technical Documentation</a> &nbsp;&bull;&nbsp;
+  <a href="../README.md">Main Project</a>
+</p>
 
 ---
 
-## Getting Started
+The **Krishi Prabandh Web Portal** is a full-stack field operations and scheme processing command center built for agricultural officers. It provides a clean, modern React 18 interface for managing incoming agricultural claims, evaluating AI-generated fraud risks, and executing field visits.
+
+---
+
+## Core Features
+
+### 📊 Applications Dashboard
+Filter, sort, and action scheme applications with live priority scoring. Officers can review claims submitted by farmers in real-time.
+
+### 🗺️ Visit Planner
+Provides a daily route for field officers, complete with risk-level tracking and post-visit state transitions (Approve / Reject).
+
+### 🚨 Fraud Alerts & Intelligence
+Automated dashboard alerts for duplicate claims and anomalous applications based on backend confidence scoring and geolocation mismatches.
+
+### 🌐 Multilingual UI
+Supports English and Marathi toggling out-of-the-box via a centralized Language Context, ensuring local officers can work in their native language.
+
+---
+
+## Quick Start
 
 ### Prerequisites
-
 - **Node.js** v18+
-- **Python** 3.11+
-- **pip** (for backend dependencies)
 
----
-
-### Backend (FastAPI)
-
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-API runs at: `http://localhost:8000`  
-Interactive docs: `http://localhost:8000/docs`
-
----
-
-### Frontend (React + Vite)
-
+### Setup Frontend (React + Vite)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-
 UI runs at: `http://localhost:5173`
 
----
-
-## Key API Endpoints
-
-| Method | Endpoint                                  | Description                        |
-|--------|-------------------------------------------|------------------------------------|
-| GET    | `/applications`                           | List all applications (filterable) |
-| GET    | `/applications/{id}`                      | Get single application             |
-| POST   | `/applications/{id}/status`               | Update application status          |
-| POST   | `/applications/{id}/upload-photo`         | Upload field photo (multipart)     |
-| GET    | `/insights/summary`                       | Dashboard summary stats            |
-| GET    | `/insights/priority`                      | Priority-ranked applications       |
-| GET    | `/insights/fraud-alerts`                  | Fraud detection results            |
-| GET    | `/logs`                                   | Audit log entries                  |
-| POST   | `/logs`                                   | Append audit log entry             |
+### Setup Backend Mock (FastAPI)
+*(Note: This repository contains an integrated mock Python FastAPI server for frontend-only testing. For the full system backend, refer to the Core Backend repository).*
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+API runs at: `http://localhost:8000`
 
 ---
 
-## Features
-
-- **Applications Dashboard** - Filter, sort, and action scheme applications with live priority scoring
-- **Visit Planner** - Field officer daily route with risk-level tracking; post-visit state transitions (Approve / Reject)
-- **Capture Photo** - Live camera capture or file-picker upload; image sent as `multipart/form-data` to backend
-- **Fraud Alerts** - Automated detection of duplicate claims and anomalous applications
-- **Advanced Tools** - CV-based document analysis engine
-- **Multilingual UI** - English / Marathi toggle via Language context
-- **Audit Logs** - Every status change and upload is recorded server-side
-
----
-
-## Default Login
+## Default Login Credentials
 
 | Role    | Username | Password |
 |---------|----------|----------|
 | Officer | `officer`| `pass`   |
 | Farmer  | `farmer` | `pass`   |
+
+---
+
+For a comprehensive breakdown of the project structure and integration details, please read [DETAIL.md](./DETAIL.md).
