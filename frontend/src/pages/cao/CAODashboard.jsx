@@ -1,118 +1,147 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { useLanguage } from '../../context/LanguageContext';
 import {
   CAO_PROFILE, CAO_KPI, TALUKAS, FIELD_ALERTS, WEATHER_SUMMARY,
 } from '../../mock/cao-mock';
 import './cao-command.css';
 
-/* ── District Map (SVG fallback — always works, no network dependency) ── */
+const RISK_STROKE = { high: '#c62828', medium: '#e65100', low: '#2e7d32' };
+const RISK_FILL = { high: '#ef5350', medium: '#ffa726', low: '#66bb6a' };
+
+const LAYER_OPACITY = {
+  rainfall: { barshi: 0.85, pandharpur: 0.55, madha: 0.45, sangola: 0.3, mohol: 0.25 },
+  crop_stress: { barshi: 0.8, pandharpur: 0.72, mohol: 0.4, sangola: 0.25, madha: 0.1 },
+  pmfby: { barshi: 0.65, pandharpur: 0.6, madha: 0.35, sangola: 0.22, mohol: 0.2 },
+  surveys: { barshi: 0.7, pandharpur: 0.5, madha: 0.2, sangola: 0.1, mohol: 0.3 },
+};
+
+const LAYER_COLOR = {
+  rainfall: '#1565c0',
+  crop_stress: '#e65100',
+  pmfby: '#6a1b9a',
+  surveys: '#2e6b3e',
+};
+
+/**
+ * Leaflet measures the container on first paint — flex/% height often resolves to 0.
+ * Invalidate after layout, then fit bounds (same pattern as ActionMap: explicit px wrapper).
+ */
+function SolapurMapLayout({ latLngs }) {
+  const map = useMap();
+  useEffect(() => {
+    const apply = () => {
+      map.invalidateSize({ animate: false });
+      if (!latLngs?.length) return;
+      const b = L.latLngBounds(latLngs.map(([la, ln]) => L.latLng(la, ln)));
+      if (b.isValid()) map.fitBounds(b, { padding: [44, 44], maxZoom: 10, animate: false });
+    };
+    const raf = requestAnimationFrame(apply);
+    const t1 = setTimeout(apply, 120);
+    const t2 = setTimeout(apply, 400);
+    window.addEventListener('resize', apply);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('resize', apply);
+    };
+  }, [map, latLngs]);
+  return null;
+}
+
+/* ── District risk map — real basemap (Leaflet) + same operational risk model as before ── */
 function DistrictMap({ talukas, activeLayer, onTalukaClick }) {
-  const riskColors = {
-    high: '#ef5350',
-    medium: '#ffa726',
-    low: '#66bb6a',
-  };
-  const layerOpacity = {
-    rainfall: { barshi: 0.85, pandharpur: 0.55, madha: 0.45, sangola: 0.30, mohol: 0.25 },
-    crop_stress: { barshi: 0.80, pandharpur: 0.72, mohol: 0.40, sangola: 0.25, madha: 0.10 },
-    pmfby: { barshi: 0.65, pandharpur: 0.60, madha: 0.35, sangola: 0.22, mohol: 0.20 },
-    surveys: { barshi: 0.70, pandharpur: 0.50, madha: 0.20, sangola: 0.10, mohol: 0.30 },
-  };
-  const layerColor = {
-    rainfall: '#1565c0',
-    crop_stress: '#e65100',
-    pmfby: '#6a1b9a',
-    surveys: '#2e6b3e',
-  };
+  const layerColor = LAYER_COLOR[activeLayer] || '#2e6b3e';
+  const layerOpacity = LAYER_OPACITY[activeLayer] || {};
 
-  const talukaById = Object.fromEntries(talukas.map(t => [t.id, t]));
-  const col = layerColor[activeLayer] || '#2e6b3e';
+  const latLngs = useMemo(
+    () => talukas.filter((t) => t.lat != null && t.lng != null).map((t) => [t.lat, t.lng]),
+    [talukas],
+  );
 
-  // Schematic SVG representation of Solapur district talukas
-  const shapes = [
-    { id: 'barshi',     label: 'Barshi',      x: 220, y: 80,  w: 160, h: 100, rx: 12 },
-    { id: 'pandharpur', label: 'Pandharpur',   x: 80,  y: 170, w: 170, h: 110, rx: 12 },
-    { id: 'madha',      label: 'Madha',        x: 260, y: 185, w: 140, h: 95,  rx: 12 },
-    { id: 'sangola',    label: 'Sangola',      x: 110, y: 285, w: 150, h: 90,  rx: 12 },
-    { id: 'mohol',      label: 'Mohol',        x: 270, y: 285, w: 120, h: 90,  rx: 12 },
-  ];
+  const center = useMemo(() => {
+    if (!latLngs.length) return [17.65, 75.55];
+    const b = L.latLngBounds(latLngs.map(([la, ln]) => L.latLng(la, ln)));
+    const c = b.getCenter();
+    return [c.lat, c.lng];
+  }, [latLngs]);
 
   return (
-    <div className="cao-map-fallback" style={{ minHeight: 380, position: 'relative' }}>
-      {/* Legend */}
-      <div style={{
-        position: 'absolute', top: 10, right: 12, zIndex: 10,
-        background: 'rgba(255,255,255,.92)', border: '1px solid #e0e3db',
-        borderRadius: 8, padding: '8px 12px', fontSize: 10.5, fontWeight: 600,
-      }}>
-        <div style={{ color: '#9aa19c', textTransform: 'uppercase', letterSpacing: '.07em', marginBottom: 6, fontSize: 9.5 }}>
-          Layer: {activeLayer.replace('_', ' ').toUpperCase()}
+    <div className="cao-map-fallback cao-risk-leaflet" style={{ position: 'relative' }}>
+      <div className="cao-risk-leaflet-legend">
+        <div className="cao-risk-leaflet-legend__title">
+          Layer: {activeLayer.replaceAll('_', ' ').toUpperCase()}
         </div>
-        {['high', 'medium', 'low'].map(r => (
-          <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: riskColors[r] }} />
-            <span style={{ color: '#37474f', textTransform: 'capitalize' }}>{r} risk</span>
+        {['high', 'medium', 'low'].map((r) => (
+          <div key={r} className="cao-risk-leaflet-legend__row">
+            <span className="cao-risk-leaflet-legend__swatch" style={{ background: RISK_FILL[r] }} />
+            <span className="cao-risk-leaflet-legend__label">{r} risk</span>
           </div>
         ))}
-        <div style={{ borderTop: '1px solid #eceee9', marginTop: 6, paddingTop: 5, display: 'flex', alignItems: 'center', gap: 5 }}>
-          <div style={{ width: 10, height: 10, borderRadius: 2, background: col, opacity: .6 }} />
-          <span style={{ color: '#37474f' }}>Layer intensity</span>
+        <div className="cao-risk-leaflet-legend__divider">
+          <span className="cao-risk-leaflet-legend__swatch cao-risk-leaflet-legend__swatch--layer" style={{ background: layerColor }} />
+          <span className="cao-risk-leaflet-legend__label">Layer intensity</span>
         </div>
       </div>
 
-      <svg viewBox="0 0 460 420" style={{ width: '100%', height: '100%', minHeight: 360, display: 'block' }}>
-        {/* District background */}
-        <rect x="60" y="60" width="340" height="320" rx="20" fill="#e8f0e8" stroke="#c8d4c8" strokeWidth="1.5" />
+      <div className="cao-risk-leaflet-map">
+        <MapContainer
+          center={center}
+          zoom={9}
+          scrollWheelZoom
+          className="cao-risk-leaflet-map__inner"
+          style={{ height: '100%', width: '100%' }}
+        >
+          <SolapurMapLayout latLngs={latLngs} />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            subdomains="abc"
+            maxZoom={19}
+          />
+          {talukas.map((t) => {
+            if (t.lat == null || t.lng == null) return null;
+            const risk = t.riskLevel || 'low';
+            const stroke = RISK_STROKE[risk] || RISK_STROKE.low;
+            const layerOp = layerOpacity[t.id] ?? 0.25;
+            const radius = 12 + Math.min(24, Math.round((t.pending + t.pmfbyClaims) / 5));
+            const fillOp = Math.min(0.78, 0.22 + layerOp * 0.55);
+            return (
+              <CircleMarker
+                key={t.id}
+                center={[t.lat, t.lng]}
+                radius={radius}
+                pathOptions={{
+                  color: stroke,
+                  weight: risk === 'high' ? 3 : 2,
+                  fillColor: layerColor,
+                  fillOpacity: fillOp,
+                  opacity: 0.95,
+                }}
+                eventHandlers={{ click: () => onTalukaClick(t.id) }}
+              >
+                <Tooltip direction="top" offset={[0, -6]} opacity={0.95} className="cao-taluka-tooltip">
+                  <div style={{ fontWeight: 700, marginBottom: 4 }}>{t.name}</div>
+                  <div style={{ fontSize: 11, color: '#37474f' }}>
+                    {t.pending} pending · {t.pmfbyClaims} PMFBY · {t.riskLevel} risk
+                  </div>
+                  <div style={{ fontSize: 10, color: '#616161', marginTop: 4 }}>
+                    Layer {activeLayer.replaceAll('_', ' ')} · rain alerts: {t.rainAlerts ?? 0}
+                  </div>
+                </Tooltip>
+              </CircleMarker>
+            );
+          })}
+        </MapContainer>
+      </div>
 
-        {shapes.map(s => {
-          const t = talukaById[s.id];
-          const risk = t?.riskLevel || 'low';
-          const baseColor = riskColors[risk];
-          const layerOp = (layerOpacity[activeLayer] || {})[s.id] || 0;
-          return (
-            <g key={s.id} style={{ cursor: 'pointer' }} onClick={() => onTalukaClick(s.id)}>
-              {/* Base fill */}
-              <rect x={s.x} y={s.y} width={s.w} height={s.h} rx={s.rx}
-                fill={baseColor} fillOpacity={0.18} stroke={baseColor} strokeOpacity={0.5} strokeWidth="1.5" />
-              {/* Layer overlay */}
-              {layerOp > 0 && (
-                <rect x={s.x + 2} y={s.y + 2} width={s.w - 4} height={s.h - 4} rx={s.rx - 1}
-                  fill={col} fillOpacity={layerOp * 0.55} />
-              )}
-              {/* Hover fill */}
-              <rect x={s.x} y={s.y} width={s.w} height={s.h} rx={s.rx}
-                fill="transparent" stroke={baseColor} strokeOpacity={0.8} strokeWidth="2" />
-              {/* Label */}
-              <text x={s.x + s.w / 2} y={s.y + s.h / 2 - 8} textAnchor="middle"
-                fontSize="11" fontWeight="700" fill="#1a1c1a" fontFamily="inherit">
-                {s.label}
-              </text>
-              <text x={s.x + s.w / 2} y={s.y + s.h / 2 + 8} textAnchor="middle"
-                fontSize="9.5" fill="#717972" fontFamily="inherit">
-                {t?.pending} pending · {t?.pmfbyClaims} PMFBY
-              </text>
-              {/* Rain alert dot */}
-              {t?.rainAlerts > 0 && (
-                <circle cx={s.x + s.w - 12} cy={s.y + 12} r={6}
-                  fill="#1565c0" stroke="#fff" strokeWidth="1.5" />
-              )}
-              {/* High risk star */}
-              {risk === 'high' && (
-                <text x={s.x + 14} y={s.y + 16} fontSize="12" fill="#c62828">⚠</text>
-              )}
-            </g>
-          );
-        })}
-
-        {/* District label */}
-        <text x="230" y="50" textAnchor="middle" fontSize="11" fontWeight="700" fill="#37474f" fontFamily="inherit">
-          SOLAPUR DISTRICT — BARSHI CIRCLE
-        </text>
-        <text x="230" y="402" textAnchor="middle" fontSize="9" fill="#9aa19c" fontFamily="inherit">
-          Schematic representation · Click taluka to drill down
-        </text>
-      </svg>
+      <p className="cao-risk-leaflet-caption">
+        Solapur district — Barshi circle · OpenStreetMap basemap · click a marker for taluka performance
+      </p>
     </div>
   );
 }
