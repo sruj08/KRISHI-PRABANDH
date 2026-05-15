@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo/KRISHI_PRABANDH_LOGO.png" width="120" alt="Krishi Prabandh Logo" />
+  <img src="../Krishi%20Prabandh%20SwaSurvey%20App/logo/KRISHI_PRABANDH_LOGO.png" width="120" alt="Krishi Prabandh Logo" />
 </p>
 
 <h1 align="center">Krishi Prabandh Web Portal</h1>
@@ -21,16 +21,16 @@ The **Krishi Prabandh Web Portal** is a full-stack field operations and scheme p
 
 ## Core Features
 
-### 📊 Applications Dashboard
+### Applications Dashboard
 Filter, sort, and action scheme applications with live priority scoring. Officers can review claims submitted by farmers in real-time.
 
-### 🗺️ Visit Planner
+### Visit Planner
 Provides a daily route for field officers, complete with risk-level tracking and post-visit state transitions (Approve / Reject).
 
-### 🚨 Fraud Alerts & Intelligence
+### Fraud Alerts & Intelligence
 Automated dashboard alerts for duplicate claims and anomalous applications based on backend confidence scoring and geolocation mismatches.
 
-### 🌐 Multilingual UI
+### Multilingual UI
 Supports English and Marathi toggling out-of-the-box via a centralized Language Context, ensuring local officers can work in their native language.
 
 ---
