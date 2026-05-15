@@ -75,14 +75,26 @@ def list_survey_queue(
         return success("Pending Queue", {
             "items": [
                 {
-                    "id": "KP/EPP/2026/7681573780",
+                    "id": "SRV-552E6D58",
                     "farmerName": "Mamta Kulkarni",
-                    "damageType": "Flood",
-                    "village": "Hadgaon Village 48",
-                    "status": "PROCESSING",
-                    "createdAt": "2026-05-13T18:52:00Z",
+                    "damageType": "Cyclone",
+                    "village": "Hadgaon_Village_48",
+                    "status": "AI_PROCESSING",
+                    "createdAt": "2026-05-15T08:52:00Z",
                     "severity": "High",
-                    "aiRemarks": "Damage Score: 65% (Moderate-High). Disaster: Flood. Est Payout: Rs.19,500. Image Authenticity Verified (99.1%). Crop: Paddy (Bhaat)."
+                    "aiRemarks": "Loss claim due to Cyclone",
+                    "estPayout": "Rs. 25,000",
+                    "aiConfidence": "92.5%",
+                    "cropExtent": "~8.0 of 12.0 Hectares",
+                    "farmerComments": "Heavy winds and rain damaged the entire field.",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?auto=format&fit=crop&q=80&w=400", "lat": "18.4580", "lon": "73.8513"},
+                        {"type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "lat": "18.4581", "lon": "73.8514"}
+                    ],
+                    "documents": [
+                        {"name": "Claim_Form.pdf"},
+                        {"name": "7_12_Extract.pdf"}
+                    ]
                 },
                 {
                     "id": "P-105",
@@ -90,9 +102,41 @@ def list_survey_queue(
                     "damageType": "Drought",
                     "village": "Wagholi",
                     "status": "PROCESSING",
-                    "createdAt": "2026-05-12T10:00:00Z",
+                    "createdAt": "2026-05-14T10:00:00Z",
                     "severity": "Medium",
-                    "aiRemarks": "Drought impact detected in geo-tagged images."
+                    "aiRemarks": "Drought impact detected in geo-tagged images.",
+                    "estPayout": "Rs. 12,000",
+                    "aiConfidence": "85.0%",
+                    "cropExtent": "~4.5 of 10.0 Hectares",
+                    "farmerComments": "Lack of rain has ruined the crops.",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1584485509930-7411bc215037?auto=format&fit=crop&q=80&w=400", "lat": "19.0760", "lon": "72.8777"}
+                    ],
+                    "documents": [
+                        {"name": "Survey_Report.pdf"}
+                    ]
+                },
+                {
+                    "id": "KP/EPP/2026/7681573780",
+                    "farmerName": "Ramesh Chavan",
+                    "damageType": "Flood",
+                    "village": "Shirur",
+                    "status": "PROCESSING",
+                    "createdAt": "2026-05-13T18:52:00Z",
+                    "severity": "High",
+                    "aiRemarks": "Damage Score: 65% (Moderate-High). Disaster: Flood. Est Payout: Rs.19,500. Image Authenticity Verified (99.1%). Crop: Paddy (Bhaat).",
+                    "estPayout": "Rs. 19,500",
+                    "aiConfidence": "87.3%",
+                    "cropExtent": "~6.5 of 10.12 Hectares",
+                    "farmerComments": "\"standing water caused complete lodging of Paddy crop\"",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1473655584856-f08e4210a54d?auto=format&fit=crop&q=80&w=400", "lat": "18.5204", "lon": "73.8567"},
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1468276311594-df7cb65d8df6?auto=format&fit=crop&q=80&w=400", "lat": "18.5205", "lon": "73.8568"}
+                    ],
+                    "documents": [
+                        {"name": "Land_Record.pdf"},
+                        {"name": "Flood_Assessment.pdf"}
+                    ]
                 }
             ]
         })

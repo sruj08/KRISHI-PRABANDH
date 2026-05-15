@@ -32,9 +32,82 @@ const OfficerPendingSurveysPage = () => {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const res = await fetch('/api/surveys/queue');
-        const data = await res.json();
-          if (data.success) {
+        setLoading(true);
+        // Using hardcoded mock data to ensure dashboard works without backend
+        const mockData = {
+          success: true,
+          data: {
+            items: [
+                {
+                    "id": "SRV-552E6D58",
+                    "farmerName": "Mamta Kulkarni",
+                    "damageType": "Cyclone",
+                    "village": "Hadgaon_Village_48",
+                    "status": "AI_PROCESSING",
+                    "createdAt": "2026-05-15T08:52:00Z",
+                    "severity": "High",
+                    "aiRemarks": "Loss claim due to Cyclone",
+                    "estPayout": "Rs. 25,000",
+                    "aiConfidence": "92.5%",
+                    "cropExtent": "~8.0 of 12.0 Hectares",
+                    "farmerComments": "Heavy winds and rain damaged the entire field.",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?auto=format&fit=crop&q=80&w=400", "lat": "18.4580", "lon": "73.8513"},
+                        {"type": "video", "url": "https://www.w3schools.com/html/mov_bbb.mp4", "lat": "18.4581", "lon": "73.8514"}
+                    ],
+                    "documents": [
+                        {"name": "Claim_Form.pdf"},
+                        {"name": "7_12_Extract.pdf"}
+                    ]
+                },
+                {
+                    "id": "P-105",
+                    "farmerName": "Babanrao Patil",
+                    "damageType": "Drought",
+                    "village": "Wagholi",
+                    "status": "PROCESSING",
+                    "createdAt": "2026-05-14T10:00:00Z",
+                    "severity": "Medium",
+                    "aiRemarks": "Drought impact detected in geo-tagged images.",
+                    "estPayout": "Rs. 12,000",
+                    "aiConfidence": "85.0%",
+                    "cropExtent": "~4.5 of 10.0 Hectares",
+                    "farmerComments": "Lack of rain has ruined the crops.",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1584485509930-7411bc215037?auto=format&fit=crop&q=80&w=400", "lat": "19.0760", "lon": "72.8777"}
+                    ],
+                    "documents": [
+                        {"name": "Survey_Report.pdf"}
+                    ]
+                },
+                {
+                    "id": "KP/EPP/2026/7681573780",
+                    "farmerName": "Ramesh Chavan",
+                    "damageType": "Flood",
+                    "village": "Shirur",
+                    "status": "PROCESSING",
+                    "createdAt": "2026-05-13T18:52:00Z",
+                    "severity": "High",
+                    "aiRemarks": "Damage Score: 65% (Moderate-High). Disaster: Flood. Est Payout: Rs.19,500. Image Authenticity Verified (99.1%). Crop: Paddy (Bhaat).",
+                    "estPayout": "Rs. 19,500",
+                    "aiConfidence": "87.3%",
+                    "cropExtent": "~6.5 of 10.12 Hectares",
+                    "farmerComments": "\"standing water caused complete lodging of Paddy crop\"",
+                    "media": [
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1473655584856-f08e4210a54d?auto=format&fit=crop&q=80&w=400", "lat": "18.5204", "lon": "73.8567"},
+                        {"type": "image", "url": "https://images.unsplash.com/photo-1468276311594-df7cb65d8df6?auto=format&fit=crop&q=80&w=400", "lat": "18.5205", "lon": "73.8568"}
+                    ],
+                    "documents": [
+                        {"name": "Land_Record.pdf"},
+                        {"name": "Flood_Assessment.pdf"}
+                    ]
+                }
+            ]
+          }
+        };
+        const data = mockData;
+        
+        if (data.success) {
           const items = Array.isArray(data.data) ? data.data : (data.data?.items || []);
           const mappedSurveys = items.map(s => ({
             id: s.id,
@@ -67,8 +140,6 @@ const OfficerPendingSurveysPage = () => {
     };
 
     fetchSurveys();
-    const interval = setInterval(fetchSurveys, 10000); // 10s poll for real-time visibility
-    return () => clearInterval(interval);
   }, []);
 
   const confirmAction = () => {
@@ -209,41 +280,26 @@ const OfficerPendingSurveysPage = () => {
                   <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                     <div>
                       <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#414943', margin: '0 0 12px', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-                        Digital Crop Inspection & Damage Survey Report
+                        Uploaded Documents
                       </h3>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
-                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Report Ref</div>
-                          <div style={{ fontWeight: 600 }}>{selectedApp.id}</div>
-                        </div>
-                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
-                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Survey Date</div>
-                          <div style={{ fontWeight: 600 }}>{new Date(selectedApp.raw.createdAt).toLocaleString('en-IN', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit'})}</div>
-                        </div>
-                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
-                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Estimated Payout</div>
-                          <div style={{ fontWeight: 600, color: '#1f4d36' }}>
-                            {selectedApp.id === 'KP/EPP/2026/7681573780' ? 'Rs. 19,500' : 'Pending AI Calc'}
-                          </div>
-                        </div>
-                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
-                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>AI Confidence</div>
-                          <div style={{ fontWeight: 600 }}>
-                             {selectedApp.id === 'KP/EPP/2026/7681573780' ? '87.3%' : 'N/A'}
-                          </div>
-                        </div>
-                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
-                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Crop Extent Damaged</div>
-                          <div style={{ fontWeight: 600 }}>
-                            {selectedApp.id === 'KP/EPP/2026/7681573780' ? '~6.5 of 10.12 Hectares' : 'N/A'}
-                          </div>
-                        </div>
-                        <div style={{ background: '#f8f9f8', padding: '12px', borderRadius: '8px', border: '1px solid #e2e9e6' }}>
-                          <div style={{ fontSize: '0.8rem', color: '#717972' }}>Farmer Comments</div>
-                          <div style={{ fontWeight: 600 }}>
-                            {selectedApp.id === 'KP/EPP/2026/7681573780' ? '"standing water caused complete lodging of Paddy crop"' : 'N/A'}
-                          </div>
-                        </div>
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        {selectedApp.raw.documents && selectedApp.raw.documents.length > 0 ? (
+                          selectedApp.raw.documents.map((doc, i) => (
+                            <div key={i} style={{ ...THUMB, width: '100px', flexDirection: 'column', gap: '8px', background: '#e2e9e6' }}>
+                              <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '24px' }}>description</span>
+                              <span style={{ fontSize: '0.7rem', color: '#717972', textAlign: 'center', padding: '0 4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{doc.name}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <>
+                            <div style={{ ...THUMB, width: '100px' }}>
+                              <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '24px' }}>description</span>
+                            </div>
+                            <div style={{ ...THUMB, width: '100px' }}>
+                              <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '24px' }}>description</span>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -252,17 +308,19 @@ const OfficerPendingSurveysPage = () => {
                         Geo-tagged Photos
                       </h3>
                       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                        {selectedApp.id === 'KP/EPP/2026/7681573780' ? (
-                          <>
-                            <div style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                              <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '32px', marginBottom: '8px' }}>image</span>
-                              <span style={{ fontSize: '0.85rem', color: '#717972' }}>Photo 1 (Lat: 18.4580, Lon: 73.8513)</span>
+                        {selectedApp.raw.media && selectedApp.raw.media.length > 0 ? (
+                          selectedApp.raw.media.map((m, i) => (
+                            <div key={i} style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
+                              {m.type === 'video' ? (
+                                <video src={m.url} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                <img src={m.url} alt={`Geo-tagged ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              )}
+                              <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'rgba(0,0,0,0.6)', padding: '6px', textAlign: 'center' }}>
+                                <span style={{ fontSize: '0.75rem', color: '#fff' }}>Media {i + 1} (Lat: {m.lat}, Lon: {m.lon})</span>
+                              </div>
                             </div>
-                            <div style={{ ...THUMB, width: '100%', height: '200px', background: '#e2e9e6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                              <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '32px', marginBottom: '8px' }}>image</span>
-                              <span style={{ fontSize: '0.85rem', color: '#717972' }}>Photo 2 (Lat: 18.4580, Lon: 73.8513)</span>
-                            </div>
-                          </>
+                          ))
                         ) : (
                           <div style={{ ...THUMB, width: '100px' }}>
                             <span className="material-symbols-outlined" style={{ color: '#9eaa9f', fontSize: '22px' }}>image</span>

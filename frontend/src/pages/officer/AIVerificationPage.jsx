@@ -27,6 +27,24 @@ const AIVerificationPage = () => {
       duplicates: [DUPLICATE_DETECTION[1]],
       suggestedAction: 'Verify mobile number ownership. Mobile number and Aadhaar tail match an existing record.',
       docType: 'Aadhaar / Bank Passbook'
+    },
+    {
+      id: 'AI-4492',
+      farmer: 'Srujan Ganesh Satav',
+      scheme: 'Farmer Registry',
+      village: 'Uruli-dewachi',
+      confidence: 'High Risk',
+      ocr: [
+        { field: 'Aadhaar Number', value: '4274 2817 5419', confidence: 99 },
+        { field: 'Name', value: 'Srujan Ganesh Satav', confidence: 95 },
+        { field: 'DOB', value: '17/08/2006', confidence: 98 },
+      ],
+      duplicates: [
+        { match: 'Aadhaar Number 4274 2817 5419', districts: 'Pune, Satara', similarity: 100 }
+      ],
+      suggestedAction: 'Reject Application. This Aadhaar number has already been registered in Satara district for PM-KISAN benefits.',
+      docType: 'Aadhaar Card',
+      imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Aadhaar_Logo.svg/512px-Aadhaar_Logo.svg.png' // Placeholder for the actual image
     }
   ];
 
@@ -74,8 +92,12 @@ const AIVerificationPage = () => {
                 <div style={{ padding: '12px 16px', borderBottom: '1px solid #e2e9e6', fontWeight: 600, fontSize: '0.9rem', color: '#414943' }}>
                   Document: {currentCase.docType}
                 </div>
-                <div style={{ flex: 1, minHeight: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9eaa9f' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 48, opacity: 0.5 }}>plagiarism</span>
+                <div style={{ flex: 1, minHeight: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9eaa9f', overflow: 'hidden' }}>
+                  {currentCase.imgUrl ? (
+                    <img src={currentCase.imgUrl} alt={currentCase.docType} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  ) : (
+                    <span className="material-symbols-outlined" style={{ fontSize: 48, opacity: 0.5 }}>plagiarism</span>
+                  )}
                 </div>
               </div>
 
