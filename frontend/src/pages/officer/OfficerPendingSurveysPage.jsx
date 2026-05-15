@@ -232,20 +232,9 @@ const OfficerPendingSurveysPage = () => {
                     {app.daysOpen}d ago
                   </span>
                 </div>
-                <div style={{ fontSize: '0.8125rem', color: '#5c6656', marginBottom: '8px' }}>
+                <div style={{ fontSize: '0.8125rem', color: '#5c6656' }}>
                   {app.scheme} &bull; {app.village}
                 </div>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '3px 8px',
-                  borderRadius: '4px',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  background: app.priority === 'HIGH' ? '#fff0ef' : '#eef0eb',
-                  color: app.priority === 'HIGH' ? '#ba1a1a' : '#414943',
-                }}>
-                  Status: {app.stage}
-                </span>
               </div>
             );
           })
